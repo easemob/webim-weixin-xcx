@@ -1,11 +1,11 @@
 //logs.js
-console.log(this, window, document)
 
 var util = require('../../utils/util.js')
 
 // console.log(wx)
-var readme = require('../../utils/strophe.js')
-console.log(readme)
+var strophe = require('../../utils/strophe.js')
+var WebIM = require('../../utils/WebIM.js')
+console.log(WebIM)
 Page({
   data: {
     logs: []
@@ -16,7 +16,7 @@ Page({
     })
   },
   onLoad: function () {
-
+    console.log(WebIM)
     this.setData({
       logs: (wx.getStorageSync('logs') || []).map(function (log) {
         return util.formatTime(new Date(log))
