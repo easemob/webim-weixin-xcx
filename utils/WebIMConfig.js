@@ -17,14 +17,14 @@ let config = {
   /*
    * XMPP server
    */
- xmppURL: 'im-api.easemob.com',
+ xmppURL: 'https://im-api.easemob.com',
   // xmppURL: '172.17.3.122:5280',
   /*
    * Backend REST API URL
    */
   // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
   // ios must be https!!! by lwz
-  apiURL:  'https://a1.easemob.com',
+  apiURL:  'https://a1.sdb.easemob.com',
   // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//172.17.3.155:8080',
   /*
    * Application AppKey

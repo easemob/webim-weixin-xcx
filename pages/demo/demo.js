@@ -37,57 +37,53 @@ Page({
     },
     submit: function() {
         var that = this
-        wx.request({
-            url: 'https://a1.sdb.easemob.com/easemob-demo/chatdemoui/users',
-            data: {
-                username: that.data.username,
-                password: that.data.password,
-                nickname: that.data.nickname
-            },
-             header: {
-              'content-type': 'application/json'
-            },
-            method: 'POST',
-            success: function(res) {
-                console.log(res)
-            }
-        })
-    },
-
-    login: function() {
-        var that = this
-        console.log(that.data)
-        var conn = new WebIM.default.connection({
-            https: WebIM.config.https,
-            url: WebIM.config.xmppURL,
-            isAutoLogin: WebIM.config.isAutoLogin,
-            isMultiLoginSessions: WebIM.config.isMultiLoginSessions
-        })
+        console.log(WebIM.default)
         var options = {
-            apiUrl: WebIM.config.apiURL,
-            username: "that.data.username",
-            password: "that.data.password",
-            appKey: "orgName#appName",  
+            apiUrl: WebIM.default.config.apiURL,
+            username: that.data.username,
+            password: that.data.password,
+            nickname: that.data.nickname,
+            appKey: 'orgName#appName' 
         }
-        conn.WebIM.default.open(options)
+        WebIM.default.utils.registerUser(options)
+        
         // wx.request({
-        //     url: 'https://a1.sdb.easemob.com/easemob-demo/chatdemoui/token',
+        //     url: 'https://a1.sdb.easemob.com/easemob-demo/chatdemoui/users',
         //     data: {
-        //         grant_type: that.data.grant_type,
-        //         username: that.data.name,
-        //         password: that.data.psd               
+        //         username: that.data.username,
+        //         password: that.data.password,
+        //         nickname: that.data.nickname
         //     },
-        //     header: {
-        //         'content-type':'application/json'
+        //      header: {
+        //       'content-type': 'application/json'
         //     },
         //     method: 'POST',
         //     success: function(res) {
         //         console.log(res)
-        //         if(res.statusCode == 200) {
-        //             that.webSocket()
-        //         }
         //     }
         // })
+    },
+
+    login: function() {
+        var that = this
+        wx.request({
+            url: 'https://a1.sdb.easemob.com/easemob-demo/chatdemoui/token',
+            data: {
+                grant_type: that.data.grant_type,
+                username: that.data.name,
+                password: that.data.psd               
+            },
+            header: {
+                'content-type':'application/json'
+            },
+            method: 'POST',
+            success: function(res) {
+                console.log(res)
+                if(res.statusCode == 200) {
+                    that.webSocket()
+                }
+            }
+        })
         
     },
     webSocket: function() {

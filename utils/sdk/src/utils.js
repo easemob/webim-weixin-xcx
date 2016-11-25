@@ -224,8 +224,8 @@
             }
         },
         registerUser: function (options) {
-            var orgName = options.orgName || '';
-            var appName = options.appName || '';
+            var orgName = "easemob-demo";
+            var appName = "chatdemoui";
             var appKey = options.appKey || '';
             var suc = options.success || EMPTYFN;
             var err = options.error || EMPTYFN;
@@ -254,11 +254,9 @@
                 password: options.password,
                 nickname: options.nickname || ''
             };
-
             var userinfo = utils.stringify(userjson);
             var options = {
                 url: restUrl,
-                dataType: 'json',
                 data: userinfo,
                 success: suc,
                 error: err
@@ -269,7 +267,6 @@
             var options = options || {};
             var suc = options.success || EMPTYFN;
             var err = options.error || EMPTYFN;
-            var headers = options.headers || null;
 
             var appKey = options.appKey || '';
             var devInfos = appKey.split('#');
@@ -777,69 +774,9 @@
 
 
         ajax: function (options) {
-            var dataType = options.dataType || 'text';
+            var that = this
             var suc = options.success || EMPTYFN;
             var error = options.error || EMPTYFN;
-            var xhr = utils.xmlrequest();
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    var status = xhr.status || 0;
-                    if (status === 200) {
-                        try {
-                            switch (dataType) {
-                                case 'text':
-                                    suc(xhr.responseText);
-                                    return;
-                                case 'json':
-                                    var json = utils.parseJSON(xhr.responseText);
-                                    suc(json, xhr);
-                                    return;
-                                case 'xml':
-                                    if (xhr.responseXML && xhr.responseXML.documentElement) {
-                                        suc(xhr.responseXML.documentElement, xhr);
-                                    } else {
-                                        error({
-                                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
-                                            data: xhr.responseText
-                                        });
-                                    }
-                                    return;
-                            }
-                            suc(xhr.response || xhr.responseText, xhr);
-                        } catch (e) {
-                            error({
-                                type: _code.WEBIM_CONNCTION_AJAX_ERROR,
-                                data: e
-                            });
-                        }
-                        return;
-                    } else {
-                        error({
-                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
-                            data: xhr.responseText
-                        });
-                        return;
-                    }
-                }
-                if (xhr.readyState === 0) {
-                    error({
-                        type: _code.WEBIM_CONNCTION_AJAX_ERROR,
-                        data: xhr.responseText
-                    });
-                }
-            };
-
-            if (options.responseType) {
-                if (xhr.responseType) {
-                    xhr.responseType = options.responseType;
-                }
-            }
-            if (options.mimeType) {
-                if (utils.hasOverrideMimeType) {
-                    xhr.overrideMimeType(options.mimeType);
-                }
-            }
 
             var type = options.type || 'POST',
                 data = options.data || null,
@@ -856,22 +793,18 @@
                 data = null;
                 tempData = null;
             }
-            xhr.open(type, options.url);
-
-            if (utils.isCanSetRequestHeader) {
-                var headers = options.headers || {};
-                for (var key in headers) {
-                    if (headers.hasOwnProperty(key)) {
-                        xhr.setRequestHeader(key, headers[key]);
-                    }
-                }
-                // todo by lwz
-                xhr.setRequestHeader('content-type', 'application/json');
-            }
-
-            xhr.send(data);
-            return xhr;
+            wx.request({
+                url: options.url,
+                data: options.data,
+                header: {
+                    'content-type': 'application/json'
+                },
+                method: type,
+                success: suc,
+                fail: error
+            })
         },
+
         ts: function () {
             var d = new Date();
             var Hours = d.getHours(); //获取当前小时数(0-23)
