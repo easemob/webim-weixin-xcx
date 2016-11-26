@@ -29,7 +29,7 @@ if (WebIM.config.isDebug) {
   }
 
   Strophe.Strophe.log = function (level, msg) {
-    if(__DEV__) console.log(ts(), level, msg);
+    console.log(ts(), level, msg);
   };
 
   Strophe.Strophe.Connection.prototype.rawOutput = function (data) {

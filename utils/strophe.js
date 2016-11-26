@@ -16,6 +16,10 @@
  * that are still executing.
  */
 // console.log(window,document)
+import xmldom from 'xmldom/dom-parser'
+var DOMParser = xmldom.DOMParser;
+let document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", 'text/xml');
+
 var window = window || {};
 var Strophe = null;
 var $build = null;
@@ -1596,6 +1600,8 @@ Strophe = {
      */
     /* jshint ignore:start */
     log: function (level, msg) {
+          console.log('log',level, msg);
+
         return;
     },
     /* jshint ignore:end */
@@ -3410,8 +3416,16 @@ Strophe.Connection.prototype = {
             hasFeatures = bodyWrap.getElementsByTagName("stream:features").length > 0 ||
                             bodyWrap.getElementsByTagName("features").length > 0;
         }
+
+        console.log('hasFeatures', hasFeatures, bodyWrap, _callback)
         if (!hasFeatures) {
-            this._proto._no_auth_received(_callback);
+            console.log('hasFeatures2')
+            try {
+               this._proto._no_auth_received(_callback);
+             } catch(e) {
+               console.log('_no_auth_received')
+             }          
+
             return;
         }
 
@@ -3423,6 +3437,8 @@ Strophe.Connection.prototype = {
                 if (this.mechanisms[mech]) matched.push(this.mechanisms[mech]);
             }
         }
+
+        console.log('matched', matched, bodyWrap)
         if (matched.length === 0) {
             if (bodyWrap.getElementsByTagName("auth").length === 0) {
                 // There are no matching SASL mechanisms and also no legacy
@@ -3557,6 +3573,7 @@ Strophe.Connection.prototype = {
      *
      */
     authenticate: function (matched) {
+      console.log('authenticate');
         if (!this._attemptSASLAuth(matched)) {
             this._attemptLegacyAuth();
         }
@@ -3627,6 +3644,7 @@ Strophe.Connection.prototype = {
      *    false to remove the handler.
      */
     _sasl_success_cb: function (elem) {
+      console.log('_sasl_success_cb',elem)
         if (this._sasl_data["server-signature"]) {
             var serverSignature;
             var success = Base64.decode(Strophe.getText(elem));
@@ -3694,6 +3712,8 @@ Strophe.Connection.prototype = {
      *    false to remove the handler.
      */
     _sasl_auth1_cb: function (elem) {
+            console.log('_sasl_auth1_cb',elem)
+
         // save stream:features for future usage
         this.features = elem;
         var i, child;
@@ -3739,6 +3759,8 @@ Strophe.Connection.prototype = {
      *    false to remove the handler.
      */
     _sasl_bind_cb: function (elem) {
+                  console.log('_sasl_bind_cb',elem)
+
         if (elem.getAttribute("type") == "error") {
             Strophe.info("SASL binding failed.");
             var conflict = elem.getElementsByTagName("conflict"), condition;
@@ -4832,6 +4854,8 @@ Strophe.Bosh.prototype = {
      * has been received and sends a blank poll request.
      */
     _no_auth_received: function (_callback) {
+        console.log('_no_auth_received')
+
         if (_callback) {
             _callback = _callback.bind(this._conn);
         } else {
@@ -4843,6 +4867,7 @@ Strophe.Bosh.prototype = {
                     this._onRequestStateChange.bind(
                         this, _callback.bind(this._conn)),
                     body.tree().getAttribute("rid")));
+        console.log(this._requests)
         this._throttledRequestHandler();
     },
 
@@ -5462,11 +5487,34 @@ Strophe.Websocket.prototype = {
        // Create the new WobSocket
        
        this.socket = {}
-       wx.connectSocket({url: this._conn.service, method: "GET"})
+       var self = this;
+       console.log('service', this._conn.service)
+       
        this.socket.onopen = this._onOpen;
        this.socket.onmessage = this._connect_cb_wrapper;
        this.socket.onerror = this._onError;
        this.socket.onclose = this._onClose;
+       this.socket.send = function(str) {
+           wx.sendSocketMessage({data:str})
+       }
+
+       wx.connectSocket({url: this._conn.service, method: "GET"})
+        wx.onSocketOpen(function(res) {
+            console.log('WebSocket连接已打开！')
+            // wx.sendSocketMessage({
+            //     data: "Hello,World:" 
+            // })
+            self._onOpen()
+        })
+        wx.onSocketMessage(function(msg) {
+            console.log(msg)
+            self.socket.onmessage.call(self, msg);
+        })
+        wx.onSocketClose(function() {
+          console.log('WebSocket连接已经关闭!')
+
+          self.socket.onclose()
+        })
     },
 
     /** PrivateFunction: _connect_cb
@@ -5478,6 +5526,7 @@ Strophe.Websocket.prototype = {
      *    (Strophe.Request) bodyWrap - The received stanza.
      */
     _connect_cb: function(bodyWrap) {
+      console.log('connnect_cb', bodyWrap)
         var error = this._check_streamerror(bodyWrap, Strophe.Status.CONNFAIL);
         if (error) {
             return Strophe.Status.CONNFAIL;
@@ -5526,11 +5575,6 @@ Strophe.Websocket.prototype = {
      * message handler. On receiving a stream error the connection is terminated.
      */
     _connect_cb_wrapper: function(message) {
-            wx.onSocketMessage(function(msg) {
-              console.log(msg)
-          })
-        
-
         
         if (message.data.indexOf("<open ") === 0 || message.data.indexOf("<?xml") === 0) {
             // Strip the XML Declaration, if there is one
@@ -5542,8 +5586,10 @@ Strophe.Websocket.prototype = {
             this._conn.rawInput(message.data);
 
             //_handleStreamSteart will check for XML errors and disconnect on error
+            console.log('_handleStreamStart', streamStart)
             if (this._handleStreamStart(streamStart)) {
                 //_connect_cb will check for stream:error and disconnect on error
+                console.log('_connect_cb')
                 this._connect_cb(streamStart);
             }
         } else if (message.data.indexOf("<close ") === 0) { //'<close xmlns="urn:ietf:params:xml:ns:xmpp-framing />') {
@@ -5709,7 +5755,11 @@ Strophe.Websocket.prototype = {
                     rawStanza = Strophe.serialize(stanza);
                     this._conn.xmlOutput(stanza);
                     this._conn.rawOutput(rawStanza);
-                    this.socket.send(rawStanza);
+
+                    // onsend todo
+                    console.log('rawStanza',rawStanza)
+                     wx.sendSocketMessage({data:rawStanza})
+                    //this.socket.send(rawStanza);
                 }
             }
             this._conn._data = [];
@@ -5787,15 +5837,16 @@ Strophe.Websocket.prototype = {
      * The opening stream tag is sent here.
      */
     _onOpen: function() {
-      wx.onSocketOpen(function() {
-        console.log('WebSocket连接已打开！')
-      })
-        // Strophe.info("Websocket open");
-        // var start = this._buildStream();
-        // this._conn.xmlOutput(start.tree());
+        Strophe.info("Websocket open");
+        var start = this._buildStream();
+        this._conn.xmlOutput(start.tree());
 
-        // var startString = Strophe.serialize(start);
-        // this._conn.rawOutput(startString);
+        var startString = Strophe.serialize(start);
+        this._conn.rawOutput(startString);
+        // onsend todo
+        console.log('startString', startString)
+       wx.sendSocketMessage({data:startString})
+      //this.socket.send(rawStanza);
         // this.socket.send(startString);
     },
 

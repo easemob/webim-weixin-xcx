@@ -4,6 +4,10 @@ import StropheAll from '../../strophe.js'
 
 var Strophe = StropheAll.Strophe
 
+  Strophe.log = function (level, msg) {
+    console.log(ts(), level, msg);
+  };
+
 var window = {}
 var _version = '1.1.3';
 var _code = require('./status').code;
@@ -75,6 +79,9 @@ Strophe.Websocket.prototype._onMessage = function (message) {
     }catch(e) {
       console.log('%crecv' + message.data, 'color: green');
     }
+
+          console.log('%crecv' + message.data, 'color: green');
+
 
     var elem, data;
     // check for closing stream
@@ -315,7 +322,7 @@ var _parseFriend = function (queryTag, conn, from) {
 };
 
 var _login = function (options, conn) {
-    console.log(options, '_login')
+    console.log(options,conn, '_login')
     var accessToken = options.access_token || '';
     if (accessToken == '') {
         var loginfo = _utils.stringify(options);
@@ -721,8 +728,8 @@ connection.prototype.listen = function (options) {
 connection.prototype.heartBeat = function () {
     var me = this;
     //IE8: strophe auto switch from ws to BOSH, need heartbeat
-    var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
-
+    var isNeed = !/^ws|wss/.test(me.url) ;
+    // || /mobile/.test(navigator.userAgent)
     if (this.heartBeatID || !isNeed) {
         return;
     }
@@ -919,7 +926,7 @@ connection.prototype.addHandler = function (handler, ns, name, type, id, from, o
 
 connection.prototype.notifyVersion = function (suc, fail) {
     var jid = _getJid({}, this);
-    var dom = $iq({
+    var dom = StropheAll.$iq({
         from: this.context.jid || ''
         , to: this.domain
         , type: 'result'
@@ -1525,7 +1532,7 @@ connection.prototype.removeRoster = function (options) {
 
 connection.prototype.getRoster = function (options) {
     var conn = this;
-    var dom = $iq({
+    var dom = StropheAll.$iq({
         type: 'get'
     }).c('query', {xmlns: 'jabber:iq:roster'});
 
@@ -1797,7 +1804,7 @@ connection.prototype.queryRoomOccupants = function (options) {
     var attrs = {
         xmlns: Strophe.NS.DISCO_ITEMS
     };
-    var info = $iq({
+    var info = StropheAll.$iq({
         from: this.context.jid
         , to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
         , type: 'get'
@@ -1806,14 +1813,14 @@ connection.prototype.queryRoomOccupants = function (options) {
 };
 
 connection.prototype.setUserSig = function (desc) {
-    var dom = $pres({xmlns: 'jabber:client'});
+    var dom = StropheAll.$pres({xmlns: 'jabber:client'});
     desc = desc || '';
     dom.c('status').t(desc);
     this.sendCommand(dom.tree());
 };
 
 connection.prototype.setPresence = function (type, status) {
-    var dom = $pres({xmlns: 'jabber:client'});
+    var dom = StropheAll.$pres({xmlns: 'jabber:client'});
     if (type) {
         if (status) {
             dom.c('show').t(type);
@@ -1826,7 +1833,7 @@ connection.prototype.setPresence = function (type, status) {
 };
 
 connection.prototype.getPresence = function () {
-    var dom = $pres({xmlns: 'jabber:client'});
+    var dom = StropheAll.$pres({xmlns: 'jabber:client'});
     var conn = this;
     this.sendCommand(dom.tree());
 };
@@ -1835,7 +1842,7 @@ connection.prototype.ping = function (options) {
     var options = options || {};
     var jid = _getJid(options, this);
 
-    var dom = $iq({
+    var dom = StropheAll.$iq({
         from: this.context.jid || ''
         , to: jid
         , type: 'get'
