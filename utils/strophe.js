@@ -5341,10 +5341,11 @@ return Strophe;
  *    A new Strophe.WebSocket object.
  */
 Strophe.Websocket = function(connection) {
+    console.log(connection)
     this._conn = connection;
     this.strip = "wrapper";
 
-    var service = connection.service;
+    var service = connection.service;    //"wss://im-api.sandbox.easemob.com/ws/"
     if (service.indexOf("ws:") !== 0 && service.indexOf("wss:") !== 0) {
         // If the service is not an absolute URL, assume it is a path and put the absolute
         // URL together from options, current URL and the path.
@@ -5457,14 +5458,15 @@ Strophe.Websocket.prototype = {
      */
     _connect: function () {
         // Ensure that there is no open WebSocket from a previous Connection.
-        this._closeSocket();
-
-        // Create the new WobSocket
-        this.socket = new WebSocket(this._conn.service, "xmpp");
-        this.socket.onopen = this._onOpen.bind(this);
-        this.socket.onerror = this._onError.bind(this);
-        this.socket.onclose = this._onClose.bind(this);
-        this.socket.onmessage = this._connect_cb_wrapper.bind(this);
+       wx.closeSocket()
+       // Create the new WobSocket
+       
+       this.socket = {}
+       wx.connectSocket({url: this._conn.service, method: "GET"})
+       this.socket.onopen = this._onOpen;
+       this.socket.onmessage = this._connect_cb_wrapper;
+       this.socket.onerror = this._onError;
+       this.socket.onclose = this._onClose;
     },
 
     /** PrivateFunction: _connect_cb
@@ -5524,6 +5526,12 @@ Strophe.Websocket.prototype = {
      * message handler. On receiving a stream error the connection is terminated.
      */
     _connect_cb_wrapper: function(message) {
+            wx.onSocketMessage(function(msg) {
+              console.log(msg)
+          })
+        
+
+        
         if (message.data.indexOf("<open ") === 0 || message.data.indexOf("<?xml") === 0) {
             // Strip the XML Declaration, if there is one
             var data = message.data.replace(/^(<\?.*?\?>\s*)*/, "");
@@ -5609,12 +5617,12 @@ Strophe.Websocket.prototype = {
      *
      *  Closes the socket if it is still open and deletes it
      */
-    _closeSocket: function () {
-        if (this.socket) { try {
-            this.socket.close();
-        } catch (e) {} }
-        this.socket = null;
-    },
+    // _closeSocket: function () {
+    //     if (this.socket) { try {
+    //         this.socket.close();
+    //     } catch (e) {} }
+    //     this.socket = null;
+    // },
 
     /** PrivateFunction: _emptyQueue
      * _Private_ function to check if the message queue is empty.
@@ -5674,9 +5682,12 @@ Strophe.Websocket.prototype = {
      * (Object) error - The websocket error.
      */
     _onError: function(error) {
-        Strophe.error("Websocket error " + error);
-        this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "The WebSocket connection could not be established or was disconnected.");
-        this._disconnect();
+        wx.onSocketError(function(res){
+          console.log('WebSocket连接打开失败，请检查！')
+        })
+        // Strophe.error("Websocket error " + error);
+        // this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "The WebSocket connection could not be established or was disconnected.");
+        // this._disconnect();
     },
 
     /** PrivateFunction: _onIdle
@@ -5729,6 +5740,9 @@ Strophe.Websocket.prototype = {
      * (string) message - The websocket message.
      */
     _onMessage: function(message) {
+        // wx.sendSocketMessage({
+        //   data: message
+        // })
         var elem, data;
         // check for closing stream
         var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -5773,13 +5787,16 @@ Strophe.Websocket.prototype = {
      * The opening stream tag is sent here.
      */
     _onOpen: function() {
-        Strophe.info("Websocket open");
-        var start = this._buildStream();
-        this._conn.xmlOutput(start.tree());
+      wx.onSocketOpen(function() {
+        console.log('WebSocket连接已打开！')
+      })
+        // Strophe.info("Websocket open");
+        // var start = this._buildStream();
+        // this._conn.xmlOutput(start.tree());
 
-        var startString = Strophe.serialize(start);
-        this._conn.rawOutput(startString);
-        this.socket.send(startString);
+        // var startString = Strophe.serialize(start);
+        // this._conn.rawOutput(startString);
+        // this.socket.send(startString);
     },
 
     /** PrivateFunction: _reqToData

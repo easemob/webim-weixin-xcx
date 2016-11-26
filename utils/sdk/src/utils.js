@@ -295,9 +295,7 @@
 
             var options = {
                 url: apiUrl + '/' + orgName + '/' + appName + '/token',
-                dataType: 'json',
                 data: loginfo,
-                headers: headers,
                 success: suc,
                 error: err
             };
@@ -774,7 +772,6 @@
 
 
         ajax: function (options) {
-            var that = this
             var suc = options.success || EMPTYFN;
             var error = options.error || EMPTYFN;
 

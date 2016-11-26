@@ -5,6 +5,7 @@ import websdk from 'sdk/index'
 import xmldom from 'xmldom/dom-parser'
 import config from 'WebIMConfig'
 
+console.log(websdk)
 // init DOMParser / document for strophe and sdk
 // window.WebIM.config.isDebug = true
 console = console || {}

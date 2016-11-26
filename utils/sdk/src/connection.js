@@ -1,6 +1,8 @@
 // ;
 // (function (window, undefined) {
-import Strophe from '../../strophe.js'
+import StropheAll from '../../strophe.js'
+
+var Strophe = StropheAll.Strophe
 
 var window = {}
 var _version = '1.1.3';
@@ -25,7 +27,7 @@ if (window.XDomainRequest) {
     };
 }
 
-Strophe.Strophe.Request.prototype._newXHR = function () {
+Strophe.Request.prototype._newXHR = function () {
     var xhr = _utils.xmlrequest(true);
     if (xhr.overrideMimeType) {
         xhr.overrideMimeType('text/xml');
@@ -35,7 +37,7 @@ Strophe.Strophe.Request.prototype._newXHR = function () {
     return xhr;
 };
 
-Strophe.Strophe.Websocket.prototype._closeSocket = function () {
+Strophe.Websocket.prototype._closeSocket = function () {
     if (this.socket) {
         var me = this;
         setTimeout(function () {
@@ -62,7 +64,7 @@ Strophe.Strophe.Websocket.prototype._closeSocket = function () {
  * this will trigger socket.onError, therefore _doDisconnect again.
  * Fix it by overide  _onMessage
  */
-Strophe.Strophe.Websocket.prototype._onMessage = function (message) {
+Strophe.Websocket.prototype._onMessage = function (message) {
     // WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + 'recv:', message.data);
     try {
       if (WebIM && WebIM.config.isDebug) {
@@ -313,6 +315,7 @@ var _parseFriend = function (queryTag, conn, from) {
 };
 
 var _login = function (options, conn) {
+    console.log(options, '_login')
     var accessToken = options.access_token || '';
     if (accessToken == '') {
         var loginfo = _utils.stringify(options);
@@ -756,18 +759,18 @@ connection.prototype.cacheReceiptsMessage = function (options) {
 };
 
 connection.prototype.open = function (options) {
+    
+    // _handlePageLimit();
 
-    _handlePageLimit();
-
-    setTimeout(function () {
-        var total = _getPageCount();
-        if (total > PAGELIMIT) {
-            Demo.api.NotifyError(Demo.lan.nomorethan + PAGELIMIT + Demo.lan.reslogatonetime);
-            setTimeout(function () {
-                location.reload();
-            }, 500);
-        }
-    }, 50);
+    // setTimeout(function () {
+    //     var total = _getPageCount();
+    //     if (total > PAGELIMIT) {
+    //         Demo.api.NotifyError(Demo.lan.nomorethan + PAGELIMIT + Demo.lan.reslogatonetime);
+    //         setTimeout(function () {
+    //             location.reload();
+    //         }, 500);
+    //     }
+    // }, 50);
 
     var pass = _validCheck(options, this);
 
@@ -776,25 +779,26 @@ connection.prototype.open = function (options) {
     }
 
     var conn = this;
-
+      
     if (conn.isOpening() || conn.isOpened()) {
         return;
     }
-
+    
     if (options.accessToken) {
         options.access_token = options.accessToken;
         _login(options, conn);
     } else {
         var apiUrl = options.apiUrl;
-        var userId = this.context.userId;
+        var userId = options.user;
         var pwd = options.pwd || '';
-        var appName = this.context.appName;
-        var orgName = this.context.orgName;
+        var orgName= 'easemob-demo';
+        var appName = 'chatdemoui';
 
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            _login(data, conn);
+            // todo
+            _login(data.data, conn);
         };
         var error = function (res, xhr, msg) {
             conn.clear();
@@ -826,7 +830,6 @@ connection.prototype.open = function (options) {
 
         var options = {
             url: apiUrl + '/' + orgName + '/' + appName + '/token',
-            dataType: 'json',
             data: loginfo,
             success: suc || _utils.emptyfn,
             error: error || _utils.emptyfn
@@ -2670,8 +2673,9 @@ function _setText(valueDom, v) {
         // valueDom.innerHTML = v;
     }
 }
-
-
+// connection.prototype.onError = function () {
+//     return false;
+// };
 // window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
 var WebIM = window.WebIM || {};
 WebIM.connection = connection;
