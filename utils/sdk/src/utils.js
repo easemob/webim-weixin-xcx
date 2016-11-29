@@ -224,8 +224,8 @@
             }
         },
         registerUser: function (options) {
-            var orgName = "easemob-demo";
-            var appName = "chatdemoui";
+            var orgName = options.orgName || '';
+            var appName = options.appName || '';
             var appKey = options.appKey || '';
             var suc = options.success || EMPTYFN;
             var err = options.error || EMPTYFN;
@@ -774,7 +774,7 @@
         ajax: function (options) {
             var suc = options.success || EMPTYFN;
             var error = options.error || EMPTYFN;
-
+            
             var type = options.type || 'POST',
                 data = options.data || null,
                 tempData = '';

@@ -14,7 +14,7 @@ Page({
   },
   bindWs: function() {
     wx.navigateTo({
-      url: '../ws/ws'
+      url: '../login/login'
     })
   },
   onLoad: function () {

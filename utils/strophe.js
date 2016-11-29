@@ -5497,7 +5497,7 @@ Strophe.Websocket.prototype = {
        this.socket.send = function(str) {
            wx.sendSocketMessage({data:str})
        }
-
+       
        wx.connectSocket({url: this._conn.service, method: "GET"})
         wx.onSocketOpen(function(res) {
             console.log('WebSocket连接已打开！')

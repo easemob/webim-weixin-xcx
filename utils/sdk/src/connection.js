@@ -804,7 +804,15 @@ connection.prototype.open = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            // todo
+            
+            if(data.statusCode != '404' && data.statusCode != '400'){
+                wx.showToast({
+                  title: '登录成功',
+                  icon: 'success',
+                  duration: 2000
+                });
+            }
+            
             _login(data.data, conn);
         };
         var error = function (res, xhr, msg) {
