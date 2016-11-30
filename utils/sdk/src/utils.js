@@ -229,7 +229,7 @@
             var appKey = options.appKey || '';
             var suc = options.success || EMPTYFN;
             var err = options.error || EMPTYFN;
-
+            
             if (!orgName && !appName && appKey) {
                 var devInfos = appKey.split('#');
                 if (devInfos.length === 2) {

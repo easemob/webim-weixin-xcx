@@ -5,7 +5,10 @@
     "pages/demo/demo",
     "pages/ws/ws",
     "pages/login/login",
-    "pages/register/register"
+    "pages/register/register",
+    "pages/main/main",
+    "pages/add_new/add_new",
+    "pages/chat/chat"
   ],
   "window":{
     "backgroundTextStyle":"light",

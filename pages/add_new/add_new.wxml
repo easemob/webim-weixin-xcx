@@ -1,0 +1,7 @@
+<view class="search_input">
+	<view>
+		<icon type="search" size="13"></icon>
+		<input placeholder="输入要查找的好友" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus></input>
+	</view>
+	<text>搜索</text>
+</view>
