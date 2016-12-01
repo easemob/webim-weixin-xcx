@@ -8,7 +8,8 @@
     "pages/register/register",
     "pages/main/main",
     "pages/add_new/add_new",
-    "pages/chat/chat"
+    "pages/chat/chat",
+    "pages/settings/settings"
   ],
   "window":{
     "backgroundTextStyle":"light",

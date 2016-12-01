@@ -24,13 +24,14 @@
 	align-items: center;
 }
 .search view {
-	width: 83%;
+	width: 84%;
 	justify-content:center;
 }
 .search image {
 	display: block;
-	width: 5%;
-	height: 50%;
+	width: 6%;
+	height: 53%;
+	margin-right: 5px;
 }
 .search_input view {
 	padding-left: 10px;
@@ -46,14 +47,18 @@
 	color: #CFCFCF;
 }
 .search_input view {
-	width: 77%;
+	width: 80%;
 	text-align: left;
+	margin-right: -10px;
 }
 .search_input text {
 	display: inline-block;
-	width: 32px;
+	width: 40px;
+	height: 30px;
+	line-height: 30px;
 	font-size: 16px;
 	color:#7B68EE;
+	text-align: right;
 }
 .search_input input {
 	font-size: 14px;
@@ -84,6 +89,7 @@
 .chat_lists image {
 	width: 12%;
 	height:100%;
+	margin-right: 2px;
 }
 .chat text,.chat_groups text,.chat_lists text {
 	font-size:14px;
@@ -93,11 +99,10 @@
 	height: 60px;
 }
 .nbr_header {
-	width: 100%;
 	height: 20px;
 	background-color: #D4D4D4;
 	line-height: 20px;
-	padding-left: 14px;
+	padding-left: 16px;
 }
 .nbr_body {
 	width: 100%;
@@ -108,10 +113,18 @@
 .nbr_body image{
 	width: 6%; 
 	height: 50%;
-	margin-left: 8px;
+	margin-left: 10px;
 	margin-right: 13px;
 }
-
+.mask {
+	background-color: black;
+	opacity: 0.4;
+	position: absolute;
+	top: 40px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
 
 
 

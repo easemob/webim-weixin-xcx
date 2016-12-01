@@ -2,6 +2,7 @@ Page({
 	data: {
 		search_btn: true,
 		search_friend: false,
+		show_mask: false,
 		array: [{
 			word: 'A',
 			username: 'zzf'
@@ -16,7 +17,8 @@ Page({
 	openSearch: function() {
 		this.setData({
 			search_btn: false,
-			search_friend: true
+			search_friend: true,
+			show_mask: true
 		})
 	},
 	cancel: function() {
@@ -33,6 +35,18 @@ Page({
 	tab_chat: function() {
 		wx.redirectTo({
 		  url: '../chat/chat'
+		})
+	},
+	close_mask: function() {
+		this.setData({
+			search_btn: true,
+			search_friend: false,
+			show_mask: false
+		})
+	},
+	tab_setting: function() {
+		wx.redirectTo({
+			url: '../settings/settings'
 		})
 	}
 

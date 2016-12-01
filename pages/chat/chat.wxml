@@ -3,26 +3,43 @@
 		<icon type="search" size="13"></icon>
 		<text>搜索</text>
 	</view>
-	<image src="../../images/add.png" bindtap="add_new"></image>
 </view>
-<view class="search_input" wx:if="{{ search_friend }}">
+<view class="search_input" wx:if="{{ search_chats }}">
 	<view>
 		<icon type="search" size="13"></icon>
 		<input placeholder="搜索" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus></input>
 	</view>
 	<text bindtap="cancel">取消</text>
 </view>
+<view style="width:100%; height:40px; background-color:red"></view>
+<view wx:for="{{array}}" wx:key="date" class="chat_list">
+	<view class="list_left">
+		<view class="list_pic">
+			<image src="../../images/number.png"></image>
+		</view>
+		<view class="list_text">
+			<text class="list_user">{{item.username}}</text>
+			<text class="list_word">{{item.contain}}</text>
+		</view>
+	</view>
+	<view class="list_right">
+		<text>{{item.date}} {{item.time}}</text>
+	</view>
+</view>
 
 
+
+
+<view class="mask" bindtap="close_mask" wx:if="{{show_mask}}"></view>
 
 <view class="chatRoom_tab">
 	<view class="contacts" bindtap="tab_contacts">
 		<image src="../../images/contacts.png" ></image>
 	</view>
-	<view class="chats" bindtap="tab_chat">
+	<view class="chats">
 		<image src="../../images/chatsActive.png"></image>
 	</view>
-	<view class="settings">
+	<view class="settings" bindtap="tab_setting">
 		<image src="../../images/settings.png"></image>
 	</view>
 </view>

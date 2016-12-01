@@ -24,7 +24,7 @@
 	align-items: center;
 }
 .search view {
-	width: 83%;
+	width: 96%;
 	justify-content:center;
 }
 .search image {
@@ -46,12 +46,14 @@
 	color: #CFCFCF;
 }
 .search_input view {
-	width: 77%;
+	width: 79%;
 	text-align: left;
 }
 .search_input text {
 	display: inline-block;
-	width: 32px;
+	width: 40px;
+	height: 30px;
+	line-height: 30px;
 	font-size: 16px;
 	color:#7B68EE;
 }
@@ -59,6 +61,65 @@
 	font-size: 14px;
 	width: 90%;
 }
+.mask {
+	background-color: black;
+	opacity: 0.4;
+	position: absolute;
+	top: 40px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+.chat_list {
+	width: 100%;
+	height: 60px;
+	border-bottom: 1px solid rgba(173,185,193,0.5);
+}
+.list_left {
+	width: 65%;
+	height: 100%;
+	float: left;
+}
+.list_text {
+	width: 70%;
+	height: 100%;
+	float: left;
+	margin-top: 12px;
+	font-size: 16px;
+}
+.list_pic {
+	width: 25%;
+	height: 100%;
+	float: left;
+	margin-top: 15px;
+	
+}
+.list_pic image {
+	display: block;
+	width: 60%;
+	height: 54%;
+	border: 1px solid rgb(0,186,110);
+	margin-left: 10px;
+	padding-top: 2px;
+}
+.list_word {
+	height: 20px;
+	display: block;
+	color: #CFCFCF;
+	margin-top: 2px;
+}
+.list_right {
+	width: 33%;
+	height: 100%;
+	float: right;
+	margin-top: 3px;
+	font-size: 14px;
+}
+.list_right text {
+	line-height: 50px;
+}
+
+
 
 
 
