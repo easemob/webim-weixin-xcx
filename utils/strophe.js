@@ -16,8 +16,10 @@
  * that are still executing.
  */
 // console.log(window,document)
-import xmldom from 'xmldom/dom-parser'
+var xmldom = require ('./xmldom/dom-parser');
+console.log('xml',xmldom);
 var DOMParser = xmldom.DOMParser;
+console.log("string",DOMParser)
 let document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", 'text/xml');
 
 var window = window || {};

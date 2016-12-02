@@ -76,12 +76,12 @@
 	border-bottom: 1px solid rgba(173,185,193,0.5);
 }
 .list_left {
-	width: 65%;
+	width: 60%;
 	height: 100%;
 	float: left;
 }
 .list_text {
-	width: 70%;
+	width: 60%;
 	height: 100%;
 	float: left;
 	margin-top: 12px;
@@ -96,8 +96,8 @@
 }
 .list_pic image {
 	display: block;
-	width: 60%;
-	height: 54%;
+	width: 63%;
+	height: 53%;
 	border: 1px solid rgb(0,186,110);
 	margin-left: 10px;
 	padding-top: 2px;
@@ -109,11 +109,13 @@
 	margin-top: 2px;
 }
 .list_right {
-	width: 33%;
+	width: 36%;
 	height: 100%;
 	float: right;
 	margin-top: 3px;
 	font-size: 14px;
+	margin-right: 8px;
+	text-align: right;
 }
 .list_right text {
 	line-height: 50px;

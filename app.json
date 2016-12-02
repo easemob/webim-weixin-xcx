@@ -9,7 +9,9 @@
     "pages/main/main",
     "pages/add_new/add_new",
     "pages/chat/chat",
-    "pages/settings/settings"
+    "pages/settings/settings",
+    "pages/groups/groups",
+    "pages/inform/inform"
   ],
   "window":{
     "backgroundTextStyle":"light",

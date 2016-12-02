@@ -243,7 +243,10 @@ function appendElement (hander,node) {
 
 if(typeof require == 'function'){
 	var XMLReader = require('./sax').XMLReader;
-	var DOMImplementation = exports.DOMImplementation = require('./dom').DOMImplementation;
-	exports.XMLSerializer = require('./dom').XMLSerializer ;
-	exports.DOMParser = DOMParser;
+	var DOMImplementation = module.exports.DOMImplementation = require('./dom').DOMImplementation;
+	module.exports.XMLSerializer = require('./dom').XMLSerializer ;
+	module.exports.DOMParser = DOMParser;
+}
+module.exports = {
+	a: '1'
 }

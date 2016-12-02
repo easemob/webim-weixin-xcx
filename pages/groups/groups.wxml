@@ -1,0 +1,39 @@
+<view class="search" wx:if="{{ search_btn }}">
+	<view bindtap="openSearch">
+		<icon type="search" size="13"></icon>
+		<text>搜索</text>
+	</view>
+</view>
+<view class="search_input" wx:if="{{ search_friend }}">
+	<view>
+		<icon type="search" size="13"></icon>
+		<input placeholder="搜索" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus></input>
+	</view>
+	<text bindtap="cancel">取消</text>
+</view>
+<view class="contain">
+	<view class="build_group">
+		<image src="../../images/chat-list.png"></image>
+		<text>新建群聊</text>
+	</view>
+	<view class="add_group">
+		<image src="../../images/cell_groups.png"></image>
+		<text>添加公开群</text>
+	</view>
+	<view class="line"></view>
+</view>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<view class="mask" bindtap="close_mask" wx:if="{{show_mask}}"></view>

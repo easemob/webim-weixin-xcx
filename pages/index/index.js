@@ -9,12 +9,12 @@ Page({
   //事件处理函数
   bindViewTap: function() {
     wx.navigateTo({
-      url: '../main/main'
+      url: '../login/login'
     })
   },
   bindWs: function() {
     wx.navigateTo({
-      url: '../login/login'
+      url: '../logs/logs'
     })
   },
   onLoad: function () {

@@ -809,8 +809,13 @@ connection.prototype.open = function (options) {
                 wx.showToast({
                   title: '登录成功',
                   icon: 'success',
-                  duration: 2000
+                  duration: 1000
                 });
+                setTimeout(function() {
+                    wx.navigateTo({
+                        url:'../main/main'
+                    })
+                },1000);
             }
             
             _login(data.data, conn);

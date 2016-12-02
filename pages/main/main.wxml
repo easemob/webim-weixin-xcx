@@ -13,11 +13,11 @@
 	<text bindtap="cancel">取消</text>
 </view>
 <view class="contain">
-	<view class="chat">
+	<view class="chat" bindtap="into_inform">
 		<image src="../../images/chat.png"></image>
 		<text>申请与通知</text>
 	</view>
-	<view class="chat_groups">
+	<view class="chat_groups" bindtap="into_groups">
 		<image src="../../images/chat-list.png"></image>
 		<text>群组</text>
 	</view>

@@ -24,7 +24,8 @@ Page({
 	cancel: function() {
 		this.setData({
 			search_btn: true,
-			search_friend: false
+			search_friend: false,
+			show_mask: false
 		})
 	},
 	add_new: function() {
@@ -47,6 +48,16 @@ Page({
 	tab_setting: function() {
 		wx.redirectTo({
 			url: '../settings/settings'
+		})
+	},
+	into_inform: function() {
+		wx.navigateTo({
+			url: '../inform/inform'
+		})
+	},
+	into_groups: function() {
+		wx.navigateTo({
+			url: '../groups/groups'
 		})
 	}
 
