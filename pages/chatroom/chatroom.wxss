@@ -1,0 +1,110 @@
+.message {
+	padding: 10px 15px;
+	overflow-y: scroll;
+}
+.time {
+	margin: 7px 0;
+    text-align: center;
+}
+.time text {
+	display: inline-block;
+	padding: 0 10px;
+	font-size: 12px;
+    color: #fff;
+    border-radius: 2px;
+    background-color: #dcdcdc;
+}
+.avatar {
+	width: 32px;
+	height: 30px;
+	float: left;
+    margin: 0 10px 0 0;
+    border-radius: 3px;
+}
+.msg {
+	display: inline-block;
+	position: relative;
+	padding: 0 10px;
+	max-width: ~'calc(100% - 40px)';
+	min-height: 30px;
+	line-height: 2.5;
+	font-size: 12px;
+    text-align: left;
+    word-break: break-all;
+    background-color: #fafafa;
+    border-radius: 4px;
+}
+.msg :before {
+    content: " ";
+    position: absolute;
+    top: 9px;
+    right: 100%;
+    border: 6px solid transparent;
+    border-right-color: #fafafa;
+}
+.self {
+	text-align: right;
+}
+.self .avatar {
+    float: right;
+    margin: 0 0 0 10px;
+}
+.self .msg {
+    background-color: #b2e281;
+}    
+.self .msg :before {
+    right: inherit;
+    left: 100%;
+    border-right-color: transparent;
+    border-left-color: #b2e281;
+}
+
+
+
+
+
+
+
+
+
+
+.room_bar {
+	width: 100%;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	border-top: 1px solid #CFCFCF;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+}
+.audio {
+	width: 4%;
+	height:40%;
+	border: 1px solid rgb(135,152,164);
+	border-radius: 50px;
+	padding: 3px 4px;
+	margin-left: 5px;
+}
+.news {
+	width: 60%;
+	height: 30px;
+	border: 1px solid #CFCFCF;
+	border-radius: 5px;
+	font-size: 14px;
+	padding-left: 4px;
+}
+.emoj {
+	width: 6.4%;
+	height: 60%;
+}
+.add {
+	width: 4%;
+	height: 40%;
+	border: 1px solid rgb(0,186,110);
+	border-radius: 50px;
+	padding: 3px 3px;
+	margin-right: 5px;
+}
+

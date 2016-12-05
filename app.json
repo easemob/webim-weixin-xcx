@@ -11,11 +11,13 @@
     "pages/chat/chat",
     "pages/settings/settings",
     "pages/groups/groups",
-    "pages/inform/inform"
+    "pages/inform/inform",
+    "pages/chatroom/chatroom"
   ],
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTextStyle":"black"
+    "navigationBarTextStyle":"black",
+    "enablePullDownRefresh": true
   }
 }

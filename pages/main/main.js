@@ -59,6 +59,11 @@ Page({
 		wx.navigateTo({
 			url: '../groups/groups'
 		})
+	},
+	into_room: function() {
+		wx.navigateTo({
+			url: '../chatroom/chatroom'
+		})
 	}
 
 })

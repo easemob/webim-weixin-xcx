@@ -1,0 +1,16 @@
+<view class="message" wx:for="{{array}}" wx:key="time">
+	<view class="time">
+		<text>{{item.time}}</text>
+	</view>
+	<view class="main" class="{{ item.name }}">
+		<image class="avatar" src="../../images/number.png"></image>
+		<text class="msg">{{ item.msg }}</text>
+	</view>
+</view>
+
+<view class="room_bar">
+	<image src="../../images/Audio.png" class="audio"></image>
+	<input type="text"  class="news" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" />
+	<image src="../../images/Emoji.png" class="emoj"></image>
+	<image src="../../images/add.png" class="add"></image>
+</view>

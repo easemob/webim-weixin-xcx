@@ -34,7 +34,7 @@ function buildErrorHandler(errorImpl,domBuilder,locator){
 		if(domBuilder instanceof DOMHandler){
 			return domBuilder;
 		}
-		errorImpl = domBuilder ;
+		errorImpl = domBuilder;
 	}
 	var errorHandler = {}
 	var isCallback = errorImpl instanceof Function;
@@ -103,7 +103,7 @@ DOMHandler.prototype = {
 	    }
 	},
 	endElement:function(namespaceURI, localName, qName) {
-		var current = this.currentElement
+		var current = this.currentElement;
 	    var tagName = current.tagName;
 	    this.currentElement = current.parentNode;
 	},
@@ -243,10 +243,15 @@ function appendElement (hander,node) {
 
 if(typeof require == 'function'){
 	var XMLReader = require('./sax').XMLReader;
-	var DOMImplementation = module.exports.DOMImplementation = require('./dom').DOMImplementation;
-	module.exports.XMLSerializer = require('./dom').XMLSerializer ;
-	module.exports.DOMParser = DOMParser;
-}
-module.exports = {
-	a: '1'
+	var DOMImplementation = exports.DOMImplementation = require('./dom').DOMImplementation;
+	exports.XMLSerializer = require('./dom').XMLSerializer ;
+	exports.DOMParser = DOMParser;
+	var DOMParser = {
+		DOMImplementation: DOMImplementation,
+		XMLSerializer: XMLSerializer,
+		DOMParser: DOMParser
+	}
+	module.exports = {
+		DOMParser: DOMParser
+	}
 }

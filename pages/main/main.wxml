@@ -26,7 +26,7 @@
 		<text>聊天室列表</text>
 	</view>
 </view>
-<view wx:for="{{array}}" class="numbers" wx:key="word">
+<view wx:for="{{array}}" class="numbers" wx:key="word" bindtap="into_room">
 	<view class="nbr_header">{{ item.word }}</view>
 	<view class="nbr_body">
 		<image src="../../images/number.png"></image>

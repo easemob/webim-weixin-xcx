@@ -11,7 +11,7 @@
 	</view>
 	<text bindtap="cancel">取消</text>
 </view>
-<view style="width:100%; height:40px; background-color:red"></view>
+<view style="width:100%; height:40px;"></view>
 <view wx:for="{{array}}" wx:key="date" class="chat_list">
 	<view class="list_left">
 		<view class="list_pic">
