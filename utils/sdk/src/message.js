@@ -1,3 +1,5 @@
+import StropheAll from '../../strophe.js'
+
 ;(function () {
     'use strict';
 
@@ -210,13 +212,13 @@
 
     _Message.prototype.send = function (conn) {
         var me = this;
-
+        console.log(this)
         var _send = function (message) {
 
             message.ext = message.ext || {};
             message.ext.weichat = message.ext.weichat || {};
             message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
-
+            // console.log('message',message)     msg对象
             var json = {
                 from: conn.context.userId || ''
                 , to: message.to
@@ -225,13 +227,12 @@
             };
 
             var jsonstr = _utils.stringify(json);
-            var dom = $msg({
+            var dom = StropheAll.$msg({
                 type: message.group || 'chat'
                 , to: message.toJid
                 , id: message.id
                 , xmlns: 'jabber:client'
             }).c('body').t(jsonstr);
-
             if (message.roomType) {
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
             }
@@ -297,6 +298,7 @@
             }
 
             _send(me.msg);
+            console.log('ooooooooooooooooooo')
         }
     };
 

@@ -22,7 +22,26 @@ Page({
 			time: '18:13',
 			msg: 'world!world!world!',
 			name: ''
-		}]
-	}
+		}],
+		bar:'',
+		btn:''
+	},
 
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

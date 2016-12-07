@@ -48,7 +48,7 @@ if (WebIM.config.isDebug) {
  */
 WebIM.config.autoSignIn = false;
 if (WebIM.config.autoSignIn) {
-  WebIM.config.autoSignInName = 'liuwz';
+  WebIM.config.autoSignInName = 'lwz2';
   WebIM.config.autoSignInPwd = '1';
 }
 

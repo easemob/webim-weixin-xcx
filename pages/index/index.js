@@ -14,7 +14,7 @@ Page({
   },
   bindWs: function() {
     wx.navigateTo({
-      url: '../logs/logs'
+      url: '../add_new/add_new'
     })
   },
   onLoad: function () {

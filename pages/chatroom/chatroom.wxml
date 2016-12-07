@@ -8,9 +8,30 @@
 	</view>
 </view>
 
+
+
 <view class="room_bar">
 	<image src="../../images/Audio.png" class="audio"></image>
 	<input type="text"  class="news" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" />
 	<image src="../../images/Emoji.png" class="emoj"></image>
 	<image src="../../images/add.png" class="add"></image>
 </view>
+
+<view class="other_btn">
+	<view class="other_first">
+		<image src="../../images/settingsActive.png"></image>
+		<image src="../../images/settingsActive.png"></image>
+		<image src="../../images/settingsActive.png"></image>
+		<image src="../../images/settingsActive.png"></image>
+	</view>
+	<view class="other_second">
+		<image src="../../images/settingsActive.png"></image>
+		<image src="../../images/settingsActive.png"></image>
+		<image src="../../images/settingsActive.png"></image> 
+		<image src=""></image>
+	</view>
+</view>
+
+
+
+

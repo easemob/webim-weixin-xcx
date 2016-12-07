@@ -5508,7 +5508,7 @@ Strophe.Websocket.prototype = {
             self._onOpen()
         })
         wx.onSocketMessage(function(msg) {
-            console.log(msg)
+            console.log('onSocketMessage', msg)
             self.socket.onmessage.call(self, msg);
         })
         wx.onSocketClose(function() {

@@ -750,7 +750,7 @@ connection.prototype.stopHeartBeat = function () {
 };
 
 connection.prototype.sendReceiptsMessage = function (options) {
-    var dom = $msg({
+    var dom = StropheAll.$msg({
         from: this.context.jid || '',
         to: this.domain,
         id: options.id || ''
@@ -1501,12 +1501,14 @@ connection.prototype.send = function (message) {
             if (message.resource) {
                 toJid = toJid + '/' + message.resource;
             }
+            console.log(toJid);
 
             message.toJid = toJid;
             message.id = message.id || this.getUniqueId();
             _msgHash[message.id] = new _message(message);
+            console.log(new _message(message))
             _msgHash[message.id].send(this);
-        } else if (typeof message === 'string') {
+    } else if (typeof message === 'string') {
             _msgHash[message] && _msgHash[message].send(this);
         }
     }
@@ -1517,7 +1519,7 @@ connection.prototype.addRoster = function (options) {
     var name = options.name || '';
     var groups = options.groups || '';
 
-    var iq = $iq({type: 'set'});
+    var iq = StropheAll.$iq({type: 'set'});
     iq.c('query', {xmlns: 'jabber:iq:roster'});
     iq.c('item', {jid: jid, name: name});
 
@@ -1533,7 +1535,7 @@ connection.prototype.addRoster = function (options) {
 
 connection.prototype.removeRoster = function (options) {
     var jid = _getJid(options, this);
-    var iq = $iq({type: 'set'}).c('query', {xmlns: 'jabber:iq:roster'}).c('item', {
+    var iq = StropheAll.$iq({type: 'set'}).c('query', {xmlns: 'jabber:iq:roster'}).c('item', {
         jid: jid,
         subscription: 'remove'
     });
@@ -1578,7 +1580,7 @@ connection.prototype.getRoster = function (options) {
 
 connection.prototype.subscribe = function (options) {
     var jid = _getJid(options, this);
-    var pres = $pres({to: jid, type: 'subscribe'});
+    var pres = StropheAll.$pres({to: jid, type: 'subscribe'});
     if (options.message) {
         pres.c('status').t(options.message).up();
     }
@@ -1590,7 +1592,7 @@ connection.prototype.subscribe = function (options) {
 
 connection.prototype.subscribed = function (options) {
     var jid = _getJid(options, this);
-    var pres = $pres({to: jid, type: 'subscribed'});
+    var pres = StropheAll.$pres({to: jid, type: 'subscribed'});
 
     if (options.message) {
         pres.c('status').t(options.message).up();
@@ -1600,7 +1602,7 @@ connection.prototype.subscribed = function (options) {
 
 connection.prototype.unsubscribe = function (options) {
     var jid = _getJid(options, this);
-    var pres = $pres({to: jid, type: 'unsubscribe'});
+    var pres = StropheAll.$pres({to: jid, type: 'unsubscribe'});
 
     if (options.message) {
         pres.c('status').t(options.message);
@@ -1610,7 +1612,7 @@ connection.prototype.unsubscribe = function (options) {
 
 connection.prototype.unsubscribed = function (options) {
     var jid = _getJid(options, this);
-    var pres = $pres({to: jid, type: 'unsubscribed'});
+    var pres = StropheAll.$pres({to: jid, type: 'unsubscribed'});
 
     if (options.message) {
         pres.c('status').t(options.message).up();
@@ -1623,7 +1625,7 @@ connection.prototype.createRoom = function (options) {
     var err = options.error || _utils.emptyfn;
     var roomiq;
 
-    roomiq = $iq({
+    roomiq = StropheAll.$iq({
         to: options.roomName,
         type: 'set'
     })
@@ -1654,7 +1656,7 @@ connection.prototype.joinPublicGroup = function (options) {
 };
 
 connection.prototype.listRooms = function (options) {
-    var iq = $iq({
+    var iq = StropheAll.$iq({
         to: options.server || 'conference.' + this.domain,
         from: this.context.jid,
         type: 'get'
@@ -1688,7 +1690,7 @@ connection.prototype.listRooms = function (options) {
 connection.prototype.queryRoomMember = function (options) {
     var domain = this.domain;
     var members = [];
-    var iq = $iq({
+    var iq = StropheAll.$iq({
         to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
         , type: 'get'
     })
@@ -1723,7 +1725,7 @@ connection.prototype.queryRoomMember = function (options) {
 
 connection.prototype.queryRoomInfo = function (options) {
     var domain = this.domain;
-    var iq = $iq({
+    var iq = StropheAll.$iq({
         to: this.context.appKey + '_' + options.roomId + '@conference.' + domain,
         type: 'get'
     }).c('query', {xmlns: Strophe.NS.DISCO_INFO});
@@ -2170,7 +2172,7 @@ function _parsePrivacy(iq) {
 // used for blacklist
 connection.prototype.getBlacklist = function (options) {
     options = (options || {});
-    var iq = $iq({type: 'get'});
+    var iq = StropheAll.$iq({type: 'get'});
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
     var me = this;
@@ -2189,7 +2191,7 @@ connection.prototype.getBlacklist = function (options) {
 
 // used for blacklist
 connection.prototype.addToBlackList = function (options) {
-    var iq = $iq({type: 'set'});
+    var iq = StropheAll.$iq({type: 'set'});
     var blacklist = options.list || {};
     var type = options.type || 'jid';
     var sucFn = options.success || _utils.emptyfn;
@@ -2220,7 +2222,7 @@ connection.prototype.addToBlackList = function (options) {
 // used for blacklist
 connection.prototype.removeFromBlackList = function (options) {
 
-    var iq = $iq({type: 'set'});
+    var iq = StropheAll.$iq({type: 'set'});
     var blacklist = options.list || {};
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
@@ -2260,7 +2262,7 @@ connection.prototype.addToGroupBlackList = function (options) {
     var jid = _getJid(options, this);
     var affiliation = 'admin';//options.affiliation || 'admin';
     var to = this._getGroupJid(options.roomId);
-    var iq = $iq({type: 'set', to: to});
+    var iq = StropheAll.$iq({type: 'set', to: to});
 
     iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
         .c('item', {
@@ -2304,7 +2306,7 @@ connection.prototype.getGroupBlacklist = function (options) {
     // var jid = _getJid(options, this);
     var affiliation = 'admin';//options.affiliation || 'admin';
     var to = this._getGroupJid(options.roomId);
-    var iq = $iq({type: 'get', to: to});
+    var iq = StropheAll.$iq({type: 'get', to: to});
 
     iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
         .c('item', {
@@ -2327,7 +2329,7 @@ connection.prototype.removeGroupMemberFromBlacklist = function (options) {
     var jid = _getJid(options, this);
     var affiliation = 'admin';//options.affiliation || 'admin';
     var to = this._getGroupJid(options.roomId);
-    var iq = $iq({type: 'set', to: to});
+    var iq = StropheAll.$iq({type: 'set', to: to});
 
     iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
         .c('item', {
@@ -2362,7 +2364,7 @@ connection.prototype.changeGroupSubject = function (options) {
     // must be `owner`
     var affiliation = 'owner';
     var to = this._getGroupJid(options.roomId);
-    var iq = $iq({type: 'set', to: to});
+    var iq = StropheAll.$iq({type: 'set', to: to});
 
     iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
         .c('x', {type: 'submit', xmlns: 'jabber:x:data'})
@@ -2403,7 +2405,7 @@ connection.prototype.destroyGroup = function (options) {
     // must be `owner`
     var affiliation = 'owner';
     var to = this._getGroupJid(options.roomId);
-    var iq = $iq({type: 'set', to: to});
+    var iq = StropheAll.$iq({type: 'set', to: to});
 
     iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
         .c('destroy');
@@ -2568,7 +2570,7 @@ connection.prototype.createGroup = function (options) {
     var toRoom = this._getGroupJid(roomId);
     var to = toRoom + '/' + this.context.userId;
 
-    var pres = $pres({to: to})
+    var pres = StropheAll.$pres({to: to})
         .c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up()
         .c('create', {xmlns: 'http://jabber.org/protocol/muc'}).up();
     // .c('c', {

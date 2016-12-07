@@ -8,9 +8,10 @@
 }
 .time text {
 	display: inline-block;
-	padding: 0 10px;
+	padding: 3px 10px 0 10px;
 	font-size: 12px;
     color: #fff;
+    line-height: 14px;
     border-radius: 2px;
     background-color: #dcdcdc;
 }
@@ -25,10 +26,11 @@
 	display: inline-block;
 	position: relative;
 	padding: 0 10px;
-	max-width: ~'calc(100% - 40px)';
+	max-width: calc(85% - 40px);
 	min-height: 30px;
 	line-height: 2.5;
 	font-size: 12px;
+	overflow: hidden;
     text-align: left;
     word-break: break-all;
     background-color: #fafafa;
@@ -78,6 +80,8 @@
 	position: fixed;
 	bottom: 0;
 	right: 0;
+	z-index: 1;
+	background-color: #FFFFFF;
 }
 .audio {
 	width: 4%;
@@ -107,4 +111,43 @@
 	padding: 3px 3px;
 	margin-right: 5px;
 }
+.other_btn {
+	width: 100%;
+	height: 110px;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	display: none;
+}
+.other_first,.other_second {
+	width: 90%;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	margin: 0 auto;
+}
+.other_second {
+	margin-top: 10px;
+}
+.other_first image {
+	width: 12%;
+	height: 70%;
+}
+.other_second image {
+	width: 12%;
+	height: 70%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
