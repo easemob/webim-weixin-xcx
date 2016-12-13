@@ -15,6 +15,12 @@
     border-radius: 2px;
     background-color: #dcdcdc;
 }
+.user text {
+	margin: auto auto 4px 7px;
+	font-size: 12px;
+	color: #dcdcdc;
+	display: block;
+}
 .avatar {
 	width: 32px;
 	height: 30px;
@@ -51,6 +57,11 @@
     float: right;
     margin: 0 0 0 10px;
 }
+.self .user {
+	margin: auto 6px 4px auto;
+	font-size: 12px;
+	color: #dcdcdc;
+}
 .self .msg {
     background-color: #b2e281;
 }    
@@ -82,6 +93,14 @@
 	right: 0;
 	z-index: 1;
 	background-color: #FFFFFF;
+}
+.room_bar text {
+	width: 30px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 14px;
+	color: #CFCFCF;
+	margin-right: 10px;
 }
 .audio {
 	width: 4%;

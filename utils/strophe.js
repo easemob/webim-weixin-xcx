@@ -5758,7 +5758,6 @@ Strophe.Websocket.prototype = {
                     this._conn.rawOutput(rawStanza);
 
                     // onsend todo
-                    console.log('rawStanza',rawStanza)
                      wx.sendSocketMessage({data:rawStanza})
                     //this.socket.send(rawStanza);
                 }

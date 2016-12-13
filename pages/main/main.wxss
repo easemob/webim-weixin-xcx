@@ -64,6 +64,11 @@
 	font-size: 14px;
 	width: 90%;
 }
+.body {
+	width: 100%;
+	height: auto;
+	margin-bottom: 50px;
+}
 .contain {
 	margin-top: 40px;
 }
@@ -109,6 +114,7 @@
 	height: 40px;
 	display: flex;
 	align-items: center;
+	font-size: 16px;
 }
 .nbr_body image{
 	width: 6%; 

@@ -80,9 +80,6 @@ Strophe.Websocket.prototype._onMessage = function (message) {
       console.log('%crecv' + message.data, 'color: green');
     }
 
-          console.log('%crecv' + message.data, 'color: green');
-
-
     var elem, data;
     // check for closing stream
     // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -212,7 +209,9 @@ var _parseRoomOccupants = function (result) {
 var _parseResponseMessage = function (msginfo) {
     var parseMsgData = {errorMsg: true, data: []};
 
+    console.log('msginfo', msginfo)
     var msgBodies = msginfo.getElementsByTagName('body');
+    console.log('msginfo', msgBodies) 
     if (msgBodies) {
         for (var i = 0; i < msgBodies.length; i++) {
             var msgBody = msgBodies[i];
@@ -222,11 +221,14 @@ var _parseResponseMessage = function (msginfo) {
                 if (childNode.nodeType == Strophe.ElementType.TEXT) {
                     var jsondata = childNode.wholeText || childNode.nodeValue;
                     jsondata = jsondata.replace('\n', '<br>');
+                    console.log('jsondata', jsondata)
+
                     try {
-                        var data = eval('(' + jsondata + ')');
+                        var data = JSON.parse(jsondata);
                         parseMsgData.errorMsg = false;
                         parseMsgData.data = [data];
                     } catch (e) {
+                        console.log('eval error', e)
                     }
                 }
             }
@@ -387,7 +389,7 @@ var _handleMessageQueue = function (conn) {
 
 var _loginCallback = function (status, msg, conn) {
     var conflict, error;
-
+    console.log(conn)
     if (msg === 'conflict') {
         conflict = true;
     }
@@ -395,7 +397,7 @@ var _loginCallback = function (status, msg, conn) {
     if (status == Strophe.Status.CONNFAIL) {
         //client offline, ping/pong timeout, server quit, server offline
         error = {
-            type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+            type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,              //客户端网络离线
             msg: msg,
             reconnect: true
         };
@@ -409,7 +411,6 @@ var _loginCallback = function (status, msg, conn) {
         }, 200);
         var handleMessage = function (msginfo) {
             var type = _parseMessageType(msginfo);
-
             if ('received' === type) {
                 conn.handleReceivedMessage(msginfo);
                 return true;
@@ -441,7 +442,6 @@ var _loginCallback = function (status, msg, conn) {
             conn.handleIq(msginfo);
             return true;
         };
-
         conn.addHandler(handleMessage, null, 'message', null, null, null);
         conn.addHandler(handlePresence, null, 'presence', null, null, null);
         conn.addHandler(handlePing, 'urn:xmpp:ping', 'iq', 'get', null, null);
@@ -784,7 +784,6 @@ connection.prototype.open = function (options) {
     if (!pass) {
         return;
     }
-
     var conn = this;
       
     if (conn.isOpening() || conn.isOpened()) {
@@ -799,12 +798,12 @@ connection.prototype.open = function (options) {
         var userId = options.user;
         var pwd = options.pwd || '';
         var orgName= 'easemob-demo';
-        var appName = 'chatdemoui';
-
+        var appName = 'chatdemoui'; 
+        console.log(options)
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            
+            console.log(options)
             if(data.statusCode != '404' && data.statusCode != '400'){
                 wx.showToast({
                   title: '登录成功',
@@ -817,12 +816,17 @@ connection.prototype.open = function (options) {
                     })
                 },1000);
             }
-            
             _login(data.data, conn);
         };
         var error = function (res, xhr, msg) {
             conn.clear();
-
+            // if(data.statusCode == '400' || data.statusCode == '404'){
+            //     wx.showModal({
+            //        title:'用户名或密码错误！',
+            //        showCancel: false,
+            //        confirmText: 'OK'
+            //     })
+            // }
             if (res.error && res.error_description) {
                 conn.onError({
                     type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
@@ -1147,7 +1151,7 @@ connection.prototype.handleIqRoster = function (e) {
     var curJid = this.context.jid;
     var curUser = this.context.userId;
 
-    var iqresult = $iq({type: 'result', id: id, from: curJid});
+    var iqresult = StropheAll.$iq({type: 'result', id: id, from: curJid});
     this.sendCommand(iqresult.tree());
 
     var msgBodies = e.getElementsByTagName('query');
@@ -1170,7 +1174,9 @@ connection.prototype.handleMessage = function (msginfo) {
     this.cacheReceiptsMessage({
         id: id
     });
+    console.log('handlePresence', msginfo)
     var parseMsgData = _parseResponseMessage(msginfo);
+    console.log('parseMsgData', parseMsgData)
     if (parseMsgData.errorMsg) {
         this.handlePresence(msginfo);
         return;
@@ -1216,6 +1222,8 @@ connection.prototype.handleMessage = function (msginfo) {
         var msgBody = msg.bodies[0];
         var type = msgBody.type;
 
+        console.log('onmessage', type, msgBody)
+
         try {
             switch (type) {
                 case 'txt':
@@ -1250,6 +1258,8 @@ connection.prototype.handleMessage = function (msginfo) {
                         msg.error = errorBool;
                         msg.errorText = errorText;
                         msg.errorCode = errorCode;
+                        console.log('onmessage', type, msg)
+
                         this.onTextMessage(msg);
                     }
                     break;
@@ -1483,6 +1493,7 @@ connection.prototype.getUniqueId = function (prefix) {
 };
 
 connection.prototype.send = function (message) {
+    console.log("tttttttttt")
     if (WebIM.config.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
@@ -1550,7 +1561,6 @@ connection.prototype.getRoster = function (options) {
     var dom = StropheAll.$iq({
         type: 'get'
     }).c('query', {xmlns: 'jabber:iq:roster'});
-
     var options = options || {};
     var suc = options.success || this.onRoster;
     var completeFn = function (ele) {

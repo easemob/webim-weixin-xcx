@@ -1,10 +1,13 @@
-<view class="message" wx:for="{{array}}" wx:key="time">
+<view class="message" wx:for="{{ chatMsg }}" wx:key="time">
 	<view class="time">
 		<text>{{item.time}}</text>
 	</view>
-	<view class="main" class="{{ item.name }}">
+	<view class="main" class="{{ item.style }}">
+		<view class="user">
+			<text>{{ item.username }}</text>
+		</view>
 		<image class="avatar" src="../../images/number.png"></image>
-		<text class="msg">{{ item.msg }}</text>
+		<text class="msg">{{ item.msg.data }}</text>
 	</view>
 </view>
 
@@ -12,9 +15,9 @@
 
 <view class="room_bar">
 	<image src="../../images/Audio.png" class="audio"></image>
-	<input type="text"  class="news" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" />
+	<input type="text"  class="news" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" bindinput="bindMessage"></input>
 	<image src="../../images/Emoji.png" class="emoj"></image>
-	<image src="../../images/add.png" class="add"></image>
+	<text bindtap="sendMessage">发送</text>
 </view>
 
 <view class="other_btn">

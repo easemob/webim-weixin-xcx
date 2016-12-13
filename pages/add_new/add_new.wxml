@@ -1,7 +1,7 @@
 <view class="search_input">
 	<view>
 		<icon type="search" size="13"></icon>
-		<input placeholder="添加好友" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus></input>
+		<input placeholder="添加好友" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus bindinput="bindFriendName"></input>
 	</view>
 	<text bindtap="add_friend">添加</text>
 </view>

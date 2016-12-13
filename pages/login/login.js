@@ -4,8 +4,8 @@ var WebIM = WebIM.default
 
 Page({
 	data: {
-		name: 'lwz2',
-		psd: '1',
+		name: 'wjy666',
+		psd: '123',
 		grant_type: "password"
 	},
 	bindUsername: function(e) {
@@ -33,29 +33,24 @@ Page({
 				showCancel: false
 			})
 		}else {
-			var conn = new WebIM.connection({
-	            url: WebIM.config.xmppURL,
-	            isAutoLogin: WebIM.config.isAutoLogin,
-	            isMultiLoginSessions: WebIM.config.isMultiLoginSessions
-	        })
-	        conn.listen({
-	        	onError: function() {
-		        	wx.showModal({
-		        		title:'用户名或密码错误！',
-		        		showCancel: false,
-		        		confirmText: 'OK'
-		        	})
-		            console.log('onError', arguments)
-	        	}
-			})
-	        var options = {
+			var options = {
 	            apiUrl: WebIM.config.apiURL,
 	            user: that.data.name,
 	            pwd: that.data.psd,
 	            grant_type: that.data.grant_type,
 	            appKey: WebIM.config.appkey
 	        }
-	        conn.open(options);
+	        WebIM.conn.open(options)
+	  //       WebIM.conn.listen({
+	  //       	onError: function() {
+		 //        	wx.showModal({
+		 //        		title:'用户名或密码错误！',
+		 //        		showCancel: false,
+		 //        		confirmText: 'OK'
+		 //        	})
+		 //            console.log('onError', arguments)
+	  //       	}
+			// })
 		}
 	}
 })

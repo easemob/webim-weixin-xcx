@@ -233,6 +233,7 @@ import StropheAll from '../../strophe.js'
                 , id: message.id
                 , xmlns: 'jabber:client'
             }).c('body').t(jsonstr);
+            console.log("dommmmmmmm",dom)
             if (message.roomType) {
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
             }
