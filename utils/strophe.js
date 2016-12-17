@@ -2826,6 +2826,7 @@ Strophe.Connection.prototype = {
                 this._queueData(elem[i]);
             }
         } else if (typeof(elem.tree) === "function") {
+          console.log("ffffffffffff")
             this._queueData(elem.tree());
         } else {
             this._queueData(elem);

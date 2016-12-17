@@ -1,40 +1,34 @@
-<view class="message" wx:for="{{ chatMsg }}" wx:key="time">
-	<view class="time">
-		<text>{{item.time}}</text>
-	</view>
-	<view class="main" class="{{ item.style }}">
-		<view class="user">
-			<text>{{ item.username }}</text>
+<view  style="height: 100%; width: 100%; margin-bottom: 80px;">
+	<view class="message" wx:for="{{ chatMsg }}" wx:key="">
+		<view class="time">
+			<text>{{item.time}}</text>
 		</view>
-		<image class="avatar" src="../../images/number.png"></image>
-		<text class="msg">{{ item.msg.data }}</text>
+		<view class="main" class="{{ item.style }}">
+			<view class="user">
+				<text>{{ item.username }}</text>
+			</view>
+			<image class="avatar" src="../../images/number.png"></image>
+			<text class="msg">{{ item.msg.data }}</text>
+		</view>
 	</view>
 </view>
-
 
 
 <view class="room_bar">
-	<image src="../../images/Audio.png" class="audio"></image>
-	<input type="text"  class="news" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" bindinput="bindMessage"></input>
-	<image src="../../images/Emoji.png" class="emoj"></image>
-	<text bindtap="sendMessage">发送</text>
-</view>
-
-<view class="other_btn">
-	<view class="other_first">
-		<image src="../../images/settingsActive.png"></image>
-		<image src="../../images/settingsActive.png"></image>
-		<image src="../../images/settingsActive.png"></image>
-		<image src="../../images/settingsActive.png"></image>
+	<form bindreset="cleanInput">
+		<input type="text"  class="news" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" bindinput="bindMessage"></input>
+		<button bindtap="sendMessage" formType="reset" class="send_btn">发送</button>
+	</form>
+	<view class="other_func">
+		<image src="../../images/Emoji.png" style="margin-left: 10px;" bindtap="send_emoji"></image>
+		<image src="../../images/iconImage@2x.png" style="height: 18px;" bindtap="send_image"></image>
+		<image src="../../images/iconCamera@2x.png" style="width: 26px;" bindtap="open_camera"></image>
+		<image src="../../images/iconFile@2x.png" style="margin-right: 10px;" bindtap="send_file"></image>
 	</view>
-	<view class="other_second">
-		<image src="../../images/settingsActive.png"></image>
-		<image src="../../images/settingsActive.png"></image>
-		<image src="../../images/settingsActive.png"></image> 
-		<image src=""></image>
+	<view class="emoji_list">
+		<image wx:for="{{ emoji }}" src="{{ emoji[index] }}" wx:key=""></image>
 	</view>
 </view>
-
 
 
 

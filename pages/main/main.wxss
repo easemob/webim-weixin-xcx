@@ -110,17 +110,18 @@
 	padding-left: 16px;
 }
 .nbr_body {
-	width: 100%;
+	width: 80%;
 	height: 40px;
-	display: flex;
-	align-items: center;
+	display: inline-block;
 	font-size: 16px;
+	line-height: 40px;
+	margin-right: 0;
 }
 .nbr_body image{
-	width: 6%; 
-	height: 50%;
-	margin-left: 10px;
-	margin-right: 13px;
+	width: 9%; 
+	height: 55%;
+	margin: 8px 13px auto 10px;
+	float: left;
 }
 .mask {
 	background-color: black;
@@ -130,6 +131,16 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
+}
+.delete {
+	width: 30px;
+	height: 35px;
+	float: right;
+	margin-top: 6px;
+}
+.delete image {
+	width: 16px;
+	height: 2px;
 }
 
 

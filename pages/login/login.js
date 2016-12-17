@@ -41,16 +41,6 @@ Page({
 	            appKey: WebIM.config.appkey
 	        }
 	        WebIM.conn.open(options)
-	  //       WebIM.conn.listen({
-	  //       	onError: function() {
-		 //        	wx.showModal({
-		 //        		title:'用户名或密码错误！',
-		 //        		showCancel: false,
-		 //        		confirmText: 'OK'
-		 //        	})
-		 //            console.log('onError', arguments)
-	  //       	}
-			// })
 		}
 	}
 })

@@ -11,14 +11,14 @@ Page({
 		member: []
 	},
 	onLoad: function(option) {
-		console.log(option)
+		this.setData({
+			myName: option.myName
+		})
 	},
 	onShow: function() {
 		console.log(WebIM.conn)
-		var that = this
 		var rosters = {
 			success: function(roster) {
-				console.log(roster)
 				var member = []
 				for(var i = 0; i < roster.length; i++){
 					if(roster[i].subscription == "both") {
@@ -30,10 +30,11 @@ Page({
 				})
 			}
 		}
+		var that = this
 		WebIM.conn.setPresence()
 		WebIM.conn.getRoster(rosters)
 	},
-	deleteFriend: function(message) {
+	moveFriend: function(message) {
 		var that = this
 		var rosters = {
 			success: function(roster) {
@@ -59,6 +60,64 @@ Page({
 		        }
 	    	})
 		}
+	},
+	handleFriendMsg: function(message) {
+		var that = this
+		console.log(message)
+		wx.showModal({
+			title: '添加好友请求',
+			content: message.from + '请求加为好友',
+			success: function(res) {
+				if(res.confirm == true) {
+					WebIM.conn.subscribed({
+		                to: message.from,
+		                message: "[resp:true]"
+		            })
+					WebIM.conn.subscribe({
+		                to: message.to,
+		                message: "[resp:true]"
+		            })
+				}else {
+					WebIM.conn.unsubscribed({
+		                to: message.from,
+		                message: "rejectAddFriend"                  
+		            })
+		            console.log('delete_friend')
+				}	
+			},
+			fail: function(error) {
+				console.log(error)
+			}
+		})
+		
+	},
+	delete_friend: function(event) {
+		var delName = event.target.dataset.username
+		wx.showModal({
+			title: '确认删除好友' + delName,
+			cancelText: '取消',
+			confirmText: '删除',
+			success: function(res) {
+				if(res.confirm == true){
+					WebIM.conn.removeRoster({
+			        to: delName,
+			        success: function () {
+			            WebIM.conn.unsubscribed({
+			                to: delName
+			            });
+			            console.log(delName)
+			        },
+			        error: function (error) {
+			        	console.log(error)
+			        }
+			    })
+			}
+				
+			},
+			fail: function(error) {
+				console.log(error)
+			}
+		})	
 	},
 	openSearch: function() {
 		this.setData({
@@ -110,6 +169,7 @@ Page({
 		var that = this
 		console.log(event)
 		var nameList = {
+			myName: that.data.myName,
 			your: event.target.dataset.username
 		}
 		wx.navigateTo({

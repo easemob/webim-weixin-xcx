@@ -11,39 +11,25 @@ App({
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
 
-    // {
-    //   byId: {
-    //     a: {
-    //       type: 'chat',
-    //       to: 
-    //       id: 
-    //       body: {type: 'image'}
-    //     },
-    //     b: {},
-    //   },
-    //   chat: {
-    //     roomid1: [a,b,c]
-    //   },
-    //   groupchat: {
-    //     roomid1: [d,e,f]
-    //   }
-    // }
     WebIM.conn.listen({
       onOpened: function(message) {
         console.log("kkkkkkk")
       },
-      onPresence: function(msg) {
-        console.log('onPresence',msg)
+      onPresence: function(message) {
+        console.log('onPresence',message)
         var pages = getCurrentPages()
-        if(pages[1]) {
-          pages[1].deleteFriend(msg)
+        if(message.type == "unsubscribe") {
+            pages[1].moveFriend(message)
+        }
+        if(message.type === "subscribe") {
+            pages[1].handleFriendMsg(message)
         }
       },
       onRoster: function(message) {
 			    console.log('onRoster',message) 
           var pages = getCurrentPages()
-          if(message) {
-            pages[2].sendMsg(message)
+          if(pages[1]) {
+            pages[1].onShow()
           }
 			},
       onTextMessage: function (message) {
@@ -52,9 +38,43 @@ App({
           console.log(pages)
           if(message) {
               if(pages[2]) {
-                 pages[2].chat(message)
-            }
+                 pages[2].receiveMsg(message)
+            } else {
+                var chatMsg = that.globalData.chatMsg || []
+                var date = new Date()
+                var Hours = date.getHours(); 
+                var Minutes = date.getMinutes(); 
+                var Seconds = date.getSeconds(); 
+                var time = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' 
+                + (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds)
+                var msgData = {
+                  info: {
+                    from: message.from,
+                    to: message.to
+                  },
+                  username: '',
+                  msg: {
+                    type: message.type,
+                    data: message.data
+                  },
+                  style:'',
+                  time: time
+                }
+                msgData.style = ''
+                msgData.username = message.from
+                chatMsg.push(msgData)
+                wx.setStorage({
+                  key: msgData.username,
+                  data: chatMsg,
+                  success: function() {
+                    console.log('success')
+                  }
+                })
+              }
           }
+        },
+        onEmojiMessage: function(message) {
+          console.log(message)
         }
     })
   },
@@ -77,6 +97,7 @@ App({
     }
   },
   globalData:{
-    userInfo:null
+    userInfo:null,
+    chatMsg: []
   }
 })

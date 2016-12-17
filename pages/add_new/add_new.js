@@ -22,22 +22,6 @@ Page({
 		})
 	},
 	add_friend: function() {
-	    // var id = WebIM.conn.getUniqueId()
-	    // var msg = new WebIM.message('txt', id)
-	    // // console.log(msg)
-	    // msg.set({
-	    //     msg: 'hello, world',                       // 消息内容
-	    //     to: 'wjy666',                          // 接收消息对象
-	    //     roomType: false,
-	    //     success: function (id, serverMsgId) {
-	    //         console.log("send private text Success")
-	    //     },
-	    //     fail: function(error) {
-	    //     	console.log('send error')
-	    //     }
-	    // });
-	    // msg.body.chatType = 'singleChat';
-	    // WebIM.conn.send(msg.body)
 	    var that = this
 	    if(that.data.friend_name == '') {
 	    	wx.showToast({
@@ -49,7 +33,7 @@ Page({
 	    else {
 		    WebIM.conn.subscribe({
 		        to: that.data.friend_name,
-		        message: "Hello!"                   // Demo里面接收方没有展现出来这个message，在status字段里面
+		        message: "Hello!"                   
 		    })
 	    } 
 	    

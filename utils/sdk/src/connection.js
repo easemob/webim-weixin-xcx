@@ -800,7 +800,7 @@ connection.prototype.open = function (options) {
         var orgName= 'easemob-demo';
         var appName = 'chatdemoui'; 
         console.log(options)
-        var suc = function (data, xhr) {
+        var suc = function (data, xhr, myName) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
             console.log(options)
@@ -812,7 +812,7 @@ connection.prototype.open = function (options) {
                 });
                 setTimeout(function() {
                     wx.redirectTo({
-                        url:'../main/main'
+                        url:'../main/main?myName=' + userId
                     })
                 },1000);
             }
@@ -1493,7 +1493,6 @@ connection.prototype.getUniqueId = function (prefix) {
 };
 
 connection.prototype.send = function (message) {
-    console.log("tttttttttt")
     if (WebIM.config.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
@@ -1603,7 +1602,7 @@ connection.prototype.subscribe = function (options) {
 connection.prototype.subscribed = function (options) {
     var jid = _getJid(options, this);
     var pres = StropheAll.$pres({to: jid, type: 'subscribed'});
-
+    console.log("options.message",options.message)
     if (options.message) {
         pres.c('status').t(options.message).up();
     }

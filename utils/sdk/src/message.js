@@ -212,7 +212,7 @@ import StropheAll from '../../strophe.js'
 
     _Message.prototype.send = function (conn) {
         var me = this;
-        console.log(this)
+        console.log(this)           // 消息对象
         var _send = function (message) {
 
             message.ext = message.ext || {};
