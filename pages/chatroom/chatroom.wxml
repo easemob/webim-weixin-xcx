@@ -1,32 +1,43 @@
-<view  style="height: 100%; width: 100%; margin-bottom: 80px;">
-	<view class="message" wx:for="{{ chatMsg }}" wx:key="">
-		<view class="time">
-			<text>{{item.time}}</text>
-		</view>
-		<view class="main" class="{{ item.style }}">
-			<view class="user">
-				<text>{{ item.username }}</text>
+<view class="main">
+	<scroll-view  scroll-y="true" class="scroll_view"  class="{{ view }}" bindtap="cancel_emoji" scroll-into-view="{{ toView }}">
+		<view class="message" wx:for="{{ chatMsg }}" wx:key="" id="{{ item.mid }}">
+			<view class="time">
+				<text>{{item.time}}</text>
 			</view>
-			<image class="avatar" src="../../images/number.png"></image>
-			<text class="msg">{{ item.msg.data }}</text>
+			<view class="main" class="{{ item.style }}">
+				<view class="user">
+					<text>{{ item.username }}</text>
+				</view>
+				<image class="avatar" src="../../images/number.png"></image>
+				<text class="msg">{{ item.msg.data }}</text>
+			</view>
 		</view>
-	</view>
-</view>
+	</scroll-view>
 
 
-<view class="room_bar">
-	<form bindreset="cleanInput">
-		<input type="text"  class="news" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" bindinput="bindMessage"></input>
-		<button bindtap="sendMessage" formType="reset" class="send_btn">发送</button>
-	</form>
-	<view class="other_func">
-		<image src="../../images/Emoji.png" style="margin-left: 10px;" bindtap="send_emoji"></image>
-		<image src="../../images/iconImage@2x.png" style="height: 18px;" bindtap="send_image"></image>
-		<image src="../../images/iconCamera@2x.png" style="width: 26px;" bindtap="open_camera"></image>
-		<image src="../../images/iconFile@2x.png" style="margin-right: 10px;" bindtap="send_file"></image>
-	</view>
-	<view class="emoji_list">
-		<image wx:for="{{ emoji }}" src="{{ emoji[index] }}" wx:key=""></image>
+	<view class="room_bar">
+		<form bindreset="cleanInput">
+			<input type="text"  class="news" value="{{ userMessage }}" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" bindinput="bindMessage" bindtap="focus"></input>
+			<button bindtap="sendMessage" formType="reset" class="send_btn">发送</button>
+		</form>
+		<view class="other_func">
+			<image src="../../images/Emoji.png" style="margin-left: 10px;" bindtap="open_emoji"></image>
+			<image src="../../images/iconImage@2x.png" style="height: 18px;" bindtap="send_image"></image>
+			<image src="../../images/iconCamera@2x.png" style="width: 26px;" bindtap="open_camera"></image>
+			<image src="../../images/iconFile@2x.png" style="margin-right: 10px;" bindtap="send_file"></image>
+		</view>
+		<swiper class="emoji_list" class="{{ show }}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+		  <block>
+		    <swiper-item>
+		      	<image wx:for="{{ emoji.map }}" src="{{ emoji.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    </swiper-item>
+		  </block>
+		  <block class="second">
+		    <swiper-item>
+		      	<image  wx:for="{{ emoji.map }}" src="{{ emoji.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    </swiper-item>
+		  </block>
+		</swiper>
 	</view>
 </view>
 

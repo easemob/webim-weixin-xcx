@@ -111,7 +111,7 @@ Page({
 			        	console.log(error)
 			        }
 			    })
-			}
+			  }
 				
 			},
 			fail: function(error) {

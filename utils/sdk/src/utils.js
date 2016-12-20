@@ -386,7 +386,7 @@
                 for (var face in emoji.map) {
                     if (emoji.map.hasOwnProperty(face)) {
                         while (msg.indexOf(face) > -1) {
-                            msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
+                            msg = msg.replace(face, '<image class="emoji" src="' + emoji.path + emoji.map[face] + '" /></image>');
                         }
                     }
                 }

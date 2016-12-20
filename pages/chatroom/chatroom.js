@@ -5,44 +5,31 @@ var WebIM = WebIM.default
 Page({
 	data: {
 		chatMsg: [],
+		emojiList: [],
 		yourname: '',
 		myName: '',
 		sendInfo: '',
 		userMessage: '',
-		emoji: [
-			'../../images/faces/ee_1.png',
-			'../../images/faces/ee_2.png',
-			'../../images/faces/ee_3.png',
-			'../../images/faces/ee_4.png',
-			'../../images/faces/ee_5.png',
-			'../../images/faces/ee_6.png',
-			'../../images/faces/ee_7.png',
-			'../../images/faces/ee_8.png',
-			'../../images/faces/ee_9.png',
-			'../../images/faces/ee_10.png',
-			'../../images/faces/ee_11.png',
-			'../../images/faces/ee_12.png',
-			'../../images/faces/ee_13.png',
-			'../../images/faces/ee_14.png',
-			'../../images/faces/ee_15.png',
-			'../../images/faces/ee_16.png',
-			'../../images/faces/ee_17.png',
-			'../../images/faces/ee_18.png',
-			'../../images/faces/ee_19.png',
-			'../../images/faces/ee_20.png',
-			'../../images/faces/ee_21.png',
-			'../../images/faces/ee_22.png',
-			'../../images/faces/ee_23.png',
-			'../../images/faces/ee_24.png',
-			'../../images/faces/ee_25.png',
-			'../../images/faces/ee_26.png'
-		]
+		indicatorDots: true,
+	    autoplay: false,
+	    interval: 5000,
+	    duration: 1000,
+	    show: 'emoji_list',
+	    view: 'scroll_view',
+	    toView: '',
+		emoji: WebIM.Emoji
 	},
 	onLoad: function(options) {
-		var that = this										
+		var that = this									
 		var options = JSON.parse(options.username)
 		console.log(options)
 		console.log(wx.getStorageSync(options.your))
+		var num = wx.getStorageSync(options.your).length - 1
+		if(num > 0) {
+			this.setData({
+				toView: wx.getStorageSync(options.your)[num].mid
+			})
+		}
 		this.setData({
 			yourname: options.your,
 			myName: options.myName,
@@ -76,11 +63,12 @@ Page({
 	    msg.body.chatType = 'singleChat';
 	    WebIM.conn.send(msg.body);
 	    if(msg) {
+	    	var value = WebIM.parseEmoji(msg.value.replace(/\n/mg, ''))
 	    	var date = new Date()
 	    	var Hours = date.getHours(); 
             var Minutes = date.getMinutes(); 
             var Seconds = date.getSeconds();
-            var time = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' 
+            var time = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' 
             + (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds)
 			var msgData = {
 				info: {
@@ -89,20 +77,28 @@ Page({
 				username: that.data.myName,
 				msg: {
 					type: msg.type,
-					data: msg.value
+					data: value
 				},
-				style:'self',
-				time: time
+				style: 'self',
+				time: time,
+				mid: msg.id
 			}
 			that.data.chatMsg.push(msgData)
+			console.log(that.data.chatMsg)
 			wx.setStorage({
 				key: that.data.yourname,
 				data: that.data.chatMsg,
 				success: function() {
 					console.log('success', that.data)
 					that.setData({
-						chatMsg: that.data.chatMsg
+						chatMsg: that.data.chatMsg,
+						emojiList: [],
 					})
+					setTimeout(function() {
+						that.setData({
+							toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
+						})
+					}, 10)
 				}
 			})
 			that.setData({
@@ -110,7 +106,7 @@ Page({
 			})
 	    }
 	},
-	receiveMsg: function(msg) {
+	receiveMsg: function(msg, type) {
 		var that = this 
 		if(msg.from == that.data.yourname || msg.to == that.data.yourname) {
 			console.log(msg)
@@ -118,7 +114,7 @@ Page({
 			var Hours = date.getHours(); 
             var Minutes = date.getMinutes(); 
             var Seconds = date.getSeconds(); 
-            var time = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' 
+            var time = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' 
             + (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds)
 			var msgData = {
 				info: {
@@ -131,7 +127,8 @@ Page({
 					data: msg.data
 				},
 				style:'',
-				time: time
+				time: time,
+				mid: msg.type + msg.id
 			}
 			if(msg.from == that.data.yourname) {
 				msgData.style = ''
@@ -148,14 +145,53 @@ Page({
 				success: function() {
 					console.log('success', that.data)
 					that.setData({
-						chatMsg: that.data.chatMsg
+						chatMsg: that.data.chatMsg,
 					})
+					setTimeout(function() {
+						that.setData({
+							toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
+						})
+					}, 10)
 				}
 			})
 		}
 	},
-	send_emoji: function() {
-
+	open_emoji: function() {
+		this.setData({
+			show: 'showEmoji',
+			view: 'scroll_view_change'
+		})
+	},
+	send_emoji: function(event) {
+		var that = this
+		if(event.target.dataset.emoji && event.target.dataset.emoji != '[del]') {
+			that.data.emojiList.push(event.target.dataset.emoji)
+			var str = that.data.emojiList.join("")
+		} else if(event.target.dataset.emoji == '[del]') {
+			that.data.emojiList.pop()
+			var str = that.data.emojiList.join("")
+		}
+		this.setData({
+			userMessage: str
+		})
+	},
+	focus: function() {
+		this.setData({
+			show: 'emoji_list',
+			view: 'scroll_view'
+		})
+	},
+	cancel_emoji: function() {
+		this.setData({
+			show: 'emoji_list',
+			view: 'scroll_view'
+		})
+	},
+	scroll: function(e) {
+		// console.log(e)
+	},
+	lower: function(e) {
+		console.log(e)
 	}
 })
 

@@ -38,14 +38,14 @@ App({
           console.log(pages)
           if(message) {
               if(pages[2]) {
-                 pages[2].receiveMsg(message)
+                 pages[2].receiveMsg(message,'txt')
             } else {
                 var chatMsg = that.globalData.chatMsg || []
                 var date = new Date()
                 var Hours = date.getHours(); 
                 var Minutes = date.getMinutes(); 
                 var Seconds = date.getSeconds(); 
-                var time = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' 
+                var time = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' 
                 + (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds)
                 var msgData = {
                   info: {
@@ -74,7 +74,7 @@ App({
           }
         },
         onEmojiMessage: function(message) {
-          console.log(message)
+          console.log('onEmojiMessage',message)
         }
     })
   },
