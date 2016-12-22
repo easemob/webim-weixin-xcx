@@ -41,12 +41,9 @@ App({
                  pages[2].receiveMsg(message,'txt')
             } else {
                 var chatMsg = that.globalData.chatMsg || []
-                var date = new Date()
-                var Hours = date.getHours(); 
-                var Minutes = date.getMinutes(); 
-                var Seconds = date.getSeconds(); 
-                var time = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' 
-                + (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds)
+                var value = WebIM.parseEmoji(message.data.replace(/\n/mg, ''))
+                conosle.log(value)
+                var time = WebIM.time()
                 var msgData = {
                   info: {
                     from: message.from,
@@ -55,7 +52,7 @@ App({
                   username: '',
                   msg: {
                     type: message.type,
-                    data: message.data
+                    data: value
                   },
                   style:'',
                   time: time
@@ -75,6 +72,41 @@ App({
         },
         onEmojiMessage: function(message) {
           console.log('onEmojiMessage',message)
+          var pages = getCurrentPages()
+          console.log(pages)
+          if(message) {
+              if(pages[2]) {
+                 pages[2].receiveMsg(message,'emoji')
+            } else {
+                var chatMsg = that.globalData.chatMsg || []
+                var value = WebIM.parseEmoji(message.data.replace(/\n/mg, ''))
+                conosle.log(value)
+                var time = WebIM.time()
+                var msgData = {
+                  info: {
+                    from: message.from,
+                    to: message.to
+                  },
+                  username: '',
+                  msg: {
+                    type: message.type,
+                    data: value
+                  },
+                  style:'',
+                  time: time
+                }
+                msgData.style = ''
+                msgData.username = message.from
+                chatMsg.push(msgData)
+                wx.setStorage({
+                  key: msgData.username,
+                  data: chatMsg,
+                  success: function() {
+                    console.log('success')
+                  }
+                })
+              }
+          }
         }
     })
   },

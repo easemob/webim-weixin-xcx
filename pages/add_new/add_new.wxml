@@ -5,3 +5,4 @@
 	</view>
 	<text bindtap="add_friend">添加</text>
 </view>
+

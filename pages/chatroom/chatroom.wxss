@@ -15,7 +15,7 @@
 }
 .message {
 	width: 92%;
-	height: 100px;
+	height: auto;
 	padding: 10px 15px;
 }
 .time {
@@ -40,8 +40,8 @@
 .avatar {
 	width: 32px;
 	height: 30px;
-	float: left;
     margin: 0 10px 0 0;
+    padding-top: 3px;
     border-radius: 3px;
 }
 .msg {
@@ -180,6 +180,14 @@
 	width: 30px;
 	height: 30px;
 	margin: 5px 4px;
+}
+.emoji {
+	width: 22px;
+	height: 22px; 
+	margin: 0 0;
+}
+.template {
+	display: inline;
 }
 
 

@@ -1227,8 +1227,12 @@ connection.prototype.handleMessage = function (msginfo) {
         try {
             switch (type) {
                 case 'txt':
+                    console.log("666666666666")
                     var receiveMsg = msgBody.msg;
+                    console.log('receiveMsg',receiveMsg)
+                    console.log('WebIM.Emoji',WebIM.Emoji)
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
+                    console.log('emojibody',emojibody)
                     if (emojibody.isemoji) {
                         var msg = {
                             id: id
@@ -1243,8 +1247,11 @@ connection.prototype.handleMessage = function (msginfo) {
                         msg.error = errorBool;
                         msg.errorText = errorText;
                         msg.errorCode = errorCode;
+                        console.log('onmessage', type, msg)
+
                         this.onEmojiMessage(msg);
                     } else {
+                        console.log('ttxtxtxtxtxtxttxtxtxtxtxtxt')
                         var msg = {
                             id: id
                             , type: chattype

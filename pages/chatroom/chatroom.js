@@ -5,11 +5,12 @@ var WebIM = WebIM.default
 Page({
 	data: {
 		chatMsg: [],
-		emojiList: [],
+		emojiStr: '',
 		yourname: '',
 		myName: '',
 		sendInfo: '',
 		userMessage: '',
+		inputMessage: '',
 		indicatorDots: true,
 	    autoplay: false,
 	    interval: 5000,
@@ -23,7 +24,7 @@ Page({
 		var that = this									
 		var options = JSON.parse(options.username)
 		console.log(options)
-		console.log(wx.getStorageSync(options.your))
+		console.log(that.data.sendInfo)
 		var num = wx.getStorageSync(options.your).length - 1
 		if(num > 0) {
 			this.setData({
@@ -33,25 +34,34 @@ Page({
 		this.setData({
 			yourname: options.your,
 			myName: options.myName,
+			inputMessage: '',
 			chatMsg: wx.getStorageSync(options.your) || []
 		}) 
+	},
+	onShow: function() {
+		this.setData({
+			inputMessage: ''
+		})
 	},
 	bindMessage: function(e) {
 		this.setData({
 			userMessage: e.detail.value
 		})
+		console.log(this.data.userMessage)
 	},
 	cleanInput: function() {
+		var that = this
 		var setUserMessage = {
-			sendInfo: this.data.userMessage
+			sendInfo: that.data.userMessage
 		}
-		this.setData(setUserMessage)
+		that.setData(setUserMessage)
 	},
 	sendMessage: function() {
 		var that = this
+	    console.log(that.data.userMessage)
+	    console.log(that.data.sendInfo)
 		var id = WebIM.conn.getUniqueId();
-	    var msg = new WebIM.message('txt', id);
-	    console.log(msg)
+	    var msg = new WebIM.message('txt', id); 
 	    msg.set({
 	        msg: that.data.sendInfo,                       
 	        to: that.data.yourname,                          
@@ -60,16 +70,12 @@ Page({
 	            console.log('success')
 	        }
 	    });
+	    console.log(msg)
 	    msg.body.chatType = 'singleChat';
 	    WebIM.conn.send(msg.body);
 	    if(msg) {
 	    	var value = WebIM.parseEmoji(msg.value.replace(/\n/mg, ''))
-	    	var date = new Date()
-	    	var Hours = date.getHours(); 
-            var Minutes = date.getMinutes(); 
-            var Seconds = date.getSeconds();
-            var time = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' 
-            + (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds)
+	    	var time = WebIM.time()
 			var msgData = {
 				info: {
 					to: msg.body.to
@@ -93,6 +99,7 @@ Page({
 					that.setData({
 						chatMsg: that.data.chatMsg,
 						emojiList: [],
+						inputMessage:''
 					})
 					setTimeout(function() {
 						that.setData({
@@ -106,16 +113,19 @@ Page({
 			})
 	    }
 	},
-	receiveMsg: function(msg, type) {
+	receiveMsg: function(msg,type) {
 		var that = this 
 		if(msg.from == that.data.yourname || msg.to == that.data.yourname) {
 			console.log(msg)
-			var date = new Date()
-			var Hours = date.getHours(); 
-            var Minutes = date.getMinutes(); 
-            var Seconds = date.getSeconds(); 
-            var time = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' 
-            + (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds)
+			if(type == 'txt') {
+				var value = WebIM.parseEmoji(msg.data.replace(/\n/mg, ''))
+			} else if(type == 'emoji') {
+				var value = msg.data
+			}
+			console.log(msg)
+			
+			console.log(value)
+			var time = WebIM.time()
 			var msgData = {
 				info: {
 					from: msg.from,
@@ -124,7 +134,7 @@ Page({
 				username: '',
 				msg: {
 					type: msg.type,
-					data: msg.data
+					data: value
 				},
 				style:'',
 				time: time,
@@ -164,15 +174,25 @@ Page({
 	},
 	send_emoji: function(event) {
 		var that = this
-		if(event.target.dataset.emoji && event.target.dataset.emoji != '[del]') {
-			that.data.emojiList.push(event.target.dataset.emoji)
-			var str = that.data.emojiList.join("")
-		} else if(event.target.dataset.emoji == '[del]') {
-			that.data.emojiList.pop()
-			var str = that.data.emojiList.join("")
+		var emoji = event.target.dataset.emoji
+		var msglen = that.data.userMessage.length - 1
+		if(emoji && emoji != '[del]') {
+			var str = that.data.userMessage + emoji
+		} else if(emoji == '[del]') {
+			var start = that.data.userMessage.lastIndexOf('[')
+			var end = that.data.userMessage.lastIndexOf(']')
+			var len = end - start
+			console.log(start,end,len)
+			if(end != -1 && end == msglen && len >= 3 && len <= 4 ) {
+				var str = that.data.userMessage.slice(0,start)
+			} else {
+				var str = that.data.userMessage.slice(0,msglen)
+			}
 		}
+		console.log(str)
 		this.setData({
-			userMessage: str
+			userMessage: str,
+			inputMessage: str
 		})
 	},
 	focus: function() {

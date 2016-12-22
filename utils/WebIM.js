@@ -71,17 +71,49 @@ WebIM.parseEmoji = function (msg) {
     } else {
         var emoji = WebIM.Emoji,
             reg = null;
-
+        var msgList = [];
+        var objList = [];
         for (var face in emoji.map) {
             if (emoji.map.hasOwnProperty(face)) {
-                while (msg.indexOf(face) > -1) {
-                    msg = msg.replace(face, '<image class="emoji" src="' + emoji.path + emoji.map[face] + '" ></image>');
+                 while (msg.indexOf(face) > -1) {
+                       msg = msg.replace(face,  "^"+emoji.map[face]+"^");
                 }
             }
         }
-        return msg;
+        var ary = msg.split('^')
+        var reg = /^e.*g$/
+        for(var i = 0; i < ary.length; i++) {
+            if(ary[i] != '') {
+                msgList.push(ary[i])
+            }
+        }
+        for(var i = 0; i < msgList.length; i++) {
+            if(reg.test(msgList[i])) {
+                var obj = {}
+                obj['data'] = msgList[i]
+                obj['type'] = 'emoji'
+                objList.push(obj)
+            }else {
+                var obj = {}
+                obj['data'] = msgList[i]
+                obj['type'] = 'txt'
+                objList.push(obj)
+            }
+        }
+        console.log(objList)
+        return objList;
     }
 }
+
+WebIM.time = function() {
+    var date = new Date()
+    var Hours = date.getHours(); 
+    var Minutes = date.getMinutes(); 
+    var Seconds = date.getSeconds();
+    var time = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' 
+    + (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds)
+    return time
+} 
 
 WebIM.Emoji = {
   path: '../../images/faces/',

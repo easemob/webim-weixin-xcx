@@ -693,12 +693,11 @@
                     ]
                 };
             }
-
             var receiveMsg = message;
             var emessage = [];
             var expr = /\[[^[\]]{2,3}\]/mg;
             var emoji = receiveMsg.match(expr);
-
+            console.log(emoji)
             if (!emoji || emoji.length < 1) {
                 return {
                     isemoji: false,
@@ -710,11 +709,11 @@
                     ]
                 };
             }
+
             var isemoji = false;
             for (var i = 0; i < emoji.length; i++) {
-                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
-                    existEmoji = WebIM.Emoji.map[emoji[i]];
-
+                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i]));
+                var existEmoji = faces.map[emoji[i]];
                 if (tmsg) {
                     emessage.push({
                         type: 'txt',
@@ -728,7 +727,7 @@
                     });
                     continue;
                 }
-                var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
+                var emojiStr = faces.map ? existEmoji : null;
 
                 if (emojiStr) {
                     isemoji = true;
