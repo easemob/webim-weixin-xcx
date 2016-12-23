@@ -3,22 +3,24 @@ Page({
 		search_btn: true,
 		search_chats: false,
 		show_mask: false,
-		array: [{
-			username:'wjy1',
-			date: '2016-11-12',
-			time: '10:03',
-			contain: 'hello'
-		},{
-			username:'wjy2',
-			date: '2016-11-21',
-			time: '16:03',
-			contain: 'lalala'
-		},{
-			username:'wjy3',
-			date: '2016-11-26',
-			time: '20:03',
-			contain: '在干吗？'
-		}]
+		yourname: '',
+		arr: []
+	},
+	onShow: function() {
+		var that = this
+		var member = wx.getStorageSync('member')
+		console.log(member)
+		var array = []
+		for(var i = 0; i < member.length; i++) {
+			if(wx.getStorageSync(member[i].name) != '') {
+				array.push(wx.getStorageSync(member[i].name)[wx.getStorageSync(member[i].name).length - 1])
+			}
+		}
+		console.log(array)
+		this.setData({
+			arr: array
+		})
+		console.log(that.data.arr)
 	},
 	openSearch: function() {
 		this.setData({
@@ -50,6 +52,21 @@ Page({
 		wx.redirectTo({
 	      url: '../settings/settings'
 	    })
+	},
+	into_chatRoom: function(event) {
+		var that = this
+		console.log(event)
+		var my = wx.getStorageSync('myUsername')
+		var nameList = {
+			myName: my,
+			your: event.currentTarget.dataset.username
+		}
+		wx.navigateTo({
+			url: '../chatroom/chatroom?username=' + JSON.stringify(nameList)
+		})
 	}
 
 })
+
+
+

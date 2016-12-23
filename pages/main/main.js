@@ -16,6 +16,7 @@ Page({
 		})
 	},
 	onShow: function() {
+		var that = this
 		console.log(WebIM.conn)
 		var rosters = {
 			success: function(roster) {
@@ -28,9 +29,12 @@ Page({
 				that.setData({
 					member: member
 				})
+				wx.setStorage({
+					key:'member',
+					data: that.data.member
+				})
 			}
 		}
-		var that = this
 		WebIM.conn.setPresence()
 		WebIM.conn.getRoster(rosters)
 	},
@@ -174,6 +178,11 @@ Page({
 		}
 		wx.navigateTo({
 			url: '../chatroom/chatroom?username=' + JSON.stringify(nameList)
+		})
+	},
+	into_info: function(event) {
+		wx.navigateTo({
+			url: '../friend_info/friend_info?yourname=' + event.target.dataset.username
 		})
 	}
 

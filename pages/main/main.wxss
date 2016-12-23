@@ -99,7 +99,7 @@
 .chat text,.chat_groups text,.chat_lists text {
 	font-size:14px;
 }
-.number {
+.numbers {
 	width: 100%;
 	height: 60px;
 }
@@ -110,17 +110,12 @@
 	padding-left: 16px;
 }
 .nbr_body {
-	width: 80%;
+	width: 70%;
 	height: 40px;
 	display: inline-block;
 	font-size: 16px;
 	line-height: 40px;
 	margin-right: 0;
-}
-.nbr_body image{
-	width: 9%; 
-	height: 55%;
-	margin: 8px 13px auto 10px;
 	float: left;
 }
 .mask {
@@ -142,7 +137,18 @@
 	width: 16px;
 	height: 2px;
 }
-
+.info {
+	width: 12%;
+	height: 40px;
+	display: inline-block;
+	float: left;
+}
+.info image {
+	width: 68%; 
+	height: 70%;
+	display: inline-block;
+	margin: 6px auto auto 6px;
+}
 
 
 

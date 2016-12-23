@@ -24,7 +24,6 @@ Page({
 		var that = this									
 		var options = JSON.parse(options.username)
 		console.log(options)
-		console.log(that.data.sendInfo)
 		var num = wx.getStorageSync(options.your).length - 1
 		if(num > 0) {
 			this.setData({
@@ -36,7 +35,10 @@ Page({
 			myName: options.myName,
 			inputMessage: '',
 			chatMsg: wx.getStorageSync(options.your) || []
-		}) 
+		})
+		wx.setNavigationBarTitle({
+		  	title: that.data.yourname
+		})
 	},
 	onShow: function() {
 		this.setData({

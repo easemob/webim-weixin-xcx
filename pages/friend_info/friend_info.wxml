@@ -1,0 +1,22 @@
+<view class="info_title">
+	<view class="head_pic">
+		<image src="../../images/default.png"></image>
+		<text>{{ yourname }}</text>
+	</view>
+	<view class="contact">
+		<image src="../../images/buttonChat.png"></image>
+		<image src="../../images/buttonCall.png"></image>
+		<image src="../../images/buttonVideo.png"></image>
+		</view>
+</view>
+
+<view class="message">
+	<view class="name">
+		<text>Name</text>
+		<text>{{ yourname }}</text>
+	</view>
+	<view class="ID">
+		<text>Hyphenate ID</text>
+		<text>{{ yourname }}</text>
+	</view>
+</view>

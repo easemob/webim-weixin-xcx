@@ -13,8 +13,9 @@ Page({
 		})
 	},
 	person: function() {
+		var myUsername = wx.getStorageSync('myUsername')
 		wx.navigateTo({
-			url: '../chat/chat'
+			url: '../friend_info/friend_info?yourname=' + myUsername
 		})
 	}
 })

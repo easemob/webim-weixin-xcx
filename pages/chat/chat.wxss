@@ -76,7 +76,7 @@
 	border-bottom: 1px solid rgba(173,185,193,0.5);
 }
 .list_left {
-	width: 60%;
+	width: 45%;
 	height: 100%;
 	float: left;
 }
@@ -84,19 +84,20 @@
 	width: 60%;
 	height: 100%;
 	float: left;
-	margin-top: 12px;
-	font-size: 16px;
+	margin-top: 16px;
+	font-size: 14px;
 }
 .list_pic {
 	width: 25%;
 	height: 100%;
 	float: left;
 	margin-top: 15px;
+	margin-right: 14px;
 	
 }
 .list_pic image {
 	display: block;
-	width: 63%;
+	width: 88%;
 	height: 53%;
 	border: 1px solid rgb(0,186,110);
 	margin-left: 10px;
@@ -106,14 +107,14 @@
 	height: 20px;
 	display: block;
 	color: #CFCFCF;
-	margin-top: 2px;
+	margin-top: 6px;
 }
 .list_right {
-	width: 36%;
+	width: 50%;
 	height: 100%;
 	float: right;
 	margin-top: 3px;
-	font-size: 14px;
+	font-size: 12px;
 	margin-right: 8px;
 	text-align: right;
 }

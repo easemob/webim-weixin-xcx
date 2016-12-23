@@ -40,7 +40,15 @@ Page({
 	            grant_type: that.data.grant_type,
 	            appKey: WebIM.config.appkey
 	        }
+	        wx.setStorage({
+			  key: "myUsername",
+			  data: that.data.name
+			})
 	        WebIM.conn.open(options)
 		}
 	}
 })
+
+
+
+
