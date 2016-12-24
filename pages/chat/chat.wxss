@@ -118,8 +118,17 @@
 	margin-right: 8px;
 	text-align: right;
 }
-.list_right text {
-	line-height: 50px;
+.list_right text:first-child {
+	display: block;
+	line-height: 30px;
+	margin: 6px auto auto auto;
+}
+.list_right text:last-child {
+	height: 20px; 
+	font-size: 13px;
+	color: #CFCFCF;
+	display: block;
+	margin-top: 2px;
 }
 
 

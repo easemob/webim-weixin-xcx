@@ -42,7 +42,6 @@ App({
             } else {
                 var chatMsg = that.globalData.chatMsg || []
                 var value = WebIM.parseEmoji(message.data.replace(/\n/mg, ''))
-                conosle.log(value)
                 var time = WebIM.time()
                 var msgData = {
                   info: {
@@ -50,6 +49,7 @@ App({
                     to: message.to
                   },
                   username: '',
+                  yourname: message.from,
                   msg: {
                     type: message.type,
                     data: value
@@ -58,10 +58,10 @@ App({
                   time: time
                 }
                 msgData.style = ''
-                msgData.username = message.from
+                chatMsg = wx.getStorageSync(msgData.yourname) || []
                 chatMsg.push(msgData)
                 wx.setStorage({
-                  key: msgData.username,
+                  key: msgData.yourname,
                   data: chatMsg,
                   success: function() {
                     console.log('success')
@@ -76,11 +76,9 @@ App({
           console.log(pages)
           if(message) {
               if(pages[2]) {
-                 pages[2].receiveMsg(message,'emoji')
+                  pages[2].receiveMsg(message,'emoji')
             } else {
                 var chatMsg = that.globalData.chatMsg || []
-                var value = WebIM.parseEmoji(message.data.replace(/\n/mg, ''))
-                conosle.log(value)
                 var time = WebIM.time()
                 var msgData = {
                   info: {
@@ -88,18 +86,19 @@ App({
                     to: message.to
                   },
                   username: '',
+                  yourname: message.from,
                   msg: {
                     type: message.type,
-                    data: value
+                    data: message.data
                   },
                   style:'',
                   time: time
                 }
                 msgData.style = ''
-                msgData.username = message.from
+                chatMsg = wx.getStorageSync(msgData.yourname) || []
                 chatMsg.push(msgData)
                 wx.setStorage({
-                  key: msgData.username,
+                  key: msgData.yourname,
                   data: chatMsg,
                   success: function() {
                     console.log('success')

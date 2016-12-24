@@ -12,18 +12,19 @@
 	<text bindtap="cancel">取消</text>
 </view>
 <view style="width:100%; height:40px;"></view>
-<view wx:for="{{ arr }}" wx:key="time" class="chat_list" bindtap="into_chatRoom" data-username="{{ item.info.to }}">
-	<view class="list_left" bindtap="into_chatRoom" data-username="{{ item.info.to }}">
+<view wx:for="{{ arr }}" wx:key="time" class="chat_list">
+	<view class="list_left" bindtap="into_chatRoom" data-username="{{ item.yourname }}">
 		<view class="list_pic">
 			<image src="../../images/number.png"></image>
 		</view>
 		<view class="list_text">
-			<text class="list_user">{{item.info.to}}</text>
+			<text class="list_user">{{item.yourname}}</text>
 			<text class="list_word">{{item.msg.data[0].data}}</text>
 		</view>
 	</view>
 	<view class="list_right">
-		<text>{{item.time}}</text>
+		<text bindtap="into_chatRoom" data-username="{{ item.yourname }}">{{item.time}}</text>
+		<text bindtap="del_chat" data-username="{{ item.yourname }}">删除会话</text>
 	</view>
 </view>
 

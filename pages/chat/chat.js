@@ -20,7 +20,6 @@ Page({
 		this.setData({
 			arr: array
 		})
-		console.log(that.data.arr)
 	},
 	openSearch: function() {
 		this.setData({
@@ -63,6 +62,32 @@ Page({
 		}
 		wx.navigateTo({
 			url: '../chatroom/chatroom?username=' + JSON.stringify(nameList)
+		})
+	},
+	del_chat: function(event) {
+		var nameList = {
+			your: event.currentTarget.dataset.username
+		}
+		var currentPage = getCurrentPages()
+		wx.showModal({
+			title: '删除该聊天记录',
+			confirmText: '删除',
+			success: function(res) {
+				if(res.confirm){
+					wx.setStorage({
+						key: nameList.your,
+						data: '',
+						success: function() {
+							if(currentPage[1]) {
+								currentPage[1].onShow()
+							}
+						}
+					})
+				}
+			},
+			fail: function(error) {
+				console.log(error)
+			}
 		})
 	}
 

@@ -40,12 +40,28 @@
 		<swiper class="emoji_list" class="{{ show }}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
 		  <block>
 		    <swiper-item>
-		      	<image wx:for="{{ emoji.map }}" src="{{ emoji.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    	<view class="emoji_item">
+		    		<image wx:for="{{ emojiObj.map1 }}" src="{{ emojiObj.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    	</view>
+		      	<view class="emoji_item">
+		    		<image wx:for="{{ emojiObj.map2 }}" src="{{ emojiObj.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    	</view>
+		    	<view class="emoji_item">
+		    		<image wx:for="{{ emojiObj.map3 }}" src="{{ emojiObj.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    	</view>
 		    </swiper-item>
 		  </block>
 		  <block class="second">
 		    <swiper-item>
-		      	<image  wx:for="{{ emoji.map }}" src="{{ emoji.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		      	<view class="emoji_item">
+		    		<image wx:for="{{ emojiObj.map4 }}" src="{{ emojiObj.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    	</view>
+		    	<view class="emoji_item">
+		    		<image wx:for="{{ emojiObj.map5 }}" src="{{ emojiObj.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    	</view>
+		    	<view class="emoji_item">
+		    		<image wx:for="{{ emojiObj.map6 }}" src="{{ emojiObj.path + item }}" wx:key="" bindtap="send_emoji" data-emoji="{{ index }}"></image>
+		    	</view>
 		    </swiper-item>
 		  </block>
 		</swiper>

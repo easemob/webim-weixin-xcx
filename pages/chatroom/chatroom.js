@@ -18,12 +18,12 @@ Page({
 	    show: 'emoji_list',
 	    view: 'scroll_view',
 	    toView: '',
-		emoji: WebIM.Emoji
+		emoji: WebIM.Emoji,
+		emojiObj: WebIM.EmojiObj
 	},
 	onLoad: function(options) {
 		var that = this									
 		var options = JSON.parse(options.username)
-		console.log(options)
 		var num = wx.getStorageSync(options.your).length - 1
 		if(num > 0) {
 			this.setData({
@@ -49,7 +49,6 @@ Page({
 		this.setData({
 			userMessage: e.detail.value
 		})
-		console.log(this.data.userMessage)
 	},
 	cleanInput: function() {
 		var that = this
@@ -83,6 +82,7 @@ Page({
 					to: msg.body.to
 				},
 				username: that.data.myName,
+				yourname: msg.body.to,
 				msg: {
 					type: msg.type,
 					data: value
@@ -134,6 +134,7 @@ Page({
 					to: msg.to
 				},
 				username: '',
+				yourname: msg.from,
 				msg: {
 					type: msg.type,
 					data: value
@@ -184,14 +185,12 @@ Page({
 			var start = that.data.userMessage.lastIndexOf('[')
 			var end = that.data.userMessage.lastIndexOf(']')
 			var len = end - start
-			console.log(start,end,len)
 			if(end != -1 && end == msglen && len >= 3 && len <= 4 ) {
 				var str = that.data.userMessage.slice(0,start)
 			} else {
 				var str = that.data.userMessage.slice(0,msglen)
 			}
 		}
-		console.log(str)
 		this.setData({
 			userMessage: str,
 			inputMessage: str

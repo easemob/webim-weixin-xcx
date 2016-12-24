@@ -179,13 +179,18 @@
 .emoji_list image,.showEmoji image{
 	width: 30px;
 	height: 30px;
-	margin: 5px 4px;
+	margin: 5px 2%;
 }
 .emoji {
-	width: 22px;
-	height: 22px; 
+	width: 26px;
+	height: 26px; 
 	margin: 0 0;
 }
+.emoji_item {
+	display: flex;
+	justify-content: space-around;
+	margin-right: 20px;
+} 
 .template {
 	display: inline;
 }
