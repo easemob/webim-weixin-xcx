@@ -43,6 +43,7 @@
     margin: 0 10px 0 0;
     padding-top: 3px;
     border-radius: 3px;
+    float: left;
 }
 .msg {
 	display: inline-block;

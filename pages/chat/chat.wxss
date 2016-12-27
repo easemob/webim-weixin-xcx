@@ -76,7 +76,7 @@
 	border-bottom: 1px solid rgba(173,185,193,0.5);
 }
 .list_left {
-	width: 45%;
+	width: 63%;
 	height: 100%;
 	float: left;
 }
@@ -88,7 +88,7 @@
 	font-size: 14px;
 }
 .list_pic {
-	width: 25%;
+	width: 18%;
 	height: 100%;
 	float: left;
 	margin-top: 15px;
@@ -110,7 +110,7 @@
 	margin-top: 6px;
 }
 .list_right {
-	width: 50%;
+	width: 32%;
 	height: 100%;
 	float: right;
 	margin-top: 3px;
@@ -129,6 +129,10 @@
 	color: #CFCFCF;
 	display: block;
 	margin-top: 2px;
+}
+.delChat {
+	width: 80px;
+	float: right;
 }
 
 

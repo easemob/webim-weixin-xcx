@@ -1,5 +1,4 @@
 import StropheAll from '../../strophe.js'
-
 ;(function () {
     'use strict';
 
@@ -98,10 +97,9 @@ import StropheAll from '../../strophe.js'
         this.body = {};
     };
     Message.img.prototype.set = function (opt) {
-        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
-
+        // opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+        console.log(opt)
         this.value = opt.file;
-
         this.body = {
             id: this.id,
             file: this.value,
@@ -119,7 +117,6 @@ import StropheAll from '../../strophe.js'
             height: opt.height,
             body: opt.body
         };
-
         !opt.roomType && delete this.body.roomType;
     };
 
@@ -286,20 +283,24 @@ import StropheAll from '../../strophe.js'
             me.msg.onFileUploadComplete = _complete;
             _utils.uploadFile.call(conn, me.msg);
         } else {
-            me.msg.body = {
-                type: me.msg.type === 'chat' ? 'txt' : me.msg.type
-                , msg: me.msg.msg
-            };
-            if (me.msg.type === 'cmd') {
-                me.msg.body.action = me.msg.action;
-            } else if (me.msg.type === 'loc') {
-                me.msg.body.addr = me.msg.addr;
-                me.msg.body.lat = me.msg.lat;
-                me.msg.body.lng = me.msg.lng;
+            if(me.msg.type === 'img') {                                             //  添加img判断规则   wjy
+                 _send(me.msg);                                             
+            }else {
+                 me.msg.body = {
+                    type: me.msg.type === 'chat' ? 'txt' : me.msg.type
+                    , msg: me.msg.msg
+                };
+                if (me.msg.type === 'cmd') {
+                    me.msg.body.action = me.msg.action;
+                } else if (me.msg.type === 'loc') {
+                    me.msg.body.addr = me.msg.addr;
+                    me.msg.body.lat = me.msg.lat;
+                    me.msg.body.lng = me.msg.lng;
+                }
+                _send(me.msg);
+                console.log('ooooooooooooooooooo')
             }
-
-            _send(me.msg);
-            console.log('ooooooooooooooooooo')
+           
         }
     };
 

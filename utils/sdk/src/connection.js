@@ -1500,6 +1500,7 @@ connection.prototype.getUniqueId = function (prefix) {
 };
 
 connection.prototype.send = function (message) {
+    console.log(message)
     if (WebIM.config.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
@@ -1519,7 +1520,7 @@ connection.prototype.send = function (message) {
                 toJid = toJid + '/' + message.resource;
             }
             console.log(toJid);
-
+            console.log("adwadwdawdaw",message)
             message.toJid = toJid;
             message.id = message.id || this.getUniqueId();
             _msgHash[message.id] = new _message(message);

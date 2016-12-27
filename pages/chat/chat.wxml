@@ -24,7 +24,7 @@
 	</view>
 	<view class="list_right">
 		<text bindtap="into_chatRoom" data-username="{{ item.yourname }}">{{item.time}}</text>
-		<text bindtap="del_chat" data-username="{{ item.yourname }}">删除会话</text>
+		<text bindtap="del_chat" data-username="{{ item.yourname }}" class="delChat">删除会话</text>
 	</view>
 </view>
 

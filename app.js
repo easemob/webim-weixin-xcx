@@ -55,7 +55,8 @@ App({
                     data: value
                   },
                   style:'',
-                  time: time
+                  time: time,
+                  mid: message.id
                 }
                 msgData.style = ''
                 chatMsg = wx.getStorageSync(msgData.yourname) || []
@@ -88,11 +89,12 @@ App({
                   username: '',
                   yourname: message.from,
                   msg: {
-                    type: message.type,
-                    data: message.data
+                    type: 'img',
+                    data: message.url
                   },
                   style:'',
-                  time: time
+                  time: time,
+                  mid: message.id
                 }
                 msgData.style = ''
                 chatMsg = wx.getStorageSync(msgData.yourname) || []
@@ -106,7 +108,45 @@ App({
                 })
               }
           }
-        }
+        },
+        onPictureMessage: function (message) {
+          console.log('Picture',message);
+          var pages = getCurrentPages()
+          if(message) {
+            if(pages[2]) {
+                console.log("wdawdawdawdqwd")
+                pages[2].receiveImage(message,'img')
+            } else {
+                var chatMsg = that.globalData.chatMsg || []
+                var time = WebIM.time()
+                var msgData = {
+                  info: {
+                    from: message.from,
+                    to: message.to
+                  },
+                  username: message.from,
+                  yourname: message.from,
+                  msg: {
+                    type: 'img',
+                    data: message.url
+                  },
+                  style:'',
+                  time: time,
+                  mid: 'img' + message.id
+                }
+                msgData.style = ''
+                chatMsg = wx.getStorageSync(msgData.yourname) || []
+                chatMsg.push(msgData)
+                wx.setStorage({
+                  key: msgData.yourname,
+                  data: chatMsg,
+                  success: function() {
+                    console.log('success')
+                  }
+                })
+            }
+          }
+      }
     })
   },
   getUserInfo:function(cb){

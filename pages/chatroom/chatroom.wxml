@@ -1,5 +1,5 @@
 <view class="main">
-	<scroll-view  scroll-y="true" class="scroll_view"  class="{{ view }}" bindtap="cancel_emoji" scroll-into-view="{{ toView }}">
+	<scroll-view  scroll-y="true" class="scroll_view"  class="{{ view }}" bindtap="cancelEmoji" scroll-into-view="{{ toView }}">
 		<view class="message" wx:for="{{ chatMsg }}" wx:key="" id="{{ item.mid }}">
 			<view class="time">
 				<text>{{item.time}}</text>
@@ -10,21 +10,30 @@
 				</view>
 				<image class="avatar" src="../../images/number.png"></image>
 				<view class="msg">
-					<!-- <text> {{item.msg.data[0].value}}</text> -->
-					<view class="template" wx:for="{{ item.msg.data }}" wx:key="" >
-						<template   is="{{ item.type == 'emoji'? 'emoji' : 'txt' }}" data="{{ item }}"/>
+					<view wx:if="{{ item.msg.type == 'img' }}">
+						<template is="{{ item.msg.type }}" data="{{ item }}"/>
 					</view>
+					<view wx:elif="{{ item.msg.type == 'txt' || item.msg.type == 'emoji' }}">
+						<view class="template" wx:for="{{ item.msg.data }}" wx:key="" >
+							<template is="{{ item.type }}" data="{{ item }}"/>
+						</view>
+					</view>	
 				</view>
 			</view>
 		</view>
 	</scroll-view>
 
 	<template name="txt">
-	   <text style="float: left;margin-top: 2px;">{{ item.data }} </text>
+	   <text style="float: left;margin-top: 2px;"> {{ item.data }} </text>
 	</template>
 	<template name="emoji">
 	   <image class="avatar" src="{{'../../images/faces/' + item.data }}" style="width: 25px;height: 25px;margin: 0 0 2px 0;float: left;"></image>
 	</template>
+	<template name="img">
+		<image class="avatar" src="{{ item.msg.data }}" style="width:90px;height: 120px;margin: 2px auto;" mode="aspectFit"></image>
+	</template>
+
+
 
 	<view class="room_bar">
 		<form bindreset="cleanInput">
@@ -32,10 +41,10 @@
 			<button bindtap="sendMessage" formType="reset" class="send_btn">发送</button>
 		</form>
 		<view class="other_func">
-			<image src="../../images/Emoji.png" style="margin-left: 10px;" bindtap="open_emoji"></image>
-			<image src="../../images/iconImage@2x.png" style="height: 18px;" bindtap="send_image"></image>
-			<image src="../../images/iconCamera@2x.png" style="width: 26px;" bindtap="open_camera"></image>
-			<image src="../../images/iconFile@2x.png" style="margin-right: 10px;" bindtap="send_file"></image>
+			<image src="../../images/Emoji.png" style="margin-left: 10px;" bindtap="openEmoji"></image>
+			<image src="../../images/iconImage@2x.png" style="height: 18px;" bindtap="sendImage"></image>
+			<image src="../../images/iconCamera@2x.png" style="width: 26px;" bindtap="openCamera"></image>
+			<image src="../../images/iconFile@2x.png" style="margin-right: 10px;" bindtap="sendFile"></image>
 		</view>
 		<swiper class="emoji_list" class="{{ show }}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
 		  <block>

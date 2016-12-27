@@ -318,12 +318,12 @@
             }
             try {
                 if (window.URL.createObjectURL) {
-                    var fileItems = fileObj.files;
+                    var fileItems = fileObj.files;     //一个对象,文件列表 
                     if (fileItems.length > 0) {
-                        var u = fileItems.item(0);
+                        var u = fileItems.item(0);      // 有关选取文件的信息
                         uri.data = u;
-                        uri.url = window.URL.createObjectURL(u);
-                        uri.filename = u.name || '';
+                        uri.url = window.URL.createObjectURL(u);    //指向该文件的URL
+                        uri.filename = u.name || '';                   
                     }
                 } else { // IE
                     var u = document.getElementById(fileInputId).value;
