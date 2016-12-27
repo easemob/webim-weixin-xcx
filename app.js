@@ -51,14 +51,13 @@ App({
                   username: '',
                   yourname: message.from,
                   msg: {
-                    type: message.type,
+                    type: 'txt',
                     data: value
                   },
                   style:'',
                   time: time,
-                  mid: message.id
+                  mid: 'txt' + message.id
                 }
-                msgData.style = ''
                 chatMsg = wx.getStorageSync(msgData.yourname) || []
                 chatMsg.push(msgData)
                 wx.setStorage({
@@ -89,16 +88,17 @@ App({
                   username: '',
                   yourname: message.from,
                   msg: {
-                    type: 'img',
-                    data: message.url
+                    type: 'emoji',
+                    data: message.data
                   },
                   style:'',
                   time: time,
-                  mid: message.id
+                  mid: 'emoji' + message.id
                 }
                 msgData.style = ''
                 chatMsg = wx.getStorageSync(msgData.yourname) || []
                 chatMsg.push(msgData)
+                console.log(chatMsg)
                 wx.setStorage({
                   key: msgData.yourname,
                   data: chatMsg,
