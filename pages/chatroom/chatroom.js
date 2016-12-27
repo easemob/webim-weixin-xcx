@@ -197,108 +197,15 @@ Page({
 	},
 	sendImage: function() {
 		var that = this
+		var pages = getCurrentPages()
 		wx.chooseImage({
 			  count: 1, 
 			  sizeType: ['original', 'compressed'], 
 			  sourceType: ['album'],
 			  success: function (res) {
-			    // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
-			    var tempFilePaths = res.tempFilePaths
-			    console.log(tempFilePaths)
-			    wx.getImageInfo({
-			        src: res.tempFilePaths[0],
-			        success: function (res) {
-				        console.log(res)
-				        var allowType = {
-					        'jpg': true,
-					        'gif': true,
-					        'png': true,
-					        'bmp': true
-					    };
-					    var width = res.width
-					    var height = res.height
-					    var index = res.path.lastIndexOf('.')
-				        if(index != -1) {
-				        	var filetype = res.path.slice(index+1)
-				        }
-				        if(filetype.toLowerCase() in allowType) {
-				        	wx.uploadFile({
-						    	url: 'https://a1.easemob.com/easemob-demo/chatdemoui/chatfiles',
-						    	filePath: tempFilePaths[0],
-						    	name: 'file',
-						    	header: {
-						    		'Content-Type': 'multipart/form-data'
-						    	},
-						    	success: function(res) {
-						    		var data = res.data
-						    		var dataObj = JSON.parse(data)
-						    		console.log(dataObj)
-						    		var id = WebIM.conn.getUniqueId();                   // 生成本地消息id
-			    					var msg = new WebIM.message('img', id); 
-			    					var file =  {
-						            	type: 'img',
-						            	size: {
-						            		width: width,
-						            		height: height
-						            	},
-						            	'url': dataObj.uri + '/' + dataObj.entities[0].uuid,
-						            	'filetype' : filetype,
-						            	'filename': tempFilePaths[0]
-							        }
-							        console.log(file)
-						    		var option = {
-							            apiUrl: WebIM.config.apiURL,
-							            body: file,
-							            to: that.data.yourname,                  // 接收消息对象
-							            roomType: false,
-							            chatType: 'singleChat'
-							        }
-							        msg.set(option)
-			    				    WebIM.conn.send(msg.body)
-			    				    if(msg) {
-			    				    	console.log(msg,msg.body.body.url)
-			    				    	var time = WebIM.time()
-										var msgData = {
-											info: {
-												to: msg.body.to
-											},
-											username: that.data.myName,
-											yourname: msg.body.to,
-											msg: {
-												type: msg.type,
-												data: msg.body.body.url,
-												size: {
-													width: msg.body.body.size.width,
-													height: msg.body.body.size.height,
-												}
-											},
-											style: 'self',
-											time: time,
-											mid: msg.id
-										}
-										that.data.chatMsg.push(msgData)
-										console.log(that.data.chatMsg)
-										wx.setStorage({
-											key: that.data.yourname,
-											data: that.data.chatMsg,
-											success: function() {
-												console.log('success', that.data)
-												that.setData({
-													chatMsg: that.data.chatMsg
-												})
-												setTimeout(function() {
-													that.setData({
-														toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
-													})
-												}, 10)
-											}
-										})
-			    				    }
-						    	}
-						    })
-				        }
-				    }
-				})
+			  	  if(pages[2]) {
+			  	  	 pages[2].upLoadImage(res,that)
+			  	}
 			}
 		})
 	},
@@ -344,13 +251,16 @@ Page({
 		}
 	},
 	openCamera: function() {
+		var that = this 
+		var pages = getCurrentPages()
 		wx.chooseImage({
 			count: 1,
 			sizeType: ['original', 'compressed'],
 			sourceType: ['camera'],
 			success: function(res) {
-				var tempFilePaths = res.tempFilePaths
-				console.log(tempFilePaths)
+				if(pages[2]) {
+			  	  	pages[2].upLoadImage(res,that)
+			  	}
 			}
 		})
 	},
@@ -372,8 +282,109 @@ Page({
 	lower: function(e) {
 		console.log(e)
 	},
-	autoSize: function() {
-
+	upLoadImage: function(res,that) {
+		var tempFilePaths = res.tempFilePaths
+	    console.log(tempFilePaths)
+	    wx.getImageInfo({
+	        src: res.tempFilePaths[0],
+	        success: function (res) {
+		        console.log(res)
+		        var allowType = {
+			        'jpg': true,
+			        'gif': true,
+			        'png': true,
+			        'bmp': true
+			    };
+			    var width = res.width
+			    var height = res.height
+			    var index = res.path.lastIndexOf('.')
+		        if(index != -1) {
+		        	var filetype = res.path.slice(index+1)
+		        }
+		        if(filetype.toLowerCase() in allowType) {
+		        	wx.uploadFile({
+				    	url: 'https://a1.easemob.com/easemob-demo/chatdemoui/chatfiles',
+				    	filePath: tempFilePaths[0],
+				    	name: 'file',
+				    	header: {
+				    		'Content-Type': 'multipart/form-data'
+				    	},
+				    	success: function(res) {
+				    		var data = res.data
+				    		var dataObj = JSON.parse(data)
+				    		console.log(dataObj)
+				    		var id = WebIM.conn.getUniqueId();                   // 生成本地消息id
+	    					var msg = new WebIM.message('img', id); 
+	    					var file =  {
+				            	type: 'img',
+				            	size: {
+				            		width: width,
+				            		height: height
+				            	},
+				            	'url': dataObj.uri + '/' + dataObj.entities[0].uuid,
+				            	'filetype' : filetype,
+				            	'filename': tempFilePaths[0]
+					        }
+					        console.log(file)
+				    		var option = {
+					            apiUrl: WebIM.config.apiURL,
+					            body: file,
+					            to: that.data.yourname,                  // 接收消息对象
+					            roomType: false,
+					            chatType: 'singleChat'
+					        }
+					        msg.set(option)
+	    				    WebIM.conn.send(msg.body)
+	    				    if(msg) {
+	    				    	console.log(msg,msg.body.body.url)
+	    				    	var time = WebIM.time()
+								var msgData = {
+									info: {
+										to: msg.body.to
+									},
+									username: that.data.myName,
+									yourname: msg.body.to,
+									msg: {
+										type: msg.type,
+										data: msg.body.body.url,
+										size: {
+											width: msg.body.body.size.width,
+											height: msg.body.body.size.height,
+										}
+									},
+									style: 'self',
+									time: time,
+									mid: msg.id
+								}
+								that.data.chatMsg.push(msgData)
+								console.log(that.data.chatMsg)
+								wx.setStorage({
+									key: that.data.yourname,
+									data: that.data.chatMsg,
+									success: function() {
+										console.log('success', that.data)
+										that.setData({
+											chatMsg: that.data.chatMsg
+										})
+										setTimeout(function() {
+											that.setData({
+												toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
+											})
+										}, 10)
+									}
+								})
+	    				    }
+				    	}
+				    })
+		        }
+		    }
+		})
+	},
+	previewImage: function(event) {
+		var url = event.target.dataset.url
+		wx.previewImage({
+		   urls: [url]  // 需要预览的图片http链接列表
+		})
 	}
 })
 
