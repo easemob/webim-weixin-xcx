@@ -14,6 +14,7 @@ Page({
 		this.setData({
 			myName: option.myName
 		})
+		console.log("wjy")
 	},
 	onShow: function() {
 		var that = this

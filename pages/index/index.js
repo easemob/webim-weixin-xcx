@@ -18,6 +18,16 @@ Page({
     })
   },
   onLoad: function () {
+    var num = 0
+    console.log('num')
+    // while(true) {
+    //   if(num++ > 10) {
+    //         console.log('num', num)
+    //     break;
+    //   }
+    // }
+    console.log('num end')
+
     // console.log('onLoad')
     var that = this
     //调用应用实例的方法获取全局数据

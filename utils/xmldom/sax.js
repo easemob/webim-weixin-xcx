@@ -59,8 +59,17 @@ function parse(source,defaultNSMapCopy,entityMap,domBuilder,errorHandler){
 	}
 	function appendText(end){//has some bugs
 		if(end>start){
+			console.log('appendText', source.substring(start,end))
+
+
 			var xt = source.substring(start,end).replace(/&#?\w+;/g,entityReplacer);
+
+						console.log('xt', xt)
+
 			locator&&position(start);
+
+						console.log('xt', xt)
+
 			domBuilder.characters(xt,0,end-start);
 			start = end
 		}
@@ -82,21 +91,37 @@ function parse(source,defaultNSMapCopy,entityMap,domBuilder,errorHandler){
 	var parseStack = [{currentNSMap:defaultNSMapCopy}]
 	var closeMap = {};
 	var start = 0;
-	while(true){
+	var isEnd = true;
+	var tagStart;
+	while(isEnd){
+		console.log('begin1', isEnd, start, source.indexOf('<',start))
+		// if(source.indexOf('<',start) < 0 ) {
+		// 	isEnd = false
+		// 	continue;
+		// 	return;
+		// }
+		console.log('begin', isEnd, start, source.indexOf('<',start))
 		try{
-			var tagStart = source.indexOf('<',start);
+			tagStart = source.indexOf('<',start);
+						console.log('tagStart begin', tagStart, domBuilder)
+
 			if(tagStart<0){
-				if(!source.substr(start).match(/^\s*$/)){
-					var doc = domBuilder.document;
-	    			var text = doc.createTextNode(source.substr(start));
-	    			doc.appendChild(text);
-	    			domBuilder.currentElement = text;
-				}
+
+				// if(!source.substr(start).match(/^\s*$/)){
+				// 	var doc = domBuilder.document;
+	   //  			var text = doc.createTextNode(source.substr(start));
+	   //  			doc.appendChild(text);
+	   //  			domBuilder.currentElement = text;
+				// }
+						console.log('return begin')
+				
+				isEnd = false
 				return;
 			}
 			if(tagStart>start){
 				appendText(tagStart);
 			}
+			console.log('tag', source.charAt(tagStart+1))
 			switch(source.charAt(tagStart+1)){
 			case '/':
 				var end = source.indexOf('>',tagStart+3);
@@ -124,13 +149,16 @@ function parse(source,defaultNSMapCopy,entityMap,domBuilder,errorHandler){
 				end = parseDCC(source,tagStart,domBuilder,errorHandler);
 				break;
 			default:
-			
+				console.log('locator', locator)
+
 				locator&&position(tagStart);
 				
 				var el = new ElementAttributes();
 				
 				//elStartEnd
 				var end = parseElementStartPart(source,tagStart,el,entityReplacer,errorHandler);
+				console.log('end', end)
+
 				var len = el.length;
 				
 				if(locator){
@@ -144,14 +172,20 @@ function parse(source,defaultNSMapCopy,entityMap,domBuilder,errorHandler){
 					}
 					position(end);
 				}
+								console.log('el', el)
+
 				if(!el.closed && fixSelfClosed(source,end,el.tagName,closeMap)){
 					el.closed = true;
 					if(!entityMap.nbsp){
 						errorHandler.warning('unclosed xml attribute');
 					}
 				}
+								console.log('parseStack', parseStack)
+
 				appendElement(el,domBuilder,parseStack);
 				
+								console.log('el', el, parseStack)
+
 				
 				if(el.uri === 'http://www.w3.org/1999/xhtml' && !el.closed){
 					end = parseHtmlSpecialContent(source,end,el.tagName,entityReplacer,domBuilder)
@@ -161,8 +195,12 @@ function parse(source,defaultNSMapCopy,entityMap,domBuilder,errorHandler){
 			}
 		}catch(e){
 			errorHandler.error('element parse error: '+e);
+			console.log('element parse error: ', e)
 			end = -1;
 		}
+								console.log('out', end, start)
+
+
 		if(end>start){
 			start = end;
 		}else{
@@ -186,8 +224,11 @@ function parseElementStartPart(source,start,el,entityReplacer,errorHandler){
 	var value;
 	var p = ++start;
 	var s = S_TAG;//status
-	while(true){
+	var is = true
+	var num = 0
+	while(is){
 		var c = source.charAt(p);
+		console.log('c', source,  c, is, num++)
 		switch(c){
 		case '=':
 			if(s === S_ATTR){//attrName
@@ -278,6 +319,9 @@ function parseElementStartPart(source,start,el,entityReplacer,errorHandler){
 				throw new Error('attribute value missed!!');
 			}
 //			console.log(tagName,tagNamePattern,tagNamePattern.test(tagName))
+
+			console.log('is',p, is)
+			is = false
 			return p;
 		/*xml space '\x20' | #x9 | #xD | #xA; */
 		case '\u0080':
@@ -580,7 +624,11 @@ function split(source,start){
 	}
 }
 
-if(typeof require == 'function'){
-	exports.XMLReader = XMLReader;
+// if(typeof require == 'function'){
+// 	exports.XMLReader = XMLReader;
+// }
+
+module.exports = {
+	XMLReader: XMLReader
 }
 

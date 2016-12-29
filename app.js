@@ -2,6 +2,7 @@ var strophe = require('./utils/strophe.js')
 var WebIM = require('./utils/WebIM.js')
 var WebIM = WebIM.default
 
+
 //app.js   
 App({
   onLaunch: function () {

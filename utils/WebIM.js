@@ -15,7 +15,8 @@ console.groupEnd = console.groupEnd || {}
 var window = {}
 let WebIM = window.WebIM = websdk;
 window.WebIM.config = config;
-window.DOMParser = xmldom.DOMParser;
+var DOMParser = window.DOMParser = xmldom.DOMParser;
+console.log(DOMParser,'kilwddaw')
 let document = window.document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", 'text/xml');
 
 if (WebIM.config.isDebug) {
@@ -234,4 +235,7 @@ WebIM.conn = new WebIM.connection({
 //   onOpened: () => dispatch({type: Types.ON_OPEND})
 // })
 
-export default WebIM;
+// export default WebIM;
+module.exports = {
+    'default': WebIM
+}

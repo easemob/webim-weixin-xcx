@@ -10,11 +10,26 @@ function copy(src,dest){
 		dest[p] = src[p];
 	}
 }
+function copyNoSelf(src,dest, ctor){
+	for(var p in src){
+		console.log(p, src[p])
+		if(src[p] && typeof src[p] == 'object' && 'constructor' in src[p]) {
+			continue;
+		}
+		dest[p] = src[p];
+	}
+}
 /**
 ^\w+\.prototype\.([_\w]+)\s*=\s*((?:.*\{\s*?[\r\n][\s\S]*?^})|\S.*?(?=[;\r\n]));?
 ^\w+\.prototype\.([_\w]+)\s*=\s*(\S.*?(?=[;\r\n]));?
  */
 function _extends(Class,Super){
+	var  a = new Super()
+	copy(Class.prototype, Super.prototype)
+	Class.prototype = Super.prototype
+
+	return;
+
 	var pt = Class.prototype;
 	if(Object.create){
 		var ppt = Object.create(Super.prototype)
@@ -27,12 +42,15 @@ function _extends(Class,Super){
 		copy(pt,t);
 		Class.prototype = pt = t;
 	}
-	if(pt.constructor != Class){
-		if(typeof Class != 'function'){
-			console.error("unknow Class:"+Class)
-		}
-		pt.constructor = Class
-	}
+	// if(pt.constructor != Class){
+	// 	if(typeof Class != 'function'){
+	// 		console.error("unknow Class:"+Class)
+	// 	}
+	// 	pt.constructor = Class
+	// }
+
+
+
 }
 var htmlns = 'http://www.w3.org/1999/xhtml' ;
 // Node Types
@@ -464,10 +482,10 @@ function _onUpdateChild(doc,el,newChild){
 			//console.log(1)
 			var child = el.firstChild;
 			var i = 0;
-			while(child){
-				cs[i++] = child;
-				child =child.nextSibling;
-			}
+			// while(child){
+			// 	cs[i++] = child;
+			// 	child =child.nextSibling;
+			// }
 			cs.length = i;
 		}
 	}
@@ -612,7 +630,7 @@ Document.prototype = {
 	//document factory method:
 	createElement :	function(tagName){
 		var node = new Element();
-		node.ownerDocument = this;
+		// node.ownerDocument = this;
 		node.nodeName = tagName;
 		node.tagName = tagName;
 		node.childNodes = new NodeList();
@@ -622,38 +640,38 @@ Document.prototype = {
 	},
 	createDocumentFragment :	function(){
 		var node = new DocumentFragment();
-		node.ownerDocument = this;
+		// node.ownerDocument = this;
 		node.childNodes = new NodeList();
 		return node;
 	},
 	createTextNode :	function(data){
 		var node = new Text();
-		node.ownerDocument = this;
+		// node.ownerDocument = this;
 		node.appendData(data)
 		return node;
 	},
 	createComment :	function(data){
 		var node = new Comment();
-		node.ownerDocument = this;
+		// node.ownerDocument = this;
 		node.appendData(data)
 		return node;
 	},
 	createCDATASection :	function(data){
 		var node = new CDATASection();
-		node.ownerDocument = this;
+		// node.ownerDocument = this;
 		node.appendData(data)
 		return node;
 	},
 	createProcessingInstruction :	function(target,data){
 		var node = new ProcessingInstruction();
-		node.ownerDocument = this;
+		// node.ownerDocument = this;
 		node.tagName = node.target = target;
 		node.nodeValue= node.data = data;
 		return node;
 	},
 	createAttribute :	function(name){
 		var node = new Attr();
-		node.ownerDocument	= this;
+		// node.ownerDocument	= this;
 		node.name = name;
 		node.nodeName	= name;
 		node.localName = name;
@@ -662,7 +680,7 @@ Document.prototype = {
 	},
 	createEntityReference :	function(name){
 		var node = new EntityReference();
-		node.ownerDocument	= this;
+		// node.ownerDocument	= this;
 		node.nodeName	= name;
 		return node;
 	},
@@ -672,7 +690,7 @@ Document.prototype = {
 		var pl = qualifiedName.split(':');
 		var attrs	= node.attributes = new NamedNodeMap();
 		node.childNodes = new NodeList();
-		node.ownerDocument = this;
+		// node.ownerDocument = this;
 		node.nodeName = qualifiedName;
 		node.tagName = qualifiedName;
 		node.namespaceURI = namespaceURI;
@@ -690,7 +708,7 @@ Document.prototype = {
 	createAttributeNS :	function(namespaceURI,qualifiedName){
 		var node = new Attr();
 		var pl = qualifiedName.split(':');
-		node.ownerDocument = this;
+		// node.ownerDocument = this;
 		node.nodeName = qualifiedName;
 		node.name = qualifiedName;
 		node.namespaceURI = namespaceURI;
@@ -1141,7 +1159,16 @@ try{
 }catch(e){//ie8
 }
 
+console.log('DOMImplementation', DOMImplementation)
+
 if(typeof require == 'function'){
-	exports.DOMImplementation = DOMImplementation;
+	exports.DOMImplementation = DOMImplementation || {};
 	exports.XMLSerializer = XMLSerializer;
 }
+
+// console.log('DOMImplementation', DOMImplementation, typeof DOMImplementation)
+
+// module.exports = {
+// 	DOMImplementation: DOMImplementation,
+// 	_XMLSerializer: XMLSerializer
+// }

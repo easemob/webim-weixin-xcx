@@ -17,11 +17,13 @@
  */
 // console.log(window,document)
 var xmldom = require ('./xmldom/dom-parser');
-// console.log('xml',xmldom);
-var DOMParser = xmldom.DOMParser.DOMParser;
+console.log('xml',xmldom, typeof xmldom.DOMParser);
+var DOMParser = xmldom.DOMParser;
+console.log('DOMParser inited');
 let document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", 'text/xml');
-
+console.log('document inited');
 var window = window || {};
+window.DOMParser = DOMParser;
 var Strophe = null;
 var $build = null;
 var $msg = null;
@@ -1297,6 +1299,7 @@ Strophe = {
     xmlHtmlNode: function (html) {
         var node;
         //ensure text is escaped
+        console.log('xmlhtmlnode init', window.DOMParser, typeof window.DOMParser)
         if (window.DOMParser) {
             var parser = new DOMParser();
             node = parser.parseFromString(html, "text/xml");
@@ -5509,7 +5512,7 @@ Strophe.Websocket.prototype = {
             self._onOpen()
         })
         wx.onSocketMessage(function(msg) {
-            console.log('onSocketMessage', msg)
+            console.log('onSocketMessage', msg, JSON.stringify(msg))
             self.socket.onmessage.call(self, msg);
         })
         wx.onSocketClose(function() {
@@ -5546,6 +5549,8 @@ Strophe.Websocket.prototype = {
     _handleStreamStart: function(message) {
         var error = false;
 
+        console.log('_handleStreamStart', message, typeof message)
+
         // Check for errors in the <open /> tag
         var ns = message.getAttribute("xmlns");
         if (typeof ns !== "string") {
@@ -5577,13 +5582,22 @@ Strophe.Websocket.prototype = {
      * message handler. On receiving a stream error the connection is terminated.
      */
     _connect_cb_wrapper: function(message) {
-        
+        console.log('_connect_cb_wrapper inited')
+
         if (message.data.indexOf("<open ") === 0 || message.data.indexOf("<?xml") === 0) {
+            console.log('_connect_cb_wrapper open 2')
+
             // Strip the XML Declaration, if there is one
             var data = message.data.replace(/^(<\?.*?\?>\s*)*/, "");
+            console.log('_connect_cb_wrapper open 3', data)
+
             if (data === '') return;
 
+            console.log(new DOMParser().parseFromString(data, "text/xml"))
+            console.log('_connect_cb_wrapper open 3.1', data)
+
             var streamStart = new DOMParser().parseFromString(data, "text/xml").documentElement;
+            console.log('_connect_cb_wrapper open 4', streamStart)
             this._conn.xmlInput(streamStart);
             this._conn.rawInput(message.data);
 
@@ -5595,6 +5609,7 @@ Strophe.Websocket.prototype = {
                 this._connect_cb(streamStart);
             }
         } else if (message.data.indexOf("<close ") === 0) { //'<close xmlns="urn:ietf:params:xml:ns:xmpp-framing />') {
+                  console.log('_connect_cb_wrapper inited 3')
             this._conn.rawInput(message.data);
             this._conn.xmlInput(message);
             var see_uri = message.getAttribute("see-other-uri");
@@ -5608,9 +5623,17 @@ Strophe.Websocket.prototype = {
                 this._conn._doDisconnect();
             }
         } else {
+            console.log('_connect_cb_wrapper inited 4')
+
             var string = this._streamWrap(message.data);
+            console.log('_connect_cb_wrapper inited 5')
+
             var elem = new DOMParser().parseFromString(string, "text/xml").documentElement;
+            console.log('_connect_cb_wrapper inited 6')
+
             this.socket.onmessage = this._onMessage.bind(this);
+            console.log('_connect_cb_wrapper inited 7')
+
             this._conn._connect_cb(elem, null, message.data);
         }
     },
@@ -5791,6 +5814,7 @@ Strophe.Websocket.prototype = {
      * (string) message - The websocket message.
      */
     _onMessage: function(message) {
+      console.log('_onMessage')
         // wx.sendSocketMessage({
         //   data: message
         // })

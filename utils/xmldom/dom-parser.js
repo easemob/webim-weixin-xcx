@@ -1,11 +1,25 @@
-function DOMParser(options){
+var XMLReader = require('./sax').XMLReader;
+var dom = require('./dom');
+dom.DOMParser = _DOMParser
+module.exports = dom
+
+var obj = new dom.DOMImplementation()
+
+for(var a in new dom.DOMImplementation()) {
+	console.log(a)
+}
+
+function _DOMParser(options){
 	this.options = options ||{locator:{}};
 	
 }
-DOMParser.prototype.parseFromString = function(source,mimeType){	
+_DOMParser.prototype.parseFromString = function(source,mimeType){	
+	console.log('parseFromString 1')
 	var options = this.options;
 	var sax =  new XMLReader();
 	var domBuilder = options.domBuilder || new DOMHandler();//contentHandler and LexicalHandler
+		console.log('parseFromString 2')
+
 	var errorHandler = options.errorHandler;
 	var locator = options.locator;
 	var defaultNSMap = options.xmlns||{};
@@ -13,8 +27,13 @@ DOMParser.prototype.parseFromString = function(source,mimeType){
 	if(locator){
 		domBuilder.setDocumentLocator(locator)
 	}
+		console.log('parseFromString 3')
+
 	
 	sax.errorHandler = buildErrorHandler(errorHandler,domBuilder,locator);
+		console.log('parseFromString 4')
+
+
 	sax.domBuilder = options.domBuilder || domBuilder;
 	if(/\/x?html?$/.test(mimeType)){
 		entityMap.nbsp = '\xa0';
@@ -23,10 +42,17 @@ DOMParser.prototype.parseFromString = function(source,mimeType){
 	}
 	defaultNSMap.xml = defaultNSMap.xml || 'http://www.w3.org/XML/1998/namespace';
 	if(source){
+			console.log('parseFromString 5', source, defaultNSMap, entityMap)
+
 		sax.parse(source,defaultNSMap,entityMap);
 	}else{
+			console.log('parseFromString 6')
+
+
 		sax.errorHandler.error("invalid document source");
 	}
+		console.log('parseFromString 7', domBuilder.document)
+
 	return domBuilder.document;
 }
 function buildErrorHandler(errorImpl,domBuilder,locator){
@@ -77,7 +103,7 @@ function position(locator,node){
  */ 
 DOMHandler.prototype = {
 	startDocument : function() {
-    	this.document = new DOMImplementation().createDocument(null, null, null);
+    	this.document = obj.createDocument(null, null, null);
     	if (this.locator) {
         	this.document.documentURI = this.locator.systemId;
     	}
@@ -241,17 +267,13 @@ function appendElement (hander,node) {
     }
 }//appendChild and setAttributeNS are preformance key
 
-if(typeof require == 'function'){
-	var XMLReader = require('./sax').XMLReader;
-	var DOMImplementation = exports.DOMImplementation = require('./dom').DOMImplementation;
-	exports.XMLSerializer = require('./dom').XMLSerializer ;
-	exports.DOMParser = DOMParser;
-	var DOMParser = {
-		DOMImplementation: DOMImplementation,
-		XMLSerializer: XMLSerializer,
-		DOMParser: DOMParser
-	}
-	module.exports = {
-		DOMParser: DOMParser
-	}
-}
+// if(typeof require == 'function'){
+// 	// var XMLReader = require('./sax').XMLReader;
+// 	exports.DOMParser = DOMParser;
+// 	var DOMParser123 = {
+// 		DOMImplementation: DOMImplementation,
+// 		XMLSerializer: XMLSerializer,
+// 		DOMParser: DOMParser
+// 	}
+// 	module.exports = DOMParser123
+// }

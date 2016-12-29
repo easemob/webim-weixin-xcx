@@ -8,6 +8,11 @@ var Strophe = StropheAll.Strophe
     console.log(ts(), level, msg);
   };
 
+var xmldom = require ('../../xmldom/dom-parser');
+console.log('xml',xmldom, typeof xmldom.DOMParser);
+var DOMParser = xmldom.DOMParser;
+
+
 var window = {}
 var _version = '1.1.3';
 var _code = require('./status').code;
@@ -93,6 +98,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
     //
     // send and receive close xml: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/>
     // so we can't judge whether message.data equals close by === simply.
+    console.log('DOMParser connection')
     if (message.data.indexOf("<close ") === 0) {
         elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
         var see_uri = elem.getAttribute("see-other-uri");
@@ -118,6 +124,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
         elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
     }
 
+    console.log('DOMParser connection ed')
     if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
         return;
     }
@@ -389,7 +396,7 @@ var _handleMessageQueue = function (conn) {
 
 var _loginCallback = function (status, msg, conn) {
     var conflict, error;
-    console.log(conn)
+    console.log('_loginCallback 1', Strophe.Status, status, msg)
     if (msg === 'conflict') {
         conflict = true;
     }
@@ -406,6 +413,7 @@ var _loginCallback = function (status, msg, conn) {
         conn.onError(error);
     } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
         // client should limit the speed of sending ack messages  up to 5/s
+        console.log('_loginCallback 2')
         conn.intervalId = setInterval(function () {
             conn.handelSendQueue();
         }, 200);
@@ -464,6 +472,7 @@ var _loginCallback = function (status, msg, conn) {
             supportSedMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
             supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
         }
+        console.log('_loginCallback 3')
         conn.notifyVersion();
         conn.retry && _handleMessageQueue(conn);
         conn.heartBeat();
@@ -810,11 +819,11 @@ connection.prototype.open = function (options) {
                   icon: 'success',
                   duration: 1000
                 });
-                setTimeout(function() {
-                    wx.redirectTo({
-                        url:'../main/main?myName=' + userId
-                    })
-                },1000);
+                // setTimeout(function() {
+                //     wx.redirectTo({
+                //         url:'../main/main?myName=' + userId
+                //     })
+                // },1000);
             }
             _login(data.data, conn);
         };

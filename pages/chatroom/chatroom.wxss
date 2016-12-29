@@ -65,7 +65,7 @@
     top: 9px;
     right: 100%;
     border: 6px solid transparent;
-    border-right-color: #fafafa;
+    border-right-color: #EDEDED;
 }
 .self {
 	text-align: right;
