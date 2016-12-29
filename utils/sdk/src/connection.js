@@ -4,12 +4,12 @@ import StropheAll from '../../strophe.js'
 
 var Strophe = StropheAll.Strophe
 
-  Strophe.log = function (level, msg) {
+Strophe.log = function (level, msg) {
     console.log(ts(), level, msg);
-  };
+};
 
-var xmldom = require ('../../xmldom/dom-parser');
-console.log('xml',xmldom, typeof xmldom.DOMParser);
+var xmldom = require('../../xmldom/dom-parser');
+// console.log('xml',xmldom, typeof xmldom.DOMParser);
 var DOMParser = xmldom.DOMParser;
 
 
@@ -25,7 +25,7 @@ var Queue = require('./queue').Queue;
 var PAGELIMIT = 2;
 var pageLimitKey = new Date().getTime();
 
-var location = window.location || { protocol: 'https:' }
+var location = window.location || {protocol: 'https:'}
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 if (window.XDomainRequest) {
@@ -76,13 +76,13 @@ Strophe.Websocket.prototype._closeSocket = function () {
 Strophe.Websocket.prototype._onMessage = function (message) {
     // WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + 'recv:', message.data);
     try {
-      if (WebIM && WebIM.config.isDebug) {
-          console.group('%crecv # ', 'color: green; font-size: large')
-          console.log('%c' + message.data, 'color: green');
-          console.groupEnd();
-      }
-    }catch(e) {
-      console.log('%crecv' + message.data, 'color: green');
+        if (WebIM && WebIM.config.isDebug) {
+            console.group('%crecv # ', 'color: green; font-size: large')
+            console.log('%c' + message.data, 'color: green');
+            console.groupEnd();
+        }
+    } catch (e) {
+        console.log('%crecv' + message.data, 'color: green');
     }
 
     var elem, data;
@@ -218,7 +218,7 @@ var _parseResponseMessage = function (msginfo) {
 
     console.log('msginfo', msginfo)
     var msgBodies = msginfo.getElementsByTagName('body');
-    console.log('msginfo', msgBodies) 
+    console.log('msginfo', msgBodies)
     if (msgBodies) {
         for (var i = 0; i < msgBodies.length; i++) {
             var msgBody = msgBodies[i];
@@ -331,7 +331,7 @@ var _parseFriend = function (queryTag, conn, from) {
 };
 
 var _login = function (options, conn) {
-    console.log(options,conn, '_login')
+    console.log(options, conn, '_login')
     var accessToken = options.access_token || '';
     if (accessToken == '') {
         var loginfo = _utils.stringify(options);
@@ -737,7 +737,7 @@ connection.prototype.listen = function (options) {
 connection.prototype.heartBeat = function () {
     var me = this;
     //IE8: strophe auto switch from ws to BOSH, need heartbeat
-    var isNeed = !/^ws|wss/.test(me.url) ;
+    var isNeed = !/^ws|wss/.test(me.url);
     // || /mobile/.test(navigator.userAgent)
     if (this.heartBeatID || !isNeed) {
         return;
@@ -775,7 +775,7 @@ connection.prototype.cacheReceiptsMessage = function (options) {
 };
 
 connection.prototype.open = function (options) {
-    
+
     // _handlePageLimit();
 
     // setTimeout(function () {
@@ -794,11 +794,11 @@ connection.prototype.open = function (options) {
         return;
     }
     var conn = this;
-      
+
     if (conn.isOpening() || conn.isOpened()) {
         return;
     }
-    
+
     if (options.accessToken) {
         options.access_token = options.accessToken;
         _login(options, conn);
@@ -806,24 +806,24 @@ connection.prototype.open = function (options) {
         var apiUrl = options.apiUrl;
         var userId = options.user;
         var pwd = options.pwd || '';
-        var orgName= 'easemob-demo';
-        var appName = 'chatdemoui'; 
+        var orgName = 'easemob-demo';
+        var appName = 'chatdemoui';
         console.log(options)
         var suc = function (data, xhr, myName) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
             console.log(options)
-            if(data.statusCode != '404' && data.statusCode != '400'){
+            if (data.statusCode != '404' && data.statusCode != '400') {
                 wx.showToast({
-                  title: '登录成功',
-                  icon: 'success',
-                  duration: 1000
+                    title: '登录成功',
+                    icon: 'success',
+                    duration: 1000
                 });
-                // setTimeout(function() {
+                // setTimeout(function () {
                 //     wx.redirectTo({
-                //         url:'../main/main?myName=' + userId
+                //         url: '../main/main?myName=' + userId
                 //     })
-                // },1000);
+                // }, 1000);
             }
             _login(data.data, conn);
         };
@@ -1238,10 +1238,10 @@ connection.prototype.handleMessage = function (msginfo) {
                 case 'txt':
                     console.log("666666666666")
                     var receiveMsg = msgBody.msg;
-                    console.log('receiveMsg',receiveMsg)
-                    console.log('WebIM.Emoji',WebIM.Emoji)
+                    console.log('receiveMsg', receiveMsg)
+                    console.log('WebIM.Emoji', WebIM.Emoji)
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
-                    console.log('emojibody',emojibody)
+                    console.log('emojibody', emojibody)
                     if (emojibody.isemoji) {
                         var msg = {
                             id: id
@@ -1529,13 +1529,13 @@ connection.prototype.send = function (message) {
                 toJid = toJid + '/' + message.resource;
             }
             console.log(toJid);
-            console.log("adwadwdawdaw",message)
+            console.log("adwadwdawdaw", message)
             message.toJid = toJid;
             message.id = message.id || this.getUniqueId();
             _msgHash[message.id] = new _message(message);
-            console.log(new _message(message))
+            // console.log(new _message(message))
             _msgHash[message.id].send(this);
-    } else if (typeof message === 'string') {
+        } else if (typeof message === 'string') {
             _msgHash[message] && _msgHash[message].send(this);
         }
     }
@@ -1619,7 +1619,7 @@ connection.prototype.subscribe = function (options) {
 connection.prototype.subscribed = function (options) {
     var jid = _getJid(options, this);
     var pres = StropheAll.$pres({to: jid, type: 'subscribed'});
-    console.log("options.message",options.message)
+    console.log("options.message", options.message)
     if (options.message) {
         pres.c('status').t(options.message).up();
     }
