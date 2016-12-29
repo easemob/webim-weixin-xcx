@@ -1,5 +1,6 @@
 import StropheAll from '../../strophe.js'
-;(function () {
+    ;
+(function () {
     'use strict';
 
     var _utils = require('./utils').utils;
@@ -98,7 +99,7 @@ import StropheAll from '../../strophe.js'
     };
     Message.img.prototype.set = function (opt) {
         // opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
-        console.log(opt)
+        ////console.log(opt)
         this.value = opt.file;
         this.body = {
             id: this.id,
@@ -209,13 +210,13 @@ import StropheAll from '../../strophe.js'
 
     _Message.prototype.send = function (conn) {
         var me = this;
-        console.log(this)           // 消息对象
+        ////console.log(this)           // 消息对象
         var _send = function (message) {
 
             message.ext = message.ext || {};
             message.ext.weichat = message.ext.weichat || {};
             message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
-            // console.log('message',message)     msg对象
+            // //console.log('message',message)     msg对象
             var json = {
                 from: conn.context.userId || ''
                 , to: message.to
@@ -230,7 +231,7 @@ import StropheAll from '../../strophe.js'
                 , id: message.id
                 , xmlns: 'jabber:client'
             }).c('body').t(jsonstr);
-            console.log("dommmmmmmm",dom)
+            //console.log("dommmmmmmm",dom)
             if (message.roomType) {
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
             }
@@ -283,10 +284,10 @@ import StropheAll from '../../strophe.js'
             me.msg.onFileUploadComplete = _complete;
             _utils.uploadFile.call(conn, me.msg);
         } else {
-            if(me.msg.type === 'img') {                                             //  添加img判断规则   wjy
-                 _send(me.msg);                                             
-            }else {
-                 me.msg.body = {
+            if (me.msg.type === 'img') {                                             //  添加img判断规则   wjy
+                _send(me.msg);
+            } else {
+                me.msg.body = {
                     type: me.msg.type === 'chat' ? 'txt' : me.msg.type
                     , msg: me.msg.msg
                 };
@@ -298,9 +299,9 @@ import StropheAll from '../../strophe.js'
                     me.msg.body.lng = me.msg.lng;
                 }
                 _send(me.msg);
-                console.log('ooooooooooooooooooo')
+                //console.log('ooooooooooooooooooo')
             }
-           
+
         }
     };
 

@@ -5,7 +5,7 @@ var util = require('../../utils/util.js')
 // console.log(wx)
 var strophe = require('../../utils/strophe.js')
 var WebIM = require('../../utils/WebIM.js')
-console.log(WebIM)
+//console.log(WebIM)
 Page({
   data: {
     logs: []

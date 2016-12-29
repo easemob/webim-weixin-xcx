@@ -1,53 +1,53 @@
 var strophe = require('../../utils/strophe.js')
 var WebIM = require('../../utils/WebIM.js')
 var WebIM = WebIM.default
-console.log(WebIM)
+//console.log(WebIM)
 Page({
     data: {
-            username: '',
-            password: '',
-            nickname: '',
-            name:'asdfghj',
-            psd:'123456',
-            grant_type: "password"
+        username: '',
+        password: '',
+        nickname: '',
+        name: 'asdfghj',
+        psd: '123456',
+        grant_type: "password"
     },
-    bindKeyInput: function(e) {
+    bindKeyInput: function (e) {
         this.setData({
             username: e.detail.value
         })
     },
-    bindPsdInput: function(e) {
+    bindPsdInput: function (e) {
         this.setData({
             password: e.detail.value
         })
     },
-    bindNameInput: function(e) {
+    bindNameInput: function (e) {
         this.setData({
             nickname: e.detail.value
         })
     },
-    usernameInput: function(e) {
+    usernameInput: function (e) {
         this.setData({
             name: e.detail.value
         })
     },
-    psdInput: function(e) {
+    psdInput: function (e) {
         this.setData({
             psd: e.detail.value
         })
     },
-    submit: function() {
+    submit: function () {
         var that = this
-        console.log(WebIM)
+        //console.log(WebIM)
         var options = {
             apiUrl: WebIM.config.apiURL,
             username: that.data.username,
             password: that.data.password,
             nickname: that.data.nickname,
-            appKey: 'orgName#appName' 
+            appKey: 'orgName#appName'
         }
         WebIM.default.utils.registerUser(options)
-        
+
         // wx.request({
         //     url: 'https://a1.sdb.easemob.com/easemob-demo/chatdemoui/users',
         //     data: {
@@ -60,21 +60,23 @@ Page({
         //     },
         //     method: 'POST',
         //     success: function(res) {
-        //         console.log(res)
+        //         //console.log(res)
         //     }
         // })
     },
 
-    login: function() {
+    login: function () {
         var that = this
         var conn = new WebIM.connection({
             url: WebIM.config.xmppURL,
             isAutoLogin: WebIM.config.isAutoLogin,
             isMultiLoginSessions: WebIM.config.isMultiLoginSessions
         })
-        conn.listen({onError: function() {
-            console.log('onError', arguments)
-        }})
+        conn.listen({
+            onError: function () {
+                //console.log('onError', arguments)
+            }
+        })
         var options = {
             apiUrl: WebIM.config.apiURL,
             user: that.data.name,
@@ -103,24 +105,24 @@ Page({
         //         }
         //     }
         // })
-        
+
     },
-    webSocket: function() {
+    webSocket: function () {
         wx.connectSocket({
             url: 'wss://im-api.sandbox.easemob.com/ws/',
             method: "GET"
         })
-        wx.onSocketOpen(function(res) {
-            console.log('WebSocket连接已打开！')
+        wx.onSocketOpen(function (res) {
+            //console.log('WebSocket连接已打开！')
             wx.sendSocketMessage({
-                data: "Hello,World:" 
+                data: "Hello,World:"
             })
         })
-        wx.onSocketMessage(function(msg) {
-            console.log(msg)
+        wx.onSocketMessage(function (msg) {
+            //console.log(msg)
         })
-        wx.onSocketClose(function() {
-          console.log('WebSocket连接已经关闭!')
+        wx.onSocketClose(function () {
+            //console.log('WebSocket连接已经关闭!')
         })
     }
 })

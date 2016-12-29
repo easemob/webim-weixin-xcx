@@ -60,7 +60,7 @@
     };
 
     var _hasFlash = (function () {
-                return false;
+        return false;
 
         if ('ActiveXObject' in window) {
             try {
@@ -229,7 +229,7 @@
             var appKey = options.appKey || '';
             var suc = options.success || EMPTYFN;
             var err = options.error || EMPTYFN;
-            
+
             if (!orgName && !appName && appKey) {
                 var devInfos = appKey.split('#');
                 if (devInfos.length === 2) {
@@ -323,7 +323,7 @@
                         var u = fileItems.item(0);      // 有关选取文件的信息
                         uri.data = u;
                         uri.url = window.URL.createObjectURL(u);    //指向该文件的URL
-                        uri.filename = u.name || '';                   
+                        uri.filename = u.name || '';
                     }
                 } else { // IE
                     var u = document.getElementById(fileInputId).value;
@@ -697,7 +697,7 @@
             var emessage = [];
             var expr = /\[[^[\]]{2,3}\]/mg;
             var emoji = receiveMsg.match(expr);
-            console.log(emoji)
+            //console.log(emoji)
             if (!emoji || emoji.length < 1) {
                 return {
                     isemoji: false,
@@ -773,7 +773,7 @@
         ajax: function (options) {
             var suc = options.success || EMPTYFN;
             var error = options.error || EMPTYFN;
-            
+
             var type = options.type || 'POST',
                 data = options.data || null,
                 tempData = '';

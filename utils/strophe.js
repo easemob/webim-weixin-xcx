@@ -5564,7 +5564,7 @@ var $pres = null;
 
                 wx.connectSocket({url: this._conn.service, method: "GET"})
                 wx.onSocketOpen(function (res) {
-                    //console.log('WebSocket连接已打开！')
+                    console.log('WebSocket连接已打开！')
                     // wx.sendSocketMessage({
                     //     data: "Hello,World:"
                     // })
@@ -5575,9 +5575,9 @@ var $pres = null;
                     self.socket.onmessage.call(self, msg);
                 })
                 wx.onSocketClose(function () {
-                    //console.log('WebSocket连接已经关闭!')
+                    console.log('WebSocket连接已经关闭!')
 
-                    self.socket.onclose()
+                    self.socket.onclose.call(self);
                 })
             },
 

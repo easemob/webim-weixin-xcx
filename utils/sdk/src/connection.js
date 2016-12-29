@@ -5,11 +5,11 @@ import StropheAll from '../../strophe.js'
 var Strophe = StropheAll.Strophe
 
 Strophe.log = function (level, msg) {
-    console.log(ts(), level, msg);
+    //console.log(ts(), level, msg);
 };
 
 var xmldom = require('../../xmldom/dom-parser');
-// console.log('xml',xmldom, typeof xmldom.DOMParser);
+// //console.log('xml',xmldom, typeof xmldom.DOMParser);
 var DOMParser = xmldom.DOMParser;
 
 
@@ -74,15 +74,15 @@ Strophe.Websocket.prototype._closeSocket = function () {
  * Fix it by overide  _onMessage
  */
 Strophe.Websocket.prototype._onMessage = function (message) {
-    // WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + 'recv:', message.data);
+    // WebIM && WebIM.config.isDebug && //console.log(WebIM.utils.ts() + 'recv:', message.data);
     try {
         if (WebIM && WebIM.config.isDebug) {
             console.group('%crecv # ', 'color: green; font-size: large')
-            console.log('%c' + message.data, 'color: green');
+            //console.log('%c' + message.data, 'color: green');
             console.groupEnd();
         }
     } catch (e) {
-        console.log('%crecv' + message.data, 'color: green');
+        //console.log('%crecv' + message.data, 'color: green');
     }
 
     var elem, data;
@@ -98,7 +98,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
     //
     // send and receive close xml: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/>
     // so we can't judge whether message.data equals close by === simply.
-    console.log('DOMParser connection')
+    //console.log('DOMParser connection')
     if (message.data.indexOf("<close ") === 0) {
         elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
         var see_uri = elem.getAttribute("see-other-uri");
@@ -124,7 +124,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
         elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
     }
 
-    console.log('DOMParser connection ed')
+    //console.log('DOMParser connection ed')
     if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
         return;
     }
@@ -216,9 +216,9 @@ var _parseRoomOccupants = function (result) {
 var _parseResponseMessage = function (msginfo) {
     var parseMsgData = {errorMsg: true, data: []};
 
-    console.log('msginfo', msginfo)
+    ////console.log('msginfo', msginfo)
     var msgBodies = msginfo.getElementsByTagName('body');
-    console.log('msginfo', msgBodies)
+    ////console.log('msginfo', msgBodies)
     if (msgBodies) {
         for (var i = 0; i < msgBodies.length; i++) {
             var msgBody = msgBodies[i];
@@ -228,14 +228,14 @@ var _parseResponseMessage = function (msginfo) {
                 if (childNode.nodeType == Strophe.ElementType.TEXT) {
                     var jsondata = childNode.wholeText || childNode.nodeValue;
                     jsondata = jsondata.replace('\n', '<br>');
-                    console.log('jsondata', jsondata)
+                    //console.log('jsondata', jsondata)
 
                     try {
                         var data = JSON.parse(jsondata);
                         parseMsgData.errorMsg = false;
                         parseMsgData.data = [data];
                     } catch (e) {
-                        console.log('eval error', e)
+                        //console.log('eval error', e)
                     }
                 }
             }
@@ -331,7 +331,7 @@ var _parseFriend = function (queryTag, conn, from) {
 };
 
 var _login = function (options, conn) {
-    console.log(options, conn, '_login')
+    ////console.log(options, conn, '_login')
     var accessToken = options.access_token || '';
     if (accessToken == '') {
         var loginfo = _utils.stringify(options);
@@ -396,7 +396,7 @@ var _handleMessageQueue = function (conn) {
 
 var _loginCallback = function (status, msg, conn) {
     var conflict, error;
-    console.log('_loginCallback 1', Strophe.Status, status, msg)
+    //console.log('_loginCallback 1', Strophe.Status, status, msg)
     if (msg === 'conflict') {
         conflict = true;
     }
@@ -412,8 +412,10 @@ var _loginCallback = function (status, msg, conn) {
         conflict && (error.conflict = true);
         conn.onError(error);
     } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
+        conn.autoReconnectNumTotal = 0
+
         // client should limit the speed of sending ack messages  up to 5/s
-        console.log('_loginCallback 2')
+        //console.log('_loginCallback 2')
         conn.intervalId = setInterval(function () {
             conn.handelSendQueue();
         }, 200);
@@ -472,7 +474,7 @@ var _loginCallback = function (status, msg, conn) {
             supportSedMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
             supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
         }
-        console.log('_loginCallback 3')
+        //console.log('_loginCallback 3')
         conn.notifyVersion();
         conn.retry && _handleMessageQueue(conn);
         conn.heartBeat();
@@ -484,8 +486,13 @@ var _loginCallback = function (status, msg, conn) {
         });
     } else if (status == Strophe.Status.DISCONNECTING) {
         if (conn.isOpened()) {
-            conn.stopHeartBeat();
-            conn.context.status = _code.STATUS_CLOSING;
+            if (conn.autoReconnectNumTotal < conn.autoReconnectNumMax) {
+                conn.reconnect()
+                return
+            }
+
+            conn.stopHeartBeat()
+            conn.context.status = _code.STATUS_CLOSING
 
             error = {
                 type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
@@ -664,7 +671,7 @@ var _getPageCount = function () {
             }
         }
     }
-    console.log(sum);
+    //console.log(sum);
     return sum;
 };
 
@@ -808,22 +815,22 @@ connection.prototype.open = function (options) {
         var pwd = options.pwd || '';
         var orgName = 'easemob-demo';
         var appName = 'chatdemoui';
-        console.log(options)
+        //console.log(options)
         var suc = function (data, xhr, myName) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            console.log(options)
+            //console.log(options)
             if (data.statusCode != '404' && data.statusCode != '400') {
                 wx.showToast({
                     title: '登录成功',
                     icon: 'success',
                     duration: 1000
                 });
-                // setTimeout(function () {
-                //     wx.redirectTo({
-                //         url: '../main/main?myName=' + userId
-                //     })
-                // }, 1000);
+                setTimeout(function () {
+                    wx.redirectTo({
+                        url: '../main/main?myName=' + userId
+                    })
+                }, 1000);
             }
             _login(data.data, conn);
         };
@@ -1183,9 +1190,9 @@ connection.prototype.handleMessage = function (msginfo) {
     this.cacheReceiptsMessage({
         id: id
     });
-    console.log('handlePresence', msginfo)
+    ////console.log('handlePresence', msginfo)
     var parseMsgData = _parseResponseMessage(msginfo);
-    console.log('parseMsgData', parseMsgData)
+    ////console.log('parseMsgData', parseMsgData)
     if (parseMsgData.errorMsg) {
         this.handlePresence(msginfo);
         return;
@@ -1231,17 +1238,17 @@ connection.prototype.handleMessage = function (msginfo) {
         var msgBody = msg.bodies[0];
         var type = msgBody.type;
 
-        console.log('onmessage', type, msgBody)
+        //console.log('onmessage1', type, msgBody)
 
         try {
             switch (type) {
                 case 'txt':
-                    console.log("666666666666")
+                    //console.log("666666666666")
                     var receiveMsg = msgBody.msg;
-                    console.log('receiveMsg', receiveMsg)
-                    console.log('WebIM.Emoji', WebIM.Emoji)
+                    //console.log('receiveMsg', receiveMsg)
+                    //console.log('WebIM.Emoji', WebIM.Emoji)
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
-                    console.log('emojibody', emojibody)
+                    //console.log('emojibody', emojibody)
                     if (emojibody.isemoji) {
                         var msg = {
                             id: id
@@ -1256,11 +1263,11 @@ connection.prototype.handleMessage = function (msginfo) {
                         msg.error = errorBool;
                         msg.errorText = errorText;
                         msg.errorCode = errorCode;
-                        console.log('onmessage', type, msg)
+                        //console.log('onmessage', type, msg)
 
                         this.onEmojiMessage(msg);
                     } else {
-                        console.log('ttxtxtxtxtxtxttxtxtxtxtxtxt')
+                        //console.log('ttxtxtxtxtxtxttxtxtxtxtxtxt')
                         var msg = {
                             id: id
                             , type: chattype
@@ -1274,7 +1281,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         msg.error = errorBool;
                         msg.errorText = errorText;
                         msg.errorCode = errorCode;
-                        console.log('onmessage', type, msg)
+                        //console.log('onmessage', type, msg)
 
                         this.onTextMessage(msg);
                     }
@@ -1509,7 +1516,7 @@ connection.prototype.getUniqueId = function (prefix) {
 };
 
 connection.prototype.send = function (message) {
-    console.log(message)
+    //console.log(message)
     if (WebIM.config.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
@@ -1528,12 +1535,12 @@ connection.prototype.send = function (message) {
             if (message.resource) {
                 toJid = toJid + '/' + message.resource;
             }
-            console.log(toJid);
-            console.log("adwadwdawdaw", message)
+            //console.log(toJid);
+            //console.log("adwadwdawdaw", message)
             message.toJid = toJid;
             message.id = message.id || this.getUniqueId();
             _msgHash[message.id] = new _message(message);
-            // console.log(new _message(message))
+            // //console.log(new _message(message))
             _msgHash[message.id].send(this);
         } else if (typeof message === 'string') {
             _msgHash[message] && _msgHash[message].send(this);
@@ -1619,7 +1626,7 @@ connection.prototype.subscribe = function (options) {
 connection.prototype.subscribed = function (options) {
     var jid = _getJid(options, this);
     var pres = StropheAll.$pres({to: jid, type: 'subscribed'});
-    console.log("options.message", options.message)
+    //console.log("options.message", options.message)
     if (options.message) {
         pres.c('status').t(options.message).up();
     }
