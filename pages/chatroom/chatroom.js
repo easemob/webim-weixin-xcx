@@ -23,16 +23,20 @@ Page({
     },
     onLoad: function (options) {
         var that = this
+        console.log(options)
         var options = JSON.parse(options.username)
         var num = wx.getStorageSync(options.your).length - 1
         if (num > 0) {
-            this.setData({
-                toView: wx.getStorageSync(options.your)[num].mid
-            })
+            setTimeout(function() {
+                that.setData({
+                    toView: wx.getStorageSync(options.your)[num].mid
+                })
+            },10)
         }
+        var myName = wx.getStorageSync('myUsername')
         this.setData({
             yourname: options.your,
-            myName: options.myName,
+            myName: myName,
             inputMessage: '',
             chatMsg: wx.getStorageSync(options.your) || []
         })
@@ -41,6 +45,7 @@ Page({
         })
     },
     onShow: function () {
+        var that = this
         this.setData({
             inputMessage: ''
         })

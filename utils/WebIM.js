@@ -243,6 +243,7 @@ WebIM.EmojiObj = {
     }
 }
 
+// wx.connectSocket({url: WebIM.config.xmppURL, method: "GET"})
 
 WebIM.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,

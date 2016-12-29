@@ -30,13 +30,13 @@
 	<view wx:for="{{ member }}" class="numbers" wx:key="word">
 		<view class="nbr_header">{{ item.word }}</view>
 		<view class="info" bindtap="into_info">
-			<image src="../../images/number.png" bindtap="into_info" data-username="{{ item.name }}"></image>
+			<image src="../../images/number.png"  data-username="{{ item.name }}"></image>
 		</view>
 		<view class="nbr_body" data-username="{{ item.name }}" bindtap="into_room">
-			<text bindtap="into_room" data-username="{{ item.name }}">{{ item.name }}</text>
+			<text data-username="{{ item.name }}">{{ item.name }}</text>
 		</view>
 		<view class="delete" bindtap="delete_friend" data-username="{{ item.name }}">
-			<image src="../../images/delete.png" bindtap="delete_friend" data-username="{{ item.name }}"></image>
+			<image src="../../images/delete.png"  data-username="{{ item.name }}"></image>
 		</view>
 	</view>
 </view>

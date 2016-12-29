@@ -23,7 +23,11 @@ App({
                     pages[1].moveFriend(message)
                 }
                 if (message.type === "subscribe") {
-                    pages[1].handleFriendMsg(message)
+                    if(message.status === '[resp:true]') {
+                      return
+                    } else {
+                      pages[1].handleFriendMsg(message)
+                    }    
                 }
             },
             onRoster: function (message) {
@@ -49,7 +53,7 @@ App({
                                 from: message.from,
                                 to: message.to
                             },
-                            username: '',
+                            username: message.from,
                             yourname: message.from,
                             msg: {
                                 type: 'txt',
@@ -86,7 +90,7 @@ App({
                                 from: message.from,
                                 to: message.to
                             },
-                            username: '',
+                            username: message.from,
                             yourname: message.from,
                             msg: {
                                 type: 'emoji',

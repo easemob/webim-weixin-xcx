@@ -98,7 +98,7 @@
 .list_pic image {
 	display: block;
 	width: 88%;
-	height: 53%;
+	height: 56%;
 	border: 1px solid rgb(0,186,110);
 	margin-left: 10px;
 	padding-top: 2px;
@@ -107,7 +107,7 @@
 	height: 20px;
 	display: block;
 	color: #CFCFCF;
-	margin-top: 6px;
+	margin-top: 0;
 }
 .list_right {
 	width: 32%;

@@ -4,8 +4,8 @@ var WebIM = WebIM.default
 
 Page({
     data: {
-        name: 'lwz2',
-        psd: '1',
+        name: '',
+        psd: '',
         grant_type: "password"
     },
     bindUsername: function (e) {
@@ -19,6 +19,7 @@ Page({
         })
     },
     login: function () {
+        console.log('login')
         var that = this
         if (that.data.name == '') {
             wx.showModal({

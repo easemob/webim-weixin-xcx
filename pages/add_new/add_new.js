@@ -2,7 +2,7 @@ var strophe = require('../../utils/strophe.js')
 var WebIM = require('../../utils/WebIM.js')
 var WebIM = WebIM.default
 
-//WebIM.conn  实例化的connection  
+//WebIM.conn  实例化的  
 Page({
 	data: {
 		friend_name:''
@@ -35,8 +35,11 @@ Page({
 		        to: that.data.friend_name,
 		        message: "Hello!"                   
 		    })
-	    } 
-	    
+		    wx.showToast({
+	    		title: '消息发送成功！',
+	    		duration: 1500
+	    	})
+	    }  
 	}
 })
 

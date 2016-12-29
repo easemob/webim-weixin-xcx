@@ -16,6 +16,8 @@
  * that are still executing.
  */
 // //console.log(window,document)
+
+var isSocketConnnected = false;
 var xmldom = require('./xmldom/dom-parser');
 // //console.log('xml', xmldom, typeof xmldom.DOMParser);
 var DOMParser = xmldom.DOMParser;
@@ -24,6 +26,8 @@ let document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", 'text/
 //console.log('document inited');
 var window = window || {};
 window.DOMParser = DOMParser;
+
+console.log('strophe ...')
 var Strophe = null;
 var $build = null;
 var $msg = null;
@@ -5545,9 +5549,10 @@ var $pres = null;
              *  Creates a WebSocket for a connection and assigns Callbacks to it.
              *  Does nothing if there already is a WebSocket.
              */
+             
             _connect: function () {
                 // Ensure that there is no open WebSocket from a previous Connection.
-                wx.closeSocket()
+                //wx.closeSocket()
                 // Create the new WobSocket
 
                 this.socket = {}
@@ -5561,14 +5566,18 @@ var $pres = null;
                 this.socket.send = function (str) {
                     wx.sendSocketMessage({data: str})
                 }
+                console.log('isSocketConnnected', isSocketConnnected)
 
                 wx.connectSocket({url: this._conn.service, method: "GET"})
+                // isSocketConnnected && self._onOpen()    
+
                 wx.onSocketOpen(function (res) {
                     console.log('WebSocket连接已打开！')
+                    isSocketConnnected = true
                     // wx.sendSocketMessage({
                     //     data: "Hello,World:"
                     // })
-                    self._onOpen()
+                    self.socket.onopen.call(self)
                 })
                 wx.onSocketMessage(function (msg) {
                     // //console.log('onSocketMessage', msg, JSON.stringify(msg))
@@ -5706,7 +5715,9 @@ var $pres = null;
              *    (Request) pres - This stanza will be sent before disconnecting.
              */
             _disconnect: function (pres) {
-                if (this.socket && this.socket.readyState !== WebSocket.CLOSED) {
+                console.log('_disconnect', this.socket.readyState, !!this.socket)
+                //  && this.socket.readyState !== WebSocket.CLOSED
+                if (this.socket) {
                     if (pres) {
                         this._conn.send(pres);
                     }

@@ -1,4 +1,4 @@
-<view class="person" bindtap="person">
+ <view class="person" bindtap="person">
 	<view class="setting_list">
 		<text>个人信息</text>
 		<text class="list_right">></text>
@@ -32,7 +32,7 @@
 	<text>自动登录</text>
 	<switch checked/>
 </view>
-<button type="warn">退出登录({{ username }})</button>
+<button type="warn" bindtap="logout">退出登录({{ username }})</button>
 
 
 

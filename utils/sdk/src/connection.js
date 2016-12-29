@@ -806,6 +806,8 @@ connection.prototype.open = function (options) {
         return;
     }
 
+    console.log('open ....')
+
     if (options.accessToken) {
         options.access_token = options.accessToken;
         _login(options, conn);
