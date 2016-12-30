@@ -24,21 +24,21 @@ Page({
     onLoad: function (options) {
         var that = this
         console.log(options)
+        var myName = wx.getStorageSync('myUsername')
         var options = JSON.parse(options.username)
-        var num = wx.getStorageSync(options.your).length - 1
+        var num = wx.getStorageSync(options.your + myName).length - 1
         if (num > 0) {
             setTimeout(function() {
                 that.setData({
-                    toView: wx.getStorageSync(options.your)[num].mid
+                    toView: wx.getStorageSync(options.your + myName)[num].mid
                 })
             },10)
         }
-        var myName = wx.getStorageSync('myUsername')
         this.setData({
             yourname: options.your,
             myName: myName,
             inputMessage: '',
-            chatMsg: wx.getStorageSync(options.your) || []
+            chatMsg: wx.getStorageSync(options.your + myName) || []
         })
         wx.setNavigationBarTitle({
             title: that.data.yourname
@@ -66,6 +66,7 @@ Page({
         var that = this
         // //console.log(that.data.userMessage)
         // //console.log(that.data.sendInfo)
+        var myName = wx.getStorageSync('myUsername')
         var id = WebIM.conn.getUniqueId();
         var msg = new WebIM.message('txt', id);
         msg.set({
@@ -98,8 +99,9 @@ Page({
             }
             that.data.chatMsg.push(msgData)
             //console.log(that.data.chatMsg)
+
             wx.setStorage({
-                key: that.data.yourname,
+                key: that.data.yourname + myName,
                 data: that.data.chatMsg,
                 success: function () {
                     //console.log('success', that.data)
@@ -122,6 +124,7 @@ Page({
     },
     receiveMsg: function (msg, type) {
         var that = this
+        var myName = wx.getStorageSync('myUsername')
         if (msg.from == that.data.yourname || msg.to == that.data.yourname) {
             //console.log(msg)
             if (type == 'txt') {
@@ -157,7 +160,7 @@ Page({
             //console.log(msgData, that.data.chatMsg, that.data)
             that.data.chatMsg.push(msgData)
             wx.setStorage({
-                key: that.data.yourname,
+                key: that.data.yourname + myName,
                 data: that.data.chatMsg,
                 success: function () {
                     //console.log('success', that.data)
@@ -216,6 +219,7 @@ Page({
     },
     receiveImage: function (msg, type) {
         var that = this
+        var myName = wx.getStorageSync('myUsername')
         //console.log(msg)
         if (msg) {
             //console.log(msg)
@@ -239,7 +243,7 @@ Page({
             that.data.chatMsg.push(msgData)
             //console.log(that.data.chatMsg)
             wx.setStorage({
-                key: that.data.yourname,
+                key: that.data.yourname + myName,
                 data: that.data.chatMsg,
                 success: function () {
                     //console.log('success', that.data)
@@ -363,8 +367,9 @@ Page({
                                 }
                                 that.data.chatMsg.push(msgData)
                                 //console.log(that.data.chatMsg)
+                                var myName = wx.getStorageSync('myUsername')
                                 wx.setStorage({
-                                    key: that.data.yourname,
+                                    key: that.data.yourname + myName,
                                     data: that.data.chatMsg,
                                     success: function () {
                                         //console.log('success', that.data)

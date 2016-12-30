@@ -782,7 +782,6 @@ connection.prototype.cacheReceiptsMessage = function (options) {
 };
 
 connection.prototype.open = function (options) {
-
     // _handlePageLimit();
 
     // setTimeout(function () {
@@ -806,8 +805,6 @@ connection.prototype.open = function (options) {
         return;
     }
 
-    console.log('open ....')
-
     if (options.accessToken) {
         options.access_token = options.accessToken;
         _login(options, conn);
@@ -817,8 +814,9 @@ connection.prototype.open = function (options) {
         var pwd = options.pwd || '';
         var orgName = 'easemob-demo';
         var appName = 'chatdemoui';
-        //console.log(options)
+        console.log(options)
         var suc = function (data, xhr, myName) {
+            // console.log('success',data, xhr, myName)
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
             //console.log(options)
@@ -837,14 +835,13 @@ connection.prototype.open = function (options) {
             _login(data.data, conn);
         };
         var error = function (res, xhr, msg) {
+            console.log('error',res, xhr, msg)
             conn.clear();
-            // if(data.statusCode == '400' || data.statusCode == '404'){
-            //     wx.showModal({
-            //        title:'用户名或密码错误！',
-            //        showCancel: false,
-            //        confirmText: 'OK'
-            //     })
-            // }
+            wx.showModal({
+                title: 'username or password error!',
+                showCancel: false,
+                confirmText: 'OK'
+            });
             if (res.error && res.error_description) {
                 conn.onError({
                     type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
@@ -876,6 +873,7 @@ connection.prototype.open = function (options) {
             success: suc || _utils.emptyfn,
             error: error || _utils.emptyfn
         };
+        console.log("options", options.success)
         _utils.ajax(options);
     }
 

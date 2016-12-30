@@ -796,8 +796,14 @@
                     'content-type': 'application/json'
                 },
                 method: type,
-                success: suc,
-                fail: error
+                success: function(res){
+                    console.log(res)
+                    if(res.statusCode == '200') {
+                        suc(res)
+                    }else {
+                        error(res)
+                    }
+                }
             })
         },
 

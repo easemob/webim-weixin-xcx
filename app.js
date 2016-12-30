@@ -63,10 +63,10 @@ App({
                             time: time,
                             mid: 'txt' + message.id
                         }
-                        chatMsg = wx.getStorageSync(msgData.yourname) || []
+                        chatMsg = wx.getStorageSync(msgData.yourname + message.to) || []
                         chatMsg.push(msgData)
                         wx.setStorage({
-                            key: msgData.yourname,
+                            key: msgData.yourname + message.to,
                             data: chatMsg,
                             success: function () {
                                 //console.log('success')
@@ -101,11 +101,11 @@ App({
                             mid: 'emoji' + message.id
                         }
                         msgData.style = ''
-                        chatMsg = wx.getStorageSync(msgData.yourname) || []
+                        chatMsg = wx.getStorageSync(msgData.yourname + message.to) || []
                         chatMsg.push(msgData)
                         //console.log(chatMsg)
                         wx.setStorage({
-                            key: msgData.yourname,
+                            key: msgData.yourname + message.to,
                             data: chatMsg,
                             success: function () {
                                 //console.log('success')
@@ -140,10 +140,10 @@ App({
                             mid: 'img' + message.id
                         }
                         msgData.style = ''
-                        chatMsg = wx.getStorageSync(msgData.yourname) || []
+                        chatMsg = wx.getStorageSync(msgData.yourname + message.to) || []
                         chatMsg.push(msgData)
                         wx.setStorage({
-                            key: msgData.yourname,
+                            key: msgData.yourname + message.to,
                             data: chatMsg,
                             success: function () {
                                 //console.log('success')

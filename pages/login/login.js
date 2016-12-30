@@ -45,6 +45,7 @@ Page({
                 key: "myUsername",
                 data: that.data.name
             })
+            console.log('open')
             WebIM.conn.open(options)
         }
     }
