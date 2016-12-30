@@ -4,28 +4,27 @@ var app = getApp()
 Page({
   data: {
     motto: '环信即时通讯云',
-    userInfo: {}
+    userInfo: {},
+    login: false
   },
   //事件处理函数
   bindViewTap: function() {
-    wx.navigateTo({
+    wx.redirectTo({
       url: '../login/login'
     })
-  },
-  bindWs: function() {
-    wx.navigateTo({
-      url: '../logs/logs'
-    })
+    // this.setData({
+    //   login: true
+    // }) 
   },
   onLoad: function () {
-    // var num = 0
-    // console.log('num')
-    // console.log('num end')
-    // console.log('onLoad')
-    var pages = getCurrentPages()
-    setTimeout(function() {
-      pages[0].bindViewTap()
-    },3000)
+     // var set = setTimeout(function() {
+     //       wx.redirectTo({
+     //          url: '../login/login'
+     //      })
+     //    },3000)
+     //  if(this.data.login){
+     //    clearTimeout(set)
+     //  }
     var that = this
     //调用应用实例的方法获取全局数据
     app.getUserInfo(function(userInfo){

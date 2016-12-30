@@ -1,18 +1,18 @@
 <view class="register">
 	<view class="register_img">
-		<image src="../../images/login.png"></image>
+		<image src="../../images/logo.png"></image>
 	</view>
 	<view class="register_user">
-		<input type="text" placeholder="Hyphenate ID" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername"/>
+		<input type="text" placeholder="Easemob ID" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername"/>
 	</view>
 	<view class="register_pwd">
 		<input type="text" password placeholder="Password" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword"/>
 	</view>
 	<view class="register_text">
 		<view>
-			<text>Have an account?</text>
-			<navigator url="../login/login" redirect hover-class="navigator-hover">Sign in</navigator>
+			<text>已有账号?</text>
+			<navigator url="../login/login" redirect hover-class="navigator-hover">登 录</navigator>
 		</view>
 	</view>
-	<button  class="register_btn" hover-class="btn_hover" bindtap="register">SIGN UP</button>
+	<button  class="register_btn" hover-class="btn_hover" bindtap="register">注 册</button>
 </view>

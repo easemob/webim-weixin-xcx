@@ -1,18 +1,18 @@
 <view class="login">
 	<view class="login_img">
-		<image src="../../images/login.png"></image>
+		<image src="../../images/logo.png"></image>
 	</view>
 	<view class="login_user">
-		<input type="text" placeholder="Hyphenate ID" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername"/>
+		<input type="text" placeholder="Easemob ID" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername"/>
 	</view>
 	<view class="login_pwd">
 		<input type="text" password placeholder="Password" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword"/>
 	</view>
 	<view class="login_text">
 		<view>
-			<text>Yay! New to Hyphenat?</text>
-			<navigator url="../register/register" redirect hover-class="navigator-hover">Sign up</navigator>
+			<text>没有账号?</text>
+			<navigator url="../register/register" redirect hover-class="navigator-hover">注 册</navigator>
 		</view>
 	</view>
-	<button  class="login_btn" hover-class="btn_hover" bindtap="login">SIGN IN</button>
+	<button  class="login_btn" hover-class="btn_hover" bindtap="login">登 录</button>
 </view>
