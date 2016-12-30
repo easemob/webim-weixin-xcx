@@ -3,7 +3,7 @@
 var app = getApp()
 Page({
   data: {
-    motto: 'Hello World',
+    motto: '环信即时通讯云',
     userInfo: {}
   },
   //事件处理函数
@@ -18,17 +18,14 @@ Page({
     })
   },
   onLoad: function () {
-    var num = 0
-    console.log('num')
-    // while(true) {
-    //   if(num++ > 10) {
-    //         console.log('num', num)
-    //     break;
-    //   }
-    // }
-    console.log('num end')
-
+    // var num = 0
+    // console.log('num')
+    // console.log('num end')
     // console.log('onLoad')
+    var pages = getCurrentPages()
+    setTimeout(function() {
+      pages[0].bindViewTap()
+    },3000)
     var that = this
     //调用应用实例的方法获取全局数据
     app.getUserInfo(function(userInfo){

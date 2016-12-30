@@ -41,11 +41,38 @@ Page({
 	            success: function(res) {
 	            	if(res.statusCode == '200') {
 	            		wx.showToast({
-			              title: '注册成功',
-			              icon: 'success',
-			              duration: 2000
-			            });
+			                title: '注册成功,正在登录',
+			                icon: 'success',
+			                duration: 1500,
+			                success: function() {
+			                	var data = {
+					                apiUrl: WebIM.config.apiURL,
+					                user: that.data.username,
+					                pwd: that.data.password,
+					                grant_type: 'password',
+					                appKey: WebIM.config.appkey
+					            }
+					            console.log('data',data)
+					            wx.setStorage({
+					                key: "myUsername",
+					                data: that.data.username
+					            })
+					            setTimeout(function(){
+					            	WebIM.conn.open(data)
+					            },1000)
+					            
+			                }
+			            });   
 	            	}	
+	            },
+	            error: function(res) {
+	            	if(res.statusCode !== '200') {
+	            		wx.showModal({
+	            			title: '用户名已被占用',
+			                showCancel: false,
+			                confirmText: 'OK'
+	            		})
+	            	}
 	            }
         	}
         	WebIM.utils.registerUser(options)
