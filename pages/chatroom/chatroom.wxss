@@ -195,6 +195,13 @@
 .template {
 	display: inline;
 }
+.open_emoji,.send_image,.open_camera {
+	width: 40px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
 
 
 

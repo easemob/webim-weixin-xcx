@@ -3,7 +3,6 @@
     "pages/index/index",
     "pages/logs/logs",
     "pages/demo/demo",
-    "pages/ws/ws",
     "pages/login/login",
     "pages/register/register",
     "pages/main/main",
@@ -18,7 +17,6 @@
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTextStyle":"black",
-    "enablePullDownRefresh": true
+    "navigationBarTextStyle":"black"
   }
 }

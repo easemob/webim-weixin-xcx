@@ -41,10 +41,16 @@
 			<button bindtap="sendMessage" formType="reset" class="send_btn">发送</button>
 		</form>
 		<view class="other_func">
-			<image src="../../images/Emoji.png" style="margin-left: 10px;" bindtap="openEmoji"></image>
-			<image src="../../images/iconImage@2x.png" style="height: 18px;" bindtap="sendImage"></image>
-			<image src="../../images/iconCamera@2x.png" style="width: 26px;margin-right: 10px;" bindtap="openCamera"></image>
-			<!-- <image src="../../images/iconFile@2x.png" style="margin-right: 10px;" bindtap="sendFile"></image> -->
+			<view class="open_emoji" bindtap="openEmoji">
+				<image src="../../images/Emoji.png"></image>
+			</view>
+			<view class="send_image" bindtap="sendImage">
+				<image src="../../images/iconImage@2x.png" style="height: 18px;"></image>
+			</view>
+			<view class="open_camera" bindtap="openCamera">
+				<image src="../../images/iconCamera@2x.png" style="width: 26px;"></image>
+			</view>
+			<!-- <image src="../../images/iconFile@2x.png" style="margin-right: 15px;" bindtap="sendFile"></image> -->
 		</view>
 		<swiper class="emoji_list" class="{{ show }}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
 		  <block>
