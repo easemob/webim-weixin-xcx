@@ -9,11 +9,12 @@ Page({
     onShow: function () {
         var that = this
         var member = wx.getStorageSync('member')
-        //console.log(member)
+        var myName = wx.getStorageSync('myUsername')
+        console.log(member)
         var array = []
         for (var i = 0; i < member.length; i++) {
-            if (wx.getStorageSync(member[i].name) != '') {
-                array.push(wx.getStorageSync(member[i].name)[wx.getStorageSync(member[i].name).length - 1])
+            if (wx.getStorageSync(member[i].name + myName) != '') {
+                array.push(wx.getStorageSync(member[i].name + myName)[wx.getStorageSync(member[i].name + myName).length - 1])
             }
         }
         //console.log(array，'1')
@@ -68,6 +69,7 @@ Page({
         var nameList = {
             your: event.currentTarget.dataset.username
         }
+        var myName = wx.getStorageSync('myUsername')
         var currentPage = getCurrentPages()
         wx.showModal({
             title: '删除该聊天记录',
@@ -75,7 +77,7 @@ Page({
             success: function (res) {
                 if (res.confirm) {
                     wx.setStorage({
-                        key: nameList.your,
+                        key: nameList.your + myName,
                         data: '',
                         success: function () {
                             if (currentPage[1]) {
