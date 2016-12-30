@@ -113,7 +113,6 @@
 	width: 32%;
 	height: 100%;
 	float: right;
-	margin-top: 3px;
 	font-size: 12px;
 	margin-right: 8px;
 	text-align: right;
@@ -131,7 +130,7 @@
 	margin-top: 2px;
 }
 .delChat {
-	width: 80px;
+	width: 60px;
 	float: right;
 }
 
