@@ -1,0 +1,7 @@
+text{
+	color: #E3E3E3;
+	font-size: 16px;
+	text-align: center;
+	display: block;
+	margin: 20px auto 0 auto;
+}

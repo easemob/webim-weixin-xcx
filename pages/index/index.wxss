@@ -19,3 +19,11 @@
 .usermotto {
   margin-top: 200px;
 }
+
+.jump text{
+	position: absolute;
+	bottom: 8px;
+	right: 8px;
+	display: block;
+	font-size: 12px;
+}

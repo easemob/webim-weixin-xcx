@@ -23,6 +23,10 @@
 	margin-bottom: 20px;
 }
 button {
+	position: absolute;
+	bottom: 120px;
+	right: 0;
+	left:0;
 	display: block;
 	width: 94%;
 	height: 46px;

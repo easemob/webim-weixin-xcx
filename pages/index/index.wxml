@@ -8,3 +8,6 @@
     <text class="user-motto">{{motto}}</text>
   </view>
 </view>
+<view class="jump">
+	<text>3秒后自动跳转</text>
+</view>
