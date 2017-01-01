@@ -10,14 +10,14 @@ Page({
   },
   //事件处理函数
   bindViewTap: function() {
-    wx.redirectTo({
+    wx.navigateTo({
       url: '../login/login'
     })
     clearTimeout(this.timeOut)  
   },
   onLoad: function () {
      this.timeOut = setTimeout(function() {
-           wx.redirectTo({
+           wx.navigateTo({
               url: '../login/login'
           })
     },3000)

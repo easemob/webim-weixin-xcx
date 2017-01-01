@@ -98,7 +98,7 @@ Page({
                 mid: msg.id
             }
             that.data.chatMsg.push(msgData)
-            //console.log(that.data.chatMsg)
+            // console.log(that.data.chatMsg)
 
             wx.setStorage({
                 key: that.data.yourname + myName,
@@ -211,6 +211,8 @@ Page({
             sizeType: ['original', 'compressed'],
             sourceType: ['album'],
             success: function (res) {
+                console.log(res)
+                console.log(pages)
                 if (pages[2]) {
                     pages[2].upLoadImage(res, that)
                 }
@@ -292,12 +294,13 @@ Page({
         //console.log(e)
     },
     upLoadImage: function (res, that) {
+        console.log(res)
         var tempFilePaths = res.tempFilePaths
         //console.log(tempFilePaths)
         wx.getImageInfo({
             src: res.tempFilePaths[0],
             success: function (res) {
-                //console.log(res)
+                // console.log(res)
                 var allowType = {
                     'jpg': true,
                     'gif': true,
@@ -321,7 +324,7 @@ Page({
                         success: function (res) {
                             var data = res.data
                             var dataObj = JSON.parse(data)
-                            //console.log(dataObj)
+                            // console.log(dataObj)
                             var id = WebIM.conn.getUniqueId();                   // 生成本地消息id
                             var msg = new WebIM.message('img', id);
                             var file = {
@@ -366,7 +369,7 @@ Page({
                                     mid: msg.id
                                 }
                                 that.data.chatMsg.push(msgData)
-                                //console.log(that.data.chatMsg)
+                                console.log(that.data.chatMsg)
                                 var myName = wx.getStorageSync('myUsername')
                                 wx.setStorage({
                                     key: that.data.yourname + myName,
