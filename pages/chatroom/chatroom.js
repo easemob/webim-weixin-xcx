@@ -114,7 +114,7 @@ Page({
                         that.setData({
                             toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
                         })
-                    }, 10)
+                    }, 100)
                 }
             })
             that.setData({
@@ -171,7 +171,7 @@ Page({
                         that.setData({
                             toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
                         })
-                    }, 10)
+                    }, 100)
                 }
             })
         }
@@ -256,7 +256,7 @@ Page({
                         that.setData({
                             toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
                         })
-                    }, 10)
+                    }, 100)
                 }
             })
         }
