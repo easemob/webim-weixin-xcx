@@ -21,13 +21,13 @@ Page({
         var that = this
         if(that.data.username == '') {
 			wx.showModal({
-				title: 'Please enter username',
+				title: '请输入用户名！',
 				confirmText: 'OK',
 				showCancel: false
 			})
 		}else if(that.data.password == '') {
 			wx.showModal({
-				title: 'Please enter password',
+				title: '请输入密码！',
 				confirmText: 'OK',
 				showCancel: false
 			})
