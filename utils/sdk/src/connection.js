@@ -838,7 +838,7 @@ connection.prototype.open = function (options) {
             console.log('error',res, xhr, msg)
             conn.clear();
             wx.showModal({
-                title: 'username or password error!',
+                title: '用户名或密码错误!',
                 showCancel: false,
                 confirmText: 'OK'
             });

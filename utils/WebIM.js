@@ -212,7 +212,7 @@ WebIM.EmojiObj = {
         '[|-)]': 'ee_18.png',
         '[*-)]': 'ee_19.png',
         '[:-#]': 'ee_20.png',
-        '[del]': 'btn_del.png'
+        '[del]': 'del.png'
     },
     map4: {
         '[:-*]': 'ee_21.png',
@@ -239,7 +239,7 @@ WebIM.EmojiObj = {
         '[8o|]': 'ee_14.png',
         '[(D)]': 'ee_35.png',
         '[:s]': 'ee_8.png',
-        '[del]': 'btn_del.png'
+        '[del]': 'del.png'
     }
 }
 

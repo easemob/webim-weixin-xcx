@@ -37,7 +37,7 @@
 
 	<view class="room_bar">
 		<form bindreset="cleanInput">
-			<input type="text"  class="news" value="{{ inputMessage }}" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" bindinput="bindMessage" bindtap="focus"></input>
+			<input type="text"  class="news" value="{{ inputMessage }}" placeholder="输入新消息" placeholder-style="color:#CFCFCF;padding-left:5px;" bindinput="bindMessage" bindtap="focus" bindfocus="focus"></input>
 			<button bindtap="sendMessage" formType="reset" class="send_btn">发送</button>
 		</form>
 		<view class="other_func">

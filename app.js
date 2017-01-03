@@ -20,21 +20,21 @@ App({
                 //console.log('onPresence',message)
                 var pages = getCurrentPages()
                 if (message.type == "unsubscribe") {
-                    pages[1].moveFriend(message)
+                    pages[0].moveFriend(message)
                 }
                 if (message.type === "subscribe") {
                     if(message.status === '[resp:true]') {
                       return
                     } else {
-                      pages[1].handleFriendMsg(message)
+                      pages[0].handleFriendMsg(message)
                     }    
                 }
             },
             onRoster: function (message) {
                 //console.log('onRoster',message)
                 var pages = getCurrentPages()
-                if (pages[1]) {
-                    pages[1].onShow()
+                if (pages[0]) {
+                    pages[0].onShow()
                 }
             },
             onTextMessage: function (message) {
@@ -42,8 +42,8 @@ App({
                 var pages = getCurrentPages()
                 //console.log(pages)
                 if (message) {
-                    if (pages[2]) {
-                        pages[2].receiveMsg(message, 'txt')
+                    if (pages[1]) {
+                        pages[1].receiveMsg(message, 'txt')
                     } else {
                         var chatMsg = that.globalData.chatMsg || []
                         var value = WebIM.parseEmoji(message.data.replace(/\n/mg, ''))
@@ -80,8 +80,8 @@ App({
                 var pages = getCurrentPages()
                 //console.log(pages)
                 if (message) {
-                    if (pages[2]) {
-                        pages[2].receiveMsg(message, 'emoji')
+                    if (pages[1]) {
+                        pages[1].receiveMsg(message, 'emoji')
                     } else {
                         var chatMsg = that.globalData.chatMsg || []
                         var time = WebIM.time()
@@ -118,9 +118,9 @@ App({
                 //console.log('Picture',message);
                 var pages = getCurrentPages()
                 if (message) {
-                    if (pages[2]) {
+                    if (pages[1]) {
                         //console.log("wdawdawdawdqwd")
-                        pages[2].receiveImage(message, 'img')
+                        pages[1].receiveImage(message, 'img')
                     } else {
                         var chatMsg = that.globalData.chatMsg || []
                         var time = WebIM.time()

@@ -178,8 +178,8 @@
 	display: block;
 }
 .emoji_list image,.showEmoji image{
-	width: 30px;
-	height: 30px;
+	width: 26px;
+	height: 26px;
 	margin: 5px 2%;
 }
 .emoji {

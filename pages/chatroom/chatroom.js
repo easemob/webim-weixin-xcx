@@ -206,6 +206,7 @@ Page({
     sendImage: function () {
         var that = this
         var pages = getCurrentPages()
+        pages[1].cancelEmoji()
         wx.chooseImage({
             count: 1,
             sizeType: ['original', 'compressed'],
@@ -213,8 +214,8 @@ Page({
             success: function (res) {
                 console.log(res)
                 console.log(pages)
-                if (pages[2]) {
-                    pages[2].upLoadImage(res, that)
+                if (pages[1]) {
+                    pages[1].upLoadImage(res, that)
                 }
             }
         })
@@ -264,13 +265,14 @@ Page({
     openCamera: function () {
         var that = this
         var pages = getCurrentPages()
+        pages[1].cancelEmoji()
         wx.chooseImage({
             count: 1,
             sizeType: ['original', 'compressed'],
             sourceType: ['camera'],
             success: function (res) {
-                if (pages[2]) {
-                    pages[2].upLoadImage(res, that)
+                if (pages[1]) {
+                    pages[1].upLoadImage(res, that)
                 }
             }
         })
