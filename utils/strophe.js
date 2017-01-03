@@ -2859,6 +2859,7 @@ var $pres = null;
              *     Strophe.Builder) elem - The stanza to send.
              */
             send: function (elem) {
+                console.log(elem)
                 if (elem === null) {
                     return;
                 }

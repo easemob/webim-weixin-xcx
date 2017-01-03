@@ -1493,6 +1493,7 @@ connection.prototype.handleInviteMessage = function (message) {
 
 connection.prototype.sendCommand = function (dom, id) {
     if (this.isOpened()) {
+        console.log("wadawdwdwadwa",dom)
         this.context.stropheConn.send(dom);
     } else {
         this.onError({
@@ -1615,6 +1616,7 @@ connection.prototype.subscribe = function (options) {
     var jid = _getJid(options, this);
     var pres = StropheAll.$pres({to: jid, type: 'subscribe'});
     if (options.message) {
+        console.log('ggggggggg',pres,options.message)
         pres.c('status').t(options.message).up();
     }
     if (options.nick) {

@@ -32,8 +32,8 @@ Page({
 	    }
 	    else {
 		    WebIM.conn.subscribe({
-		        to: that.data.friend_name,
-		        message: "Hello!"                   
+		        to: that.data.friend_name
+		        // message: "hello!"                   
 		    })
 		    wx.showToast({
 	    		title: '消息发送成功！',

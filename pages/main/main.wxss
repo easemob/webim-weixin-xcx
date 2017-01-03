@@ -24,7 +24,7 @@
 	align-items: center;
 }
 .search view {
-	width: 84%;
+	width: 94%;
 	justify-content:center;
 }
 .search image {
@@ -170,7 +170,7 @@
 	margin-top: 8px;
 }
 .chats {
-	width: 35px;
+	width: 37px;
 	height: 37px;
 	margin-top: 8px;
 }

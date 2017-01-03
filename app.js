@@ -17,12 +17,13 @@ App({
                 //console.log("kkkkkkk")
             },
             onPresence: function (message) {
-                //console.log('onPresence',message)
+                console.log('onPresence',message)
                 var pages = getCurrentPages()
                 if (message.type == "unsubscribe") {
                     pages[0].moveFriend(message)
                 }
                 if (message.type === "subscribe") {
+                    console.log('MMMMMMMMMMMMMM',message.status)
                     if(message.status === '[resp:true]') {
                       return
                     } else {

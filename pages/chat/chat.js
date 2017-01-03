@@ -80,8 +80,8 @@ Page({
                         key: nameList.your + myName,
                         data: '',
                         success: function () {
-                            if (currentPage[1]) {
-                                currentPage[1].onShow()
+                            if (currentPage[0]) {
+                                currentPage[0].onShow()
                             }
                         }
                     })

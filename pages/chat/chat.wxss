@@ -155,9 +155,9 @@
 	margin-top: 8px;
 }
 .chats {
-	width: 35px;
-	height: 37px;
-	margin-top: 8px;
+	width: 40px;
+	height: 40px;
+	margin-top: 6px;
 }
 .contacts image,.settings image {
 	width: 100%;
