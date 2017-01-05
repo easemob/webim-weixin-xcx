@@ -10,11 +10,6 @@ Page({
   data: {
     logs: []
   },
-  bindViewTap: function() {
-    wx.navigateTo({
-      url: '../demo/demo'
-    })
-  },
   onLoad: function () {
     this.setData({
       logs: (wx.getStorageSync('logs') || []).map(function (log) {
