@@ -1,23 +1,23 @@
 <view class="search" wx:if="{{ search_btn }}">
 	<view bindtap="openSearch" bindtap="add_new">
-		<!-- <icon type="search" size="13"></icon> -->
+		<icon type="search" size="13"></icon>
 		<text>添加好友</text>
 	</view>
-	<!-- <image src="../../images/add.png" bindtap="add_new"></image> -->
+	<image src="../../images/add.png" bindtap="add_new"></image>
 </view>
-<view class="search_input" wx:if="{{ search_friend }}">
+<!-- <view class="search_input" wx:if="{{ search_friend }}">
 	<view>
 		<icon type="search" size="13"></icon>
 		<input placeholder="搜索" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus></input>
 	</view>
 	<text bindtap="cancel">取消</text>
-</view>
+</view> -->
 <view class="body">
 	<view class="contain">
-		<view class="chat" bindtap="into_inform">
+		<!-- <view class="chat" bindtap="into_inform">
 			<image src="../../images/chat.png"></image>
 			<text>申请与通知</text>
-		</view>
+		</view> -->
 		<!-- <view class="chat_groups" bindtap="into_groups">
 			<image src="../../images/chat-list.png"></image>
 			<text>群组</text>

@@ -4,9 +4,55 @@ var WebIM = WebIM.default
 
 Page({
     data: {
-        name: 'wjy666',
-        psd: '123',
-        grant_type: "password"
+        name: '',
+        psd: '',
+        grant_type: "password",
+        array: ['老大王浩', '老二代凡', '老三李瀚', '老四郭超','老五丁锐', '老六徐达', '老七钟泽方', '老八张鹏飞'],
+        objectArray: [
+          {
+            user: 'wh',
+            pwd:'123'
+          },
+          {
+            user: 'df',
+            pwd:'123'
+          },
+          {
+            user: 'lh',
+            pwd:'123'
+          },
+          {
+            user: 'gc',
+            pwd:'123'
+          },
+          {
+            user: 'dr',
+            pwd:'123'
+          },
+          {
+            user: 'xd',
+            pwd:'123'
+          },
+          {
+            user: 'zzf',
+            pwd:'123'
+          },
+          {
+            user: 'zpf',
+            pwd:'123'
+          }
+        ],
+        index: '',
+        hidden: 'input'
+    },
+    bindPickerChange: function(e) {
+        console.log(e)
+        this.setData({
+          index: e.detail.value,
+          name: this.data.objectArray[e.detail.value].user,
+          psd: this.data.objectArray[e.detail.value].pwd,
+          hidden: 'show'
+        })
     },
     bindUsername: function (e) {
         this.setData({
