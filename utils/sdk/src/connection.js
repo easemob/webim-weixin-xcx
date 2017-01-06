@@ -639,42 +639,6 @@ var _getXmppUrl = function (baseUrl, https) {
 };
 
 
-var _handlePageLimit = function () {
-    if (WebIM.config.isMultiLoginSessions && window.localStorage) {
-        var keyValue = 'empagecount' + pageLimitKey;
-
-        window.addEventListener('storage', function () {
-            window.localStorage.setItem(keyValue, Demo.user);
-        });
-
-        _clearPageSign();
-        window.localStorage.setItem(keyValue, Demo.user);
-    }
-};
-
-var _clearPageSign = function () {
-    if (window.localStorage) {
-        try {
-            window.localStorage.clear();
-        } catch (e) {
-        }
-    }
-};
-
-var _getPageCount = function () {
-    var sum = 0;
-
-    if (WebIM.config.isMultiLoginSessions && window.localStorage) {
-        for (var o in localStorage) {
-            if (/^empagecount/.test(o) && Demo.user == localStorage[o]) {
-                sum++;
-            }
-        }
-    }
-    //console.log(sum);
-    return sum;
-};
-
 //class
 var connection = function (options) {
     if (!this instanceof connection) {
@@ -782,17 +746,7 @@ connection.prototype.cacheReceiptsMessage = function (options) {
 };
 
 connection.prototype.open = function (options) {
-    // _handlePageLimit();
 
-    // setTimeout(function () {
-    //     var total = _getPageCount();
-    //     if (total > PAGELIMIT) {
-    //         Demo.api.NotifyError(Demo.lan.nomorethan + PAGELIMIT + Demo.lan.reslogatonetime);
-    //         setTimeout(function () {
-    //             location.reload();
-    //         }, 500);
-    //     }
-    // }, 50);
 
     var pass = _validCheck(options, this);
 
@@ -812,9 +766,11 @@ connection.prototype.open = function (options) {
         var apiUrl = options.apiUrl;
         var userId = options.user;
         var pwd = options.pwd || '';
-        var orgName = 'easemob-demo';
-        var appName = 'chatdemoui';
-        console.log(options)
+        var appkey = options.appKey;
+        var str = appkey.split('#');
+        var orgName = str[0];
+        var appName = str[1];
+        
         var suc = function (data, xhr, myName) {
             // console.log('success',data, xhr, myName)
             conn.context.status = _code.STATUS_DOLOGIN_IM;
@@ -866,7 +822,7 @@ connection.prototype.open = function (options) {
             timestamp: +new Date()
         };
         var loginfo = _utils.stringify(loginJson);
-
+        console.log(loginfo)
         var options = {
             url: apiUrl + '/' + orgName + '/' + appName + '/token',
             data: loginfo,
@@ -1043,7 +999,6 @@ connection.prototype.handlePresence = function (msginfo) {
         }
     }
 
-    // <item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none">
     //     <actor nick="liuwz"/>
     // </item>
     // one record once a time
@@ -1069,13 +1024,6 @@ connection.prototype.handlePresence = function (msginfo) {
     }
 
     // from message : apply to join group
-    // <message from="easemob-demo#chatdemoui_lwz4@easemob.com/mobile" id="259151681747419640" to="easemob-demo#chatdemoui_liuwz@easemob.com" xmlns="jabber:client">
-    //     <x xmlns="http://jabber.org/protocol/muc#user">
-    //         <apply from="easemob-demo#chatdemoui_lwz4@easemob.com" to="easemob-demo#chatdemoui_1477733677560@conference.easemob.com" toNick="lwzlwzlwz">
-    //             <reason>qwe</reason>
-    //         </apply>
-    //     </x>
-    // </message>
     var apply = msginfo.getElementsByTagName('apply');
     if (apply && apply.length > 0) {
         apply = apply[0];
@@ -1523,7 +1471,7 @@ connection.prototype.send = function (message) {
             function (response) {
             },
             function (code, msg) {
-                Demo.api.NotifyError('send:' + code + " - " + msg);
+                
             });
     } else {
         if (Object.prototype.toString.call(message) === '[object Object]') {
@@ -1945,7 +1893,7 @@ connection.prototype.clear = function () {
         clearInterval(this.intervalId);
     }
     if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
-        Demo.api.init();
+        
     }
 };
 
@@ -2067,14 +2015,14 @@ connection.prototype._onReceiveInviteFromGroup = function (info) {
         agree: function agree() {
             WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("acceptInvitationFromGroup error:" + msg);
+                IM.api.NotifyError("acceptInvitationFromGroup error:" + msg);
             });
 
         },
         reject: function reject() {
             WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("declineInvitationFromGroup error:" + msg);
+                IM.api.NotifyError("declineInvitationFromGroup error:" + msg);
             });
         }
     };
@@ -2129,13 +2077,13 @@ connection.prototype._onReceiveJoinGroupApplication = function (info) {
         agree: function agree() {
             WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("acceptJoinGroupApplication error:" + msg);
+                IM.api.NotifyError("acceptJoinGroupApplication error:" + msg);
             });
         },
         reject: function reject() {
             WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("declineJoinGroupApplication error:" + msg);
+                IM.api.NotifyError("declineJoinGroupApplication error:" + msg);
             });
         }
     };
@@ -2175,7 +2123,7 @@ connection.prototype.reconnect = function () {
     this.autoReconnectNumTotal++;
 };
 connection.prototype.closed = function () {
-    Demo.api.init();
+    IM.api.init();
 };
 
 // used for blacklist
@@ -2384,14 +2332,7 @@ connection.prototype.removeGroupMemberFromBlacklist = function (options) {
  *
  * @param options
  */
-// <iq to='easemob-demo#chatdemoui_roomid@conference.easemob.com' type='set' id='3940489311' xmlns='jabber:client'>
-//     <query xmlns='http://jabber.org/protocol/muc#owner'>
-//         <x type='submit' xmlns='jabber:x:data'>
-//             <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
-//             <field var='muc#roomconfig_roomname'><value>Room Name</value></field>
-//         </x>
-//     </query>
-// </iq>
+
 connection.prototype.changeGroupSubject = function (options) {
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
@@ -2428,11 +2369,7 @@ connection.prototype.changeGroupSubject = function (options) {
  *
  * @param options
  */
-// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
-//     <query xmlns="http://jabber.org/protocol/muc#owner">
-//         <destroy/>
-//     </query>
-// </iq>
+
 connection.prototype.destroyGroup = function (options) {
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
@@ -2457,11 +2394,7 @@ connection.prototype.destroyGroup = function (options) {
  *
  * @param options
  */
-// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
-//     <query xmlns="http://jabber.org/protocol/muc#admin">
-//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-//     </query>
-// </iq>
+
 connection.prototype.leaveGroupBySelf = function (options) {
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
@@ -2490,14 +2423,7 @@ connection.prototype.leaveGroupBySelf = function (options) {
  *
  * @param options
  */
-// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
-//     <query xmlns="http://jabber.org/protocol/muc#admin">
-//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
-//         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
-//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-//         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
-//     </query>
-// </iq>
+
 connection.prototype.leaveGroup = function (options) {
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
@@ -2534,11 +2460,7 @@ connection.prototype.leaveGroup = function (options) {
  *
  * @param options
  */
-// <iq id="09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477482739698@conference.easemob.com" type="set">
-//     <query xmlns="http://jabber.org/protocol/muc#admin">
-//         <item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-//     </query>
-// </iq>
+
 connection.prototype.addGroupMembers = function (options) {
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;

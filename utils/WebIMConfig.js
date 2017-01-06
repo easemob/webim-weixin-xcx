@@ -29,7 +29,7 @@ let config = {
   /*
    * Application AppKey
    */
-  appkey: 'easemob-demo#chatdemoui',
+  appkey: '1177161227178308#xcx',
   /*
    * Whether to use HTTPS
    * @parameter {Boolean} true or false

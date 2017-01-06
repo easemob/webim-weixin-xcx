@@ -87,7 +87,6 @@ if (WebIM.config.autoSignIn) {
 //             });
 //
 // stropheConn.connect(
-//   'easemob-demo#chatdemoui_liuwz@easemob.com',
 //   '$t$' + 'YWMtmbQEBKKIEeaGmMtXyg5n1wAAAVlkQvGO2WOJGlMCEJKM4VV9GCMnb_XLCXU',
 //   function() {
 //     console.log(arguments, 'ggogogo');

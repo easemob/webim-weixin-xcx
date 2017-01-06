@@ -309,6 +309,7 @@ Page({
                     'png': true,
                     'bmp': true
                 };
+                var str = WebIM.config.appkey.split('#')
                 var width = res.width
                 var height = res.height
                 var index = res.path.lastIndexOf('.')
@@ -317,7 +318,7 @@ Page({
                 }
                 if (filetype.toLowerCase() in allowType) {
                     wx.uploadFile({
-                        url: 'https://a1.easemob.com/easemob-demo/chatdemoui/chatfiles',
+                        url: 'https://a1.easemob.com/'+ str[0] + '/' + str[1] + '/chatfiles',
                         filePath: tempFilePaths[0],
                         name: 'file',
                         header: {
