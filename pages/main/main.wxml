@@ -1,10 +1,10 @@
-<view class="search" wx:if="{{ search_btn }}">
+<!-- <view class="search" wx:if="{{ search_btn }}">
 	<view bindtap="openSearch" bindtap="add_new">
 		<icon type="search" size="13"></icon>
 		<text>添加好友</text>
 	</view>
 	<image src="../../images/add.png" bindtap="add_new"></image>
-</view>
+</view> -->
 <!-- <view class="search_input" wx:if="{{ search_friend }}">
 	<view>
 		<icon type="search" size="13"></icon>
