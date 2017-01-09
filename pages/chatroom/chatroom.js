@@ -220,89 +220,89 @@ Page({
             }
         })
     },
-    sendVideo: function() {
-        var that = this
-        wx.chooseVideo({
-            sourceType: ['album', 'camera'],
-            maxDuration: 60,
-            camera: 'back',
-            success: function(res) {
-                console.log(res)
-                var tempFilePaths = res.tempFilePath
-                var str = WebIM.config.appkey.split('#')
-                wx.uploadFile({
-                    url: 'https://a1.easemob.com/'+ str[0] + '/' + str[1] + '/chatfiles',
-                    filePath: tempFilePaths,
-                    name: 'file',
-                    header: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    success: function (res) {
-                            var data = res.data
+    // sendVideo: function() {
+    //     var that = this
+    //     wx.chooseVideo({
+    //         sourceType: ['album', 'camera'],
+    //         maxDuration: 60,
+    //         camera: 'back',
+    //         success: function(res) {
+    //             console.log(res)
+    //             var tempFilePaths = res.tempFilePath
+    //             var str = WebIM.config.appkey.split('#')
+    //             wx.uploadFile({
+    //                 url: 'https://a1.easemob.com/'+ str[0] + '/' + str[1] + '/chatfiles',
+    //                 filePath: tempFilePaths,
+    //                 name: 'file',
+    //                 header: {
+    //                     'Content-Type': 'multipart/form-data'
+    //                 },
+    //                 success: function (res) {
+    //                         var data = res.data
 
-                            var dataObj = JSON.parse(data)
-                            console.log(dataObj)
-                            var id = WebIM.conn.getUniqueId();                   // 生成本地消息id
-                            var msg = new WebIM.message('img', id);
-                            console.log(msg)
-                            var file = {
-                                type: 'img',
-                                'url': dataObj.uri + '/' + dataObj.entities[0].uuid,
-                                'filetype': 'mp4',
-                                'filename': tempFilePaths
-                            }
-                            //console.log(file)
-                            var option = {
-                                apiUrl: WebIM.config.apiURL,
-                                body: file,
-                                to: that.data.yourname,                  // 接收消息对象
-                                roomType: false,
-                                chatType: 'singleChat'
-                            }
-                            msg.set(option)
-                            WebIM.conn.send(msg.body)
-                            if (msg) {
-                                //console.log(msg,msg.body.body.url)
-                                var time = WebIM.time()
-                                var msgData = {
-                                    info: {
-                                        to: msg.body.to
-                                    },
-                                    username: that.data.myName,
-                                    yourname: msg.body.to,
-                                    msg: {
-                                        type: msg.type,
-                                        data: msg.body.body.url
-                                    },
-                                    style: 'self',
-                                    time: time,
-                                    mid: msg.id
-                                }
-                                that.data.chatMsg.push(msgData)
-                                console.log(that.data.chatMsg)
-                                var myName = wx.getStorageSync('myUsername')
-                                wx.setStorage({
-                                    key: that.data.yourname + myName,
-                                    data: that.data.chatMsg,
-                                    success: function () {
-                                        //console.log('success', that.data)
-                                        that.setData({
-                                            chatMsg: that.data.chatMsg
-                                        })
-                                        setTimeout(function () {
-                                            that.setData({
-                                                toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
-                                            })
-                                        }, 10)
-                                    }
-                                })
-                            }
+    //                         var dataObj = JSON.parse(data)
+    //                         console.log(dataObj)
+    //                         var id = WebIM.conn.getUniqueId();                   // 生成本地消息id
+    //                         var msg = new WebIM.message('img', id);
+    //                         console.log(msg)
+    //                         var file = {
+    //                             type: 'img',
+    //                             'url': dataObj.uri + '/' + dataObj.entities[0].uuid,
+    //                             'filetype': 'mp4',
+    //                             'filename': tempFilePaths
+    //                         }
+    //                         //console.log(file)
+    //                         var option = {
+    //                             apiUrl: WebIM.config.apiURL,
+    //                             body: file,
+    //                             to: that.data.yourname,                  // 接收消息对象
+    //                             roomType: false,
+    //                             chatType: 'singleChat'
+    //                         }
+    //                         msg.set(option)
+    //                         WebIM.conn.send(msg.body)
+    //                         if (msg) {
+    //                             //console.log(msg,msg.body.body.url)
+    //                             var time = WebIM.time()
+    //                             var msgData = {
+    //                                 info: {
+    //                                     to: msg.body.to
+    //                                 },
+    //                                 username: that.data.myName,
+    //                                 yourname: msg.body.to,
+    //                                 msg: {
+    //                                     type: msg.type,
+    //                                     data: msg.body.body.url
+    //                                 },
+    //                                 style: 'self',
+    //                                 time: time,
+    //                                 mid: msg.id
+    //                             }
+    //                             that.data.chatMsg.push(msgData)
+    //                             console.log(that.data.chatMsg)
+    //                             var myName = wx.getStorageSync('myUsername')
+    //                             wx.setStorage({
+    //                                 key: that.data.yourname + myName,
+    //                                 data: that.data.chatMsg,
+    //                                 success: function () {
+    //                                     //console.log('success', that.data)
+    //                                     that.setData({
+    //                                         chatMsg: that.data.chatMsg
+    //                                     })
+    //                                     setTimeout(function () {
+    //                                         that.setData({
+    //                                             toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
+    //                                         })
+    //                                     }, 10)
+    //                                 }
+    //                             })
+    //                         }
 
-                    }
-                })
-            }
-        })
-    },
+    //                 }
+    //             })
+    //         }
+    //     })
+    // },
     receiveImage: function (msg, type) {
         var that = this
         var myName = wx.getStorageSync('myUsername')
