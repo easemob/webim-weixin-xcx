@@ -1,12 +1,9 @@
 var strophe = require('./utils/strophe.js')
 var WebIM = require('./utils/WebIM.js')
 var WebIM = WebIM.default
-
-
-//app.js   
+ 
 App({
     onLaunch: function () {
-        //调用API从本地缓存中获取数据
         var that = this
         var logs = wx.getStorageSync('logs') || []
         logs.unshift(Date.now())
@@ -14,7 +11,7 @@ App({
 
         WebIM.conn.listen({
             onOpened: function (message) {
-                //console.log("kkkkkkk")
+                //console.log("message")
             },
             onPresence: function (message) {
                 console.log('onPresence',message)
