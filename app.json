@@ -1,5 +1,6 @@
 {
-  "pages": [
+  "pages":[
+    "pages/index/index",
     "pages/login/login",
     "pages/register/register",
     "pages/main/main",
@@ -11,9 +12,9 @@
     "pages/chatroom/chatroom",
     "pages/friend_info/friend_info"
   ],
-  "window": {
-    "backgroundTextStyle": "light",
+  "window":{
+    "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTextStyle": "black"
+    "navigationBarTextStyle":"black"
   }
 }

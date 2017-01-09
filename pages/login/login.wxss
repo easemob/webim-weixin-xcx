@@ -5,6 +5,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
+    /*background: -webkit-linear-gradient(top,rgb(36,61,85) 10%,  rgb(61,92,120) 50%,rgb(36,61,85) 80%);*/
     background-color: #ffffff;
 }
 .login_img {
@@ -20,7 +21,6 @@
 .login_user, .login_pwd {
 	width: 100%;
 	height: 50px;
-	margin-top: 20px;
 }
 .login_user input, .login_pwd input {
 	width: 70%;
@@ -37,7 +37,7 @@
 	margin: 30px auto 15px auto;
 }
 .login_pwd input {
-	margin: 30px auto 0 auto;
+	margin: 15px auto 0 auto;
 }
 .login_text {
 	width: 100%;
@@ -73,41 +73,6 @@
 	color: rgb(255,255,255);
 	background-color: #1aa0e5;
 }
-.header,.header_img {
-	display: flex;
-	justify-content: center;
-}
-.header text{
-	font-size: 26px;
-	display: block;
-	margin-bottom: 50px;
-}
-.header_img image {
-	width: 100px;
-	height: 100px;
-	border-radius: 50px;
-	margin:30px auto 30px auto;
-}
-.section_title,.picker {
-	display: flex;
-	justify-content: center;
-}
-.picker {
-	width: 100%;
-	height: 40px;
-	line-height: 40px;
-	background-color: #dddddd;
-}
-
-
-
-
-
-
-
-
-
-
 .btn_hover {
 	background-color: #4F94CD;
 }
