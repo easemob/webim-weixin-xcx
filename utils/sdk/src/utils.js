@@ -21,7 +21,7 @@
             return false;
         }
     };
-
+    
     var _xmlrequest = function (crossDomain) {
         return false;
         crossDomain = crossDomain || true;

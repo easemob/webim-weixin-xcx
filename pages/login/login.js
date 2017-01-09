@@ -4,7 +4,7 @@ var WebIM = WebIM.default
 
 Page({
     data: {
-        name: 'wjy000',
+        name: 'wjy666',
         psd: '123',
         grant_type: "password"
     },
