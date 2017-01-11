@@ -30,7 +30,7 @@ function _extends(Class, Super) {
     }
     if (pt.constructor != Class) {
         if (typeof Class != 'function') {
-            console.error("unknow Class:" + Class)
+            //console.error("unknow Class:" + Class)
         }
         pt.constructor = Class
     }

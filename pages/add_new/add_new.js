@@ -13,7 +13,7 @@ Page({
 		})
 	},
 	onShow: function() {
-		console.log(getCurrentPages())
+		//console.log(getCurrentPages())
 	},
 	sendMsg: function() {
 		wx.showToast({

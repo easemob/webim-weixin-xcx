@@ -19,20 +19,22 @@ Page({
         view: 'scroll_view',
         toView: '',
         emoji: WebIM.Emoji,
-        emojiObj: WebIM.EmojiObj
+        emojiObj: WebIM.EmojiObj,
+        showRecordHandler: false,
     },
     onLoad: function (options) {
         var that = this
         console.log(options)
         var myName = wx.getStorageSync('myUsername')
+        console.log(myName)
         var options = JSON.parse(options.username)
         var num = wx.getStorageSync(options.your + myName).length - 1
         if (num > 0) {
-            setTimeout(function() {
+            setTimeout(function () {
                 that.setData({
                     toView: wx.getStorageSync(options.your + myName)[num].mid
                 })
-            },10)
+            }, 10)
         }
         this.setData({
             yourname: options.your,
@@ -40,6 +42,7 @@ Page({
             inputMessage: '',
             chatMsg: wx.getStorageSync(options.your + myName) || []
         })
+        console.log(that.data.chatMsg)
         wx.setNavigationBarTitle({
             title: that.data.yourname
         })
@@ -61,6 +64,151 @@ Page({
             sendInfo: that.data.userMessage
         }
         that.setData(setUserMessage)
+    },
+    //***************** 录音 ***************************
+    toggleRecordHandler: function () {
+        if (!this.data.showRecordHandler) {
+            wx.showModal({
+                content: 'hold to record'
+            })
+        }
+
+        this.setData({
+            showRecordHandler: !this.data.showRecordHandler
+        })
+    },
+    handleRecording: function () {
+        var self = this
+        console.log('handleRecording')
+        // wx.showModal({
+        //     title: '录音中',
+        //     showCancel: false,
+        //     showConfirm: false,
+        // })
+
+        wx.startRecord({
+            fail: function (err) {
+                // 时间太短会失败
+                console.log(err)
+            },
+            success: function (res) {
+                var tempFilePath = res.tempFilePath
+                console.log(tempFilePath)
+                self.uploadRecord(tempFilePath)
+            },
+            complete: function () {
+                console.log("complete")
+            }
+        })
+
+        setTimeout(function () {
+            //超时 
+            wx.stopRecord()
+        }, 100000)
+    },
+    handleRecordingCancel: function () {
+        console.log('handleRecordingCancel')
+        wx.stopRecord()
+    },
+    playRecord: function (e) {
+        let {url} = e.target.dataset
+        console.log(url)
+        wx.showToast({
+            title: '下载' + url,
+            duration: 1000
+        })
+        wx.downloadFile({
+            url: url,
+            success: function (res) {
+                console.log(res)
+                wx.showToast({
+                    title: '播放' + res.tempFilePath,
+                    duration: 1000
+                })
+                wx.playVoice({
+                    filePath: res.tempFilePath
+                })
+            },
+            fail: function (err) {
+                wx.showToast({
+                    title: JSON.stringify(err),
+                    duration: 3000
+                })
+            }
+        })
+    },
+    uploadRecord: function (tempFilePath) {
+        var str = WebIM.config.appkey.split('#')
+        var that = this
+        wx.uploadFile({
+            url: 'https://a1.easemob.com/' + str[0] + '/' + str[1] + '/chatfiles',
+            filePath: tempFilePath,
+            name: 'file',
+            header: {
+                'Content-Type': 'multipart/form-data'
+            },
+            success: function (res) {
+                console.log(res)
+                // return;
+
+                // 发送xmpp消息
+                var msg = new WebIM.message('audio', WebIM.conn.getUniqueId())
+                var data = res.data
+                var dataObj = JSON.parse(data)
+                var file = {
+                    type: 'audio',
+                    'url': dataObj.uri + '/' + dataObj.entities[0].uuid,
+                    'filetype': '',
+                    'filename': tempFilePath
+                }
+                var option = {
+                    apiUrl: WebIM.config.apiURL,
+                    body: file,
+                    to: that.data.yourname,                  // 接收消息对象
+                    roomType: false,
+                    chatType: 'singleChat'
+                }
+                msg.set(option)
+                WebIM.conn.send(msg.body)
+                // 本地消息展示
+                var time = WebIM.time()
+                var msgData = {
+                    info: {
+                        to: msg.body.to
+                    },
+                    username: that.data.myName,
+                    yourname: msg.body.to,
+                    msg: {
+                        type: msg.type,
+                        data: msg.body.body.url,
+                        url: msg.body.body.url,
+                    },
+                    style: 'self',
+                    time: time,
+                    mid: msg.id
+                }
+                that.data.chatMsg.push(msgData)
+                console.log(that.data.chatMsg)
+                // 存储到本地消息
+                var myName = wx.getStorageSync('myUsername')
+                wx.setStorage({
+                    key: that.data.yourname + myName,
+                    data: that.data.chatMsg,
+                    success: function () {
+                        //console.log('success', that.data)
+                        that.setData({
+                            chatMsg: that.data.chatMsg
+                        })
+                        setTimeout(function () {
+
+                            that.setData({
+                                toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
+                            })
+                        }, 10)
+                    }
+                })
+            }
+        })
     },
     sendMessage: function () {
         var that = this
@@ -144,7 +292,8 @@ Page({
                 yourname: msg.from,
                 msg: {
                     type: type,
-                    data: value
+                    data: value,
+                    url: msg.url
                 },
                 style: '',
                 time: time,
@@ -212,8 +361,8 @@ Page({
             sizeType: ['original', 'compressed'],
             sourceType: ['album'],
             success: function (res) {
-                console.log(res)
-                console.log(pages)
+                //console.log(res)
+                //console.log(pages)
                 if (pages[1]) {
                     pages[1].upLoadImage(res, that)
                 }
@@ -379,7 +528,7 @@ Page({
         //console.log(e)
     },
     upLoadImage: function (res, that) {
-        console.log(res)
+        //console.log(res)
         var tempFilePaths = res.tempFilePaths
         //console.log(tempFilePaths)
         wx.getImageInfo({
@@ -401,7 +550,7 @@ Page({
                 }
                 if (filetype.toLowerCase() in allowType) {
                     wx.uploadFile({
-                        url: 'https://a1.easemob.com/'+ str[0] + '/' + str[1] + '/chatfiles',
+                        url: 'https://a1.easemob.com/' + str[0] + '/' + str[1] + '/chatfiles',
                         filePath: tempFilePaths[0],
                         name: 'file',
                         header: {
@@ -455,7 +604,7 @@ Page({
                                     mid: msg.id
                                 }
                                 that.data.chatMsg.push(msgData)
-                                console.log(that.data.chatMsg)
+                                //console.log(that.data.chatMsg)
                                 var myName = wx.getStorageSync('myUsername')
                                 wx.setStorage({
                                     key: that.data.yourname + myName,

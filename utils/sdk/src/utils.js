@@ -797,7 +797,7 @@
                 },
                 method: type,
                 success: function(res){
-                    console.log(res)
+                    //console.log(res)
                     if(res.statusCode == '200') {
                         suc(res)
                     }else {

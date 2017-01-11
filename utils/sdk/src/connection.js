@@ -78,7 +78,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
     try {
         if (WebIM && WebIM.config.isDebug) {
             console.group('%crecv # ', 'color: green; font-size: large')
-            //console.log('%c' + message.data, 'color: green');
+            console.log('%c' + message.data, 'color: green');
             console.groupEnd();
         }
     } catch (e) {
@@ -770,7 +770,7 @@ connection.prototype.open = function (options) {
         var str = appkey.split('#');
         var orgName = str[0];
         var appName = str[1];
-        
+
         var suc = function (data, xhr, myName) {
             // console.log('success',data, xhr, myName)
             conn.context.status = _code.STATUS_DOLOGIN_IM;
@@ -791,7 +791,7 @@ connection.prototype.open = function (options) {
             _login(data.data, conn);
         };
         var error = function (res, xhr, msg) {
-            console.log('error',res, xhr, msg)
+            console.log('error', res, xhr, msg)
             conn.clear();
             wx.showModal({
                 title: '用户名或密码错误!',
@@ -1441,7 +1441,7 @@ connection.prototype.handleInviteMessage = function (message) {
 
 connection.prototype.sendCommand = function (dom, id) {
     if (this.isOpened()) {
-        console.log("wadawdwdwadwa",dom)
+        //console.log("wadawdwdwadwa", dom)
         this.context.stropheConn.send(dom);
     } else {
         this.onError({
@@ -1471,7 +1471,7 @@ connection.prototype.send = function (message) {
             function (response) {
             },
             function (code, msg) {
-                
+
             });
     } else {
         if (Object.prototype.toString.call(message) === '[object Object]') {
@@ -1564,7 +1564,7 @@ connection.prototype.subscribe = function (options) {
     var jid = _getJid(options, this);
     var pres = StropheAll.$pres({to: jid, type: 'subscribe'});
     if (options.message) {
-        console.log('ggggggggg',pres,options.message)
+        console.log('ggggggggg', pres, options.message)
         pres.c('status').t(options.message).up();
     }
     if (options.nick) {
@@ -1893,7 +1893,7 @@ connection.prototype.clear = function () {
         clearInterval(this.intervalId);
     }
     if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
-        
+
     }
 };
 

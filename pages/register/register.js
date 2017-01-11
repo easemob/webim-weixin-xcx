@@ -52,7 +52,7 @@ Page({
 					                grant_type: 'password',
 					                appKey: WebIM.config.appkey
 					            }
-					            console.log('data',data)
+					            //console.log('data',data)
 					            wx.setStorage({
 					                key: "myUsername",
 					                data: that.data.username

@@ -36,7 +36,8 @@ Page({
                 })
             }
         }
-        WebIM.conn.setPresence()
+
+        //WebIM.conn.setPresence()
         WebIM.conn.getRoster(rosters)
     },
     moveFriend: function (message) {
@@ -74,7 +75,7 @@ Page({
             content: message.from + '请求加为好友',
             success: function (res) {
                 if (res.confirm == true) {
-                    console.log('vvvvvvvvvvvvv')
+                    //console.log('vvvvvvvvvvvvv')
                     WebIM.conn.subscribed({
                         to: message.from,
                         message: "[resp:true]"

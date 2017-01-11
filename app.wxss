@@ -8,3 +8,13 @@
   padding: 200rpx 0;
   box-sizing: border-box;
 } 
+
+
+.f {
+	flex: 1;
+}
+
+.f-row {
+  display: flex;
+  flex-direction: row;
+}

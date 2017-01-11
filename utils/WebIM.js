@@ -42,7 +42,6 @@ var window = {}
 let WebIM = window.WebIM = websdk;
 window.WebIM.config = config;
 var DOMParser = window.DOMParser = xmldom.DOMParser;
-console.log(DOMParser, 'kilwddaw')
 let document = window.document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", 'text/xml');
 
 if (WebIM.config.isDebug) {
@@ -56,7 +55,7 @@ if (WebIM.config.isDebug) {
     }
 
     Strophe.Strophe.log = function (level, msg) {
-        console.log(ts(), level, msg);
+        // console.log(ts(), level, msg);
     };
 
     Strophe.Strophe.Connection.prototype.rawOutput = function (data) {
@@ -65,6 +64,7 @@ if (WebIM.config.isDebug) {
             console.log('%c' + data, 'color: blue');
             console.groupEnd();
         } catch (e) {
+            console.log(e)
         }
     };
 }

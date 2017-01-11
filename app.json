@@ -1,20 +1,20 @@
 {
-  "pages":[
-    "pages/index/index",
+  "pages": [
     "pages/login/login",
-    "pages/register/register",
     "pages/main/main",
+    "pages/chatroom/chatroom",
+    "pages/index/index",
+    "pages/register/register",
     "pages/add_new/add_new",
     "pages/chat/chat",
     "pages/settings/settings",
     "pages/groups/groups",
     "pages/inform/inform",
-    "pages/chatroom/chatroom",
     "pages/friend_info/friend_info"
   ],
-  "window":{
-    "backgroundTextStyle":"light",
+  "window": {
+    "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTextStyle":"black"
+    "navigationBarTextStyle": "black"
   }
 }

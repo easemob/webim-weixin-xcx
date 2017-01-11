@@ -27,7 +27,7 @@ let document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", 'text/
 var window = window || {};
 window.DOMParser = DOMParser;
 
-console.log('strophe ...')
+//console.log('strophe ...')
 var Strophe = null;
 var $build = null;
 var $msg = null;
@@ -2859,7 +2859,7 @@ var $pres = null;
              *     Strophe.Builder) elem - The stanza to send.
              */
             send: function (elem) {
-                console.log(elem)
+                // console.log(elem)
                 if (elem === null) {
                     return;
                 }
