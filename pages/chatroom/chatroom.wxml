@@ -1,8 +1,11 @@
 <view class="main">
-    <view class="modal modal-record">
-        <view class="modal-body">
-            <text>hold to record</text>
-            <image bindtap="startRecord" class="icon-play" src="../../images/iconPlay@2x.png"/>
+    <view wx:if="{{recordStatus != RecordStatus.HIDE}}" class="modal modal-record" bindtap="toggleRecordModal">
+        <view class="modal-body" catchtap="toggleWithoutAction">
+            <text class="desc">{{RecordDesc[recordStatus]}}</text>
+            <view class="dot" catchtouchstart="handleRecording" catchtouchmove="handleRecordingMove"
+                  catchtouchend="handleRecordingCancel" catchtouchcancel="handleRecordingCancel">
+                <image class="icon-mic" src="../../images/mic@2x.png"/>
+            </view>
         </view>
     </view>
     <scroll-view scroll-y="true" class="scroll_view" class="{{ view }}" bindtap="cancelEmoji"
@@ -18,7 +21,7 @@
                 <image class="avatar" src="../../images/number.png"/>
                 <view class="msg">
                     <view wx:if="{{ item.msg.type == 'img' || item.msg.type == 'audio' }}">
-                        <template is="{{ item.msg.type }}" data="{{ item }}"/>
+                        <template is="{{ item.msg.type }}" data="{{ item, msgView }}"/>
                     </view>
                     <view wx:elif="{{ item.msg.type == 'txt' || item.msg.type == 'emoji' }}">
                         <view class="template" wx:for="{{ item.msg.data }}" wx:key="">
@@ -34,7 +37,8 @@
         <text style="float: left;margin-top: 2px;">{{ item.data }}</text>
     </template>
     <template name="audio">
-        <image bindtap="playRecord" data-url="{{item.msg.url}}" class="icon-play" src="../../images/iconPlay@2x.png"/>
+        <image bindtap="playRecord" data-mid="{{item.mid}}" data-url="{{item.msg.url}}" class="icon-play"
+               src="{{ msgView[item.mid].isPlay? '../../images/audioPause.png' : '../../images/audioPlay.png'}}"/>
     </template>
     <template name="emoji">
         <image class="avatar" src="{{'../../images/faces/' + item.data }}"
@@ -68,8 +72,9 @@
             <view class="open_camera" bindtap="openCamera">
                 <image src="../../images/iconCamera@2x.png" style="width: 26px;"/>
             </view>
-            <view class="v-record" bindtap="toggleRecordHandler">
-                <image class="icon-record" src="../../images/iconAudio@2x.png"/>
+            <view class="v-record" bindtap="toggleRecordModal">
+                <image class="icon-record"
+                       src="{{recordStatus != RecordStatus.HIDE ? '../../images/iconAudioActive@2x.png' : '../../images/iconAudio@2x.png'}}"/>
             </view>
         </view>
         <swiper class="emoji_list" class="{{ show }}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}"

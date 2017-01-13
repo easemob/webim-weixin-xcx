@@ -18,8 +18,11 @@ Page({
             psd: e.detail.value
         })
     },
+    onLoad: function () {
+        // this.login()
+    },
     login: function () {
-        console.log('login')
+        //console.log('login')
         var that = this
         if (that.data.name == '') {
             wx.showModal({
@@ -45,7 +48,7 @@ Page({
                 key: "myUsername",
                 data: that.data.name
             })
-            console.log('open')
+            //console.log('open')
             WebIM.conn.open(options)
         }
     }

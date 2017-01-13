@@ -2,6 +2,20 @@ var strophe = require('../../utils/strophe.js')
 var WebIM = require('../../utils/WebIM.js')
 var WebIM = WebIM.default
 
+var RecordStatus = {
+    SHOW: 0,
+    HIDE: 1,
+    HOLD: 2,
+    SWIPE: 3,
+    RELEASE: 4
+}
+
+var RecordDesc = {
+    0: '长按开始录音',
+    2: '向上滑动取消',
+    3: '松开手取消',
+}
+
 Page({
     data: {
         chatMsg: [],
@@ -20,7 +34,10 @@ Page({
         toView: '',
         emoji: WebIM.Emoji,
         emojiObj: WebIM.EmojiObj,
-        showRecordHandler: false,
+        msgView: {},
+        RecordStatus: RecordStatus,
+        RecordDesc: RecordDesc,
+        recordStatus: RecordStatus.HIDE,
     },
     onLoad: function (options) {
         var that = this
@@ -65,75 +82,134 @@ Page({
         }
         that.setData(setUserMessage)
     },
-    //***************** 录音 ***************************
-    toggleRecordHandler: function () {
-        if (!this.data.showRecordHandler) {
-            wx.showModal({
-                content: 'hold to record'
-            })
-        }
-
+    //***************** 录音 begin ***************************
+    changedTouches: null,
+    toggleRecordModal: function (e) {
         this.setData({
-            showRecordHandler: !this.data.showRecordHandler
+            recordStatus: this.data.recordStatus == RecordStatus.HIDE ? RecordStatus.SHOW : RecordStatus.HIDE
         })
     },
-    handleRecording: function () {
+    toggleWithoutAction: function (e) {
+        console.log('toggleWithoutModal 拦截请求不做处理')
+    },
+    handleRecordingMove: function (e) {
+        var touches = e.touches[0]
+        var changedTouches = this.changedTouches
+
+        if (!this.changedTouches) {
+            return
+        }
+        // 无效
+        // var changedTouches = e.changedTouches[0]
+        // console.log(changedTouches.pageY, touches.pageY)
+
+        if (this.data.recordStatus == RecordStatus.SWIPE) {
+            if (changedTouches.pageY - touches.pageY < 20) {
+                this.setData({
+                    recordStatus: RecordStatus.HOLD
+                })
+            }
+        }
+        if (this.data.recordStatus == RecordStatus.HOLD) {
+            if (changedTouches.pageY - touches.pageY > 20) {
+                this.setData({
+                    recordStatus: RecordStatus.SWIPE
+                })
+            }
+        }
+
+    },
+    handleRecording: function (e) {
         var self = this
         console.log('handleRecording')
-        // wx.showModal({
-        //     title: '录音中',
-        //     showCancel: false,
-        //     showConfirm: false,
-        // })
-
+        this.changedTouches = e.touches[0]
+        this.setData({
+            recordStatus: RecordStatus.HOLD
+        })
         wx.startRecord({
             fail: function (err) {
                 // 时间太短会失败
                 console.log(err)
             },
             success: function (res) {
-                var tempFilePath = res.tempFilePath
-                console.log(tempFilePath)
-                self.uploadRecord(tempFilePath)
+                console.log('success')
+                // 取消录音发放状态 -> 退出不发送
+                if (self.data.recordStatus == RecordStatus.RELEASE) {
+                    console.log('user canceled')
+                    return
+                }
+                // console.log(tempFilePath)
+                self.uploadRecord(res.tempFilePath)
             },
             complete: function () {
                 console.log("complete")
-            }
+                this.handleRecordingCancel()
+            }.bind(this)
         })
 
         setTimeout(function () {
             //超时 
-            wx.stopRecord()
+            self.handleRecordingCancel()
         }, 100000)
     },
     handleRecordingCancel: function () {
         console.log('handleRecordingCancel')
+        // 向上滑动状态停止：取消录音发放
+        if (this.data.recordStatus == RecordStatus.SWIPE) {
+            this.setData({
+                recordStatus: RecordStatus.RELEASE
+            })
+        } else {
+            this.setData({
+                recordStatus: RecordStatus.HIDE
+            })
+        }
         wx.stopRecord()
     },
-    playRecord: function (e) {
-        let {url} = e.target.dataset
-        console.log(url)
-        wx.showToast({
-            title: '下载' + url,
-            duration: 1000
+    stopRecord: function (e) {
+        let {url, mid} = e.target.dataset
+        this.data.msgView[mid] = this.data.msgView[mid] || {}
+        this.data.msgView[mid].isPlay = false;
+        this.setData({
+            msgView: this.data.msgView
         })
+        wx.stopVoice()
+    },
+    playRecord: function (e) {
+        let {url, mid} = e.target.dataset
+        this.data.msgView[mid] = this.data.msgView[mid] || {}
+
+        // reset all plays
+        for (let v in this.data.msgView) {
+            this.data.msgView[v] = this.data.msgView && (this.data.msgView[v] || {})
+            this.data.msgView[v].isPlay = false
+        }
+
+        // is play then stop
+        if (this.data.msgView[mid].isPlay) {
+            this.stopRecord(e)
+            return;
+        }
+
+        console.log(url, mid)
+        this.data.msgView[mid].isPlay = true;
+        this.setData({
+            msgView: this.data.msgView
+        })
+
         wx.downloadFile({
             url: url,
             success: function (res) {
-                console.log(res)
-                wx.showToast({
-                    title: '播放' + res.tempFilePath,
-                    duration: 1000
-                })
                 wx.playVoice({
-                    filePath: res.tempFilePath
+                    filePath: res.tempFilePath,
+                    complete: function () {
+                        this.stopRecord(e)
+                    }.bind(this)
                 })
-            },
+            }.bind(this),
             fail: function (err) {
-                wx.showToast({
-                    title: JSON.stringify(err),
-                    duration: 3000
-                })
+            },
+            complete: function complete() {
             }
         })
     },
@@ -148,7 +224,6 @@ Page({
                 'Content-Type': 'multipart/form-data'
             },
             success: function (res) {
-                console.log(res)
                 // return;
 
                 // 发送xmpp消息
@@ -210,7 +285,12 @@ Page({
             }
         })
     },
+    //***************** 录音 end ***************************
     sendMessage: function () {
+
+        if (!this.data.userMessage.trim()) return;
+
+
         var that = this
         // //console.log(that.data.userMessage)
         // //console.log(that.data.sendInfo)
