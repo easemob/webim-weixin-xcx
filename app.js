@@ -19,47 +19,79 @@ App({
         logs.unshift(Date.now())
         wx.setStorageSync('logs', logs)
 
-        // if (WebIM.config.isDebug) {
-        //     var options = {
-        //         apiUrl: WebIM.config.apiURL,
-        //         user: 'lwz3',
-        //         pwd: '1',
-        //         grant_type: 'password',
-        //         appKey: WebIM.config.appkey
-        //     }
-        //     WebIM.conn.open(options)
-        // }
-
-
         WebIM.conn.listen({
             onOpened: function (message) {
-                //console.log("kkkkkkk1")
-
                 WebIM.conn.setPresence()
-                // WebIM.conn.getRoster(rosters)
             },
             onPresence: function (message) {
-                //console.log('onPresence',message)
-                var pages = getCurrentPages()
-                if (message.type == "unsubscribe") {
-                    pages[0].moveFriend(message)
-                }
-                if (message.type === "subscribe") {
-                    //console.log('MMMMMMMMMMMMMM',message.status)
-                    if (message.status === '[resp:true]') {
-                        return
-                    } else {
-                        pages[0].handleFriendMsg(message)
-                    }
+                switch(message.type){
+                    case "unsubscribe":
+                        pages[0].moveFriend(message);
+                        break;
+                    case "subscribe":
+                        if (message.status === '[resp:true]') {
+                            return
+                        } else {
+                            pages[0].handleFriendMsg(message)
+                        }
+                        break;
+                    case "joinChatRoomSuccess":
+                        wx.showToast({
+                            title: "JoinChatRoomSuccess",
+                        });
+                        break;
+                    case "memberJoinChatRoomSuccess":
+                        wx.showToast({
+                            title: "memberJoinChatRoomSuccess",
+                        });
+                        break;
                 }
             },
             onRoster: function (message) {
-                //console.log('onRoster',message)
                 var pages = getCurrentPages()
                 if (pages[0]) {
                     pages[0].onShow()
                 }
             },
+
+            onVideoMessage: function(message){
+                console.log('onVideoMessage: ', message);
+                var page = that.getRoomPage()
+                if (message) {
+                    if (page) {
+                        page.receiveVideo(message, 'video')
+                    } else {
+                        var chatMsg = that.globalData.chatMsg || []
+                        var time = WebIM.time()
+                        var msgData = {
+                            info: {
+                                from: message.from,
+                                to: message.to
+                            },
+                            username: message.from,
+                            yourname: message.from,
+                            msg: {
+                                type: 'video',
+                                data: message.url
+                            },
+                            style: '',
+                            time: time,
+                            mid: 'video' + message.id
+                        }
+                        msgData.style = ''
+                        chatMsg = wx.getStorageSync(msgData.yourname + message.to) || []
+                        chatMsg.push(msgData)
+                        wx.setStorage({
+                            key: msgData.yourname + message.to,
+                            data: chatMsg,
+                            success: function () {
+                                //console.log('success')
+                            }
+                        })
+                    }
+                }
+            },
+
             onAudioMessage: function (message) {
                 console.log('onAudioMessage', message)
                 var page = that.getRoomPage()
@@ -86,6 +118,7 @@ App({
                             time: time,
                             mid: 'audio' + message.id
                         }
+                        console.log("Audio msgData: ", msgData);
                         chatMsg = wx.getStorageSync(msgData.yourname + message.to) || []
                         chatMsg.push(msgData)
                         wx.setStorage({
@@ -98,8 +131,12 @@ App({
                     }
                 }
             },
+
+            onLocationMessage: function (message) {
+                console.log("Location message: ", message);
+            },
+
             onTextMessage: function (message) {
-                console.log('onTextMessage', message)
                 var page = that.getRoomPage()
                 console.log(page)
                 if (message) {
@@ -215,15 +252,11 @@ App({
             },
             // 各种异常
             onError: function (error) {
-                //console.log(error)
                 // 16: server-side close the websocket connection
                 if (error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
-                    //console.log('WEBIM_CONNCTION_DISCONNECTED 123', WebIM.conn.autoReconnectNumTotal, WebIM.conn.autoReconnectNumMax);
                     if (WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax) {
                         return;
                     }
-                    // wx.('Error', 'server-side close the websocket connection')
-                    // NavigationActions.login()/
 
                     wx.showToast({
                         title: 'server-side close the websocket connection',
@@ -237,10 +270,6 @@ App({
 
                 // 8: offline by multi login
                 if (error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_ERROR) {
-                    //console.log('WEBIM_CONNCTION_SERVER_ERROR');
-                    // Alert.alert('Error', 'offline by multi login')
-                    // NavigationActions.login()
-
                     wx.showToast({
                         title: 'offline by multi login',
                         duration: 1000
@@ -252,6 +281,8 @@ App({
                 }
             },
         })
+
+        
     }
     ,
     getUserInfo: function (cb) {

@@ -10,7 +10,6 @@ Page({
         var that = this
         var member = wx.getStorageSync('member')
         var myName = wx.getStorageSync('myUsername')
-        //console.log(member)
         var array = []
         for (var i = 0; i < member.length; i++) {
             if (wx.getStorageSync(member[i].name + myName) != '') {

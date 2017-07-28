@@ -350,15 +350,73 @@ Page({
             })
         }
     },
+
     receiveMsg: function (msg, type) {
         var that = this
         var myName = wx.getStorageSync('myUsername')
         if (msg.from == that.data.yourname || msg.to == that.data.yourname) {
-            //console.log(msg)
             if (type == 'txt') {
                 var value = WebIM.parseEmoji(msg.data.replace(/\n/mg, ''))
             } else if (type == 'emoji') {
                 var value = msg.data
+            } else if(type == 'audio'){
+                // 如果是音频则请求服务器转码
+                console.log('Audio Audio msg: ', msg);
+                var token = msg.accessToken;
+                console.log('get token: ', token)
+                var options = {
+                    url: msg.url,
+                    header: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'audio/mp3',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    success: function(res){
+                        console.log('downloadFile success Play', res);
+                        // wx.playVoice({
+                            // filePath: res.tempFilePath
+                        // })
+                        msg.url = res.tempFilePath
+                        var msgData = {
+                            info: {
+                                from: msg.from,
+                                to: msg.to
+                            },
+                            username: '',
+                            yourname: msg.from,
+                            msg: {
+                                type: type,
+                                data: value,
+                                url: msg.url
+                            },
+                            style: '',
+                            time: time,
+                            mid: msg.type + msg.id
+                        }
+
+                        if (msg.from == that.data.yourname) {
+                            msgData.style = ''
+                            msgData.username = msg.from
+                        } else {
+                            msgData.style = 'self'
+                            msgData.username = msg.to
+                        }
+
+                        var msgArr = that.data.chatMsg;
+                        msgArr.pop();
+                        msgArr.push(msgData);
+
+                        that.setData({
+                            chatMsg: that.data.chatMsg,
+                        })
+                        console.log("New audio");
+                    },
+                    fail: function(e){
+                        console.log('downloadFile failed', e);
+                    }
+                };
+                console.log('Download');
+                wx.downloadFile(options);
             }
             //console.log(msg)
             //console.log(value)
@@ -379,6 +437,7 @@ Page({
                 time: time,
                 mid: msg.type + msg.id
             }
+            console.log('Audio Audio msgData: ', msgData);
             if (msg.from == that.data.yourname) {
                 msgData.style = ''
                 msgData.username = msg.from
@@ -392,6 +451,8 @@ Page({
                 key: that.data.yourname + myName,
                 data: that.data.chatMsg,
                 success: function () {
+                    if(type == 'audio')
+                        return;
                     //console.log('success', that.data)
                     that.setData({
                         chatMsg: that.data.chatMsg,
@@ -441,13 +502,65 @@ Page({
             sizeType: ['original', 'compressed'],
             sourceType: ['album'],
             success: function (res) {
-                //console.log(res)
-                //console.log(pages)
                 if (pages[1]) {
                     pages[1].upLoadImage(res, that)
                 }
             }
         })
+    },
+
+    sendLocation: function() {
+        var that = this
+        var pages = getCurrentPages()
+        pages[1].cancelEmoji()
+        wx.chooseLocation({
+            success: function(respData){
+                var id = WebIM.conn.getUniqueId();
+                var msg = new WebIM.message('location', id);
+                msg.set({
+                    msg: that.data.sendInfo,
+                    to: that.data.yourname,
+                    roomType: false,
+                    lng: respData.longitude,
+                    lat: respData.latitude,
+                    addr: respData.address,
+                    success: function (id, serverMsg`Id) {
+                        //console.log('success')
+                    }
+                });
+                // //console.log(msg)
+                msg.body.chatType = 'singleChat';
+                WebIM.conn.send(msg.body);
+            }
+        })
+    },
+
+    testInterfaces: function(){
+        var option = {
+            roomId: '21873157013506',
+            success: function(respData){
+                wx.showToast({
+                    title: "JoinChatRoomSuccess",
+                });
+                console.log('Response data: ', respData);
+            }
+        };
+        wx.showToast({
+            title: "JoinChatRoom",
+        });
+        WebIM.conn.joinChatRoom(option);
+        // var option = {
+        //     apiUrl: WebIM.config.apiURL,
+        //     pagenum: 1,
+        //     pagesize: 20,
+        //     success: function(resp){
+        //         console.log(resp);
+        //     },
+        //     error: function(e){
+        //         console.log(e);
+        //     }
+        // };
+        // WebIM.conn.getChatRooms(option);
     },
     // sendVideo: function() {
     //     var that = this
@@ -574,6 +687,50 @@ Page({
             })
         }
     },
+
+receiveVideo: function (msg, type) {
+        var that = this
+        var myName = wx.getStorageSync('myUsername')
+        //console.log(msg)
+        if (msg) {
+            //console.log(msg)
+            var time = WebIM.time()
+            var msgData = {
+                info: {
+                    from: msg.from,
+                    to: msg.to
+                },
+                username: msg.from,
+                yourname: msg.from,
+                msg: {
+                    type: 'video',
+                    data: msg.url
+                },
+                style: '',
+                time: time,
+                mid: 'video' + msg.id
+            }
+            //console.log(msgData)
+            that.data.chatMsg.push(msgData)
+            //console.log(that.data.chatMsg)
+            wx.setStorage({
+                key: that.data.yourname + myName,
+                data: that.data.chatMsg,
+                success: function () {
+                    //console.log('success', that.data)
+                    that.setData({
+                        chatMsg: that.data.chatMsg
+                    })
+                    setTimeout(function () {
+                        that.setData({
+                            toView: that.data.chatMsg[that.data.chatMsg.length - 1].mid
+                        })
+                    }, 100)
+                }
+            })
+        }
+    },
+
     openCamera: function () {
         var that = this
         var pages = getCurrentPages()

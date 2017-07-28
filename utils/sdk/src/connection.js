@@ -665,6 +665,7 @@ var connection = function (options) {
     this.autoReconnectNumTotal = 0;
     this.autoReconnectInterval = options.autoReconnectInterval || 0;
     this.context = {status: _code.STATUS_INIT};
+    this.apiUrl = options.apiUrl || '';
     //todo 接收的事件，放到数组里的时候，加上g.isInBackground字段。每帧执行一个事件的时候，如果g.isInBackground=true,就pass
     this.sendQueue = new Queue();  //接收到的事件队列
     this.intervalId = null;
@@ -782,6 +783,7 @@ connection.prototype.open = function (options) {
                     icon: 'success',
                     duration: 1000
                 });
+
                 setTimeout(function () {
                     wx.redirectTo({
                         url: '../main/main?myName=' + userId
@@ -953,6 +955,10 @@ connection.prototype.handlePresence = function (msginfo) {
     var presence_type = msginfo.getAttribute('presence_type') || '';
     var fromUser = _parseNameFromJidFn(from);
     var toUser = _parseNameFromJidFn(to);
+    var isCreate = false;
+    var isMemberJoin = false;
+    var isDecline = false;
+    var isApply = false;
     var info = {
         from: fromUser,
         to: toUser,
@@ -999,15 +1005,12 @@ connection.prototype.handlePresence = function (msginfo) {
         }
     }
 
-    //     <actor nick="liuwz"/>
-    // </item>
-    // one record once a time
-    // kick info: actor / member
     var members = msginfo.getElementsByTagName('item');
     if (members && members.length > 0) {
         var member = members[0];
         var role = member.getAttribute('role');
         var jid = member.getAttribute('jid');
+        var affiliation = member.getAttribute('affiliation');
         // dismissed by group
         if (role == 'none' && jid) {
             var kickedMember = _parseNameFromJidFn(jid);
@@ -1018,26 +1021,93 @@ connection.prototype.handlePresence = function (msginfo) {
         }
         // Service Acknowledges Room Creation `createGroupACK`
         if (role == 'moderator' && info.code == '201') {
-            // info.type = 'createGroupACK';
-            info.type = 'joinPublicGroupSuccess';
+            if (affiliation === 'owner') {
+                info.type = 'createGroupACK';
+                isCreate = true;
+            }
+            // else
+            //     info.type = 'joinPublicGroupSuccess';
         }
     }
 
-    // from message : apply to join group
-    var apply = msginfo.getElementsByTagName('apply');
-    if (apply && apply.length > 0) {
-        apply = apply[0];
-        var toNick = apply.getAttribute('toNick');
-        var groupJid = apply.getAttribute('to');
-        var userJid = apply.getAttribute('from');
-        var groupName = _parseNameFromJidFn(groupJid);
-        var userName = _parseNameFromJidFn(userJid);
-        info.toNick = toNick;
-        info.groupName = groupName;
-        info.type = 'joinGroupNotifications';
-        var reason = apply.getElementsByTagName('reason');
-        if (reason && reason.length > 0) {
-            info.reason = Strophe.getText(reason[0]);
+    var x = msginfo.getElementsByTagName('x');
+    if (x && x.length > 0) {
+        // 加群申请
+        var apply = x[0].getElementsByTagName('apply');
+        // 加群成功
+        var accept = x[0].getElementsByTagName('accept');
+        // 同意加群后用户进群通知
+        var item = x[0].getElementsByTagName('item');
+        // 加群被拒绝
+        var decline = x[0].getElementsByTagName('decline');
+        // 被设为管理员
+        var addAdmin = x[0].getElementsByTagName('add_admin');
+        // 被取消管理员
+        var removeAdmin = x[0].getElementsByTagName('remove_admin');
+        // 被禁言
+        var addMute = x[0].getElementsByTagName('add_mute');
+        // 取消禁言
+        var removeMute = x[0].getElementsByTagName('remove_mute');
+
+        if (apply && apply.length > 0) {
+            isApply = true;
+            info.toNick = apply[0].getAttribute('toNick');
+            info.type = 'joinGroupNotifications';
+            var groupJid = apply[0].getAttribute('to');
+            var gid = groupJid.split('@')[0].split('_');
+            gid = gid[gid.length - 1];
+            info.gid = gid;
+        } else if (accept && accept.length > 0) {
+            info.type = 'joinPublicGroupSuccess';
+        } else if (item && item.length > 0) {
+            var affiliation = item[0].getAttribute('affiliation'),
+                role = item[0].getAttribute('role');
+            if (affiliation == 'member'
+                ||
+                role == 'participant') {
+                isMemberJoin = true;
+                info.mid = info.fromJid.split('/');
+                info.mid = info.mid[info.mid.length - 1];
+                info.type = 'memberJoinPublicGroupSuccess';
+                var roomtype = msginfo.getElementsByTagName('roomtype');
+                if (roomtype && roomtype.length > 0) {
+                    var type = roomtype[0].getAttribute('type');
+                    if (type == 'chatroom') {
+                        info.type = 'memberJoinChatRoomSuccess';
+                    }
+                }
+            }
+        } else if (decline && decline.length) {
+            isDecline = true;
+            var gid = decline[0].getAttribute("fromNick");
+            var owner = _parseNameFromJidFn(decline[0].getAttribute("from"));
+            info.type = "joinPublicGroupDeclined";
+            info.owner = owner;
+            info.gid = gid;
+        } else if (addAdmin && addAdmin.length > 0) {
+            var gid = _parseNameFromJidFn(addAdmin[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(addAdmin[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "addAdmin";
+        } else if (removeAdmin && removeAdmin.length > 0) {
+            var gid = _parseNameFromJidFn(removeAdmin[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(removeAdmin[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "removeAdmin";
+        } else if (addMute && addMute.length > 0) {
+            var gid = _parseNameFromJidFn(addMute[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(addMute[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "addMute";
+        } else if (removeMute && removeMute.length > 0) {
+            var gid = _parseNameFromJidFn(removeMute[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(removeMute[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "removeMute";
         }
     }
 
@@ -1065,15 +1135,33 @@ connection.prototype.handlePresence = function (msginfo) {
         info.presence_type = presence_type;
         info.original_type = type;
 
-        if (info.type) {
-
-        } else if (type == "" && !info.status && !info.error) {
-            info.type = 'joinPublicGroupSuccess';
+        if (/subscribe/.test(info.type)) {
+            //subscribe | subscribed | unsubscribe | unsubscribed
+        } else if (type == ""
+            &&
+            !info.status
+            &&
+            !info.error
+            &&
+            !isCreate
+            &&
+            !isApply
+            &&
+            !isMemberJoin
+            &&
+            !isDecline
+        ) {
+            console.log(2222222, msginfo, info, isApply);
+            // info.type = 'joinPublicGroupSuccess';
         } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
             if (info.destroy) {// Group or Chat room Deleted.
                 info.type = 'deleteGroupChat';
             } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
-                info.type = 'leaveGroup';
+                var nick = msginfo.getAttribute('nick');
+                if (!nick)
+                    info.type = 'leaveGroup';
+                else
+                    info.type = 'removedFromGroup';
             }
         }
     }
@@ -1899,18 +1987,11 @@ connection.prototype.clear = function () {
 
 connection.prototype.getChatRooms = function (options) {
 
-    if (!_utils.isCanSetRequestHeader) {
-        conn.onError({
-            type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
-        });
-        return;
-    }
-
     var conn = this,
         token = options.accessToken || this.context.accessToken;
 
     if (token) {
-        var apiUrl = options.apiUrl;
+        var apiUrl = this.apiUrl;
         var appName = this.context.appName;
         var orgName = this.context.orgName;
 
@@ -1945,12 +2026,12 @@ connection.prototype.getChatRooms = function (options) {
             url: apiUrl + '/' + orgName + '/' + appName + '/chatrooms',
             dataType: 'json',
             type: 'GET',
-            headers: {'Authorization': 'Bearer ' + token},
+            header: {'Authorization': 'Bearer ' + token},
             data: pageInfo,
             success: suc || _utils.emptyfn,
-            error: error || _utils.emptyfn
+            fail: error || _utils.emptyfn
         };
-        _utils.ajax(opts);
+        wx.request(opts);
     } else {
         conn.onError({
             type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
@@ -1971,16 +2052,16 @@ connection.prototype.joinChatRoom = function (options) {
         });
     };
 
-    var iq = $pres({
+    var pres = StropheAll.$pres({
         from: this.context.jid,
         to: room_nick
-    })
-        .c('x', {xmlns: Strophe.NS.MUC + '#user'})
+    });
+    pres.c('x', {xmlns: Strophe.NS.MUC + '#user'})
         .c('item', {affiliation: 'member', role: 'participant'})
         .up().up()
         .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
 
-    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+    this.context.stropheConn.sendIQ(pres.tree(), suc, errorFn);
 };
 
 connection.prototype.quitChatRoom = function (options) {

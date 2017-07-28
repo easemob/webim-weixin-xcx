@@ -20,7 +20,7 @@
                 </view>
                 <image class="avatar" src="../../images/number.png"/>
                 <view class="msg">
-                    <view wx:if="{{ item.msg.type == 'img' || item.msg.type == 'audio' }}">
+                    <view wx:if="{{ item.msg.type == 'img' || item.msg.type == 'audio' || item.msg.type == 'video' || item.msg.type == 'audio'}}">
                         <template is="{{ item.msg.type }}" data="{{ item, msgView }}"/>
                     </view>
                     <view wx:elif="{{ item.msg.type == 'txt' || item.msg.type == 'emoji' }}">
@@ -36,10 +36,7 @@
     <template name="txt">
         <text style="float: left;margin-top: 2px;">{{ item.data }}</text>
     </template>
-    <template name="audio">
-        <image bindtap="playRecord" data-mid="{{item.mid}}" data-url="{{item.msg.url}}" class="icon-play"
-               src="{{ msgView[item.mid].isPlay? '../../images/audioPause.png' : '../../images/audioPlay.png'}}"/>
-    </template>
+    
     <template name="emoji">
         <image class="avatar" src="{{'../../images/faces/' + item.data }}"
                style="width: 25px;height: 25px;margin: 0 0 2px 0;float: left;"/>
@@ -47,6 +44,13 @@
     <template name="img">
         <image class="avatar" src="{{ item.msg.data }}" style="width:90px;height: 120px;margin: 2px auto;"
                mode="aspectFit" bindtap="previewImage" data-url="{{ item.msg.data }}"/>
+    </template>
+    <template name="video">
+        <video src="{{ item.msg.data }}" controls autoplay/>
+    </template>
+
+    <template name="audio">
+        <audio src="{{ item.msg.url }}" controls autoplay/>
     </template>
 
 
@@ -75,6 +79,9 @@
             <view class="v-record" bindtap="toggleRecordModal">
                 <image class="icon-record"
                        src="{{recordStatus != RecordStatus.HIDE ? '../../images/iconAudioActive@2x.png' : '../../images/iconAudio@2x.png'}}"/>
+            </view>
+            <view class="send_image" bindtap="sendLocation">
+                <image src="../../images/iconLocation@2x.png" style="height: 18px;"/>
             </view>
         </view>
         <swiper class="emoji_list" class="{{ show }}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}"

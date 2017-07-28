@@ -5,36 +5,6 @@ import websdk from 'sdk/index'
 import xmldom from 'xmldom/dom-parser'
 import config from 'WebIMConfig'
 
-// init DOMParser / document for strophe and sdk
-// window.WebIM.config.isDebug = true
-// console =
-
-// var originalStringify = JSON.stringify;
-// JSON.stringify = function (obj) {
-//     var seen = [];
-//
-//     var result = originalStringify(obj, function (key, val) {
-//         if (val instanceof HTMLElement) {
-//             return val.outerHTML
-//         }
-//         if (typeof val == "object") {
-//             if (seen.indexOf(val) >= 0) {
-//                 return "[Circular]";
-//             }
-//             seen.push(val);
-//         }
-//         return val;
-//     });
-//     return result;
-// };
-
-
-// var oriConsole = console
-// console.log = function () {
-//     oriConsole.log.call(oriConsole, [123])
-// }
-
-
 console.group = console.group || {}
 console.groupEnd = console.groupEnd || {}
 
@@ -248,6 +218,7 @@ WebIM.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
     https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
     url: WebIM.config.xmppURL,
+    apiUrl: WebIM.config.apiURL,
     isAutoLogin: false,
     heartBeatWait: WebIM.config.heartBeatWait,
     autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
