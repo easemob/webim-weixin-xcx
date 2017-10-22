@@ -84,6 +84,14 @@
                 <image src="../../images/iconLocation@2x.png" style="height: 18px;"/>
             </view>
         </view>
+        <view class="other_func">
+            <view class="open_emoji" bindtap="testInterfaces">
+                <image src="../../images/Emoji.png"/>
+            </view>
+            <view class="open_emoji" bindtap="quitChatRoom">
+                <image src="../../images/iconImage@2x.png"/>
+            </view>
+        </view>
         <swiper class="emoji_list" class="{{ show }}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}"
                 interval="{{interval}}" duration="{{duration}}">
             <block>

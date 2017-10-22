@@ -36,13 +36,21 @@ App({
                         }
                         break;
                     case "joinChatRoomSuccess":
+                        console.log('Message: ', message);
                         wx.showToast({
                             title: "JoinChatRoomSuccess",
                         });
                         break;
                     case "memberJoinChatRoomSuccess":
+                        console.log('memberMessage: ', message);
                         wx.showToast({
                             title: "memberJoinChatRoomSuccess",
+                        });
+                        break;
+                    case "memberLeaveChatRoomSuccess":
+                        console.log("LeaveChatRoom");
+                        wx.showToast({
+                            title: "leaveChatRoomSuccess",
                         });
                         break;
                 }

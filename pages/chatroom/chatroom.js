@@ -302,10 +302,11 @@ Page({
             to: that.data.yourname,
             roomType: false,
             success: function (id, serverMsgId) {
-                //console.log('success')
+                console.log('send text message success')
             }
         });
         // //console.log(msg)
+        console.log("Sending textmessage")
         msg.body.chatType = 'singleChat';
         WebIM.conn.send(msg.body);
         if (msg) {
@@ -524,7 +525,7 @@ Page({
                     lng: respData.longitude,
                     lat: respData.latitude,
                     addr: respData.address,
-                    success: function (id, serverMsg`Id) {
+                    success: function (id, serverMsgId) {
                         //console.log('success')
                     }
                 });
@@ -545,9 +546,7 @@ Page({
                 console.log('Response data: ', respData);
             }
         };
-        wx.showToast({
-            title: "JoinChatRoom",
-        });
+
         WebIM.conn.joinChatRoom(option);
         // var option = {
         //     apiUrl: WebIM.config.apiURL,
@@ -561,6 +560,16 @@ Page({
         //     }
         // };
         // WebIM.conn.getChatRooms(option);
+    },
+    quitChatRoom: function(){
+        console.log('ScareCrow');
+        var option = {
+            roomId: '21873157013506',
+            success: function(){
+                console.log("quitChatRoom");
+            }
+        }
+        WebIM.conn.quitChatRoom(option);
     },
     // sendVideo: function() {
     //     var that = this

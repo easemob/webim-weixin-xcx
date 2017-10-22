@@ -1076,6 +1076,15 @@ connection.prototype.handlePresence = function (msginfo) {
                         info.type = 'memberJoinChatRoomSuccess';
                     }
                 }
+            }else if(affiliation == 'none'
+                    || role == 'none'){
+                var roomtype = msginfo.getElementsByTagName('roomtype');
+                if (roomtype && roomtype.length > 0) {
+                    var type = roomtype[0].getAttribute('type');
+                    if (type == 'chatroom') {
+                        info.type = 'memberLeaveChatRoomSuccess';
+                    }
+                }
             }
         } else if (decline && decline.length) {
             isDecline = true;
@@ -2061,6 +2070,7 @@ connection.prototype.joinChatRoom = function (options) {
         .up().up()
         .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
 
+
     this.context.stropheConn.sendIQ(pres.tree(), suc, errorFn);
 };
 
@@ -2075,17 +2085,18 @@ connection.prototype.quitChatRoom = function (options) {
             , data: ele
         });
     };
-    var iq = $pres({
+    var pres = StropheAll.$pres({
         from: this.context.jid,
         to: room_nick,
         type: 'unavailable'
-    })
-        .c('x', {xmlns: Strophe.NS.MUC + '#user'})
+    });
+    
+    pres.c('x', {xmlns: Strophe.NS.MUC + '#user'})
         .c('item', {affiliation: 'none', role: 'none'})
         .up().up()
         .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
 
-    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+    this.context.stropheConn.sendIQ(pres.tree(), suc, errorFn);
 };
 
 connection.prototype._onReceiveInviteFromGroup = function (info) {
