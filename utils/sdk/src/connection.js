@@ -775,7 +775,7 @@ connection.prototype.open = function (options) {
         var suc = function (data, xhr, myName) {
             // console.log('success',data, xhr, myName)
             conn.context.status = _code.STATUS_DOLOGIN_IM;
-            conn.context.restTokenData = data;
+            conn.context.restTokenData = data.data;
             //console.log(options)
             if (data.statusCode != '404' && data.statusCode != '400') {
                 wx.showToast({
