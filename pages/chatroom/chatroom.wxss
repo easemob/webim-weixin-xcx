@@ -57,7 +57,7 @@
   //display: flex;
   //justify-content: center;
   display: inline-block;
-  position: relative;
+  /* position: relative; */
   padding: 5px 10px;
   max-width: calc(85% - 40px);
   /// min-height:(12 + 5 * 2) px;
