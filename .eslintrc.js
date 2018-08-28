@@ -49,12 +49,10 @@ module.exports = {
 	// 假定的全局变量，避免模块内 no-undef 时报假错
 	// 值为 false 时，能检测全局被覆盖
 	globals: {
-		app: false,
 		Page: true,
 		wx: true,
-		IScroll: false,
-		Backgrid: false,
-		_: false,
+		getApp: true,
+		getCurrentPages: true,
 	},
 
 	rules: {
