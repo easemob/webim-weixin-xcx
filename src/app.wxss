@@ -1,20 +1,18 @@
-/**app.wxss**/
 .container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 200rpx 0;
-  box-sizing: border-box;
-} 
-
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	padding: 200rpx 0;
+	box-sizing: border-box;
+}
 
 .f {
 	flex: 1;
 }
 
 .f-row {
-  display: flex;
-  flex-direction: row;
+	display: flex;
+	flex-direction: row;
 }

@@ -13,8 +13,8 @@ module.exports = {
 			globalReturn: false,					// top 作用域 return
 			impliedStrict: false,					// 执行 strict 标准
 			experimentalObjectRestSpread: true,		// 实验中的语法特性，react 需要
-		    allowImportExportEverywhere: false,		// babel-eslint 提供
-    		codeFrame: false						// babel-eslint 提供
+			allowImportExportEverywhere: false,		// babel-eslint 提供
+			codeFrame: false						// babel-eslint 提供
 		}
 	},
 	parser: "babel-eslint",		// babel-eslint | esprima | espree (default)
@@ -49,8 +49,10 @@ module.exports = {
 	// 假定的全局变量，避免模块内 no-undef 时报假错
 	// 值为 false 时，能检测全局被覆盖
 	globals: {
-		Page: true,
 		wx: true,
+		App: true,
+		Page: true,
+		Component: true,
 		getApp: true,
 		getCurrentPages: true,
 	},
