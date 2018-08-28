@@ -1,6 +1,6 @@
-import Strophe from "strophe.js";
-import websdk from "sdk/index";
-import xmldom from "xmldom/dom-parser";
+import Strophe from "../sdk/libs/strophe";
+import xmldom from "../sdk/libs/xmldom/dom-parser";
+import websdk from "../sdk/connection";
 import config from "WebIMConfig";
 
 console.group = console.group || {};
@@ -98,7 +98,7 @@ WebIM.parseEmoji = function(msg){
 	}
 	console.log(objList);
 	return objList;
-    
+
 };
 
 WebIM.time = function(){
@@ -149,8 +149,7 @@ WebIM.Emoji = {
 		"[(k)]": "ee_32.png",
 		"[(F)]": "ee_33.png",
 		"[(W)]": "ee_34.png",
-		"[(D)]": "ee_35.png",
-		"[del]": "btn_del.png"
+		"[(D)]": "ee_35.png"
 	}
 };
 

@@ -5550,7 +5550,7 @@ var $pres = null;
              *  Creates a WebSocket for a connection and assigns Callbacks to it.
              *  Does nothing if there already is a WebSocket.
              */
-             
+
             _connect: function () {
                 // Ensure that there is no open WebSocket from a previous Connection.
                 //wx.closeSocket()
@@ -5570,7 +5570,7 @@ var $pres = null;
                 console.log('isSocketConnnected', isSocketConnnected)
 
                 wx.connectSocket({url: this._conn.service, method: "GET"})
-                // isSocketConnnected && self._onOpen()    
+                // isSocketConnnected && self._onOpen()
 
                 wx.onSocketOpen(function (res) {
                     console.log('WebSocket连接已打开！')

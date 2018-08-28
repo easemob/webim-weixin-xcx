@@ -1,4 +1,4 @@
-import StropheAll from "../../strophe.js";
+import StropheAll from "libs/strophe";
 
 (function(){
 	var _utils = require("./utils").utils;

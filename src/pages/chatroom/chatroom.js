@@ -1,6 +1,4 @@
-let strophe = require("../../utils/strophe.js");
-let WebIM = require("../../utils/WebIM.js");
-WebIM = WebIM["default"];
+let WebIM = require("../../utils/WebIM")["default"];
 
 let RecordStatus = {
 	SHOW: 0,

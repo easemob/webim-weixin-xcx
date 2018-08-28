@@ -10,7 +10,7 @@ var tagNamePattern = new RegExp('^' + nameStartChar.source + nameChar.source + '
 //S_TAG,	S_ATTR,	S_EQ,	S_V
 //S_ATTR_S,	S_E,	S_S,	S_C
 var S_TAG = 0;//tag name offerring
-var S_ATTR = 1;//attr name offerring 
+var S_ATTR = 1;//attr name offerring
 var S_ATTR_S = 2;//attr name end and space offer
 var S_EQ = 3;//=space?
 var S_V = 4;//attr value(no quot value only)
@@ -568,7 +568,7 @@ ElementAttributes.prototype = {
     }
 //	,getIndex:function(uri, localName)){
 //		if(localName){
-//			
+//
 //		}else{
 //			var qName = uri
 //		}
@@ -611,4 +611,3 @@ function split(source, start) {
 if (typeof require == 'function') {
     exports.XMLReader = XMLReader;
 }
-

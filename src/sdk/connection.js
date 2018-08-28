@@ -1,26 +1,23 @@
 // ;
 // (function (window, undefined) {
-import StropheAll from "../../strophe.js";
-
-var Strophe = StropheAll.Strophe;
-
+import StropheAll from "libs/strophe";
+let Strophe = StropheAll.Strophe;
 Strophe.log = function(level, msg){
 	// console.log(ts(), level, msg);
 };
 
-var xmldom = require("../../xmldom/dom-parser");
+let xmldom = require("libs/xmldom/dom-parser");
 // //console.log('xml',xmldom, typeof xmldom.DOMParser);
-var DOMParser = xmldom.DOMParser;
+let DOMParser = xmldom.DOMParser;
+let window = {};
+let _version = "1.1.3";
+let _code = require("./status").code;
+let _utils = require("./utils").utils;
+let _msg = require("./message");
+let _message = _msg._msg;
+let _msgHash = {};
+let Queue = require("./queue").Queue;
 
-
-var window = {};
-var _version = "1.1.3";
-var _code = require("./status").code;
-var _utils = require("./utils").utils;
-var _msg = require("./message");
-var _message = _msg._msg;
-var _msgHash = {};
-var Queue = require("./queue").Queue;
 
 var PAGELIMIT = 2;
 var pageLimitKey = new Date().getTime();
@@ -449,7 +446,7 @@ var _loginCallback = function(status, msg, conn){
 			}
 			conn.handleMessage(msginfo);
 			return true;
-            
+
 		};
 		var handlePresence = function(msginfo){
 			conn.handlePresence(msginfo);
@@ -534,7 +531,7 @@ var _loginCallback = function(status, msg, conn){
 				type: _code.WEBIM_CONNCTION_DISCONNECTED
 			};
 			conn.onError(error);
-            
+
 		}
 		conn.context.status = _code.STATUS_CLOSED;
 		conn.clear();
@@ -966,7 +963,7 @@ connection.prototype.notifyVersion = function(suc, fail){
 		});
 	};
 	this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
-    
+
 };
 
 // handle all types of presence message
@@ -1498,7 +1495,7 @@ connection.prototype.handleMessage = function(msginfo){
 				this.onCmdMessage(msg);
 				break;
 			}
-			
+
 		}
 		catch(e){
 			this.onError({
@@ -1603,7 +1600,7 @@ connection.prototype.getUniqueId = function(prefix){
 		return prefix + "_" + hexd;
 	}
 	return "WEBIM_" + hexd;
-    
+
 };
 
 connection.prototype.send = function(message){
@@ -2007,7 +2004,7 @@ connection.prototype.ping = function(options){
 			type: _code.WEBIM_CONNCTION_DISCONNECTED
 		});
 	}
-    
+
 };
 
 connection.prototype.isOpened = function(){

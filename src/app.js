@@ -1,5 +1,5 @@
-require("./utils/strophe.js");
-var WebIM = require("./utils/WebIM.js")["default"];
+require("sdk/libs/strophe");
+let WebIM = require("utils/WebIM")["default"];
 
 // app.js
 App({
@@ -30,7 +30,7 @@ App({
 					break;
 				case "subscribe":
 					if(message.status === "[resp:true]"){
-                            
+
 					}
 					else{
 						pages[0].handleFriendMsg(message);
@@ -54,6 +54,8 @@ App({
 						title: "leaveChatRoomSuccess",
 					});
 					break;
+				default:
+					break;
 				}
 			},
 			onRoster: function(message){
@@ -65,7 +67,7 @@ App({
 
 			onVideoMessage: function(message){
 				console.log("onVideoMessage: ", message);
-				var page = that.getRoomPage();
+				let page = that.getRoomPage();
 				if(message){
 					if(page){
 						page.receiveVideo(message, "video");
@@ -104,7 +106,7 @@ App({
 
 			onAudioMessage: function(message){
 				console.log("onAudioMessage", message);
-				var page = that.getRoomPage();
+				let page = that.getRoomPage();
 				console.log(page);
 				if(message){
 					if(page){
@@ -291,7 +293,7 @@ App({
 					wx.redirectTo({
 						url: "../login/login"
 					});
-                    
+
 				}
 			},
 		});

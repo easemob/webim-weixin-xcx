@@ -131,7 +131,7 @@ module.exports = {
 		"consistent-return":			1,					// 建议统一 return
 		"no-else-return":				1,					// 建议统一 return
 		"no-useless-return":			1,					// 建议删除、合并没有意义的 return
-		"guard-for-in":					1,					// for in 的警告（观察观察）
+		// "guard-for-in":					1,					// for in 的警告（观察观察）
 
 		// 如果 method 没有使用 this，应该使用 static
 		"class-methods-use-this": [1, { "exceptMethods":["render"] }],
