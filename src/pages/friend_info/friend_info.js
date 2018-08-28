@@ -1,11 +1,11 @@
 Page({
 	data: {
-		yourname:''
+		yourname: ""
 	},
-	onLoad: function(option) {
-		console.log(option)
+	onLoad: function(option){
+		console.log(option);
 		this.setData({
 			yourname: option.yourname
-		})
+		});
 	}
-})
+});

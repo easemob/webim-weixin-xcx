@@ -20,16 +20,14 @@ Page({
 		// this.login()
 	},
 	login: function(){
-		// console.log('login')
-		var that = this;
-		if(that.data.name == ""){
+		if(this.data.name == ""){
 			wx.showModal({
 				title: "请输入用户名！",
 				confirmText: "OK",
 				showCancel: false
 			});
 		}
-		else if(that.data.psd == ""){
+		else if(this.data.psd == ""){
 			wx.showModal({
 				title: "请输入密码！",
 				confirmText: "OK",
@@ -37,19 +35,18 @@ Page({
 			});
 		}
 		else{
-			var options = {
-				apiUrl: WebIM.config.apiURL,
-				user: that.data.name,
-				pwd: that.data.psd,
-				grant_type: that.data.grant_type,
-				appKey: WebIM.config.appkey
-			};
 			wx.setStorage({
 				key: "myUsername",
-				data: that.data.name
+				data: this.data.name
 			});
 			// console.log('open')
-			WebIM.conn.open(options);
+			WebIM.conn.open({
+				apiUrl: WebIM.config.apiURL,
+				user: this.data.name,
+				pwd: this.data.psd,
+				grant_type: this.data.grant_type,
+				appKey: WebIM.config.appkey
+			});
 		}
 	}
 });
