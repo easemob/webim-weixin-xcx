@@ -1,8 +1,7 @@
 .register {
 	width: 100%;
-	height: 620px;
-    /*background: -webkit-linear-gradient(top,rgb(36,61,85) 10%,  rgb(61,92,120) 50%,rgb(36,61,85) 80%);*/
-    background-color: #ffffff;
+	height: 100%;
+	background-color: #ffffff;
 }
 .register_img {
 	width: 160px;

@@ -1,24 +1,25 @@
 let WebIM = require("../../utils/WebIM")["default"];
 
 Page({
+
 	data: {
 		name: "",
 		psd: "",
 		grant_type: "password"
 	},
+
 	bindUsername: function(e){
 		this.setData({
 			name: e.detail.value
 		});
 	},
+
 	bindPassword: function(e){
 		this.setData({
 			psd: e.detail.value
 		});
 	},
-	onLoad: function(){
-		// this.login()
-	},
+
 	login: function(){
 		if(this.data.name == ""){
 			wx.showModal({
@@ -45,8 +46,24 @@ Page({
 				user: this.data.name,
 				pwd: this.data.psd,
 				grant_type: this.data.grant_type,
-				appKey: WebIM.config.appkey
+				appKey: WebIM.config.appkey,
+				success: (data) => this.onLoginSuccess(data)
 			});
 		}
-	}
+	},
+
+	onLoginSuccess: function(data){
+		var me = this;
+		wx.showToast({
+			title: "登录成功",
+			icon: "success",
+			duration: 1000
+		});
+		setTimeout(function(){
+			wx.redirectTo({
+				url: "../main/main?myName=" + me.data.name
+			});
+		}, 1000);
+	},
+
 });

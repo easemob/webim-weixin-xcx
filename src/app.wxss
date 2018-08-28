@@ -16,3 +16,8 @@
 	display: flex;
 	flex-direction: row;
 }
+
+page {
+	width: 100%;
+	height: 100%;
+}

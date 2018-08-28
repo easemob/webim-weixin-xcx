@@ -1,12 +1,8 @@
 .login {
 	width: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-    /*background: -webkit-linear-gradient(top,rgb(36,61,85) 10%,  rgb(61,92,120) 50%,rgb(36,61,85) 80%);*/
-    background-color: #ffffff;
+	height: 100%;
+	/*background: -webkit-linear-gradient(top,rgb(36,61,85) 10%,  rgb(61,92,120) 50%,rgb(36,61,85) 80%);*/
+	background-color: #ffffff;
 }
 .login_img {
 	width: 160px;
@@ -53,7 +49,6 @@
 	display: inline-block;
 	float: left;
 	color: rgb(173,185,193);
-
 }
 .login_text navigator {
 	font-size: 15px;

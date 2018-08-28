@@ -767,15 +767,11 @@ connection.prototype.cacheReceiptsMessage = function(options){
 };
 
 connection.prototype.open = function(options){
-
-
+	var conn = this;
 	var pass = _validCheck(options, this);
-
 	if(!pass){
 		return;
 	}
-	var conn = this;
-
 	if(conn.isOpening() || conn.isOpened()){
 		return;
 	}
@@ -799,19 +795,12 @@ connection.prototype.open = function(options){
 			conn.context.restTokenData = data;
 			// console.log(options)
 			if(data.statusCode != "404" && data.statusCode != "400"){
-				wx.showToast({
-					title: "登录成功",
-					icon: "success",
-					duration: 1000
-				});
-
-				setTimeout(function(){
-					wx.redirectTo({
-						url: "../main/main?myName=" + userId
-					});
-				}, 1000);
+				options.success && options.success(data);
+				_login(data.data, conn);
 			}
-			_login(data.data, conn);
+			else{
+				error({});
+			}
 		};
 		var error = function(res, xhr, msg){
 			console.log("error", res, xhr, msg);
@@ -847,17 +836,13 @@ connection.prototype.open = function(options){
 		};
 		var loginfo = _utils.stringify(loginJson);
 		console.log(loginfo);
-		var options = {
+		_utils.ajax({
 			url: apiUrl + "/" + orgName + "/" + appName + "/token",
 			data: loginfo,
 			success: suc || _utils.emptyfn,
 			error: error || _utils.emptyfn
-		};
-		console.log("options", options.success);
-		_utils.ajax(options);
+		});
 	}
-
-
 };
 
 // attach to xmpp server for BOSH

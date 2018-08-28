@@ -1,17 +1,24 @@
 require("sdk/libs/strophe");
 let WebIM = require("utils/WebIM")["default"];
 
-// app.js
 App({
+
+	globalData: {
+		userInfo: null,
+		chatMsg: [],
+	},
+
 	getRoomPage: function(){
 		return this.getPage("pages/chatroom/chatroom");
 	},
+
 	getPage: function(pageName){
 		var pages = getCurrentPages();
 		return pages.find(function(page){
 			return page.__route__ == pageName;
 		});
 	},
+
 	onLaunch: function(){
 		// 调用API从本地缓存中获取数据
 		var that = this;
@@ -58,6 +65,7 @@ App({
 					break;
 				}
 			},
+
 			onRoster: function(message){
 				var pages = getCurrentPages();
 				if(pages[0]){
@@ -90,7 +98,6 @@ App({
 							time: time,
 							mid: "video" + message.id
 						};
-						msgData.style = "";
 						chatMsg = wx.getStorageSync(msgData.yourname + message.to) || [];
 						chatMsg.push(msgData);
 						wx.setStorage({
@@ -187,6 +194,7 @@ App({
 					}
 				}
 			},
+
 			onEmojiMessage: function(message){
 				// console.log('onEmojiMessage',message)
 				var page = that.getRoomPage();
@@ -227,6 +235,7 @@ App({
 					}
 				}
 			},
+
 			onPictureMessage: function(message){
 				// console.log('Picture',message);
 				var page = that.getRoomPage();
@@ -266,6 +275,7 @@ App({
 					}
 				}
 			},
+
 			// 各种异常
 			onError: function(error){
 				// 16: server-side close the websocket connection
@@ -273,7 +283,6 @@ App({
 					if(WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax){
 						return;
 					}
-
 					wx.showToast({
 						title: "server-side close the websocket connection",
 						duration: 1000
@@ -283,7 +292,6 @@ App({
 					});
 					return;
 				}
-
 				// 8: offline by multi login
 				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_ERROR){
 					wx.showToast({
@@ -293,14 +301,13 @@ App({
 					wx.redirectTo({
 						url: "../login/login"
 					});
-
 				}
 			},
 		});
 	},
 
 	getUserInfo: function(cb){
-		var that = this;
+		var me = this;
 		if(this.globalData.userInfo){
 			typeof cb == "function" && cb(this.globalData.userInfo);
 		}
@@ -310,17 +317,13 @@ App({
 				success: function(){
 					wx.getUserInfo({
 						success: function(res){
-							that.globalData.userInfo = res.userInfo;
-							typeof cb == "function" && cb(that.globalData.userInfo);
+							me.globalData.userInfo = res.userInfo;
+							typeof cb == "function" && cb(me.globalData.userInfo);
 						}
 					});
 				}
 			});
 		}
 	},
-	
-	globalData: {
-		userInfo: null,
-		chatMsg: []
-	}
+
 });

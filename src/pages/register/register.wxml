@@ -11,7 +11,7 @@
 	<view class="register_text">
 		<view>
 			<text>已有账号?</text>
-			<navigator url="../login/login" redirect hover-class="navigator-hover">登 录</navigator>
+			<navigator url="../login/login" open-type="redirect" hover-class="navigator-hover">登 录</navigator>
 		</view>
 	</view>
 	<button  class="register_btn" hover-class="btn_hover" bindtap="register">注 册</button>
