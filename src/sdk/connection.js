@@ -805,11 +805,7 @@ connection.prototype.open = function(options){
 		var error = function(res, xhr, msg){
 			console.log("error", res, xhr, msg);
 			conn.clear();
-			wx.showModal({
-				title: "用户名或密码错误!",
-				showCancel: false,
-				confirmText: "OK"
-			});
+			options.failure && options.failure(res);
 			if(res.error && res.error_description){
 				conn.onError({
 					type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
@@ -827,7 +823,6 @@ connection.prototype.open = function(options){
 		};
 
 		this.context.status = _code.STATUS_DOLOGIN_USERGRID;
-
 		var loginJson = {
 			grant_type: "password",
 			username: userId,

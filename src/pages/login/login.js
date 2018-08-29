@@ -47,7 +47,8 @@ Page({
 				pwd: this.data.psd,
 				grant_type: this.data.grant_type,
 				appKey: WebIM.config.appkey,
-				success: (data) => this.onLoginSuccess(data)
+				success: (data) => this.onLoginSuccess(data),
+				failure: (data) => this.onLoginFailure(data),
 			});
 		}
 	},
@@ -64,6 +65,14 @@ Page({
 				url: "../main/main?myName=" + me.data.name
 			});
 		}, 1000);
+	},
+
+	onLoginFailure: function(data){
+		wx.showModal({
+			title: "用户名或密码错误!",
+			showCancel: false,
+			confirmText: "OK"
+		});
 	},
 
 });
