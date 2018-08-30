@@ -1,0 +1,13 @@
+<view wx:if="{{ recordStatus != RecordStatus.HIDE }}" class="modal modal-record" bind:tap="toggleRecordModal">
+	<view class="modal-body" catch:tap="toggleWithoutAction">
+		<text class="desc">{{ RecordDesc[recordStatus] }}</text>
+		<view
+			class="dot"
+			catch:touchstart="handleRecording"
+			catch:touchmove="handleRecordingMove"
+			catch:touchend="handleRecordingCancel"
+			catch:touchcancel="handleRecordingCancel">
+			<image class="icon-mic" src="../../../../images/mic@2x.png"/>
+		</view>
+	</view>
+</view>

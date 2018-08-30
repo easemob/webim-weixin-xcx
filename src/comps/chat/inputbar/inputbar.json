@@ -1,0 +1,11 @@
+{
+	"component": true,
+	"usingComponents": {
+		"chat-suit-audio": "comps/chat/inputbar/suit/audio/audio",
+		"chat-suit-emoji": "comps/chat/inputbar/suit/emoji/emoji",
+		"chat-suit-image": "comps/chat/inputbar/suit/image/image",
+		"chat-suit-location": "comps/chat/inputbar/suit/location/location",
+		"chat-suit-main": "comps/chat/inputbar/suit/main/main",
+		"chat-suit-video": "comps/chat/inputbar/suit/video/video"
+	}
+}

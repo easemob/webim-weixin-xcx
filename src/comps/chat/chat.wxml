@@ -1,0 +1,7 @@
+<view class="main">
+	<!-- <chat-msglist></chat-msglist> -->
+	<chat-inputbar
+		bind:newImageMsg="receiveMsg"
+		bind:newLocationMsg="receiveMsg"
+		bind:newVideoMsg="receiveMsg"></chat-inputbar>
+</view>

@@ -1,0 +1,40 @@
+.modal {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 999;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.modal-record .modal-body {
+	width: 164px;
+	height: 164px;
+	background-color: rgba(135, 152, 164, 0.8);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	border-radius: 3px;
+}
+
+.modal-record .desc {
+	color: rgb(112, 126, 137);
+	font-size: 13px;
+	margin-bottom: 20px;
+}
+
+.modal-record .dot {
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	background-color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

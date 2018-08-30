@@ -1,0 +1,44 @@
+.room_bar {
+	width: 100%;
+	height: auto;
+	border-top: 1px solid #CFCFCF;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	z-index: 1;
+	background-color: #FFFFFF;
+}
+
+.other_func {
+	width: 100%;
+	height: 30px;
+	float: left;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.other_func image {
+	width: 21px;
+	height: 20px;
+}
+
+.open_emoji,
+.send_image,
+.open_camera,
+.v-record {
+	width: 40px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.v-record {
+	margin-right: 15px;
+}
+
+.v-record .icon-record {
+	width: 9px;
+	height: 20px;
+}
