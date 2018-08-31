@@ -1,68 +1,48 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
+let msgType = require("../../../msgtype");
+let EMOJI_STATUS = {
+	OPENED: "showEmoji",
+	CLOSED: "emoji_list",
+};
 
 Component({
 	data: {
-		show: "emoji_list",
-		emojiStr: "",
+		show: EMOJI_STATUS.CLOSED,
+		emoji: WebIM.Emoji,
+		emojiObj: WebIM.EmojiObj,
+
 		interval: 5000,
 		duration: 1000,
 		autoplay: false,
-		indicatorDots: true,
-		emoji: WebIM.Emoji,
-		emojiObj: WebIM.EmojiObj,
+		indicatorDots: true,	// 显示面板指示点
 	},
-	method: {
-		openEmoji: function(){
+	methods: {
+		openEmoji(){
 			this.setData({
-				show: "showEmoji",
-				view: "scroll_view_change"
+				show: EMOJI_STATUS.OPENED
 			});
 		},
 
-		cancelEmoji: function(){
+		cancelEmoji(){
 			this.setData({
-				show: "emoji_list",
-				view: "scroll_view"
+				show: EMOJI_STATUS.CLOSED
 			});
 		},
 
 		// 输出 emoji
-		sendEmoji: function(event){
-			var str;
+		sendEmoji(event){
 			var emoji = event.target.dataset.emoji;
-			var msglen = this.data.userMessage.length - 1;
-			if(emoji && emoji != "[del]"){
-				str = this.data.userMessage + emoji;
-			}
-			else if(emoji == "[del]"){
-				let start = this.data.userMessage.lastIndexOf("[");
-				let end = this.data.userMessage.lastIndexOf("]");
-				let len = end - start;
-				if(end != -1 && end == msglen && len >= 3 && len <= 4){
-					str = this.data.userMessage.slice(0, start);
+			this.triggerEvent(
+				"newEmojiStr",
+				{
+					msg: emoji,
+					type: msgType.EMOJI,
+				},
+				{
+					bubbles: true,
+					composed: true
 				}
-				else{
-					str = this.data.userMessage.slice(0, msglen);
-				}
-			}
-			this.setData({
-				userMessage: str,
-				inputMessage: str
-			});
+			);
 		},
-	},
-
-	lifetimes: {
-		created: function(){},
-		attached: function(){},
-		moved: function(){},
-		detached: function(){},
-		ready: function(){},
-	},
-
-	pageLifetimes: {
-		// 组件所在页面的生命周期函数
-		show: function(){},
-		hide: function(){},
 	},
 });

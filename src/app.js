@@ -1,23 +1,19 @@
 require("sdk/libs/strophe");
 let WebIM = require("utils/WebIM")["default"];
+let msgStorage = require("comps/chat/msgstorage");
+let msgType = require("comps/chat/msgtype");
 
 App({
-
 	globalData: {
 		userInfo: null,
-		chatMsg: [],
 	},
 
-	getRoomPage: function(){
-		return this.getPage("pages/chatroom/chatroom");
-	},
-
-	getPage: function(pageName){
-		var pages = getCurrentPages();
-		return pages.find(function(page){
-			return page.__route__ == pageName;
-		});
-	},
+	// getPage: function(pageName){
+	// 	var pages = getCurrentPages();
+	// 	return pages.find(function(page){
+	// 		return page.__route__ == pageName;
+	// 	});
+	// },
 
 	onLaunch: function(){
 		// 调用API从本地缓存中获取数据
@@ -73,206 +69,45 @@ App({
 				}
 			},
 
-			onVideoMessage: function(message){
-				console.log("onVideoMessage: ", message);
-				let page = that.getRoomPage();
-				if(message){
-					if(page){
-						page.receiveVideo(message, "video");
-					}
-					else{
-						var chatMsg = that.globalData.chatMsg || [];
-						var time = WebIM.time();
-						var msgData = {
-							info: {
-								from: message.from,
-								to: message.to
-							},
-							username: message.from,
-							yourname: message.from,
-							msg: {
-								type: "video",
-								data: message.url
-							},
-							style: "",
-							time: time,
-							mid: "video" + message.id
-						};
-						chatMsg = wx.getStorageSync(msgData.yourname + message.to) || [];
-						chatMsg.push(msgData);
-						wx.setStorage({
-							key: msgData.yourname + message.to,
-							data: chatMsg,
-							success: function(){
-								// console.log('success')
-							}
-						});
-					}
-				}
-			},
+			// onVideoMessage: function(message){
+			// 	console.log("onVideoMessage: ", message);
+			// 	if(message){
+			// 		msgStorage.saveReceiveMsg(message, msgType.VIDEO);
+			// 	}
+			// },
 
 			onAudioMessage: function(message){
 				console.log("onAudioMessage", message);
-				let page = that.getRoomPage();
-				console.log(page);
 				if(message){
-					if(page){
-						page.receiveMsg(message, "audio");
-					}
-					else{
-						var chatMsg = that.globalData.chatMsg || [];
-						var value = WebIM.parseEmoji(message.data.replace(/\n/mg, ""));
-						var time = WebIM.time();
-						var msgData = {
-							info: {
-								from: message.from,
-								to: message.to
-							},
-							username: message.from,
-							yourname: message.from,
-							msg: {
-								type: "audio",
-								data: value
-							},
-							style: "",
-							time: time,
-							mid: "audio" + message.id
-						};
-						console.log("Audio msgData: ", msgData);
-						chatMsg = wx.getStorageSync(msgData.yourname + message.to) || [];
-						chatMsg.push(msgData);
-						wx.setStorage({
-							key: msgData.yourname + message.to,
-							data: chatMsg,
-							success: function(){
-								// console.log('success')
-							}
-						});
-					}
+					msgStorage.saveReceiveMsg(message, msgType.AUDIO);
 				}
 			},
 
-			onLocationMessage: function(message){
-				console.log("Location message: ", message);
-			},
+			// onLocationMessage: function(message){
+			// 	console.log("Location message: ", message);
+			// 	if(message){
+			// 		msgStorage.saveReceiveMsg(message, msgType.LOCATION);
+			// 	}
+			// },
 
 			onTextMessage: function(message){
-				var page = that.getRoomPage();
-				console.log(page);
+				console.log("onTextMessage", message);
 				if(message){
-					if(page){
-						page.receiveMsg(message, "txt");
-					}
-					else{
-						var chatMsg = that.globalData.chatMsg || [];
-						var value = WebIM.parseEmoji(message.data.replace(/\n/mg, ""));
-						var time = WebIM.time();
-						var msgData = {
-							info: {
-								from: message.from,
-								to: message.to
-							},
-							username: message.from,
-							yourname: message.from,
-							msg: {
-								type: "txt",
-								data: value
-							},
-							style: "",
-							time: time,
-							mid: "txt" + message.id
-						};
-						chatMsg = wx.getStorageSync(msgData.yourname + message.to) || [];
-						chatMsg.push(msgData);
-						wx.setStorage({
-							key: msgData.yourname + message.to,
-							data: chatMsg,
-							success: function(){
-								// console.log('success')
-							}
-						});
-					}
+					msgStorage.saveReceiveMsg(message, msgType.TEXT);
 				}
 			},
 
 			onEmojiMessage: function(message){
-				// console.log('onEmojiMessage',message)
-				var page = that.getRoomPage();
-				// console.log(pages)
+				console.log("onEmojiMessage", message);
 				if(message){
-					if(page){
-						page.receiveMsg(message, "emoji");
-					}
-					else{
-						var chatMsg = that.globalData.chatMsg || [];
-						var time = WebIM.time();
-						var msgData = {
-							info: {
-								from: message.from,
-								to: message.to
-							},
-							username: message.from,
-							yourname: message.from,
-							msg: {
-								type: "emoji",
-								data: message.data
-							},
-							style: "",
-							time: time,
-							mid: "emoji" + message.id
-						};
-						msgData.style = "";
-						chatMsg = wx.getStorageSync(msgData.yourname + message.to) || [];
-						chatMsg.push(msgData);
-						// console.log(chatMsg)
-						wx.setStorage({
-							key: msgData.yourname + message.to,
-							data: chatMsg,
-							success: function(){
-								// console.log('success')
-							}
-						});
-					}
+					msgStorage.saveReceiveMsg(message, msgType.EMOJI);
 				}
 			},
 
 			onPictureMessage: function(message){
-				// console.log('Picture',message);
-				var page = that.getRoomPage();
+				console.log("onPictureMessage", message);
 				if(message){
-					if(page){
-						// console.log("wdawdawdawdqwd")
-						page.receiveImage(message, "img");
-					}
-					else{
-						var chatMsg = that.globalData.chatMsg || [];
-						var time = WebIM.time();
-						var msgData = {
-							info: {
-								from: message.from,
-								to: message.to
-							},
-							username: message.from,
-							yourname: message.from,
-							msg: {
-								type: "img",
-								data: message.url
-							},
-							style: "",
-							time: time,
-							mid: "img" + message.id
-						};
-						msgData.style = "";
-						chatMsg = wx.getStorageSync(msgData.yourname + message.to) || [];
-						chatMsg.push(msgData);
-						wx.setStorage({
-							key: msgData.yourname + message.to,
-							data: chatMsg,
-							success: function(){
-								// console.log('success')
-							}
-						});
-					}
+					msgStorage.saveReceiveMsg(message, msgType.IMAGE);
 				}
 			},
 

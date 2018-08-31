@@ -1,11 +1,10 @@
 <view class="room_bar">
 
-	<chat-suit-main></chat-suit-main>
-	<chat-suit-emoji></chat-suit-emoji>
-	<chat-suit-image yourname="{{ yourname }}"></chat-suit-image>
-	<chat-suit-location yourname="{{ yourname }}"></chat-suit-location>
-	<chat-suit-audio></chat-suit-audio>
-	<!-- <chat-suit-video yourname="{{ yourname }}"></chat-suit-video> -->
+	<chat-suit-emoji id="chat-suit-emoji" bind:newEmojiStr="emojiAction"></chat-suit-emoji>
+	<chat-suit-main id="chat-suit-main" username="{{ username }}" bind:inputFocused="cancelEmoji"></chat-suit-main>
+	<chat-suit-image id="chat-suit-image" username="{{ username }}"></chat-suit-image>
+	<!-- <chat-suit-location id="chat-suit-location" username="{{ username }}"></chat-suit-location> -->
+	<!-- <chat-suit-video id="chat-suit-video" username="{{ username }}"></chat-suit-video> -->
 
 	<view class="other_func">
 		<view class="open_emoji" bind:tap="openEmoji">
@@ -22,9 +21,9 @@
 				class="icon-record"
 				src="{{ recordStatus != RecordStatus.HIDE ? '../../../images/iconAudioActive@2x.png' : '../../../images/iconAudio@2x.png' }}" />
 		</view>
-		<view class="send_image" bind:tap="sendLocation">
+		<!-- <view class="send_image" bind:tap="sendLocation">
 			<image src="../../../images/iconLocation@2x.png" style="height:18px;"/>
-		</view>
+		</view> -->
 	</view>
 
 </view>

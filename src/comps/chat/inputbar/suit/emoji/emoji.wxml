@@ -1,5 +1,5 @@
 <swiper
-	class="emoji_list {{ show }}"
+	class="{{ show }}"
 	indicator-dots="{{ indicatorDots }}"
 	autoplay="{{ autoplay }}"
 	interval="{{ interval }}"

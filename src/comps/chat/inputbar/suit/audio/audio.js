@@ -1,27 +1,34 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
-let RecordStatus = require("record_status").RecordStatus;
-let RecordDesc = require("record_status").RecordDesc;
+let msgType = require("../../../msgtype");
+let RECORD_CONST = require("record_status");
+let RecordStatus = RECORD_CONST.RecordStatus;
+let RecordDesc = RECORD_CONST.RecordDesc;
 
 Component({
+	properties: {
+		username: {
+			type: Object,
+			value: {},
+		}
+	},
 	data: {
 		changedTouches: null,
 		recordStatus: RecordStatus.HIDE,
+		RecordStatus,
 		RecordDesc,		// 模板中有引用
-		yourname: "",
-		sendInfo: "",
 	},
-	method: {
-		toggleWithoutAction: function(e){
-			console.log("toggleWithoutModal 拦截请求不做处理");
+	methods: {
+		toggleWithoutAction(e){
+			// 阻止 tap 冒泡
 		},
 
-		toggleRecordModal: function(e){
+		toggleRecordModal(){
 			this.setData({
 				recordStatus: this.data.recordStatus == RecordStatus.HIDE ? RecordStatus.SHOW : RecordStatus.HIDE
 			});
 		},
 
-		handleRecordingMove: function(e){
+		handleRecordingMove(e){
 			var touches = e.touches[0];
 			var changedTouches = this.data.changedTouches;
 			if(!changedTouches){
@@ -44,30 +51,26 @@ Component({
 			}
 		},
 
-		handleRecording: function(e){
-			console.log("handleRecording");
+		handleRecording(e){
 			let me = this;
 			this.data.changedTouches = e.touches[0];
 			this.setData({
 				recordStatus: RecordStatus.HOLD
 			});
 			wx.startRecord({
-				fail: function(err){
+				fail(err){
 					// 时间太短会失败
 					console.log(err);
 				},
-				success: function(res){
-					console.log("success");
+				success(res){
 					// 取消录音发放状态 -> 退出不发送
 					if(me.data.recordStatus == RecordStatus.RELEASE){
 						console.log("user canceled");
 						return;
 					}
-					// console.log(tempFilePath)
 					me.uploadRecord(res.tempFilePath);
 				},
-				complete: function(){
-					console.log("complete");
+				complete(){
 					me.handleRecordingCancel();
 				}
 			});
@@ -77,8 +80,7 @@ Component({
 			}, 100000);
 		},
 
-		handleRecordingCancel: function(){
-			console.log("handleRecordingCancel");
+		handleRecordingCancel(){
 			// 向上滑动状态停止：取消录音发放
 			if(this.data.recordStatus == RecordStatus.SWIPE){
 				this.setData({
@@ -93,7 +95,7 @@ Component({
 			wx.stopRecord();
 		},
 
-		uploadRecord: function(tempFilePath){
+		uploadRecord(tempFilePath){
 			var str = WebIM.config.appkey.split("#");
 			var me = this;
 			wx.uploadFile({
@@ -103,72 +105,48 @@ Component({
 				header: {
 					"Content-Type": "multipart/form-data"
 				},
-				success: function(res){
+				success(res){
 					// 发送 xmpp 消息
-					var msg = new WebIM.message("audio", WebIM.conn.getUniqueId());
+					var msg = new WebIM.message(msgType.AUDIO, WebIM.conn.getUniqueId());
 					var dataObj = JSON.parse(res.data);
 					// 接收消息对象
 					msg.set({
 						apiUrl: WebIM.config.apiURL,
 						body: {
-							type: "audio",
+							type: msgType.AUDIO,
 							url: dataObj.uri + "/" + dataObj.entities[0].uuid,
 							filetype: "",
 							filename: tempFilePath
 						},
-						to: me.data.yourname,
+						from: me.data.username.myName,
+						to: me.data.username.your,
 						roomType: false,
 						chatType: "singleChat"
 					});
 					WebIM.conn.send(msg.body);
-					// 本地消息展示
-					me.data.chatMsg.push({
-						info: {
-							to: msg.body.to
+					me.triggerEvent(
+						"newAudioMsg",
+						{
+							msg: msg,
+							type: msgType.AUDIO,
 						},
-						username: me.data.myName,
-						yourname: msg.body.to,
-						msg: {
-							type: msg.type,
-							data: msg.body.body.url,
-							url: msg.body.body.url,
-						},
-						style: "self",
-						time: WebIM.time(),
-						mid: msg.id
-					});
-					// 存储到本地消息
-					wx.setStorage({
-						key: me.data.yourname + wx.getStorageSync("myUsername"),
-						data: me.data.chatMsg,
-						success: function(){
-							// console.log('success', that.data)
-							me.setData({
-								chatMsg: me.data.chatMsg
-							});
-							setTimeout(function(){
-								me.setData({
-									toView: me.data.chatMsg[me.data.chatMsg.length - 1].mid
-								});
-							}, 10);
+						{
+							bubbles: true,
+							composed: true
 						}
-					});
+					);
 				}
 			});
 		},
 	},
 
-	lifetimes: {
-		created: function(){},
-		attached: function(){},
-		moved: function(){},
-		detached: function(){},
-		ready: function(){},
-	},
-
-	pageLifetimes: {
-		// 组件所在页面的生命周期函数
-		show: function(){},
-		hide: function(){},
-	},
+	// lifetimes
+	created(){},
+	attached(){},
+	moved(){},
+	detached(){},
+	ready(){},
+	// 组件所在页面的生命周期函数
+	show(){},
+	hide(){},
 });

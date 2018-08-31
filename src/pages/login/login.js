@@ -38,11 +38,13 @@ Page({
 		else{
 			wx.setStorage({
 				key: "myUsername",
+				// data: "dcw1123" || this.data.name
 				data: this.data.name
 			});
-			// console.log('open')
 			WebIM.conn.open({
 				apiUrl: WebIM.config.apiURL,
+				// user: "dcw1123" || this.data.name,
+				// pwd: "feelings" || this.data.psd,
 				user: this.data.name,
 				pwd: this.data.psd,
 				grant_type: this.data.grant_type,
@@ -62,6 +64,7 @@ Page({
 		});
 		setTimeout(function(){
 			wx.redirectTo({
+				// url: "../main/main?myName=" + ("dcw1123" || me.data.name)
 				url: "../main/main?myName=" + me.data.name
 			});
 		}, 1000);

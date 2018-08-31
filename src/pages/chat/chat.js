@@ -37,7 +37,7 @@ Page({
 	},
 	tab_contacts: function(){
 		wx.redirectTo({
-			url: "../main/main"
+			url: "../main/main?myName=" + wx.getStorageSync("myUsername")
 		});
 	},
 	close_mask: function(){
@@ -53,8 +53,6 @@ Page({
 		});
 	},
 	into_chatRoom: function(event){
-		var that = this;
-		// console.log(event)
 		var my = wx.getStorageSync("myUsername");
 		var nameList = {
 			myName: my,

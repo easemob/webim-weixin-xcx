@@ -1,24 +1,15 @@
-<form class="text-input" bind:reset="cleanInput">
+<form class="text-input">
 	<view class="f-row">
 		<input
-			wx:if="{{ !showRecordHandler }}"
 			class="f news"
 			type="text"
 			value="{{ inputMessage }}"
 			placeholder="输入新消息"
 			placeholder-style="color:#CFCFCF; padding-left:5px;"
-			bind:input="bindMessage"
+			bindinput="bindMessage"
 			bind:tap="focus"
-			bind:focus="focus" />
-		<!-- chat-audio -->
-		<button
-			wx:else
-			class="f btn-recording"
-			catch:touchstart="handleRecording"
-			catch:touchend="handleRecordingCancel"
-			catch:touchcancel="handleRecordingCancel">
-			按住 说话
-		</button>
-		<button class="send_btn" bind:tap="sendMessage" formType="reset">发送</button>
+			bind:focus="focus"
+			bind:blur="blur" />
+		<button class="send_btn" bind:tap="sendMessage">发送</button>
 	</view>
 </form>

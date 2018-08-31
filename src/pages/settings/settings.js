@@ -12,7 +12,7 @@ Page({
 	},
 	tab_contact: function(){
 		wx.redirectTo({
-			url: "../main/main"
+			url: "../main/main?myName=" + this.data.username
 		});
 	},
 	tab_chat: function(){

@@ -1,7 +1,24 @@
 <view class="main">
-	<!-- <chat-msglist></chat-msglist> -->
+	<chat-suit-audio
+		id="chat-suit-audio"
+		username="{{ username }}"
+		bind:newAudioMsg="saveSendMsg"></chat-suit-audio>
+
+	<chat-msglist
+		id="chat-msglist"
+		username="{{ username }}"
+		bind:msglistTap="normalScroll"></chat-msglist>
+
 	<chat-inputbar
-		bind:newImageMsg="receiveMsg"
-		bind:newLocationMsg="receiveMsg"
-		bind:newVideoMsg="receiveMsg"></chat-inputbar>
+		id="chat-inputbar"
+		username="{{ username }}"
+
+		bind:newTextMsg="saveSendMsg"
+		bind:newImageMsg="saveSendMsg"
+		bind:newLocationMsg="saveSendMsg"
+		bind:newVideoMsg="saveSendMsg"
+		bind:tapSendAudio="toggleRecordModal"
+
+		bind:inputFocused="shortScroll"
+		bind:inputBlured="normalScroll"></chat-inputbar>
 </view>

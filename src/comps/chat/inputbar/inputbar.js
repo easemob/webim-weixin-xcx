@@ -1,60 +1,75 @@
 let RecordStatus = require("suit/audio/record_status").RecordStatus;
 
 Component({
+	properties: {
+		username: {
+			type: Object,
+			value: {}
+		}
+	},
 	data: {
 		recordStatus: RecordStatus.HIDE,
 		RecordStatus,
+		__comps__: {
+			main: null,
+			emoji: null,
+			image: null,
+			location: null,
+			// video: null,
+		},
 	},
-	comps: {
-		main: null,
-		emoji: null,
-		image: null,
-		location: null,
-		audio: null,
-		// video: null,
-	},
-	method: {
+	methods: {
 		// 事件有长度限制：仅限 26 字符
+		toggleRecordModal(){
+			this.triggerEvent(
+				"tapSendAudio",
+				null,
+				{
+					bubbles: true,
+					composed: true
+				}
+			);
+		},
+
 		openCamera(){
-			this.comps.image.openCamera();
-		},
-
-		sendImage(){
-			this.comps.image.sendImage();
-		},
-
-		sendLocation(){
-			this.comps.location.sendLocation();
+			this.data.__comps__.image.openCamera();
 		},
 
 		openEmoji(){
-
+			this.data.__comps__.emoji.openEmoji();
 		},
 
-		toggleRecordModal(){
-
+		cancelEmoji(){
+			this.data.__comps__.emoji.cancelEmoji();
 		},
-	},
 
-	lifetimes: {
-		created(){},
-		attached(){},
-		moved(){},
-		detached(){},
-		ready(){
-			let comps = this.comps;
-			comps.main = this.selectComponent("chat-suit-main");
-			comps.emoji = this.selectComponent("chat-suit-emoji");
-			comps.image = this.selectComponent("chat-suit-image");
-			comps.location = this.selectComponent("chat-suit-location");
-			comps.audio = this.selectComponent("chat-suit-audio");
-			// comps.video = this.selectComponent("chat-suit-video");
+		sendImage(){
+			this.data.__comps__.image.sendImage();
+		},
+
+		sendLocation(){
+			// this.data.__comps__.location.sendLocation();
+		},
+
+		emojiAction(evt){
+			this.data.__comps__.main.emojiAction(evt.detail.msg);
 		},
 	},
 
-	pageLifetimes: {
-		// 组件所在页面的生命周期函数
-		show(){},
-		hide(){},
+	// lifetimes
+	created(){},
+	attached(){},
+	moved(){},
+	detached(){},
+	ready(){
+		let comps = this.data.__comps__;
+		comps.main = this.selectComponent("#chat-suit-main");
+		comps.emoji = this.selectComponent("#chat-suit-emoji");
+		comps.image = this.selectComponent("#chat-suit-image");
+		// comps.location = this.selectComponent("#chat-suit-location");
+		// comps.video = this.selectComponent("chat-suit-video");
 	},
+	// 组件所在页面的生命周期函数
+	show(){},
+	hide(){},
 });

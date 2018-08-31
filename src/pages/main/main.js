@@ -172,10 +172,8 @@ Page({
 		});
 	},
 	into_room: function(event){
-		var that = this;
-		// console.log(event)
 		var nameList = {
-			myName: that.data.myName,
+			myName: this.data.myName,
 			your: event.target.dataset.username
 		};
 		wx.navigateTo({

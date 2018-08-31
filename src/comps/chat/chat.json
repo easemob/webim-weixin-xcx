@@ -1,7 +1,8 @@
 {
 	"component": true,
 	"usingComponents": {
-		"chat-msglist": "comps/chat/msglist/msglist",
-		"chat-inputbar": "comps/chat/inputbar/inputbar"
+		"chat-msglist": "msglist/msglist",
+		"chat-inputbar": "inputbar/inputbar",
+		"chat-suit-audio": "inputbar/suit/audio/audio"
 	}
 }

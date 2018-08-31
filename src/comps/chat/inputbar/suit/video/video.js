@@ -1,18 +1,25 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
+let msgType = require("../../../msgtype");
 
 Component({
-	data: {
-		yourname: ""
+	properties: {
+		username: {
+			type: Object,
+			value: {},
+		}
 	},
-	method: {
+	data: {
+
+	},
+	methods: {
 		// 未启用
-		sendVideo: function(){
+		sendVideo(){
 			var me = this;
 			wx.chooseVideo({
 				sourceType: ["album", "camera"],
 				maxDuration: 60,
 				camera: "back",
-				success: function(res){
+				success(res){
 					var tempFilePaths = res.tempFilePath;
 					var str = WebIM.config.appkey.split("#");
 					wx.uploadFile({
@@ -22,7 +29,7 @@ Component({
 						header: {
 							"Content-Type": "multipart/form-data"
 						},
-						success: function(res){
+						success(res){
 							var data = res.data;
 							var dataObj = JSON.parse(data);
 							var id = WebIM.conn.getUniqueId();		// 生成本地消息id
@@ -30,24 +37,27 @@ Component({
 							msg.set({
 								apiUrl: WebIM.config.apiURL,
 								body: {
-									// ？？？
 									type: "img",
 									url: dataObj.uri + "/" + dataObj.entities[0].uuid,
 									filetype: "mp4",
 									filename: tempFilePaths
 								},
-								to: me.data.yourname,			// 接收消息对象
+								from: me.data.username.myName,
+								to: me.data.username.your,
 								roomType: false,
 								chatType: "singleChat"
 							});
 							WebIM.conn.send(msg.body);
-							this.triggerEvent(
+							me.triggerEvent(
 								"newVideoMsg",
 								{
 									msg: msg,
-									type: "video"
+									type: msgType.VIDEO
 								},
-								{ bubbles: true }
+								{
+									bubbles: true,
+									composed: true
+								}
 							);
 						}
 					});
@@ -56,17 +66,13 @@ Component({
 		},
 	},
 
-	lifetimes: {
-		created: function(){},
-		attached: function(){},
-		moved: function(){},
-		detached: function(){},
-		ready: function(){},
-	},
-
-	pageLifetimes: {
-		// 组件所在页面的生命周期函数
-		show: function(){},
-		hide: function(){},
-	},
+	// lifetimes
+	created(){},
+	attached(){},
+	moved(){},
+	detached(){},
+	ready(){},
+	// 组件所在页面的生命周期函数
+	show(){},
+	hide(){},
 });

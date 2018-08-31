@@ -6,9 +6,9 @@ Page({
 	},
 
 	// options = 系统传入的 url 参数
-	onLoad: function(options){
+	onLoad(options){
 		let username = JSON.parse(options.username);
-		this.setData({ username: JSON.stringify(username) });
+		this.setData({ username: username });
 		wx.setNavigationBarTitle({
 			title: username.your
 		});

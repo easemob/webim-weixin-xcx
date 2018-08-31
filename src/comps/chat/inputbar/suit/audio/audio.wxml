@@ -7,7 +7,7 @@
 			catch:touchmove="handleRecordingMove"
 			catch:touchend="handleRecordingCancel"
 			catch:touchcancel="handleRecordingCancel">
-			<image class="icon-mic" src="../../../../images/mic@2x.png"/>
+			<image class="icon-mic" src="../../../../../images/mic@2x.png"/>
 		</view>
 	</view>
 </view>

@@ -3,6 +3,6 @@
 	"navigationBarTextStyle":"black",
 	"navigationBarTitleText":"chatting",
 	"usingComponents": {
-		"chat": "comps/chat/chat"
+		"chat": "../../comps/chat/chat"
 	}
 }

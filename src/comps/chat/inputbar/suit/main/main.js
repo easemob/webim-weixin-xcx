@@ -1,106 +1,103 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
+let msgType = require("../../../msgtype");
 
 Component({
-	data: {
-		inputMessage: "",
-		userMessage: "",
-		sendInfo: "",
-		
-		show: "emoji_list",
-		view: "scroll_view",
+	properties: {
+		username: {
+			type: Object,
+			value: {},
+		}
 	},
-	method: {
-		focus: function(){
-			this.setData({
-				show: "emoji_list",
-				view: "scroll_view"
-			});
+	data: {
+		inputMessage: "",		// render input 的值
+		userMessage: "",		// input 的实时值
+	},
+	methods: {
+		focus(){
+			this.triggerEvent("inputFocused", null, { bubbles: true });
 		},
 
-		cleanInput: function(){
-			this.setData({
-				sendInfo: this.data.userMessage
-			});
+		blur(){
+			this.triggerEvent("inputBlured", null, { bubbles: true });
 		},
 
-		bindMessage: function(e){
+		// bindinput 不能打冒号！
+		bindMessage(e){
 			this.setData({
 				userMessage: e.detail.value
 			});
 		},
 
-		sendMessage: function(){
-			if(!this.data.userMessage.trim()) return;
-			let me = this;
-			let myName = wx.getStorageSync("myUsername");
+		emojiAction(emoji){
+			var str;
+			var msglen = this.data.userMessage.length - 1;
+			if(emoji && emoji != "[del]"){
+				str = this.data.userMessage + emoji;
+			}
+			else if(emoji == "[del]"){
+				let start = this.data.userMessage.lastIndexOf("[");
+				let end = this.data.userMessage.lastIndexOf("]");
+				let len = end - start;
+				if(end != -1 && end == msglen && len >= 3 && len <= 4){
+					str = this.data.userMessage.slice(0, start);
+				}
+				else{
+					str = this.data.userMessage.slice(0, msglen);
+				}
+			}
+			this.setData({
+				userMessage: str,
+				inputMessage: str
+			});
+		},
+
+		sendMessage(){
+			if(!this.data.userMessage.trim()){
+				return;
+			}
 			let id = WebIM.conn.getUniqueId();
-			let msg = new WebIM.message("txt", id);
+			let msg = new WebIM.message(msgType.TEXT, id);
 			msg.set({
-				msg: this.data.sendInfo,
-				to: this.data.yourname,
+				msg: this.data.userMessage,
+				from: this.data.username.myName,
+				to: this.data.username.your,
 				roomType: false,
-				success: function(id, serverMsgId){
-					console.log("send text message success");
+				success(id, serverMsgId){
+
 				}
 			});
 			msg.body.chatType = "singleChat";
 			WebIM.conn.send(msg.body);
-			if(msg){
-				let value = WebIM.parseEmoji(msg.value.replace(/\n/mg, ""));
-				this.data.chatMsg.push({
-					info: {
-						to: msg.body.to
-					},
-					username: this.data.myName,
-					yourname: msg.body.to,
-					msg: {
-						type: msg.type,
-						data: value
-					},
-					style: "self",
-					time: WebIM.time(),
-					mid: msg.id
-				});
-				// console.log(that.data.chatMsg)
-				wx.setStorage({
-					key: this.data.yourname + myName,
-					data: this.data.chatMsg,
-					success: function(){
-						// console.log('success', that.data)
-						me.setData({
-							chatMsg: me.data.chatMsg,
-							emojiList: [],
-							inputMessage: ""
-						});
-						setTimeout(function(){
-							me.setData({
-								toView: me.data.chatMsg[me.data.chatMsg.length - 1].mid
-							});
-						}, 100);
-					}
-				});
-				this.setData({
-					userMessage: ""
-				});
-			}
-		},
-	},
-
-	lifetimes: {
-		created: function(){},
-		attached: function(){},
-		moved: function(){},
-		detached: function(){},
-		ready: function(){},
-	},
-
-	pageLifetimes: {
-		// 组件所在页面的生命周期函数
-		show: function(){
+			this.triggerEvent(
+				"newTextMsg",
+				{
+					msg: msg,
+					type: msgType.TEXT,
+				},
+				{
+					bubbles: true,
+					composed: true
+				}
+			);
+			//
 			this.setData({
-				inputMessage: ""
+				userMessage: "",
+				inputMessage: "",
 			});
 		},
-		hide: function(){},
 	},
+
+	// lifetimes
+	created(){},
+	attached(){},
+	moved(){},
+	detached(){},
+	ready(){},
+	// 组件所在页面的生命周期函数
+	show(){
+		this.setData({
+			inputMessage: ""
+		});
+	},
+	hide(){},
 });

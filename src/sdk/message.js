@@ -31,18 +31,17 @@ import StropheAll from "libs/strophe";
 	Message.txt.prototype.set = function(opt){
 		this.value = opt.msg;
 		this.body = {
-			id: this.id
-			, to: opt.to
-			, msg: this.value
-			, type: this.type
-			, roomType: opt.roomType
-			, ext: opt.ext || {}
-			, success: opt.success
-			, fail: opt.fail
+			id: this.id,
+			from: opt.from,
+			to: opt.to,
+			msg: this.value,
+			type: this.type,
+			roomType: opt.roomType,
+			ext: opt.ext || {},
+			success: opt.success,
+			fail: opt.fail
 		};
-
 		!opt.roomType && delete this.body.roomType;
-
 	};
 
 	/*
@@ -57,12 +56,13 @@ import StropheAll from "libs/strophe";
 		this.value = "";
 
 		this.body = {
-			to: opt.to
-			, action: opt.action
-			, msg: this.value
-			, type: this.type
-			, roomType: opt.roomType
-			, ext: opt.ext || {}
+			to: opt.to,
+			from: opt.from,
+			action: opt.action,
+			msg: this.value,
+			type: this.type,
+			roomType: opt.roomType,
+			ext: opt.ext || {}
 		};
 		!opt.roomType && delete this.body.roomType;
 	};
@@ -77,13 +77,14 @@ import StropheAll from "libs/strophe";
 	};
 	Message.location.prototype.set = function(opt){
 		this.body = {
-			to: opt.to
-			, type: this.type
-			, roomType: opt.roomType
-			, addr: opt.addr
-			, lat: opt.lat
-			, lng: opt.lng
-			, ext: opt.ext || {}
+			to: opt.to,
+			from: opt.from,
+			type: this.type,
+			roomType: opt.roomType,
+			addr: opt.addr,
+			lat: opt.lat,
+			lng: opt.lng,
+			ext: opt.ext || {}
 		};
 	};
 
@@ -104,6 +105,7 @@ import StropheAll from "libs/strophe";
 			file: this.value,
 			apiUrl: opt.apiUrl,
 			to: opt.to,
+			from: opt.from,
 			type: this.type,
 			ext: opt.ext || {},
 			roomType: opt.roomType,
@@ -134,22 +136,23 @@ import StropheAll from "libs/strophe";
 		this.filename = opt.filename || this.value.filename;
 
 		this.body = {
-			id: this.id
-			, file: this.value
-			, filename: this.filename
-			, apiUrl: opt.apiUrl
-			, to: opt.to
-			, type: this.type
-			, ext: opt.ext || {}
-			, length: opt.length || 0
-			, roomType: opt.roomType
-			, file_length: opt.file_length
-			, onFileUploadError: opt.onFileUploadError
-			, onFileUploadComplete: opt.onFileUploadComplete
-			, success: opt.success
-			, fail: opt.fail
-			, flashUpload: opt.flashUpload
-			, body: opt.body
+			id: this.id,
+			file: this.value,
+			filename: this.filename,
+			apiUrl: opt.apiUrl,
+			to: opt.to,
+			from: opt.from,
+			type: this.type,
+			ext: opt.ext || {},
+			length: opt.length || 0,
+			roomType: opt.roomType,
+			file_length: opt.file_length,
+			onFileUploadError: opt.onFileUploadError,
+			onFileUploadComplete: opt.onFileUploadComplete,
+			success: opt.success,
+			fail: opt.fail,
+			flashUpload: opt.flashUpload,
+			body: opt.body
 		};
 		!opt.roomType && delete this.body.roomType;
 	};
@@ -169,20 +172,21 @@ import StropheAll from "libs/strophe";
 		this.filename = opt.filename || this.value.filename;
 
 		this.body = {
-			id: this.id
-			, file: this.value
-			, filename: this.filename
-			, apiUrl: opt.apiUrl
-			, to: opt.to
-			, type: this.type
-			, ext: opt.ext || {}
-			, roomType: opt.roomType
-			, onFileUploadError: opt.onFileUploadError
-			, onFileUploadComplete: opt.onFileUploadComplete
-			, success: opt.success
-			, fail: opt.fail
-			, flashUpload: opt.flashUpload
-			, body: opt.body
+			id: this.id,
+			file: this.value,
+			filename: this.filename,
+			apiUrl: opt.apiUrl,
+			to: opt.to,
+			from: opt.from,
+			type: this.type,
+			ext: opt.ext || {},
+			roomType: opt.roomType,
+			onFileUploadError: opt.onFileUploadError,
+			onFileUploadComplete: opt.onFileUploadComplete,
+			success: opt.success,
+			fail: opt.fail,
+			flashUpload: opt.flashUpload,
+			body: opt.body
 		};
 		!opt.roomType && delete this.body.roomType;
 	};
@@ -196,6 +200,9 @@ import StropheAll from "libs/strophe";
 	Message.video.prototype.set = function(opt){
 
 	};
+
+
+
 
 	var _Message = function(message){
 

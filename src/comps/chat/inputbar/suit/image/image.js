@@ -1,17 +1,24 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
+let msgType = require("../../../msgtype");
 
 Component({
-	data: {
-		yourname: "",
+	properties: {
+		username: {
+			type: Object,
+			value: {},
+		}
 	},
-	method: {
+	data: {
+
+	},
+	methods: {
 		openCamera(){
 			var me = this;
 			wx.chooseImage({
 				count: 1,
 				sizeType: ["original", "compressed"],
 				sourceType: ["camera"],
-				success: function(res){
+				success(res){
 					me.upLoadImage(res);
 				}
 			});
@@ -23,18 +30,18 @@ Component({
 				count: 1,
 				sizeType: ["original", "compressed"],
 				sourceType: ["album"],
-				success: function(res){
+				success(res){
 					me.upLoadImage(res);
 				},
 			});
 		},
 
-		upLoadImage: function(res){
+		upLoadImage(res){
 			var me = this;
 			var tempFilePaths = res.tempFilePaths;
 			wx.getImageInfo({
 				src: res.tempFilePaths[0],
-				success: function(res){
+				success(res){
 					var allowType = {
 						jpg: true,
 						gif: true,
@@ -54,13 +61,13 @@ Component({
 							header: {
 								"Content-Type": "multipart/form-data"
 							},
-							success: function(res){
+							success(res){
 								var data = res.data;
 								var dataObj = JSON.parse(data);
 								var id = WebIM.conn.getUniqueId();		// 生成本地消息 id
-								var msg = new WebIM.message("img", id);
+								var msg = new WebIM.message(msgType.IMAGE, id);
 								var file = {
-									type: "img",
+									type: msgType.IMAGE,
 									size: {
 										width: width,
 										height: height
@@ -69,22 +76,25 @@ Component({
 									filetype: filetype,
 									filename: tempFilePaths[0]
 								};
-								var option = {
+								msg.set({
 									apiUrl: WebIM.config.apiURL,
 									body: file,
-									to: me.data.yourname,		// 接收消息对象
+									from: me.data.username.myName,
+									to: me.data.username.your,
 									roomType: false,
 									chatType: "singleChat"
-								};
-								msg.set(option);
+								});
 								WebIM.conn.send(msg.body);
-								this.triggerEvent(
+								me.triggerEvent(
 									"newImageMsg",
 									{
 										msg: msg,
-										type: "image"
+										type: msgType.IMAGE
 									},
-									{ bubbles: true }
+									{
+										bubbles: true,
+										composed: true
+									}
 								);
 							}
 						});
@@ -92,19 +102,5 @@ Component({
 				}
 			});
 		},
-	},
-
-	lifetimes: {
-		created: function(){},
-		attached: function(){},
-		moved: function(){},
-		detached: function(){},
-		ready: function(){},
-	},
-
-	pageLifetimes: {
-		// 组件所在页面的生命周期函数
-		show: function(){},
-		hide: function(){},
 	},
 });
