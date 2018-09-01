@@ -1,34 +1,37 @@
 <view class="group-wrap">
-	<view class="wrap">
-	<view class="group-name border-bottom">
-		<text class="pd-5">群组名称</text>
-		<text class="item-name">{{ groupName }}</text>
-	</view>
-	<view class="group-name border-bottom">
-		<text class="pd-5">群描述</text>
-		<view class="item-name">{{ groupDec }}</view>
-	</view>
-	<view class="group-member border-bottom">
-		<text class="pd-5">群组成员</text>
-		<view wx:for="{{ groupMember }}" wx:key="">
-			<view class="member-list">{{ item.member || item.owner }}</view>
-		</view>
-	</view>
-	<view class="invite-member border-bottom">
-		<text class="pd-5 invite-title">邀请群成员</text>
-		<view class="invite-wrap">
-			<input placeholder="用户名" bindinput="addFriendName" placeholder-style="color:#CFCFCF;line-height:40px;font-size:14px;" auto-focus/>
-			<button type="primary" bindtap="addGroupMembers">邀请</button>
-		</view>
-	</view>
-	<!-- <view class="black-list border-bottom">
-		<text class="pd-5">群组黑名单</text>
-	</view> -->
-	<view class="disband-group border-bottom" wx:if="{{ isOwner }}">
-		<button type="warn" bindtap="dissolveGroup">解散群组</button>
-	</view>
-	<view class="exit-group" wx:if="{{ !isOwner }}">
-		<button type="warn" bindtap="leaveGroup">退出群组</button>
-	</view>
-	</view>
+    <view class="wrap">
+    <view class="group-name border-bottom">
+        <text class="pd-10">群组名称</text>
+        <text class="item-name">{{ groupName }}</text>
+    </view>
+    <view class="group-name border-bottom">
+        <text class="pd-10">群描述</text>
+        <view class="item-name">{{ groupDec }}</view>
+    </view>
+    <view class="group-member border-bottom">
+        <text class="pd-10">群组成员</text>
+        <view wx:for="{{ groupMember }}" wx:key="">
+            <view class="member-list">{{ item.member || item.owner }}</view>
+        </view>
+    </view>
+    <view class="invite-member border-bottom">
+        <text class="pd-10 invite-title">邀请群成员</text>
+        <view class="invite-wrap">
+            <input placeholder="用户名" bindinput="addFriendName" placeholder-style="color:#CFCFCF;line-height:40px;font-size:14px;" auto-focus/>
+            <button type="primary" bindtap="addGroupMembers">邀请</button>
+        </view>
+    </view>
+    <!-- <view class="black-list border-bottom">
+        <text class="pd-5">群组黑名单</text>
+    </view> -->
+    <view class="bottom-wrap">
+    <view class="disband-group border-bottom" wx:if="{{ isOwner }}">
+        <button type="warn" bindtap="dissolveGroup">解散群组</button>
+    </view>
+    <view class="exit-group" wx:if="{{ !isOwner }}">
+        <button type="warn" bindtap="leaveGroup">退出群组</button>
+    </view>
+    </view>
+    </view>
 </view>
+
