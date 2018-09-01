@@ -12,7 +12,7 @@
 	justify-content:space-around;
 }
 .search_input {
-	justify-content:space-around;	
+	justify-content:space-around;
 }
 .search view, .search_input view {
 	height: 28px;
@@ -110,7 +110,7 @@
 	height: 50px;
 }
 .nbr_header {
-	height: 2px;
+	height: 1px;
 	background-color: #D4D4D4;
 	line-height: 20px;
 	padding-left: 16px;
@@ -151,7 +151,7 @@
 	float: left;
 }
 .info image {
-	width: 68%; 
+	width: 68%;
 	height: 70%;
 	display: inline-block;
 	margin: 6px auto auto 6px;

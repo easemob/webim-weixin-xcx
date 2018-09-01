@@ -1,49 +1,49 @@
 <!-- 创建群组 -->
 <view class="createGroup">
-    <!-- 群组名称 -->
-    <view class="create_input">
-        <view>
-            <input bindinput="getGroupName" placeholder="群名称" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus></input>
-        </view>
-    </view>
-    <!-- 群简介 -->
-    <view class="create_textarea">
-        <view>
-            <textarea bindinput="getGroupDec" placeholder="群简介" auto-focus placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;"/>
-        </view>
-    </view>
-    <view class="check_area">
-       <checkbox-group class="checkbox-group" bindchange="allowJoin">
-            <label class="checkbox">
-                <checkbox value="true"/>允许任何人加入
-            </label>
-       </checkbox-group>
-       <checkbox-group class="checkbox-group" bindchange="allowApprove">
-            <label class="checkbox">
-                <checkbox value="true"/>加入需要审批
-            </label>
-       </checkbox-group>
-       <!-- <checkbox-group class="checkbox-group" bindchange="noAllowJoin">
-            <label class="checkbox">
-                <checkbox value="true"/>不允许任何人加入
-            </label>
-       </checkbox-group> -->
-       <checkbox-group class="checkbox-group" bindchange="allowInvite">
-            <label class="checkbox">
-                <checkbox value="true"/>允许群人员邀请
-            </label>
-       </checkbox-group>
-    </view>
-    <!-- 获取需要邀请的好友列表 -->
-    <text class="invite_text">邀请好友</text>
-    <view class="friend_list">
-        <checkbox-group class="checkbox-group" bindchange="inviteFriend">
-            <label class="checkbox" wx:for="{{ friendList }}" wx:key="">
-                <checkbox value="{{ item.name}}"/>{{ item.name }}
-            </label>
-        </checkbox-group>
-    </view>
-    <view class="create_btn">
-        <button type="primary" bindtap="createGroup">创建</button>
-    </view>
+	<!-- 群组名称 -->
+	<view class="create_input">
+		<view>
+			<input bindinput="getGroupName" placeholder="群名称" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus></input>
+		</view>
+	</view>
+	<!-- 群简介 -->
+	<view class="create_textarea">
+		<view>
+			<textarea bindinput="getGroupDec" placeholder="群简介" auto-focus placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;"/>
+		</view>
+	</view>
+	<view class="check_area">
+		<checkbox-group class="checkbox-group" bindchange="allowJoin">
+			<label class="checkbox">
+				<checkbox value="true"/>允许任何人加入
+			</label>
+		</checkbox-group>
+		<checkbox-group class="checkbox-group" bindchange="allowApprove">
+			<label class="checkbox">
+				<checkbox value="true"/>加入需要审批
+			</label>
+		</checkbox-group>
+		<!-- <checkbox-group class="checkbox-group" bindchange="noAllowJoin">
+			<label class="checkbox">
+				<checkbox value="true"/>不允许任何人加入
+			</label>
+		</checkbox-group> -->
+		<checkbox-group class="checkbox-group" bindchange="allowInvite">
+			<label class="checkbox">
+				<checkbox value="true"/>允许群人员邀请
+			</label>
+		</checkbox-group>
+	</view>
+	<!-- 获取需要邀请的好友列表 -->
+	<text class="invite_text">邀请好友</text>
+	<view class="friend_list">
+		<checkbox-group class="checkbox-group" bindchange="inviteFriend">
+			<label class="checkbox" wx:for="{{ friendList }}" wx:key="">
+				<checkbox value="{{ item.name}}"/>{{ item.name }}
+			</label>
+		</checkbox-group>
+	</view>
+	<view class="create_btn">
+		<button type="primary" bindtap="createGroup">创建</button>
+	</view>
 </view>
