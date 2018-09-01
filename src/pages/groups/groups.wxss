@@ -107,20 +107,20 @@
 }
 .groupList {
 	width: 100%;
-	height: 60px;
+	height: 50px;
 }
 .nbr_header {
-	height: 20px;
+	height: 2px;
 	background-color: #D4D4D4;
 	line-height: 20px;
 	padding-left: 16px;
 }
 .nbr_body {
 	width: 70%;
-	height: 40px;
+	height: 50px;
 	display: inline-block;
 	font-size: 16px;
-	line-height: 40px;
+	line-height: 50px;
 	margin-right: 0;
 	float: left;
 }
@@ -134,16 +134,17 @@
 	bottom: 0;
 }
 .edit {
+	margin: 6px 10px 0 0;
 	width: 30px;
 	height: 35px;
 	float: right;
-	margin-right: 10px;
 }
 .edit image {
 	width: 39px;
 	height: 39px;
 }
 .info {
+	margin-top: 5px;
 	width: 12%;
 	height: 40px;
 	display: inline-block;

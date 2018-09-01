@@ -1,11 +1,12 @@
 .group-wrap{
-    padding: 7px;
+    padding: 7px 7px 0 7px;
     height: 100%;
     background-color: #CFCFCF;
 }
 .wrap{
     border-radius:3px;
     background: #fff;
+    height:100%;
 }
 .border-bottom{
     border-bottom: 1px solid #e1e1e1;
@@ -27,23 +28,49 @@ text{
     color: #ccc;
     font-size: 16px;
 }
-.group-member{
-    /* height: 40px; */
-    /* line-height: 40px; */
-}
+
 .group-member .member-list{
-    padding-left: 10px;
+    padding-left: 12px;
     font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    color: #ccc;
 }
-.invite-member{
-    /* height:40px; */
-    /* line-height:40px; */
+.invite-member .invite-wrap input{
+    display:inline-block;
+    margin-left:13px;
+    width:75%;
+    height:40px;
+    line-height:40px;
+    font-size:14px;
+    border:1px solid #e1e1e1;
+    border-radius:4px;
+}
+.invite-wrap{
+    margin-bottom: 10px;
+}
+.invite-member .invite-wrap button{
+    float:right;
+    margin: 1px 8px 0 0 ;
+    width:15%;
+    height:40px;
+    line-height:40px;
+    font-size:14px;
+}
+.invite-title{
+    display: block;
+    height: 40px;
+    line-height: 40px;
 }
 .black-list{
     height: 40px;
     line-height: 40px;
 }
 .disband-group{
+    margin-top: 10px;
     height: 40px;
     line-height: 40px;
+}
+.exit-group{
+    margin-top: 10px;
 }

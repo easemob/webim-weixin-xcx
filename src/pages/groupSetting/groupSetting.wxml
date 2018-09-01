@@ -11,13 +11,13 @@
     <view class="group-member border-bottom">
         <text class="pd-5">群组成员</text>
         <view wx:for="{{ groupMember }}" wx:key="">
-            <view class="member-list">{{ item.member}}</view>
+            <view class="member-list">{{ item.member || item.owner }}</view>
         </view>
     </view>
     <view class="invite-member border-bottom">
-        <text class="pd-5">邀请群成员</text>
+        <text class="pd-5 invite-title">邀请群成员</text>
         <view class="invite-wrap">
-            <input placeholder="用户名" bindinput="addFriendName" auto-focus/>
+            <input placeholder="用户名" bindinput="addFriendName" placeholder-style="color:#CFCFCF;line-height:40px;font-size:14px;" auto-focus/>
             <button type="primary" bindtap="addGroupMembers">邀请</button>
         </view>
     </view>
