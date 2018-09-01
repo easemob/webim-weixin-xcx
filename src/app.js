@@ -2,12 +2,12 @@ require("sdk/libs/strophe");
 let WebIM = require("utils/WebIM")["default"];
 let msgStorage = require("comps/chat/msgstorage");
 let msgType = require("comps/chat/msgtype");
-let disp = require("./utils/disp");
+let disp = require("utils/broadcast");
 
 function ack(receiveMsg){
 	// 处理未读消息回执
 	var bodyId = receiveMsg.id;         // 需要发送已读回执的消息id
-	var ackMsg = new WebIM.message('read', WebIM.conn.getUniqueId());
+	var ackMsg = new WebIM.message("read", WebIM.conn.getUniqueId());
 	ackMsg.set({
 		id: bodyId,
 		to: receiveMsg.from
@@ -46,24 +46,24 @@ App({
 					break;
 				case "subscribe":
 					if(message.status === "[resp:true]"){
-						return
+
 					}
 					else{
 						// pages[0].handleFriendMsg(message);
-						that.globalData.saveFriendList.push(message)
-                        console.log(that.globalData.saveFriendList)
-                        disp.trigger("em.xmpp.subscribe");
+						that.globalData.saveFriendList.push(message);
+						console.log(that.globalData.saveFriendList);
+						disp.trigger("em.xmpp.subscribe");
 					}
 					break;
 				case "subscribed":
-                        var newFriendList = [];
-                        for(var i=0; i < that.globalData.saveFriendList.length; i++){
-                            if(that.globalData.saveFriendList[i].from != message.from){
-                                newFriendList.push(that.globalData.saveFriendList[i]);
-                            }
-                        }
-                        that.globalData.saveFriendList = newFriendList
-                    break;
+					let newFriendList = [];
+					for(let i = 0; i < that.globalData.saveFriendList.length; i++){
+						if(that.globalData.saveFriendList[i].from != message.from){
+							newFriendList.push(that.globalData.saveFriendList[i]);
+						}
+					}
+					that.globalData.saveFriendList = newFriendList;
+					break;
 				case "joinChatRoomSuccess":
 					console.log("Message: ", message);
 					wx.showToast({
@@ -83,12 +83,13 @@ App({
 					});
 					break;
 				case "createGroupACK":
-                    WebIM.conn.createGroupAsync({
-                        from: message.from,
-                        success: function(option){
-                            console.log('Create Group Succeed');
-                        }
-                    });
+					WebIM.conn.createGroupAsync({
+						from: message.from,
+						success: function(option){
+							console.log("Create Group Succeed");
+						}
+					});
+					break;
 				default:
 					break;
 				}

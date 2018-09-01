@@ -4,7 +4,7 @@ Page({
 			your: "",
 		},
 	},
-
+	
 	// options = 系统传入的 url 参数
 	onLoad(options){
 		let username = JSON.parse(options.username);
@@ -13,5 +13,4 @@ Page({
 			title: username.your
 		});
 	},
-
 });

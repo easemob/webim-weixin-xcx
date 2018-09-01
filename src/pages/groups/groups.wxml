@@ -16,11 +16,11 @@
 		<image src="../../images/chat-list.png"></image>
 		<text>新建群聊</text>
 	</view>
-	<view class="add_group">
+	<!-- <view class="add_group">
 		<image src="../../images/cell_groups.png"></image>
 		<text>添加公开群</text>
-	</view>
-	<view class="line"></view>
+	</view> -->
+	<!-- <view class="line"></view> -->
 	<!-- 群聊列表 -->
 	<view wx:for="{{ groupList }}" class="groupList" wx:key="">
 		<view class="nbr_header"></view>

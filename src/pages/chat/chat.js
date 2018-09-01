@@ -6,21 +6,21 @@ Page({
 		yourname: "",
 		arr: []
 	},
+
 	onShow: function(){
-		var that = this;
 		var member = wx.getStorageSync("member");
 		var myName = wx.getStorageSync("myUsername");
 		var array = [];
-		for(var i = 0; i < member.length; i++){
+		for(let i = 0; i < member.length; i++){
 			if(wx.getStorageSync(member[i].name + myName) != ""){
 				array.push(wx.getStorageSync(member[i].name + myName)[wx.getStorageSync(member[i].name + myName).length - 1]);
 			}
 		}
-		// console.log(array，'1')
 		this.setData({
 			arr: array
 		});
 	},
+
 	openSearch: function(){
 		this.setData({
 			search_btn: false,
@@ -28,6 +28,7 @@ Page({
 			show_mask: true
 		});
 	},
+
 	cancel: function(){
 		this.setData({
 			search_btn: true,
@@ -35,11 +36,13 @@ Page({
 			show_mask: false
 		});
 	},
+
 	tab_contacts: function(){
 		wx.redirectTo({
 			url: "../main/main?myName=" + wx.getStorageSync("myUsername")
 		});
 	},
+
 	close_mask: function(){
 		this.setData({
 			search_btn: true,
@@ -47,11 +50,13 @@ Page({
 			show_mask: false
 		});
 	},
+
 	tab_setting: function(){
 		wx.redirectTo({
 			url: "../settings/settings"
 		});
 	},
+
 	into_chatRoom: function(event){
 		var my = wx.getStorageSync("myUsername");
 		var nameList = {
@@ -62,6 +67,7 @@ Page({
 			url: "../chatroom/chatroom?username=" + JSON.stringify(nameList)
 		});
 	},
+
 	del_chat: function(event){
 		var nameList = {
 			your: event.currentTarget.dataset.username
@@ -84,10 +90,9 @@ Page({
 					});
 				}
 			},
-			fail: function(error){
-				// console.log(error)
+			fail: function(err){
 			}
 		});
-	}
+	},
 
 });

@@ -1,5 +1,6 @@
 let WebIM = require("../../utils/WebIM")["default"];
-let disp = require("../../utils/disp");
+let disp = require("../../utils/broadcast");
+
 Page({
 	data: {
 		search_btn: true,
@@ -7,40 +8,40 @@ Page({
 		show_mask: false,
 		myName: "",
 		member: [],
-		messageNum: ''
+		messageNum: ""
 	},
+
 	onLoad: function(option){
 		var me = this;
-        disp.on("em.xmpp.subscribe", function(){
-            console.log("请求通知...")
-            me.setData({
-                messageNum: getApp().globalData.saveFriendList.length
-            });
-        });
-        this.setData({
-            myName: option.myName
-        });
+		disp.on("em.xmpp.subscribe", function(){
+			me.setData({
+				messageNum: getApp().globalData.saveFriendList.length
+			});
+		});
+		this.setData({
+			myName: option.myName
+		});
 	},
+
 	onShow: function(){
-		var that = this;
-		that.setData({
-            messageNum: getApp().globalData.saveFriendList.length
-        });
-		// //console.log(WebIM.conn)
-		var rosters = {
+		var me = this;
+		this.setData({
+			messageNum: getApp().globalData.saveFriendList.length
+		});
+		let rosters = {
 			success: function(roster){
 				var member = [];
-				for(var i = 0; i < roster.length; i++){
+				for(let i = 0; i < roster.length; i++){
 					if(roster[i].subscription == "both"){
 						member.push(roster[i]);
 					}
 				}
-				that.setData({
+				me.setData({
 					member: member
 				});
 				wx.setStorage({
 					key: "member",
-					data: that.data.member
+					data: me.data.member
 				});
 			}
 		};
@@ -49,16 +50,16 @@ Page({
 		WebIM.conn.getRoster(rosters);
 	},
 	moveFriend: function(message){
-		var that = this;
-		var rosters = {
+		let me = this;
+		let rosters = {
 			success: function(roster){
 				var member = [];
-				for(var i = 0; i < roster.length; i++){
+				for(let i = 0; i < roster.length; i++){
 					if(roster[i].subscription == "both"){
 						member.push(roster[i]);
 					}
 				}
-				that.setData({
+				me.setData({
 					member: member
 				});
 			}
@@ -76,14 +77,11 @@ Page({
 		}
 	},
 	handleFriendMsg: function(message){
-		var that = this;
-		// console.log(message)
 		wx.showModal({
 			title: "添加好友请求",
 			content: message.from + "请求加为好友",
 			success: function(res){
 				if(res.confirm == true){
-					// console.log('vvvvvvvvvvvvv')
 					WebIM.conn.subscribed({
 						to: message.from,
 						message: "[resp:true]"
@@ -98,15 +96,13 @@ Page({
 						to: message.from,
 						message: "rejectAddFriend"
 					});
-					// console.log('delete_friend')
 				}
 			},
-			fail: function(error){
-				// console.log(error)
+			fail: function(err){
 			}
 		});
-
 	},
+
 	delete_friend: function(event){
 		var delName = event.target.dataset.username;
 		wx.showModal({
@@ -121,20 +117,18 @@ Page({
 							WebIM.conn.unsubscribed({
 								to: delName
 							});
-							// console.log(delName)
 						},
 						error: function(error){
-							// console.log(error)
 						}
 					});
 				}
 
 			},
 			fail: function(error){
-				// console.log(error)
 			}
 		});
 	},
+
 	openSearch: function(){
 		this.setData({
 			search_btn: false,
@@ -142,6 +136,7 @@ Page({
 			show_mask: true
 		});
 	},
+
 	cancel: function(){
 		this.setData({
 			search_btn: true,
@@ -149,16 +144,19 @@ Page({
 			show_mask: false
 		});
 	},
+
 	add_new: function(){
 		wx.navigateTo({
 			url: "../add_new/add_new"
 		});
 	},
+
 	tab_chat: function(){
 		wx.redirectTo({
 			url: "../chat/chat"
 		});
 	},
+
 	close_mask: function(){
 		this.setData({
 			search_btn: true,
@@ -166,22 +164,25 @@ Page({
 			show_mask: false
 		});
 	},
+
 	tab_setting: function(){
 		wx.redirectTo({
 			url: "../settings/settings"
 		});
 	},
+
 	into_inform: function(){
 		wx.navigateTo({
 			url: "../inform/inform"
 		});
 	},
+
 	into_groups: function(){
-		var that =this
 		wx.navigateTo({
-			url: "../groups/groups?myName=" + that.data.myName
+			url: "../groups/groups?myName=" + this.data.myName
 		});
 	},
+
 	into_room: function(event){
 		var nameList = {
 			myName: this.data.myName,
@@ -191,10 +192,11 @@ Page({
 			url: "../chatroom/chatroom?username=" + JSON.stringify(nameList)
 		});
 	},
+
 	into_info: function(event){
 		wx.navigateTo({
 			url: "../friend_info/friend_info?yourname=" + event.target.dataset.username
 		});
-	}
+	},
 
 });
