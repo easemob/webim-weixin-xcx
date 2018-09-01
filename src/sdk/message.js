@@ -18,7 +18,21 @@ import StropheAll from "libs/strophe";
 	Message.prototype.setGroup = function(group){
 		this.body.group = group;
 	};
+	
+	/*
+     * Read Message
+     */
+    Message.read = function (id) {
+        this.id = id;
+        this.type = 'read';
+    };
 
+    Message.read.prototype.set = function (opt) {
+        this.body = {
+            ackId: opt.id
+            , to: opt.to
+        }
+    };
 
 	/*
      * text message
@@ -240,6 +254,38 @@ import StropheAll from "libs/strophe";
 			if(message.roomType){
 				dom.up().c("roomtype", { xmlns: "easemob:x:roomtype", type: "chatroom" });
 			}
+			
+			if (message.bodyId) {
+                dom = StropheAll.$msg({
+                    from: conn.context.jid || ''
+                    , to: message.toJid
+                    , id: message.id
+                    , xmlns: 'jabber:client'
+                }).c('body').t(message.bodyId);
+                var delivery = {
+                    xmlns: 'urn:xmpp:receipts'
+                    , id: message.bodyId
+                };
+                dom.up().c('delivery', delivery);
+            }
+
+            if (message.ackId) {
+
+                if (conn.context.jid.indexOf(message.toJid) >= 0) {
+                    return;
+                }
+                dom = StropheAll.$msg({
+                    from: conn.context.jid || ''
+                    , to: message.toJid
+                    , id: message.id
+                    , xmlns: 'jabber:client'
+                }).c('body').t(message.ackId);
+                var read = {
+                    xmlns: 'urn:xmpp:receipts'
+                    , id: message.ackId
+                };
+                dom.up().c('acked', read);
+            }
 
 			setTimeout(function(){
 				if(typeof _msgHash !== "undefined" && _msgHash[message.id]){

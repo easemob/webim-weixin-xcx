@@ -47,6 +47,13 @@ Component({
 				toView: curChatMsg[curChatMsg.length - 1].mid,
 			});
 		},
+		audioPlay(){
+			this.audioCtx.play()
+			debugger
+		},
+		audioPause(){
+			this.audioCtx.pause()
+		},
 	},
 
 	// lifetimes
@@ -70,6 +77,8 @@ Component({
 				me.renderMsg(renderableMsg, type, curChatMsg);
 			}
 		});
+		// 使用 wx.createAudioContext 获取 audio 上下文 context
+		this.audioCtx = wx.createAudioContext('myAudio')
 	},
 	// 组件所在页面的生命周期函数
 	show(){},

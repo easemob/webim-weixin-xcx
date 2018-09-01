@@ -1,21 +1,31 @@
 let WebIM = require("../../utils/WebIM")["default"];
-
+let disp = require("../../utils/disp");
 Page({
 	data: {
 		search_btn: true,
 		search_friend: false,
 		show_mask: false,
 		myName: "",
-		member: []
+		member: [],
+		messageNum: ''
 	},
 	onLoad: function(option){
-		this.setData({
-			myName: option.myName
-		});
-		// console.log("wjy")
+		var me = this;
+        disp.on("em.xmpp.subscribe", function(){
+            console.log("请求通知...")
+            me.setData({
+                messageNum: getApp().globalData.saveFriendList.length
+            });
+        });
+        this.setData({
+            myName: option.myName
+        });
 	},
 	onShow: function(){
 		var that = this;
+		that.setData({
+            messageNum: getApp().globalData.saveFriendList.length
+        });
 		// //console.log(WebIM.conn)
 		var rosters = {
 			success: function(roster){
@@ -167,8 +177,9 @@ Page({
 		});
 	},
 	into_groups: function(){
+		var that =this
 		wx.navigateTo({
-			url: "../groups/groups"
+			url: "../groups/groups?myName=" + that.data.myName
 		});
 	},
 	into_room: function(event){

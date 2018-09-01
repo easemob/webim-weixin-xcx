@@ -12,7 +12,7 @@
 	<text bindtap="cancel">取消</text>
 </view>
 <view class="contain">
-	<view class="build_group">
+	<view class="build_group" bindtap="build_group">
 		<image src="../../images/chat-list.png"></image>
 		<text>新建群聊</text>
 	</view>
@@ -21,6 +21,19 @@
 		<text>添加公开群</text>
 	</view>
 	<view class="line"></view>
+	<!-- 群聊列表 -->
+	<view wx:for="{{ groupList }}" class="groupList" wx:key="">
+		<view class="nbr_header"></view>
+		<view class="info" bindtap="into_info">
+			<image src="../../images/number.png"  data-username="{{ item.name }}"></image>
+		</view>
+		<view class="nbr_body" data-username="{{ item.name }}"  bindtap="into_room">
+			<text data-username="{{ item.name }}">{{ item.name }}</text>
+		</view>
+		<view class="edit" bindtap="edit_group" data-username="{{ item.name }}" data-roomId="{{ item.roomId }}">
+			<image src="../../images/cell_groups.png"  data-username="{{ item.name }}"></image>
+		</view>
+	</view>
 </view>
 
 

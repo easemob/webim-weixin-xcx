@@ -16,16 +16,16 @@
 	<view class="contain">
 		<view class="chat" bindtap="into_inform">
 			<image src="../../images/chat.png"></image>
-			<text>申请与通知</text>
+			<text>申请与通知 {{ messageNum }}</text>
 		</view>
-		<!-- <view class="chat_groups" bindtap="into_groups">
+		<view class="chat_groups" bindtap="into_groups">
 			<image src="../../images/chat-list.png"></image>
 			<text>群组</text>
-		</view>
-		<view class="chat_lists">
+		</view> 
+		<!-- <view class="chat_lists">
 			<image src="../../images/cell_groups.png"></image>
 			<text>聊天室列表</text>
-		</view> -->
+		</view> --> 
 	</view>
 	<view wx:for="{{ member }}" class="numbers" wx:key="word">
 		<view class="nbr_header">{{ item.word }}</view>

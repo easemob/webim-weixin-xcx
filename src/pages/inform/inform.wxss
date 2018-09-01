@@ -1,7 +1,24 @@
-text{
+.defaultText{
 	color: #E3E3E3;
 	font-size: 16px;
 	text-align: center;
 	display: block;
 	margin: 20px auto 0 auto;
+}
+.itemBar{
+	padding-left: 10px;
+	height: 40px;
+	border-bottom:1px solid #ccc;
+}
+.itemName{
+	float: left;
+	font-size: 16px;
+	line-height: 40px;
+	color: #333;
+}
+.agreeBtn,
+.rejectBtn{
+	float: right;
+	margin-top: 6px;
+	margin-right: 10px;
 }

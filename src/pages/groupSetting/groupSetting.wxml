@@ -1,0 +1,23 @@
+<view class="group-wrap">
+    <view class="wrap">
+    <view class="group-name border-bottom">
+        <text class="pd-5">群组名称</text>
+        <text class="item-name">{{ groupName }}</text>
+    </view>
+    <view class="group-member border-bottom">
+        <text class="pd-5">群组成员</text>
+    </view>
+    <view class="invite-member border-bottom">
+        <text class="pd-5">邀请群成员</text>
+    </view>
+    <view class="black-list border-bottom">
+        <text class="pd-5">群组黑名单</text>
+    </view>
+    <view class="disband-group border-bottom">
+        <text class="pd-5">解散群组</text>
+    </view>
+    <view class="exit-group">
+        <button type="warn">退出群组</button>
+    </view>
+    </view>
+</view>

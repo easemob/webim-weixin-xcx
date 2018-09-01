@@ -1,0 +1,44 @@
+.group-wrap{
+    padding: 7px;
+    height: 100%;
+    background-color: #CFCFCF;
+}
+.wrap{
+    border-radius:3px;
+    background: #fff;
+}
+.border-bottom{
+    border-bottom: 1px solid #e1e1e1;
+}
+.pd-5{
+    padding-left:5px;
+}
+text{
+    font-size: 16px;
+}
+.group-name{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+}
+.group-name .item-name{
+    float: right;
+    margin-right:10px;
+    color: #ccc;
+}
+.group-member{
+    height: 40px;
+    line-height: 40px;
+}
+.invite-member{
+    height:40px;
+    line-height:40px;
+}
+.black-list{
+    height: 40px;
+    line-height: 40px;
+}
+.disband-group{
+    height: 40px;
+    line-height: 40px;
+}

@@ -5558,6 +5558,7 @@ var $pres = null;
 
                 this.socket = {}
                 var self = this;
+                var timer = null;
                 //console.log('service', this._conn.service)
 
                 this.socket.onopen = this._onOpen;
@@ -5569,9 +5570,7 @@ var $pres = null;
                 }
                 console.log('isSocketConnnected', isSocketConnnected)
 
-                wx.connectSocket({url: this._conn.service, method: "GET"})
-                // isSocketConnnected && self._onOpen()
-
+                connect();
                 wx.onSocketOpen(function (res) {
                     console.log('WebSocket连接已打开！')
                     isSocketConnnected = true
@@ -5586,9 +5585,17 @@ var $pres = null;
                 })
                 wx.onSocketClose(function () {
                     console.log('WebSocket连接已经关闭!')
-
                     self.socket.onclose.call(self);
+                    timer = setTimeout(function(){
+                        connect();
+                    }, 2000);
                 })
+                function connect(){
+                    clearTimeout(timer);
+                    wx.connectSocket({url: self._conn.service, method: "GET"})
+                }
+                // connect();
+                // isSocketConnnected && self._onOpen() 
             },
 
             /** PrivateFunction: _connect_cb

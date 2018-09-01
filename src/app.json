@@ -10,7 +10,10 @@
 		"pages/settings/settings",
 		"pages/groups/groups",
 		"pages/inform/inform",
-		"pages/friend_info/friend_info"
+		"pages/friend_info/friend_info",
+		"pages/add_groups/add_groups",
+		"pages/groupChatRoom/groupChatRoom",
+		"pages/groupSetting/groupSetting"
 	],
 	"window": {
 		"backgroundTextStyle": "light",
