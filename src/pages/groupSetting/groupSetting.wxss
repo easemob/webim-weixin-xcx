@@ -1,6 +1,6 @@
 .group-wrap{
-    height: 100%;
-    background-color: #CFCFCF;
+	height: 100%;
+	background-color: #CFCFCF;
 }
 .wrap{
 	border-radius:3px;
@@ -11,10 +11,10 @@
 	border-bottom: 1px solid #e1e1e1;
 }
 .pd-10{
-    padding-left:10px;
+	padding-left:10px;
 }
 text{
-    font-size: 14px;
+	font-size: 14px;
 }
 .group-name{
 	width: 100%;
@@ -22,60 +22,60 @@ text{
 	line-height: 40px;
 }
 .group-name .item-name{
-    float: right;
-    margin-right:10px;
-    color: #ccc;
-    font-size: 14px;
+	float: right;
+	margin-right:10px;
+	color: #ccc;
+	font-size: 14px;
 }
 
 .group-member .member-list{
-    padding-left: 10px;
-    font-size: 14px;
-    height: 30px;
-    line-height: 30px;
-    color: #ccc;
+	padding-left: 10px;
+	font-size: 14px;
+	height: 30px;
+	line-height: 30px;
+	color: #ccc;
 }
 .invite-member .invite-wrap input{
-    display:inline-block;
-    margin-left:7px;
-    width:70%;
-    height:40px;
-    line-height:40px;
-    font-size:14px;
-    border:1px solid #e1e1e1;
-    border-radius:4px;
+	display:inline-block;
+	margin-left:7px;
+	width:70%;
+	height:40px;
+	line-height:40px;
+	font-size:14px;
+	border:1px solid #e1e1e1;
+	border-radius:4px;
 }
 .invite-wrap{
-    margin-bottom:6px;
+	margin-bottom:6px;
 }
 .invite-member .invite-wrap button{
-    float:right;
-    margin: 1px 8px 0 0 ;
-    width:18%;
-    height:40px;
-    line-height:40px;
-    font-size:14px;
+	float:right;
+	margin: 1px 8px 0 0 ;
+	width:18%;
+	height:40px;
+	line-height:40px;
+	font-size:14px;
 }
 .invite-title{
-    display: block;
-    height: 35px;
-    line-height: 35px;
+	display: block;
+	height: 35px;
+	line-height: 35px;
 }
 .black-list{
 	height: 40px;
 	line-height: 40px;
 }
 .disband-group{
-    padding:0 8px;
-    height: 40px;
-    line-height: 40px;
+	padding:0 8px;
+	height: 40px;
+	line-height: 40px;
 }
 .exit-group{
-    padding:0 8px;
+	padding:0 8px;
 }
 .bottom-wrap{
-    position:fixed;
-    bottom:10px;
-    width:100%;
-    z-index: 2;
+	position:fixed;
+	bottom:10px;
+	width:100%;
+	z-index: 2;
 }

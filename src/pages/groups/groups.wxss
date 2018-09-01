@@ -24,7 +24,7 @@
 	align-items: center;
 }
 .search view {
-	width: 96%;
+	width: calc(100% - 12px);
 	justify-content:center;
 }
 .search image {
