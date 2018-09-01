@@ -18,25 +18,25 @@ import StropheAll from "libs/strophe";
 	Message.prototype.setGroup = function(group){
 		this.body.group = group;
 	};
-	
-	/*
-     * Read Message
-     */
-    Message.read = function (id) {
-        this.id = id;
-        this.type = 'read';
-    };
-
-    Message.read.prototype.set = function (opt) {
-        this.body = {
-            ackId: opt.id
-            , to: opt.to
-        }
-    };
 
 	/*
-     * text message
-     */
+	 * Read Message
+	 */
+	Message.read = function(id){
+		this.id = id;
+		this.type = "read";
+	};
+
+	Message.read.prototype.set = function(opt){
+		this.body = {
+			ackId: opt.id
+			, to: opt.to
+		};
+	};
+
+	/*
+	 * text message
+	 */
 	Message.txt = function(id){
 		this.id = id;
 		this.type = "txt";
@@ -59,8 +59,8 @@ import StropheAll from "libs/strophe";
 	};
 
 	/*
-     * cmd message
-     */
+	 * cmd message
+	 */
 	Message.cmd = function(id){
 		this.id = id;
 		this.type = "cmd";
@@ -82,8 +82,8 @@ import StropheAll from "libs/strophe";
 	};
 
 	/*
-     * loc message
-     */
+	 * loc message
+	 */
 	Message.location = function(id){
 		this.id = id;
 		this.type = "loc";
@@ -98,13 +98,14 @@ import StropheAll from "libs/strophe";
 			addr: opt.addr,
 			lat: opt.lat,
 			lng: opt.lng,
+			chatType: opt.chatType,
 			ext: opt.ext || {}
 		};
 	};
 
 	/*
-     * img message
-     */
+	 * img message
+	 */
 	Message.img = function(id){
 		this.id = id;
 		this.type = "img";
@@ -136,8 +137,8 @@ import StropheAll from "libs/strophe";
 	};
 
 	/*
-     * audio message
-     */
+	 * audio message
+	 */
 	Message.audio = function(id){
 		this.id = id;
 		this.type = "audio";
@@ -172,8 +173,8 @@ import StropheAll from "libs/strophe";
 	};
 
 	/*
-     * file message
-     */
+	 * file message
+	 */
 	Message.file = function(id){
 		this.id = id;
 		this.type = "file";
@@ -206,8 +207,8 @@ import StropheAll from "libs/strophe";
 	};
 
 	/*
-     * video message
-     */
+	 * video message
+	 */
 	Message.video = function(id){
 
 	};
@@ -218,81 +219,85 @@ import StropheAll from "libs/strophe";
 
 
 
-	var _Message = function(message){
-
+	function _Message(message){
 		if(!(this instanceof _Message)){
-			return new _Message(message, conn);
+			return new _Message(message);
 		}
-
 		this.msg = message;
-	};
-
+	}
 	_Message.prototype.send = function(conn){
 		var me = this;
-		// //console.log(this)           // 消息对象
 		var _send = function(message){
-
 			message.ext = message.ext || {};
 			message.ext.weichat = message.ext.weichat || {};
 			message.ext.weichat.originType = message.ext.weichat.originType || "webim";
-			// //console.log('message',message)     msg对象
-			var json = {
-				from: conn.context.userId || ""
-				, to: message.to
-				, bodies: [message.body]
-				, ext: message.ext || {}
+			let json = {
+				from: conn.context.userId || "",
+				to: message.to,
+				bodies: [message.body],
+				ext: message.ext || {},
 			};
+			let jsonstr = _utils.stringify(json);
+			let dom = StropheAll
+			.$msg({
+				type: message.group || "chat",
+				to: message.toJid,
+				id: message.id,
+				xmlns: "jabber:client",
+			})
+			.c("body")
+			.t(jsonstr);
 
-			var jsonstr = _utils.stringify(json);
-			var dom = StropheAll.$msg({
-				type: message.group || "chat"
-				, to: message.toJid
-				, id: message.id
-				, xmlns: "jabber:client"
-			}).c("body").t(jsonstr);
-			// console.log("dommmmmmmm",dom)
 			if(message.roomType){
-				dom.up().c("roomtype", { xmlns: "easemob:x:roomtype", type: "chatroom" });
+				dom
+				.up()
+				.c("roomtype", {
+					xmlns: "easemob:x:roomtype",
+					type: "chatroom"
+				});
 			}
-			
-			if (message.bodyId) {
-                dom = StropheAll.$msg({
-                    from: conn.context.jid || ''
-                    , to: message.toJid
-                    , id: message.id
-                    , xmlns: 'jabber:client'
-                }).c('body').t(message.bodyId);
-                var delivery = {
-                    xmlns: 'urn:xmpp:receipts'
-                    , id: message.bodyId
-                };
-                dom.up().c('delivery', delivery);
-            }
+			if(message.bodyId){
+				dom = StropheAll
+				.$msg({
+					from: conn.context.jid || "",
+					to: message.toJid,
+					id: message.id,
+					xmlns: "jabber:client"
+				})
+				.c("body")
+				.t(message.bodyId);
 
-            if (message.ackId) {
+				let delivery = {
+					xmlns: "urn:xmpp:receipts",
+					id: message.bodyId
+				};
+				dom.up().c("delivery", delivery);
+			}
 
-                if (conn.context.jid.indexOf(message.toJid) >= 0) {
-                    return;
-                }
-                dom = StropheAll.$msg({
-                    from: conn.context.jid || ''
-                    , to: message.toJid
-                    , id: message.id
-                    , xmlns: 'jabber:client'
-                }).c('body').t(message.ackId);
-                var read = {
-                    xmlns: 'urn:xmpp:receipts'
-                    , id: message.ackId
-                };
-                dom.up().c('acked', read);
-            }
+			if(message.ackId){
 
-			setTimeout(function(){
-				if(typeof _msgHash !== "undefined" && _msgHash[message.id]){
-					_msgHash[message.id].msg.fail instanceof Function
-																				&& _msgHash[message.id].msg.fail(message.id);
+				if(conn.context.jid.indexOf(message.toJid) >= 0){
+					return;
 				}
-			}, 60000);
+				dom = StropheAll.$msg({
+					from: conn.context.jid || ""
+					, to: message.toJid
+					, id: message.id
+					, xmlns: "jabber:client"
+				}).c("body").t(message.ackId);
+				let read = {
+					xmlns: "urn:xmpp:receipts"
+					, id: message.ackId
+				};
+				dom.up().c("acked", read);
+			}
+
+			// setTimeout(function(){
+			// 	if(typeof _msgHash !== "undefined" && _msgHash[message.id]){
+			// 		_msgHash[message.id].msg.fail instanceof Function
+			// 			&& _msgHash[message.id].msg.fail(message.id);
+			// 	}
+			// }, 60000);
 			conn.sendCommand(dom.tree(), message.id);
 		};
 
@@ -302,36 +307,32 @@ import StropheAll from "libs/strophe";
 				_send(me.msg);
 				return;
 			}
-			var _tmpComplete = me.msg.onFileUploadComplete;
-			var _complete = function(data){
-
+			let _tmpComplete = me.msg.onFileUploadComplete;
+			let _complete = function(data){
 				if(data.entities[0]["file-metadata"]){
-					var file_len = data.entities[0]["file-metadata"]["content-length"];
+					let file_len = data.entities[0]["file-metadata"]["content-length"];
 					me.msg.file_length = file_len;
 					me.msg.filetype = data.entities[0]["file-metadata"]["content-type"];
 					if(file_len > 204800){
 						me.msg.thumbnail = true;
 					}
 				}
-
 				me.msg.body = {
-					type: me.msg.type || "file"
-					, url: data.uri + "/" + data.entities[0].uuid
-					, secret: data.entities[0]["share-secret"]
-					, filename: me.msg.file.filename || me.msg.filename
-					, size: {
+					type: me.msg.type || "file",
+					url: data.uri + "/" + data.entities[0].uuid,
+					secret: data.entities[0]["share-secret"],
+					filename: me.msg.file.filename || me.msg.filename,
+					size: {
 						width: me.msg.width || 0
 						, height: me.msg.height || 0
-					}
-					, length: me.msg.length || 0
-					, file_length: me.msg.file_length || 0
-					, filetype: me.msg.filetype
+					},
+					length: me.msg.length || 0,
+					file_length: me.msg.file_length || 0,
+					filetype: me.msg.filetype,
 				};
-
 				_send(me.msg);
 				_tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
 			};
-
 			me.msg.onFileUploadComplete = _complete;
 			_utils.uploadFile.call(conn, me.msg);
 		}
@@ -352,7 +353,6 @@ import StropheAll from "libs/strophe";
 				me.msg.body.lng = me.msg.lng;
 			}
 			_send(me.msg);
-			// console.log('ooooooooooooooooooo')
 		}
 	};
 
