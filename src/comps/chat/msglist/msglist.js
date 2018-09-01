@@ -48,11 +48,10 @@ Component({
 			});
 		},
 		audioPlay(){
-			this.audioCtx.play()
-			debugger
+			this.audioCtx.play();
 		},
 		audioPause(){
-			this.audioCtx.pause()
+			this.audioCtx.pause();
 		},
 	},
 
@@ -78,7 +77,7 @@ Component({
 			}
 		});
 		// 使用 wx.createAudioContext 获取 audio 上下文 context
-		this.audioCtx = wx.createAudioContext('myAudio')
+		this.audioCtx = wx.createAudioContext("myAudio");
 	},
 	// 组件所在页面的生命周期函数
 	show(){},

@@ -58,14 +58,13 @@ Component({
 				recordStatus: RecordStatus.HOLD
 			});
 
-			var recorderManager = wx.getRecorderManager()
-			// 录音开始事件
+			let recorderManager = wx.getRecorderManager();
 			recorderManager.onStart(() => {
-				console.log('开始录音...')
-			})
+				// console.log("开始录音...");
+			});
 			recorderManager.start({
-				format: 'mp3'
-			})
+				format: "mp3"
+			});
 			// 超时
 			setTimeout(function(){
 				me.handleRecordingCancel();
@@ -84,19 +83,18 @@ Component({
 					recordStatus: RecordStatus.HIDE
 				});
 			}
-			
-			var recorderManager = wx.getRecorderManager()
-        	recorderManager.onStop((res) => {
-            	console.log('结束录音...', res)
-				if (this.data.recordStatus == RecordStatus.RELEASE) {
-						console.log('user canceled')
-						return
+			let recorderManager = wx.getRecorderManager();
+			recorderManager.onStop((res) => {
+				// console.log("结束录音...", res);
+				if(this.data.recordStatus == RecordStatus.RELEASE){
+					console.log("user canceled");
+					return;
 				}
 				// 上传
-				this.uploadRecord(res.tempFilePath)
-          })
-          // 停止录音
-		  recorderManager.stop()
+				this.uploadRecord(res.tempFilePath);
+			});
+			// 停止录音
+			recorderManager.stop();
 		},
 
 		uploadRecord(tempFilePath){

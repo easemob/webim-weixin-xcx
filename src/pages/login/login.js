@@ -1,7 +1,9 @@
 let WebIM = require("../../utils/WebIM")["default"];
+let __test_account__, __test_psword__;
+// __test_account__ = "easezy";
+// __test_psword__ = "111111";
 
 Page({
-
 	data: {
 		name: "",
 		psd: "",
@@ -21,38 +23,35 @@ Page({
 	},
 
 	login: function(){
-		if(this.data.name == ""){
+		if(!__test_account__ && this.data.name == ""){
 			wx.showModal({
 				title: "请输入用户名！",
 				confirmText: "OK",
 				showCancel: false
 			});
+			return;
 		}
-		else if(this.data.psd == ""){
+		else if(!__test_account__ && this.data.psd == ""){
 			wx.showModal({
 				title: "请输入密码！",
 				confirmText: "OK",
 				showCancel: false
 			});
+			return;
 		}
-		else{
-			wx.setStorage({
-				key: "myUsername",
-				// data: "dcw1123" || this.data.name
-				data: this.data.name
-			});
-			WebIM.conn.open({
-				apiUrl: WebIM.config.apiURL,
-				// user: "dcw1123" || this.data.name,
-				// pwd: "feelings" || this.data.psd,
-				user: this.data.name,
-				pwd: this.data.psd,
-				grant_type: this.data.grant_type,
-				appKey: WebIM.config.appkey,
-				success: (data) => this.onLoginSuccess(data),
-				failure: (data) => this.onLoginFailure(data),
-			});
-		}
+		wx.setStorage({
+			key: "myUsername",
+			data: __test_account__ || this.data.name
+		});
+		WebIM.conn.open({
+			apiUrl: WebIM.config.apiURL,
+			user: __test_account__ || this.data.name,
+			pwd: __test_psword__ || this.data.psd,
+			grant_type: this.data.grant_type,
+			appKey: WebIM.config.appkey,
+			success: (data) => this.onLoginSuccess(data),
+			failure: (data) => this.onLoginFailure(data),
+		});
 	},
 
 	onLoginSuccess: function(data){
@@ -64,8 +63,7 @@ Page({
 		});
 		setTimeout(function(){
 			wx.redirectTo({
-				// url: "../main/main?myName=" + ("dcw1123" || me.data.name)
-				url: "../main/main?myName=" + me.data.name
+				url: "../main/main?myName=" + (__test_account__ || me.data.name)
 			});
 		}, 1000);
 	},
