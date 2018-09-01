@@ -14,5 +14,5 @@
 			<navigator url="../register/register" open-type="redirect" hover-class="navigator-hover">注 册</navigator>
 		</view>
 	</view>
-	<button class="login_btn" hover-class="btn_hover" bindtap="login">登 录</button>
+	<button class="login_btn" hover-class="btn_hover" bind:tap="login">登 录</button>
 </view>

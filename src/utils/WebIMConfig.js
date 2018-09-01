@@ -22,7 +22,7 @@ let config = {
 	 */
 	// apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
 	// ios must be https!!! by lwz
-	apiURL: (location.protocol === "https:" ? "https:" : "http:") + "//a1.easemob.com",
+	apiURL: "https://a1.easemob.com",
 	// apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//172.17.3.155:8080',
 	/*
 	 * Application AppKey
