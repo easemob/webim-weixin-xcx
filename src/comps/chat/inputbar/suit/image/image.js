@@ -6,7 +6,11 @@ Component({
 		username: {
 			type: Object,
 			value: {},
-		}
+		},
+		chatType: {
+			type: String,
+			value: msgType.chatType.SINGLE_CHAT,
+		},
 	},
 	data: {
 
@@ -34,6 +38,14 @@ Component({
 					me.upLoadImage(res);
 				},
 			});
+		},
+
+		isGroupChat(){
+			return this.data.chatType == msgType.chatType.CHAT_ROOM;
+		},
+
+		getSendToParam(){
+			return this.isGroupChat() ? this.data.username.groupId : this.data.username.your;
 		},
 
 		upLoadImage(res){
@@ -80,10 +92,13 @@ Component({
 									apiUrl: WebIM.config.apiURL,
 									body: file,
 									from: me.data.username.myName,
-									to: me.data.username.your,
+									to: me.getSendToParam(),
 									roomType: false,
-									chatType: "singleChat"
+									chatType: me.data.chatType,
 								});
+								if(me.data.chatType == msgType.chatType.CHAT_ROOM){
+									msg.setGroup("groupchat");
+								}
 								WebIM.conn.send(msg.body);
 								me.triggerEvent(
 									"newImageMsg",

@@ -1,2 +1,3 @@
 <chat
-	username="{{ username }}"></chat>
+	username="{{ username }}"
+	chatType="singleChat"></chat>

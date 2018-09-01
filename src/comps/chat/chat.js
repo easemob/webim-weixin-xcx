@@ -1,11 +1,16 @@
 let msgStorage = require("msgstorage");
+let msgType = require("msgtype");
 
 Component({
 	properties: {
 		username: {
 			type: Object,
 			value: {},
-		}
+		},
+		chatType: {
+			type: String,
+			value: msgType.chatType.SINGLE_CHAT,
+		},
 	},
 	data: {
 		__comps__: {
@@ -18,7 +23,7 @@ Component({
 		toggleRecordModal(){
 			this.data.__comps__.audio.toggleRecordModal();
 		},
-		
+
 		normalScroll(){
 			this.data.__comps__.msglist.normalScroll();
 			this.data.__comps__.inputbar.cancelEmoji();

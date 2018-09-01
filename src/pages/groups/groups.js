@@ -62,7 +62,8 @@ Page({
 	into_room: function(event){
 		var nameList = {
 			myName: this.data.myName,
-			your: event.target.dataset.username
+			your: event.currentTarget.dataset.username,
+			groupId: event.currentTarget.dataset.roomid
 		};
 		wx.navigateTo({
 			url: "../groupChatRoom/groupChatRoom?username=" + JSON.stringify(nameList)
@@ -70,20 +71,19 @@ Page({
 	},
 
 	build_group: function(){
-		var that = this
-        // console.log(event)
-        var nameList = {
-            myName: that.data.myName
-		}
+		var me = this;
+		var nameList = {
+			myName: me.data.myName
+		};
 		wx.navigateTo({
-            url: '../add_groups/add_groups?owner=' + JSON.stringify(nameList)
-        })
+			url: "../add_groups/add_groups?owner=" + JSON.stringify(nameList)
+		});
 	},
 
 	edit_group: function(event){
 		var nameList = {
 			myName: this.data.myName,
-			groupName: event.target.dataset.username,
+			groupName: event.currentTarget.dataset.username,
 			roomId: event.currentTarget.dataset.roomid
 		};
 		wx.navigateTo({

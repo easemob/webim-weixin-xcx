@@ -6,7 +6,11 @@ Component({
 		username: {
 			type: Object,
 			value: {},
-		}
+		},
+		chatType: {
+			type: String,
+			value: msgType.chatType.SINGLE_CHAT,
+		},
 	},
 	data: {
 		inputMessage: "",		// render input 的值
@@ -19,6 +23,14 @@ Component({
 
 		blur(){
 			this.triggerEvent("inputBlured", null, { bubbles: true });
+		},
+
+		isGroupChat(){
+			return this.data.chatType == msgType.chatType.CHAT_ROOM;
+		},
+
+		getSendToParam(){
+			return this.isGroupChat() ? this.data.username.groupId : this.data.username.your;
 		},
 
 		// bindinput 不能打冒号！
@@ -60,13 +72,16 @@ Component({
 			msg.set({
 				msg: this.data.userMessage,
 				from: this.data.username.myName,
-				to: this.data.username.your,
+				to: this.getSendToParam(),
 				roomType: false,
+				chatType: this.data.chatType,
 				success(id, serverMsgId){
 
 				}
 			});
-			msg.body.chatType = "singleChat";
+			if(this.data.chatType == msgType.chatType.CHAT_ROOM){
+				msg.setGroup("groupchat");
+			}
 			WebIM.conn.send(msg.body);
 			this.triggerEvent(
 				"newTextMsg",

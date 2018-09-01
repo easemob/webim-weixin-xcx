@@ -27,10 +27,10 @@
 		<view class="info" bindtap="into_info">
 			<image src="../../images/number.png"  data-username="{{ item.name }}"></image>
 		</view>
-		<view class="nbr_body" data-username="{{ item.name }}"  bindtap="into_room">
+		<view class="nbr_body" data-username="{{ item.name }}" data-roomid="{{ item.roomId }}" bindtap="into_room">
 			<text data-username="{{ item.name }}">{{ item.name }}</text>
 		</view>
-		<view class="edit" bindtap="edit_group" data-username="{{ item.name }}" data-roomId="{{ item.roomId }}">
+		<view class="edit" bind:tap="edit_group" data-username="{{ item.name }}" data-roomid="{{ item.roomId }}">
 			<image src="../../images/cell_groups.png"  data-username="{{ item.name }}"></image>
 		</view>
 	</view>

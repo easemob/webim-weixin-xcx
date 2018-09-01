@@ -2,6 +2,7 @@
 	<chat-suit-audio
 		id="chat-suit-audio"
 		username="{{ username }}"
+		chatType="{{ chatType }}"
 		bind:newAudioMsg="saveSendMsg"></chat-suit-audio>
 
 	<chat-msglist
@@ -12,6 +13,7 @@
 	<chat-inputbar
 		id="chat-inputbar"
 		username="{{ username }}"
+		chatType="{{ chatType }}"
 
 		bind:newTextMsg="saveSendMsg"
 		bind:newImageMsg="saveSendMsg"

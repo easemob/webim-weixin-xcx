@@ -1,11 +1,16 @@
 let RecordStatus = require("suit/audio/record_status").RecordStatus;
+let msgType = require("../msgtype");
 
 Component({
 	properties: {
 		username: {
 			type: Object,
 			value: {}
-		}
+		},
+		chatType: {
+			type: String,
+			value: msgType.chatType.SINGLE_CHAT,
+		},
 	},
 	data: {
 		recordStatus: RecordStatus.HIDE,

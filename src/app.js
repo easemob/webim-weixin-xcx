@@ -15,6 +15,16 @@ function ack(receiveMsg){
 	WebIM.conn.send(ackMsg.body);
 }
 
+function onMessageError(err){
+	if(err.type === "error"){
+		wx.showToast({
+			title: err.errorText
+		});
+		return false;
+	}
+	return true;
+}
+
 App({
 	globalData: {
 		userInfo: null,
@@ -104,7 +114,9 @@ App({
 			onAudioMessage: function(message){
 				console.log("onAudioMessage", message);
 				if(message){
-					msgStorage.saveReceiveMsg(message, msgType.AUDIO);
+					if(onMessageError(message)){
+						msgStorage.saveReceiveMsg(message, msgType.AUDIO);
+					}
 					ack(message);
 				}
 			},
@@ -119,7 +131,9 @@ App({
 			onTextMessage: function(message){
 				console.log("onTextMessage", message);
 				if(message){
-					msgStorage.saveReceiveMsg(message, msgType.TEXT);
+					if(onMessageError(message)){
+						msgStorage.saveReceiveMsg(message, msgType.TEXT);
+					}
 					ack(message);
 				}
 			},
@@ -127,7 +141,9 @@ App({
 			onEmojiMessage: function(message){
 				console.log("onEmojiMessage", message);
 				if(message){
-					msgStorage.saveReceiveMsg(message, msgType.EMOJI);
+					if(onMessageError(message)){
+						msgStorage.saveReceiveMsg(message, msgType.EMOJI);
+					}
 					ack(message);
 				}
 			},
@@ -135,7 +151,9 @@ App({
 			onPictureMessage: function(message){
 				console.log("onPictureMessage", message);
 				if(message){
-					msgStorage.saveReceiveMsg(message, msgType.IMAGE);
+					if(onMessageError(message)){
+						msgStorage.saveReceiveMsg(message, msgType.IMAGE);
+					}
 					ack(message);
 				}
 			},

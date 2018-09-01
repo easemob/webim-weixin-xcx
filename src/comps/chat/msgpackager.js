@@ -3,7 +3,7 @@ let msgType = require("msgtype");
 
 module.exports = function(sendableMsg, type, myName){
 	var time = WebIM.time();
-	var msgData = {
+	var renderableMsg = {
 		info: {
 			from: sendableMsg.body.from,
 			to: sendableMsg.body.to
@@ -20,12 +20,12 @@ module.exports = function(sendableMsg, type, myName){
 		mid: sendableMsg.type + sendableMsg.id
 	};
 	if(type == msgType.IMAGE){
-		msgData.msg.size = {
+		renderableMsg.msg.size = {
 			width: sendableMsg.body.body.size.width,
 			height: sendableMsg.body.body.size.height,
 		};
 	}
-	return msgData;
+	return renderableMsg;
 
 	function getMsgData(sendableMsg, type){
 		if(type == msgType.TEXT){

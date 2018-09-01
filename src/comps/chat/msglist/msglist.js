@@ -64,7 +64,9 @@ Component({
 		let me = this;
 		let username = this.data.username;
 		let myUsername = wx.getStorageSync("myUsername");
-		let sessionKey = username.your + myUsername;
+		let sessionKey = username.groupId
+			? username.groupId + myUsername
+			: username.your + myUsername;
 		let chatMsg = wx.getStorageSync(sessionKey) || [];
 		chatMsg.length && this.setData({
 			chatMsg: chatMsg,
@@ -72,7 +74,13 @@ Component({
 		});
 		msgStorage.on("newChatMsg", function(renderableMsg, type, curChatMsg){
 			// 判断是否属于当前会话
-			if(renderableMsg.info.from == username.your || renderableMsg.info.to == username.your){
+			if(username.groupId){
+				// 群消息的 to 是 id，from 是 name
+				if(renderableMsg.info.from == username.groupId || renderableMsg.info.to == username.groupId){
+					me.renderMsg(renderableMsg, type, curChatMsg);
+				}
+			}
+			else if(renderableMsg.info.from == username.your || renderableMsg.info.to == username.your){
 				me.renderMsg(renderableMsg, type, curChatMsg);
 			}
 		});

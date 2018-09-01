@@ -14,7 +14,7 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 				to: receiveMsg.to,
 				type: type,
 				ext: receiveMsg.ext,
-				// chatType: "singleChat",
+				chatType: receiveMsg.chatType,
 				toJid: "",
 				body: {
 					type: type,
@@ -39,7 +39,7 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 				to: receiveMsg.to,
 				type: type,
 				ext: receiveMsg.ext,
-				// chatType: "singleChat",
+				chatType: receiveMsg.chatType,
 				toJid: "",
 				body: {
 					type: type,
@@ -59,7 +59,7 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 				to: receiveMsg.to,
 				type: type,
 				ext: receiveMsg.ext,
-				// chatType: "singleChat",
+				chatType: receiveMsg.chatType,
 				toJid: "",
 				body: {
 					type: type,
@@ -73,16 +73,24 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 	else{
 		return;
 	}
-	this.saveMsg(sendableMsg, type);
+	this.saveMsg(sendableMsg, type, receiveMsg);
 };
-msgStorage.saveMsg = function(sendableMsg, type){
-	var me = this;
-	var myName = wx.getStorageSync("myUsername");
-	var sessionKey = sendableMsg.body.from == myName
-		? sendableMsg.body.to + myName
-		: sendableMsg.body.from + myName;
-	var curChatMsg = wx.getStorageSync(sessionKey) || [];
-	var renderableMsg = msgPackager(sendableMsg, type, myName);
+msgStorage.saveMsg = function(sendableMsg, type, receiveMsg){
+	let me = this;
+	let myName = wx.getStorageSync("myUsername");
+	let sessionKey;
+	// 仅用作群聊收消息，发消息没有 receiveMsg
+	if(receiveMsg && receiveMsg.type == "groupchat"){
+		sessionKey = receiveMsg.to + myName;
+	}
+	// 群聊发 & 单发 & 单收
+	else{
+		sessionKey = sendableMsg.body.from == myName
+			? sendableMsg.body.to + myName
+			: sendableMsg.body.from + myName;
+	}
+	let curChatMsg = wx.getStorageSync(sessionKey) || [];
+	let renderableMsg = msgPackager(sendableMsg, type, myName);
 	curChatMsg.push(renderableMsg);
 	if(type == msgType.AUDIO){
 		// 如果是音频则请求服务器转码

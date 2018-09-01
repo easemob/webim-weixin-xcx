@@ -51,6 +51,7 @@ import StropheAll from "libs/strophe";
 			msg: this.value,
 			type: this.type,
 			roomType: opt.roomType,
+			chatType: opt.chatType,
 			ext: opt.ext || {},
 			success: opt.success,
 			fail: opt.fail
