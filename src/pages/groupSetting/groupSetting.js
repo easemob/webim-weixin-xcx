@@ -1,3 +1,5 @@
+var WebIM = require("../../utils/WebIM")["default"];
+
 Page({
     data:{
         roomId: '', //群id
@@ -110,3 +112,4 @@ Page({
         };
         WebIM.conn.dissolveGroup(option);
     }
+})
