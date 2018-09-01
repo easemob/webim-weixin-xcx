@@ -82,14 +82,6 @@ App({
 						title: "leaveChatRoomSuccess",
 					});
 					break;
-				case "createGroupACK":
-					WebIM.conn.createGroupAsync({
-						from: message.from,
-						success: function(option){
-							console.log("Create Group Succeed");
-						}
-					});
-					break;
 				default:
 					break;
 				}

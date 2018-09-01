@@ -9,9 +9,17 @@ Page({
 		allowApprove: false,	// 加入需要审批
 		noAllowJoin: false,		// 不允许任何人加入
 		allowInvite: false,		// 允许群人员邀请
-		inviteFriend: []		// 需要加好友ID
+		inviteFriend: [],		// 需要加好友ID
+		owner: ''
 	},
-
+	
+    onLoad:function(options){
+        console.log(options)
+        this.setData({
+            owner: JSON.parse(options.owner).myName
+        })
+    },
+    
 	onShow: function(){
 		var me = this;
 		// 获取当前用户的好友信息
@@ -75,16 +83,20 @@ Page({
 	// 创建群组
 	createGroup: function(){
 		// 建立一个群组
-		var option = {
-			subject: this.data.groupName,				// 群名称
-			description: this.data.groupDec,			// 群简介
-			members: this.data.inviteFriend,			// 以数组的形式存储需要加群的好友ID
-			optionsPublic: this.data.allowJoin,			// 允许任何人加入
-			optionsModerate: this.data.allowApprove,	// 加入需审批
-			optionsMembersOnly: this.data.noAllowJoin,	// 不允许任何人主动加入
-			optionsAllowInvites: this.data.allowInvite	// 允许群人员邀请
+		var options = {
+            data: {
+                groupname: this.data.groupName,
+                desc: this.data.groupDec,
+                members: this.data.inviteFriend,
+                public: this.data.allowJoin,
+                approval: this.data.allowApprove,
+                allowinvites: this.data.allowInvite,
+                owner: this.data.owner
+            },
+            success: function (respData){},
+            error: function () {},
 		};
-		WebIM.conn.createGroup(option);
+		WebIM.conn.createGroupNew(options);
 	},
 
 });

@@ -25,14 +25,19 @@ text{
     float: right;
     margin-right:10px;
     color: #ccc;
+    font-size: 16px;
 }
 .group-member{
-    height: 40px;
-    line-height: 40px;
+    /* height: 40px; */
+    /* line-height: 40px; */
+}
+.group-member .member-list{
+    padding-left: 10px;
+    font-size: 14px;
 }
 .invite-member{
-    height:40px;
-    line-height:40px;
+    /* height:40px; */
+    /* line-height:40px; */
 }
 .black-list{
     height: 40px;

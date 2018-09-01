@@ -23,11 +23,11 @@
                 <checkbox value="true"/>加入需要审批
             </label>
        </checkbox-group>
-       <checkbox-group class="checkbox-group" bindchange="noAllowJoin">
+       <!-- <checkbox-group class="checkbox-group" bindchange="noAllowJoin">
             <label class="checkbox">
                 <checkbox value="true"/>不允许任何人加入
             </label>
-       </checkbox-group>
+       </checkbox-group> -->
        <checkbox-group class="checkbox-group" bindchange="allowInvite">
             <label class="checkbox">
                 <checkbox value="true"/>允许群人员邀请

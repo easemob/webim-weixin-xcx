@@ -70,9 +70,14 @@ Page({
 	},
 
 	build_group: function(){
+		var that = this
+        // console.log(event)
+        var nameList = {
+            myName: that.data.myName
+		}
 		wx.navigateTo({
-			url: "../add_groups/add_groups"
-		});
+            url: '../add_groups/add_groups?owner=' + JSON.stringify(nameList)
+        })
 	},
 
 	edit_group: function(event){

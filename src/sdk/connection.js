@@ -2,6 +2,7 @@
 // (function (window, undefined) {
 import StropheAll from "libs/strophe";
 let Strophe = StropheAll.Strophe;
+
 Strophe.log = function(level, msg){
 	// console.log(ts(), level, msg);
 };
@@ -689,6 +690,9 @@ var connection = function(options){
 	// todo 接收的事件，放到数组里的时候，加上g.isInBackground字段。每帧执行一个事件的时候，如果g.isInBackground=true,就pass
 	this.sendQueue = new Queue();  // 接收到的事件队列
 	this.intervalId = null;
+	this.orgName = '';
+	this.appName = '';
+	this.token = '';
 };
 
 connection.prototype.handelSendQueue = function(){
@@ -717,6 +721,7 @@ connection.prototype.listen = function(options){
 	this.onOffline = options.onOffline || _utils.emptyfn;
 	this.onOnline = options.onOnline || _utils.emptyfn;
 	this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
+	this.onCreateGroup = options.onCreateGroup || _utils.emptyfn;
 	// for WindowSDK
 	this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
 	this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
@@ -778,6 +783,7 @@ connection.prototype.open = function(options){
 
 	if(options.accessToken){
 		options.access_token = options.accessToken;
+		this.token = options.access_token;
 		_login(options, conn);
 	}
 	else{
@@ -788,6 +794,8 @@ connection.prototype.open = function(options){
 		var str = appkey.split("#");
 		var orgName = str[0];
 		var appName = str[1];
+		this.orgName = orgName;
+   		this.appName = appName;
 
 		var suc = function(data, xhr, myName){
 			// console.log('success',data, xhr, myName)
@@ -2245,6 +2253,94 @@ connection.prototype.closed = function(){
 	IM.api.init();
 };
 
+// 通过Rest列出群组的所有成员
+connection.prototype.listGroupMember = function (opt) {
+    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
+        throw 'The parameter \"pageNum\" should be a positive number';
+        return;
+    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
+        throw 'The parameter \"pageSize\" should be a positive number';
+        return;
+    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
+        throw 'The parameter \"groupId\" should be added';
+        return;
+    }
+    var requestData = [],
+        groupId = opt.groupId;
+    requestData['pagenum'] = opt.pageNum;
+    requestData['pagesize'] = opt.pageSize;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
+        + '/' + groupId + '/users',
+        dataType: 'json',
+        type: 'GET',
+        data: requestData,
+        headers: {
+            'Authorization': 'Bearer ' + this.context.accessToken,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest接口创建群组
+connection.prototype.createGroupNew = function (opt) {
+    // opt.data.owner = this.user;
+    opt.data.invite_need_confirm = false;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups',
+        dataType: 'json',
+        type: 'POST',
+        data: JSON.stringify(opt.data),
+        headers: {
+            'Authorization': 'Bearer ' + this.context.accessToken,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = function (respData) {
+        opt.success(respData);
+        this.onCreateGroup(respData);
+    }.bind(this);
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest根据groupid获取群组详情
+connection.prototype.getGroupInfo = function (opt) {
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups/' + opt.groupId,
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            'Authorization': 'Bearer ' + this.context.accessToken,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest解散群组
+connection.prototype.dissolveGroup = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '?version=v3',
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.context.accessToken,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
 // used for blacklist
 function _parsePrivacy(iq){
 	var list = [];
@@ -2514,27 +2610,30 @@ connection.prototype.destroyGroup = function(options){
  * @param options
  */
 
-connection.prototype.leaveGroupBySelf = function(options){
-	var sucFn = options.success || _utils.emptyfn;
-	var errFn = options.error || _utils.emptyfn;
+connection.prototype.leaveGroupBySelf = function (options) {
+    var self = this;
+    var sucFn = options.success || _utils.emptyfn;
+    var errFn = options.error || _utils.emptyfn;
 
-	// must be `owner`
-	var jid = _getJid(options, this);
-	var affiliation = "admin";
-	var to = this._getGroupJid(options.roomId);
-	var iq = $iq({ type: "set", to: to });
+    // must be `owner`
+    var jid = _getJid(options, this);
+    var affiliation = 'admin';
+    var to = this._getGroupJid(options.roomId);
+    var iq = StropheAll.$iq({type: 'set', to: to});
 
-	iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
-	.c("item", {
-		affiliation: "none",
-		jid: jid
-	});
+    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+        .c('item', {
+            affiliation: 'none',
+            jid: jid
+        });
 
-	this.context.stropheConn.sendIQ(iq.tree(), function(msgInfo){
-		sucFn(msgInfo);
-	}, function(errInfo){
-		errFn(errInfo);
-	});
+    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+        sucFn(msgInfo);
+        var pres = StropheAll.$pres({type: 'unavailable', to: to + '/' + self.context.userId});
+        self.sendCommand(pres.tree());
+    }, function (errInfo) {
+        errFn(errInfo);
+    });
 };
 
 /**
@@ -2580,33 +2679,45 @@ connection.prototype.leaveGroup = function(options){
  * @param options
  */
 
-connection.prototype.addGroupMembers = function(options){
-	var sucFn = options.success || _utils.emptyfn;
-	var errFn = options.error || _utils.emptyfn;
-	var list = options.list || [];
-	var affiliation = "admin";
-	var to = this._getGroupJid(options.roomId);
-	var iq = $iq({ type: "set", to: to });
-	var piece = iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation });
-	var keys = Object.keys(list);
-	var len = keys.length;
+connection.prototype.addGroupMembers = function (options) {
+    var sucFn = options.success || _utils.emptyfn;
+    var errFn = options.error || _utils.emptyfn;
+    var list = options.list || [];
+    var affiliation = 'admin';
+    var to = this._getGroupJid(options.roomId);
+    var iq = StropheAll.$iq({type: 'set', to: to});
+    var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation});
+    var len = list.length;
 
-	for(var i = 0; i < len; i++){
-		var name = list[keys[i]];
-		var jid = _getJidByName(name, this);
+    for (var i = 0; i < len; i++) {
 
-		piece = piece.c("item", {
-			affiliation: "member",
-			jid: jid
-		}).up();
-	}
+        var name = list[i];
+        var jid = _getJidByName(name, this);
 
-	this.context.stropheConn.sendIQ(iq.tree(), function(msgInfo){
-		sucFn(msgInfo);
-	}, function(errInfo){
-		errFn(errInfo);
-	});
+        piece = piece.c('item', {
+            affiliation: 'member',
+            jid: jid
+        }).up();
+
+        var dom = StropheAll.$msg({
+            to: to
+        }).c('x', {
+            xmlns: 'http://jabber.org/protocol/muc#user'
+        }).c('invite', {
+            to: jid
+        }).c('reason').t(options.reason || '');
+
+        this.sendCommand(dom.tree());
+
+    }
+
+    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+        sucFn(msgInfo);
+    }, function (errInfo) {
+        errFn(errInfo);
+    });
 };
+
 
 /**
  * acceptInviteFromGroup 接受加入申请

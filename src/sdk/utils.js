@@ -810,9 +810,7 @@
 			wx.request({
 				url: options.url,
 				data: options.data,
-				header: {
-					"content-type": "application/json"
-				},
+				header: options.headers,
 				method: type,
 				success: function(res){
 					// console.log(res)
