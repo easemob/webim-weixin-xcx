@@ -105,7 +105,7 @@ App({
 				console.log("onAudioMessage", message);
 				if(message){
 					msgStorage.saveReceiveMsg(message, msgType.AUDIO);
-					ack();
+					ack(message);
 				}
 			},
 
@@ -120,7 +120,7 @@ App({
 				console.log("onTextMessage", message);
 				if(message){
 					msgStorage.saveReceiveMsg(message, msgType.TEXT);
-					ack();
+					ack(message);
 				}
 			},
 
@@ -128,7 +128,7 @@ App({
 				console.log("onEmojiMessage", message);
 				if(message){
 					msgStorage.saveReceiveMsg(message, msgType.EMOJI);
-					ack();
+					ack(message);
 				}
 			},
 
@@ -136,7 +136,7 @@ App({
 				console.log("onPictureMessage", message);
 				if(message){
 					msgStorage.saveReceiveMsg(message, msgType.IMAGE);
-					ack();
+					ack(message);
 				}
 			},
 
