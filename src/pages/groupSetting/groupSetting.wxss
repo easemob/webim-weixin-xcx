@@ -19,13 +19,17 @@ text{
 .group-name{
 	width: 100%;
 	height: 40px;
-	line-height: 40px;
+    line-height: 40px;
+    border-top: 1px solid #cfcfcf;
 }
 .group-name .item-name{
 	float: right;
 	margin-right:10px;
 	color: #ccc;
 	font-size: 14px;
+}
+.invite-member,.group-member{
+    border-top: 1px solid #cfcfcf;
 }
 
 .group-member .member-list{
@@ -36,25 +40,27 @@ text{
 	color: #ccc;
 }
 .invite-member .invite-wrap input{
-	display:inline-block;
-	margin-left:7px;
-	width:70%;
-	height:40px;
-	line-height:40px;
-	font-size:14px;
-	border:1px solid #e1e1e1;
-	border-radius:4px;
+    display:inline-block;
+    width: calc(100% - 80px);
+    height:40px;
+    line-height:40px;
+    font-size:14px;
+    border:1px solid #e1e1e1;
+    border-radius:4px;
+    padding: 0 8px;
+    box-sizing: border-box;
 }
 .invite-wrap{
-	margin-bottom:6px;
+    padding: 0 10px 0 10px;
+    box-sizing: border-box;
+    margin-bottom:6px;
 }
 .invite-member .invite-wrap button{
-	float:right;
-	margin: 1px 8px 0 0 ;
-	width:18%;
-	height:40px;
-	line-height:40px;
-	font-size:14px;
+    float:right;
+    width: 70px;
+    height:40px;
+    line-height:40px;
+    font-size:14px;
 }
 .invite-title{
 	display: block;
