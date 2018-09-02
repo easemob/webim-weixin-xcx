@@ -1568,7 +1568,9 @@ connection.prototype.subscribe = function(options){
 		pres.c("status").t(options.message).up();
 	}
 	if(options.nick){
-		pres.c("nick", { xmlns: "http://jabber.org/protocol/nick" }).t(options.nick);
+		pres
+		.c("nick", { xmlns: "http://jabber.org/protocol/nick" })
+		.t(options.nick);
 	}
 	this.sendCommand(pres.tree());
 };

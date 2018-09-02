@@ -12,8 +12,9 @@ Page({
 
 	onLoad: function(option){
 		let me = this;
-		disp.on("em.invite.joingroup", function(){
+		disp.on("em.xmpp.invite.joingroup", function(){
 			var pageStack = getCurrentPages();
+			// 判断是否当前路由是本页
 			if(pageStack[pageStack.length - 1].route === me.route){
 				me.listGroups();
 			}
@@ -35,6 +36,8 @@ Page({
 				me.setData({
 					groupList: rooms
 				});
+				// 好像也没有别的官方通道共享数据啊
+				getApp().globalData.groupList = rooms || [];
 			},
 			error: function(){
 
