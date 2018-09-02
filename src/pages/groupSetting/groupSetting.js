@@ -2,32 +2,31 @@ var WebIM = require("../../utils/WebIM")["default"];
 
 Page({
 	data: {
-		roomId: "", // 群id
-		groupName: "", // 群名称
-		currentName: "",  // 当前用户
-		groupMember: [], // 群成员
-		curOwner: "", // 当前群管理员
-		groupDec: "", // 群描述
+		roomId: "",			// 群id
+		groupName: "",		// 群名称
+		currentName: "",	// 当前用户
+		groupMember: [],	// 群成员
+		curOwner: "",		// 当前群管理员
+		groupDec: "",		// 群描述
 		addFriendName: [],
 		isOwner: false
 	},
+
 	onLoad: function(options){
-		var that = this;
-		// console.log(options)
 		this.setData({
 			roomId: JSON.parse(options.groupInfo).roomId,
 			groupName: JSON.parse(options.groupInfo).groupName,
 			currentName: JSON.parse(options.groupInfo).myName
 		});
-		console.log(this.data.roomId, this.data.groupName, this.data.currentName);
-
+		// console.log(this.data.roomId, this.data.groupName, this.data.currentName);
 		// 获取群成员
-		that.getGroupMember();
+		this.getGroupMember();
 		// 获取群信息
-		that.getGroupInfo();
+		this.getGroupInfo();
 	},
+
 	getGroupMember: function(){
-		var that = this;
+		var me = this;
 		// 获取群成员
 		var pageNum = 1,
 			pageSize = 1000;
@@ -37,79 +36,120 @@ Page({
 			groupId: this.data.roomId,
 			success: function(resp){
 				if(resp && resp.data && resp.data.data){
-					that.setData({
+					me.setData({
 						groupMember: resp.data.data
 					});
 				}
-				console.log(that.data.groupMember);
+				// console.log(me.data.groupMember);
 			},
-			error: function(e){}
+			error: function(err){
+
+			}
 		};
 		WebIM.conn.listGroupMember(options);
 	},
+
 	getGroupInfo: function(){
-		var that = this;
+		var me = this;
 		// 获取群信息
 		var options = {
 			groupId: this.data.roomId,
 			success: function(resp){
 				if(resp && resp.data && resp.data.data){
-					that.setData({
+					me.setData({
 						curOwner: resp.data.data[0].owner,
 						groupDec: resp.data.data[0].description
 					});
 
-					if(that.data.currentName == resp.data.data[0].owner){
-						that.setData({
+					if(me.data.currentName == resp.data.data[0].owner){
+						me.setData({
 							isOwner: true
 						});
 					}
 				}
 			},
-			error: function(){}
+			error: function(){
+
+			}
 		};
 		WebIM.conn.getGroupInfo(options);
 	},
+
 	addFriendName: function(e){
-		var that = this;
 		var firendArr = [];
 		firendArr.push(e.detail.value);
 		this.setData({
 			addFriendName: firendArr
 		});
 	},
+
+	// 加好友入群
 	addGroupMembers: function(){
-		var that = this;
-		// 加好友入群
+		var me = this;
 		var option = {
-			list: that.data.addFriendName,
-			roomId: that.data.roomId
+			list: this.data.addFriendName,
+			roomId: this.data.roomId,
+			success: function(){
+				wx.showToast({
+					title: "邀请已发出",
+					duration: 2000,
+				});
+				me.getGroupMember();
+			},
+			error: function(err){
+				wx.showToast({
+					title: err.data.error_description,
+				});
+			}
 		};
 		WebIM.conn.addGroupMembers(option);
 	},
+
 	leaveGroup: function(){
-		var that = this;
-		var option = {
-			to: that.data.currentName,
-			roomId: that.data.roomId,
+		var me = this;
+		WebIM.conn.leaveGroupBySelf({
+			to: this.data.currentName,
+			roomId: this.data.roomId,
 			success: function(){
-				console.log("You leave room succeed!");
+				wx.showToast({
+					title: "已退",
+					duration: 2000,
+					success: function(res){
+						setTimeout(() => wx.navigateTo({
+							url: "../groups/groups?myName=" + me.data.currentName
+						}), 2000);
+					},
+				});
 			},
-			error: function(){
-				console.log("Leave room faild");
+			error: function(err){
+				wx.showToast({
+					title: err.data.error_description,
+				});
 			}
-		};
-		WebIM.conn.leaveGroupBySelf(option);
+		});
 	},
+
 	dissolveGroup: function(){
-		var that = this;
+		var me = this;
 		// 解散一个群组
-		var option = {
-			groupId: that.data.roomId,
+		WebIM.conn.dissolveGroup({
+			groupId: this.data.roomId,
 			success: function(){
-				console.log("Destroy group success!");
-			}
-		};
-		WebIM.conn.dissolveGroup(option);
+				wx.showToast({
+					title: "已解散",
+					duration: 2000,
+					success: function(res){
+						setTimeout(() => wx.navigateTo({
+							url: "../groups/groups?myName=" + me.data.currentName
+						}), 2000);
+					},
+				});
+			},
+			error: function(err){
+				wx.showToast({
+					title: err.data.error_description,
+				});
+			},
+		});
 	}
 });
