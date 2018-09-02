@@ -6,9 +6,7 @@ import StropheAll from "libs/strophe";
 		if(!(this instanceof Message)){
 			return new Message(type);
 		}
-
 		this._msg = {};
-
 		if(typeof Message[type] === "function"){
 			Message[type].prototype.setGroup = this.setGroup;
 			this._msg = new Message[type](id);

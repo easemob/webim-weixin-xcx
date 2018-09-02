@@ -5,10 +5,10 @@
 
 	Array_h.prototype = {
 		/**
-         * 返回数组长度
-         *
-         * @return {Number} length [数组长度]
-         */
+		 * 返回数组长度
+		 *
+		 * @return {Number} length [数组长度]
+		 */
 		length: function(){
 			return this.array.length;
 		},
@@ -22,24 +22,25 @@
 		},
 
 		/**
-         * 向数组的末尾添加一个或多个元素，并返回新的长度。
-         *
-         * @param  {*} obj [description]
-         * @return {Number} length [新数组的长度]
-         */
+		 * 向数组的末尾添加一个或多个元素，并返回新的长度。
+		 *
+		 * @param  {*} obj [description]
+		 * @return {Number} length [新数组的长度]
+		 */
 		push: function(obj){
 			return this.array.push(obj);
 		},
 
 		/**
-         * 返回数组中选定的元素
-         *
-         * @param  {Number} start [开始索引值]
-         * @param  {Number} end [结束索引值]
-         * @return {Array} newArray  [新的数组]
-         */
+		 * 返回数组中选定的元素
+		 *
+		 * @param  {Number} start [开始索引值]
+		 * @param  {Number} end [结束索引值]
+		 * @return {Array} newArray  [新的数组]
+		 */
 		slice: function(start, end){
-			return this.array = this.array.slice(start, end);
+			this.array = this.array.slice(start, end);
+			return this.array;
 		},
 
 		concat: function(array){
@@ -61,11 +62,11 @@
 	};
 
 	/**
-     * 先进先出队列 (First Input First Output)
-     *
-     * 一种先进先出的数据缓存器
-     */
-	var Queue = function(){
+	 * 先进先出队列 (First Input First Output)
+	 *
+	 * 一种先进先出的数据缓存器
+	 */
+	let Queue = function(){
 		this._array_h = new Array_h();
 	};
 
@@ -73,20 +74,20 @@
 		_index: 0,
 
 		/**
-         * 排队
-         *
-         * @param  {Object} obj [description]
-         * @return {[type]}     [description]
-         */
+		 * 排队
+		 *
+		 * @param  {Object} obj [description]
+		 * @return {[type]}     [description]
+		 */
 		push: function(obj){
 			this._array_h.push(obj);
 		},
 
 		/**
-         * 出队
-         *
-         * @return {Object} [description]
-         */
+		 * 出队
+		 *
+		 * @return {Object} [description]
+		 */
 		pop: function(){
 			var ret = null;
 			if(this._array_h.length()){
@@ -100,10 +101,10 @@
 		},
 
 		/**
-         * 返回队列中头部(即最新添加的)的动态对象
-         *
-         * @return {Object} [description]
-         */
+		 * 返回队列中头部(即最新添加的)的动态对象
+		 *
+		 * @return {Object} [description]
+		 */
 		head: function(){
 			var ret = null, len = this._array_h.length();
 			if(len){
@@ -113,10 +114,10 @@
 		},
 
 		/**
-         * 返回队列中尾部(即最早添加的)的动态对象
-         *
-         * @return {Object} [description]
-         */
+		 * 返回队列中尾部(即最早添加的)的动态对象
+		 *
+		 * @return {Object} [description]
+		 */
 		tail: function(){
 			var ret = null, len = this._array_h.length();
 			if(len){
@@ -126,19 +127,19 @@
 		},
 
 		/**
-         * 返回数据队列长度
-         *
-         * @return {Number} [description]
-         */
+		 * 返回数据队列长度
+		 *
+		 * @return {Number} [description]
+		 */
 		length: function(){
 			return this._array_h.length() - this._index;
 		},
 
 		/**
-         * 队列是否为空
-         *
-         * @return {Boolean} [description]
-         */
+		 * 队列是否为空
+		 *
+		 * @return {Boolean} [description]
+		 */
 		empty: function(){
 			return (this._array_h.length() === 0);
 		},
@@ -147,5 +148,7 @@
 			this._array_h.clear();
 		}
 	};
+
 	exports.Queue = Queue;
+
 }());

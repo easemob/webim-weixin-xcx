@@ -74,7 +74,4 @@ Component({
 		// comps.location = this.selectComponent("#chat-suit-location");
 		// comps.video = this.selectComponent("chat-suit-video");
 	},
-	// 组件所在页面的生命周期函数
-	show(){},
-	hide(){},
 });

@@ -48,8 +48,8 @@ Component({
 		this.data.__comps__.audio = this.selectComponent("#chat-suit-audio");
 	},
 	moved(){ console.log("moved"); },
-	detached(){ console.log("detached"); },
-	// 组件所在页面的生命周期函数
-	show(){ console.log("show"); },
-	hide(){ console.log("hide"); },
+	detached(){
+		console.log("detached");
+	},
+
 });
