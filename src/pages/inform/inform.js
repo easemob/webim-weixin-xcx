@@ -45,6 +45,7 @@ Page({
 	},
 
 	agree(event){
+		var me = this;
 		// 同意（无回调）
 		WebIM.conn.subscribed({
 			to: event.currentTarget.dataset.from,
@@ -57,12 +58,15 @@ Page({
 		});
 		wx.showToast({
 			title: "OK",
-			duration: 1000,
+			duration: 1000
 		});
-		this.removeAndRefresh(event.currentTarget.dataset.from);
+		setTimeout(function(){
+			me.removeAndRefresh(event.currentTarget.dataset.from);
+		}, 1000);
 	},
 
 	reject(event){
+		var me = this;
 		// 无回调
 		WebIM.conn.unsubscribed({
 			to: event.currentTarget.dataset.from,
@@ -70,8 +74,10 @@ Page({
 		});
 		wx.showToast({
 			title: "已拒绝",
-			duration: 1000,
+			duration: 1000
 		});
-		this.removeAndRefresh(event.currentTarget.dataset.from);
+		setTimeout(function(){
+			me.removeAndRefresh(event.currentTarget.dataset.from);
+		}, 1000);
 	}
 });

@@ -55,10 +55,10 @@ App({
 				wx.showModal({
 					title: message.from + " 已邀你入群 " + message.roomid,
 					success(){
-						disp.fire("em.invite.joingroup", message);
+						disp.fire("em.xmpp.invite.joingroup", message);
 					},
 					error(){
-						disp.fire("em.invite.joingroup", message);
+						disp.fire("em.xmpp.invite.joingroup", message);
 					}
 				});
 			},
@@ -68,6 +68,7 @@ App({
 				case "unsubscribe":
 					// pages[0].moveFriend(message);
 					break;
+				// 好友邀请列表
 				case "subscribe":
 					if(message.status === "[resp:true]"){
 
@@ -75,34 +76,43 @@ App({
 					else{
 						// pages[0].handleFriendMsg(message);
 						me.globalData.saveFriendList.push(message);
-						console.log(me.globalData.saveFriendList);
-						disp.trigger("em.xmpp.subscribe");
+						disp.fire("em.xmpp.subscribe");
 					}
 					break;
-				case "subscribed":
-					let newFriendList = [];
-					for(let i = 0; i < me.globalData.saveFriendList.length; i++){
-						if(me.globalData.saveFriendList[i].from != message.from){
-							newFriendList.push(me.globalData.saveFriendList[i]);
-						}
-					}
-					me.globalData.saveFriendList = newFriendList;
-					break;
-				case "joinChatRoomSuccess":
+				// 好友列表
+				// case "subscribed":
+				// 	let newFriendList = [];
+				// 	for(let i = 0; i < me.globalData.saveFriendList.length; i++){
+				// 		if(me.globalData.saveFriendList[i].from != message.from){
+				// 			newFriendList.push(me.globalData.saveFriendList[i]);
+				// 		}
+				// 	}
+				// 	me.globalData.saveFriendList = newFriendList;
+				// 	break;
+				// 删除好友
+				case "unavailable":
 					wx.showToast({
-						title: "JoinChatRoomSuccess",
+						title: "删除成功",
 					});
+					disp.fire("em.xmpp.contacts.remove", message);
 					break;
-				case "memberJoinChatRoomSuccess":
-					wx.showToast({
-						title: "memberJoinChatRoomSuccess",
-					});
-					break;
-				case "memberLeaveChatRoomSuccess":
-					wx.showToast({
-						title: "leaveChatRoomSuccess",
-					});
-					break;
+
+				// case "joinChatRoomSuccess":
+				// 	wx.showToast({
+				// 		title: "JoinChatRoomSuccess",
+				// 	});
+				// 	break;
+				// case "memberJoinChatRoomSuccess":
+				// 	wx.showToast({
+				// 		title: "memberJoinChatRoomSuccess",
+				// 	});
+				// 	break;
+				// case "memberLeaveChatRoomSuccess":
+				// 	wx.showToast({
+				// 		title: "leaveChatRoomSuccess",
+				// 	});
+				// 	break;
+
 				default:
 					break;
 				}

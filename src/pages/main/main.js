@@ -11,23 +11,31 @@ Page({
 		messageNum: ""
 	},
 
-	onLoad: function(option){
+	onLoad(option){
 		var me = this;
 		disp.on("em.xmpp.subscribe", function(){
 			me.setData({
 				messageNum: getApp().globalData.saveFriendList.length
 			});
 		});
+		disp.on("em.xmpp.contacts.remove", function(message){
+			// 个人操作，不用判断 curPage
+			me.getRoster();
+		});
 		this.setData({
 			myName: option.myName
 		});
 	},
 
-	onShow: function(){
-		var me = this;
+	onShow(){
 		this.setData({
 			messageNum: getApp().globalData.saveFriendList.length
 		});
+		this.getRoster();
+	},
+
+	getRoster(){
+		let me = this;
 		let rosters = {
 			success: function(roster){
 				var member = [];
@@ -45,10 +53,10 @@ Page({
 				});
 			}
 		};
-
 		// WebIM.conn.setPresence()
 		WebIM.conn.getRoster(rosters);
 	},
+
 	moveFriend: function(message){
 		let me = this;
 		let rosters = {
@@ -76,6 +84,7 @@ Page({
 			});
 		}
 	},
+
 	handleFriendMsg: function(message){
 		wx.showModal({
 			title: "添加好友请求",
@@ -109,7 +118,7 @@ Page({
 			title: "确认删除好友" + delName,
 			cancelText: "取消",
 			confirmText: "删除",
-			success: function(res){
+			success(res){
 				if(res.confirm == true){
 					WebIM.conn.removeRoster({
 						to: delName,
@@ -119,12 +128,10 @@ Page({
 							});
 						},
 						error: function(error){
+
 						}
 					});
 				}
-
-			},
-			fail: function(error){
 			}
 		});
 	},
@@ -173,7 +180,7 @@ Page({
 
 	into_inform: function(){
 		wx.navigateTo({
-			url: "../inform/inform"
+			url: "../inform/inform?myName=" + this.data.myName
 		});
 	},
 
