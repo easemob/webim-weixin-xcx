@@ -10,16 +10,15 @@ Page({
 		noAllowJoin: false,		// 不允许任何人加入
 		allowInvite: false,		// 允许群人员邀请
 		inviteFriend: [],		// 需要加好友ID
-		owner: ''
+		owner: "",				// = myName
 	},
-	
-    onLoad:function(options){
-        console.log(options)
-        this.setData({
-            owner: JSON.parse(options.owner).myName
-        })
-    },
-    
+
+	onLoad: function(options){
+		this.setData({
+			owner: JSON.parse(options.owner).myName,
+		});
+	},
+
 	onShow: function(){
 		var me = this;
 		// 获取当前用户的好友信息
@@ -83,18 +82,33 @@ Page({
 	// 创建群组
 	createGroup: function(){
 		// 建立一个群组
+		var me = this;
 		var options = {
-            data: {
-                groupname: this.data.groupName,
-                desc: this.data.groupDec,
-                members: this.data.inviteFriend,
-                public: this.data.allowJoin,
-                approval: this.data.allowApprove,
-                allowinvites: this.data.allowInvite,
-                owner: this.data.owner
-            },
-            success: function (respData){},
-            error: function () {},
+			data: {
+				groupname: this.data.groupName,
+				desc: this.data.groupDec,
+				members: this.data.inviteFriend,
+				"public": this.data.allowJoin,
+				approval: this.data.allowApprove,
+				allowinvites: this.data.allowInvite,
+				owner: this.data.owner
+			},
+			success: function(respData){
+				wx.showToast({
+					title: "添加成功",
+					duration: 2000,
+					success: function(res){
+						setTimeout(() => wx.navigateTo({
+							url: "../groups/groups?myName=" + me.data.owner
+						}), 2000);
+					},
+				});
+			},
+			error: function(err){
+				wx.showToast({
+					title: err.data.error_description,
+				});
+			},
 		};
 		WebIM.conn.createGroupNew(options);
 	},
