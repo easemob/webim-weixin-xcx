@@ -115,7 +115,8 @@ Page({
 					title: "已退",
 					duration: 2000,
 					success: function(res){
-						setTimeout(() => wx.navigateTo({
+						// redirectTo = 此操作不可返回
+						setTimeout(() => wx.redirectTo({
 							url: "../groups/groups?myName=" + me.data.currentName
 						}), 2000);
 					},
@@ -139,7 +140,8 @@ Page({
 					title: "已解散",
 					duration: 2000,
 					success: function(res){
-						setTimeout(() => wx.navigateTo({
+						// redirectTo = 此操作不可返回
+						setTimeout(() => wx.redirectTo({
 							url: "../groups/groups?myName=" + me.data.currentName
 						}), 2000);
 					},
