@@ -104,15 +104,6 @@
 	border-left-color: #b2e281;
 }
 
-.audio {
-	width: 4.5%;
-	height: 40%;
-	border: 1px solid rgb(135, 152, 164);
-	border-radius: 50px;
-	padding: 3px 4px;
-	margin-left: 10px;
-}
-
 .template {
 	display: inline;
 }

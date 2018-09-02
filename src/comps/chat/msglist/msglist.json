@@ -1,3 +1,6 @@
 {
-	"component": true
+	"component": true,
+	"usingComponents": {
+		"audio-msg": "type/audio/audio"
+	}
 }

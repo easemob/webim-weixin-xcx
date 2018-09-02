@@ -1,0 +1,15 @@
+<view class="audio-player">
+	<view
+		class="controls play-btn"
+		wx:if="{{ curStatus == playStatus.PAUSE || curStatus == playStatus.STOP }}"
+		bind:tap="audioPlay">
+		<image src="../../../../../images/audioPlay.png"></image>
+	</view>
+	<view
+		class="controls pause-btn"
+		wx:if="{{ curStatus == playStatus.PLAYING }}"
+		bind:tap="audioPause">
+		<image src="../../../../../images/audioPause.png"></image>
+	</view>
+	<text class="time">{{ time }}</text>
+</view>

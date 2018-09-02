@@ -42,14 +42,9 @@
 				<view wx:if="{{ item.msg.type == 'img' || item.msg.type == 'video' }}">
 					<template is="{{ item.msg.type }}" data="{{ item }}"/>
 				</view>
-				<view wx:if="{{item.msg.type == 'audio'}}">
-                     <audio src="{{ item.msg.url }}" id="myAudio" controls loop>
-                        <cover-view class="controls" bind:tap="audioPlay">
-                        </cover-view>
-                        <cover-view class="controls" bind:tap="audioPause">
-                        </cover-view>
-                    </audio>
-                </view>
+				<audio-msg
+					wx:if="{{ item.msg.type == 'audio' }}"
+					msg="{{ item }}"></audio-msg>
 				<view wx:elif="{{ item.msg.type == 'txt' || item.msg.type == 'emoji' }}">
 					<view class="template" wx:for="{{ item.msg.data }}" wx:key="">
 						<template is="{{ item.type }}" data="{{ item }}"/>
