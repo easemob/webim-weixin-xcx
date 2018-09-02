@@ -88,17 +88,17 @@
 	height: 50%;
 	margin:0 13px 0 10px;
 }
-.chat .msgNum{
-	position:absolute;
-	right:20px;
-	height:17px;
-	border-radius:10px;
-	min-width:15px;
-	background:#f04134;
-	color:#fff;
-	line-height:20px;
-	text-align:center;
-	padding:0px 2px 2px 2px;
+.chat .msgNum {
+	position: absolute;
+	right: 10px;
+	height: 17px;
+	border-radius: 10px;
+	min-width: 15px;
+	background: #f04134;
+	color: #fff;
+	line-height: 20px;
+	text-align: center;
+	padding: 0px 2px 2px 2px;
 }
 .chat_groups image {
 	width: 8%;
