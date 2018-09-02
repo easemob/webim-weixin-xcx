@@ -81,9 +81,27 @@ Page({
 
 	// 创建群组
 	createGroup: function(){
-		// 建立一个群组
-		var me = this;
-		var options = {
+		let me = this;
+		let allGroups = getApp().globalData.groupList;
+		if(!this.data.groupName.trim()){
+			wx.showModal({
+				title: "请输入群名",
+				confirmText: "OK",
+				showCancel: false
+			});
+			return;
+		}
+		if(allGroups.reduce(function(result, v, k){
+			return result || (v.name == me.data.groupName);
+		}, false)){
+			wx.showModal({
+				title: "群名被占用",
+				confirmText: "OK",
+				showCancel: false
+			});
+			return;
+		}
+		let options = {
 			data: {
 				groupname: this.data.groupName,
 				desc: this.data.groupDec,
