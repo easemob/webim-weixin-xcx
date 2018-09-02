@@ -31,28 +31,42 @@ App({
 		saveFriendList: []
 	},
 
-	// getPage: function(pageName){
+	// getPage(pageName){
 	// 	var pages = getCurrentPages();
 	// 	return pages.find(function(page){
 	// 		return page.__route__ == pageName;
 	// 	});
 	// },
 
-	onLaunch: function(){
-		// 调用API从本地缓存中获取数据
-		var that = this;
+	onLaunch(){
+		// 调用 API 从本地缓存中获取数据
+		var me = this;
 		var logs = wx.getStorageSync("logs") || [];
 		logs.unshift(Date.now());
 		wx.setStorageSync("logs", logs);
 
 		WebIM.conn.listen({
-			onOpened: function(message){
+			onOpened(message){
+				console.log("onOpened", message);
 				WebIM.conn.setPresence();
 			},
-			onPresence: function(message){
+			onInviteMessage(message){
+				console.log("onInviteMessage", message);
+				wx.showModal({
+					title: message.from + " 已邀你入群 " + message.roomid,
+					success(){
+						disp.fire("em.invite.joingroup", message);
+					},
+					error(){
+						disp.fire("em.invite.joingroup", message);
+					}
+				});
+			},
+			onPresence(message){
+				console.log("onPresence", message);
 				switch(message.type){
 				case "unsubscribe":
-					pages[0].moveFriend(message);
+					// pages[0].moveFriend(message);
 					break;
 				case "subscribe":
 					if(message.status === "[resp:true]"){
@@ -60,34 +74,31 @@ App({
 					}
 					else{
 						// pages[0].handleFriendMsg(message);
-						that.globalData.saveFriendList.push(message);
-						console.log(that.globalData.saveFriendList);
+						me.globalData.saveFriendList.push(message);
+						console.log(me.globalData.saveFriendList);
 						disp.trigger("em.xmpp.subscribe");
 					}
 					break;
 				case "subscribed":
 					let newFriendList = [];
-					for(let i = 0; i < that.globalData.saveFriendList.length; i++){
-						if(that.globalData.saveFriendList[i].from != message.from){
-							newFriendList.push(that.globalData.saveFriendList[i]);
+					for(let i = 0; i < me.globalData.saveFriendList.length; i++){
+						if(me.globalData.saveFriendList[i].from != message.from){
+							newFriendList.push(me.globalData.saveFriendList[i]);
 						}
 					}
-					that.globalData.saveFriendList = newFriendList;
+					me.globalData.saveFriendList = newFriendList;
 					break;
 				case "joinChatRoomSuccess":
-					console.log("Message: ", message);
 					wx.showToast({
 						title: "JoinChatRoomSuccess",
 					});
 					break;
 				case "memberJoinChatRoomSuccess":
-					console.log("memberMessage: ", message);
 					wx.showToast({
 						title: "memberJoinChatRoomSuccess",
 					});
 					break;
 				case "memberLeaveChatRoomSuccess":
-					console.log("LeaveChatRoom");
 					wx.showToast({
 						title: "leaveChatRoomSuccess",
 					});
@@ -97,21 +108,22 @@ App({
 				}
 			},
 
-			onRoster: function(message){
-				var pages = getCurrentPages();
-				if(pages[0]){
-					pages[0].onShow();
-				}
+			onRoster(message){
+				console.log("onRoster", message);
+				// let pages = getCurrentPages();
+				// if(pages[0]){
+				// 	pages[0].onShow();
+				// }
 			},
 
-			// onVideoMessage: function(message){
+			// onVideoMessage(message){
 			// 	console.log("onVideoMessage: ", message);
 			// 	if(message){
 			// 		msgStorage.saveReceiveMsg(message, msgType.VIDEO);
 			// 	}
 			// },
 
-			onAudioMessage: function(message){
+			onAudioMessage(message){
 				console.log("onAudioMessage", message);
 				if(message){
 					if(onMessageError(message)){
@@ -121,14 +133,14 @@ App({
 				}
 			},
 
-			// onLocationMessage: function(message){
+			// onLocationMessage(message){
 			// 	console.log("Location message: ", message);
 			// 	if(message){
 			// 		msgStorage.saveReceiveMsg(message, msgType.LOCATION);
 			// 	}
 			// },
 
-			onTextMessage: function(message){
+			onTextMessage(message){
 				console.log("onTextMessage", message);
 				if(message){
 					if(onMessageError(message)){
@@ -138,7 +150,7 @@ App({
 				}
 			},
 
-			onEmojiMessage: function(message){
+			onEmojiMessage(message){
 				console.log("onEmojiMessage", message);
 				if(message){
 					if(onMessageError(message)){
@@ -148,7 +160,7 @@ App({
 				}
 			},
 
-			onPictureMessage: function(message){
+			onPictureMessage(message){
 				console.log("onPictureMessage", message);
 				if(message){
 					if(onMessageError(message)){
@@ -159,7 +171,7 @@ App({
 			},
 
 			// 各种异常
-			onError: function(error){
+			onError(error){
 				// 16: server-side close the websocket connection
 				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED){
 					if(WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax){
@@ -188,7 +200,7 @@ App({
 		});
 	},
 
-	getUserInfo: function(cb){
+	getUserInfo(cb){
 		var me = this;
 		if(this.globalData.userInfo){
 			typeof cb == "function" && cb(this.globalData.userInfo);
@@ -196,9 +208,9 @@ App({
 		else{
 			// 调用登录接口
 			wx.login({
-				success: function(){
+				success(){
 					wx.getUserInfo({
-						success: function(res){
+						success(res){
 							me.globalData.userInfo = res.userInfo;
 							typeof cb == "function" && cb(me.globalData.userInfo);
 						}

@@ -1,6 +1,5 @@
 var WebIM = require("../../utils/WebIM")["default"];
 
-// WebIM.conn  实例化的
 Page({
 	data: {
 		friend_name: ""

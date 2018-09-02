@@ -116,7 +116,7 @@ Page({
 					duration: 2000,
 					success: function(res){
 						// redirectTo = 此操作不可返回
-						setTimeout(() => wx.redirectTo({
+						setTimeout(() => wx.navigateBack({
 							url: "../groups/groups?myName=" + me.data.currentName
 						}), 2000);
 					},
@@ -141,7 +141,7 @@ Page({
 					duration: 2000,
 					success: function(res){
 						// redirectTo = 此操作不可返回
-						setTimeout(() => wx.redirectTo({
+						setTimeout(() => wx.navigateBack({
 							url: "../groups/groups?myName=" + me.data.currentName
 						}), 2000);
 					},

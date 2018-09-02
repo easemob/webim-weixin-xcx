@@ -1,17 +1,18 @@
 var WebIM = require("../../utils/WebIM")["default"];
 
+// 好友邀请提醒
 Page({
 	data: {
 		friendList: []
 	},
-	
+
 	onLoad: function(options){
 		this.setData({
 			friendList: getApp().globalData.saveFriendList
 		});
 		WebIM.conn.getRoster({
 			success: function(roster){
-				console.log(roster);
+
 			}
 		});
 	},

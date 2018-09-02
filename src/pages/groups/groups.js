@@ -1,4 +1,5 @@
 var WebIM = require("../../utils/WebIM")["default"];
+let disp = require("../../utils/broadcast");
 
 Page({
 	data: {
@@ -10,29 +11,35 @@ Page({
 	},
 
 	onLoad: function(option){
+		let me = this;
+		disp.on("em.invite.joingroup", function(){
+			var pageStack = getCurrentPages();
+			if(pageStack[pageStack.length - 1].route === me.route){
+				me.listGroups();
+			}
+		});
 		this.setData({
 			myName: option.myName
 		});
 	},
 
 	onShow: function(){
+		this.listGroups();
+	},
+
+	// 列出所有群组 (调用 listRooms 函数获取当前登录用户加入的群组列表)
+	listGroups(){
 		var me = this;
-		// 列出所有群组 (调用 listRooms 函数获取当前登录用户加入的群组列表)
-		var listGroups = function(){
-			var option = {
-				success: function(rooms){
-					console.log(rooms);
-					me.setData({
-						groupList: rooms
-					});
-				},
-				error: function(){
-					console.log("List groups error");
-				}
-			};
-			WebIM.conn.listRooms(option);
-		};
-		listGroups();
+		WebIM.conn.listRooms({
+			success: function(rooms){
+				me.setData({
+					groupList: rooms
+				});
+			},
+			error: function(){
+
+			}
+		});
 	},
 
 	openSearch: function(){
