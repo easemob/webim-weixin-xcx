@@ -199,7 +199,8 @@ WebIM.EmojiObj = {
 		"[(})]": "ee_31.png",
 		"[(k)]": "ee_32.png",
 		"[(F)]": "ee_33.png",
-		"[(D)]": "ee_34.png"
+		"[(W)]": "ee_34.png",
+		"[(D)]": "ee_35.png"
 	},
 	map6: {
 		"[del]": "del.png"
