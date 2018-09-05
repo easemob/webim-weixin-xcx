@@ -126,6 +126,9 @@ Page({
 							WebIM.conn.unsubscribed({
 								to: delName
 							});
+							wx.showToast({
+								title: "删除成功",
+							});
 						},
 						error: function(error){
 

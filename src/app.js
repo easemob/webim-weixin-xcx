@@ -91,9 +91,6 @@ App({
 				// 	break;
 				// 删除好友
 				case "unavailable":
-					wx.showToast({
-						title: "删除成功",
-					});
 					disp.fire("em.xmpp.contacts.remove", message);
 					break;
 
