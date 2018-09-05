@@ -1,9 +1,9 @@
-<view class="search" wx:if="{{ search_btn }}">
+<!-- <view class="search" wx:if="{{ search_btn }}">
 	<view bindtap="openSearch">
 		<icon type="search" size="13"></icon>
 		<text>搜索</text>
 	</view>
-</view>
+</view> -->
 <view class="search_input" wx:if="{{ search_friend }}">
 	<view>
 		<icon type="search" size="13"></icon>
