@@ -90,10 +90,19 @@ Page({
 			list: this.data.addFriendName,
 			roomId: this.data.roomId,
 			success: function(){
-				wx.showToast({
-					title: "邀请已发出",
-					duration: 2000,
-				});
+				if(me.isExistGroup(me.data.addFriendName, me.data.groupMember)){
+					wx.showToast({
+						title: "已在群中",
+						duration: 2000,
+					});
+				}
+				else{
+					wx.showToast({
+						title: "邀请已发出",
+						duration: 2000,
+					});
+				}
+				
 				me.getGroupMember();
 			},
 			error: function(err){
@@ -103,6 +112,15 @@ Page({
 			}
 		};
 		WebIM.conn.addGroupMembers(option);
+	},
+
+	isExistGroup:function(name, list){
+		for(let index = 0; index < list.length; index++){
+			if(name == list[index].member || name == list[index].owner){
+				return true
+			}
+		}
+		return false
 	},
 
 	leaveGroup: function(){

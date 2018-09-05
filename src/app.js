@@ -79,6 +79,24 @@ App({
 						disp.fire("em.xmpp.subscribe");
 					}
 					break;
+				case "subscribed":
+						wx.showToast({
+							title: message.to + "已同意",
+							duration: 1000
+						});
+					break;
+				case "unsubscribed":
+						wx.showToast({
+							title: message.to + "已拒绝",
+							duration: 1000
+						});
+					break;
+				case "memberJoinPublicGroupSuccess":
+						wx.showToast({
+							title: message.to + "已进群",
+							duration: 1000
+						});
+					break;
 				// 好友列表
 				// case "subscribed":
 				// 	let newFriendList = [];
