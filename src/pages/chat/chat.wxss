@@ -108,6 +108,9 @@
 	display: block;
 	color: #CFCFCF;
 	margin-top: 0;
+	overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap
 }
 .list_right {
 	width: 32%;
