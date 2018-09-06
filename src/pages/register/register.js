@@ -41,7 +41,7 @@ Page({
 				success: function(res){
 					if(res.statusCode == "200"){
 						wx.showToast({
-							title: "注册成功,正在登录",
+							title: "注册成功",
 							icon: "success",
 							duration: 1500,
 							success: function(){
@@ -57,9 +57,9 @@ Page({
 									key: "myUsername",
 									data: that.data.username
 								});
-								setTimeout(function(){
-									WebIM.conn.open(data);
-								}, 1000);
+								// setTimeout(function(){
+								// 	// WebIM.conn.open(data);
+								// }, 1000);
 
 							}
 						});
