@@ -5,7 +5,7 @@ Page({
 		friendList: [],			// 好友列表
 		groupName: "",			// 群名称
 		groupDec: "",			// 群简介
-		allowJoin: false,		// 是否允许任何人加入
+		allowJoin: true,		// 是否允许任何人加入
 		allowApprove: false,	// 加入需要审批
 		noAllowJoin: false,		// 不允许任何人加入
 		allowInvite: false,		// 允许群人员邀请
@@ -107,8 +107,8 @@ Page({
 				desc: this.data.groupDec,
 				members: this.data.inviteFriend,
 				"public": this.data.allowJoin,
-				approval: this.data.allowApprove,
-				allowinvites: this.data.allowInvite,
+				// approval: this.data.allowApprove,
+				// allowinvites: this.data.allowInvite,
 				owner: this.data.owner
 			},
 			success: function(respData){

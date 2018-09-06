@@ -12,7 +12,8 @@
 			<textarea bindinput="getGroupDec" placeholder="群简介" auto-focus placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;"/>
 		</view>
 	</view>
-	<view class="check_area">
+	<!-- 此版本注释 -->
+	<!-- <view class="check_area">
 		<view>
 			<checkbox-group class="checkbox-group" bindchange="allowJoin">
 				<label class="checkbox">
@@ -29,13 +30,13 @@
 					<checkbox value="true"/>不允许任何人加入
 				</label>
 			</checkbox-group> -->
-			<checkbox-group class="checkbox-group" bindchange="allowInvite">
+			<!-- <checkbox-group class="checkbox-group" bindchange="allowInvite">
 				<label class="checkbox">
 					<checkbox value="true"/>允许群人员邀请
 				</label>
 			</checkbox-group>
 		</view>
-	</view>
+	</view> -->
 	<!-- 获取需要邀请的好友列表 -->
 	<view class="friend_list">
 		<view>
