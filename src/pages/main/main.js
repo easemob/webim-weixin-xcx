@@ -114,6 +114,7 @@ Page({
 
 	delete_friend: function(event){
 		var delName = event.target.dataset.username;
+		var myName = wx.getStorageSync("myUsername");// 获取当前用户名
 		wx.showModal({
 			title: "确认删除好友" + delName,
 			cancelText: "取消",
@@ -128,6 +129,14 @@ Page({
 							});
 							wx.showToast({
 								title: "删除成功",
+							});
+							// 删除好友后 同时清空会话
+							wx.setStorage({
+								key: delName + myName,
+								data: "",
+								success: function(){
+									console.log("清除" + delName + "会话成功")
+								}
 							});
 						},
 						error: function(error){
