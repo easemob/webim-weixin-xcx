@@ -1541,29 +1541,30 @@ connection.prototype.removeRoster = function(options){
 	this.context.stropheConn.sendIQ(iq, suc, error);
 };
 connection.prototype.getRoster = function(options){
-	var dom = StropheAll.$iq({
+	let dom = StropheAll.$iq({
 		type: "get"
-	}).c("query", { xmlns: "jabber:iq:roster" });
+	})
+	.c("query", {
+		xmlns: "jabber:iq:roster"
+	});
 	options = options || {};
 	let suc = options.success || this.onRoster;
-	let completeFn = function(ele){
-		var rouster = [];
-		var msgBodies = ele.getElementsByTagName("query");
-		if(msgBodies && msgBodies.length > 0){
-			let queryTag = msgBodies[0];
-			rouster = _parseFriend(queryTag);
-		}
-		suc(rouster, ele);
-	};
 	let error = options.error || this.onError;
-	let failFn = function(ele){
-		error({
-			type: _code.WEBIM_CONNCTION_GETROSTER_ERROR
-			, data: ele
-		});
-	};
 	if(this.isOpened()){
-		this.context.stropheConn.sendIQ(dom.tree(), completeFn, failFn);
+		this.context.stropheConn.sendIQ(dom.tree(), function(ele){
+			var rouster = [];
+			var msgBodies = ele.getElementsByTagName("query");
+			if(msgBodies && msgBodies.length > 0){
+				let queryTag = msgBodies[0];
+				rouster = _parseFriend(queryTag);
+			}
+			suc(rouster, ele);
+		}, function(ele){
+			error({
+				type: _code.WEBIM_CONNCTION_GETROSTER_ERROR,
+				data: ele
+			});
+		});
 	}
 	else{
 		error({

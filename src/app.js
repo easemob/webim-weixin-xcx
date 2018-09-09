@@ -25,6 +25,12 @@ function onMessageError(err){
 	return true;
 }
 
+function getCurrentRoute(){
+	let pages = getCurrentPages();
+	let currentPage = pages[pages.length - 1];
+	return currentPage.route;
+}
+
 App({
 	globalData: {
 		userInfo: null,
@@ -49,13 +55,8 @@ App({
 			onOpened(message){
 				console.log("onOpened", message);
 				WebIM.conn.setPresence();
-
-				let pages = getCurrentPages(); //获取加载的页面
-				let currentPage = pages[pages.length-1]; //获取当前页面的对象
-				let url = currentPage.route; //当前页面url
-
-				if(url == "pages/login/login"){
-					me.onLoginSuccess(pages[0].data);
+				if(getCurrentRoute() == "pages/login/login"){
+					me.onLoginSuccess(wx.getStorageSync("myUsername"));
 				}
 			},
 			onInviteMessage(message){
@@ -233,7 +234,7 @@ App({
 		});
 	},
 
-	onLoginSuccess: function(data){
+	onLoginSuccess: function(myName){
 		wx.showToast({
 			title: "登录成功",
 			icon: "success",
@@ -241,7 +242,7 @@ App({
 		});
 		setTimeout(function(){
 			wx.redirectTo({
-				url: "../main/main?myName=" + data.name
+				url: "../main/main?myName=" + myName
 			});
 		}, 1000);
 	},

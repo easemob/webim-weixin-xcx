@@ -37,7 +37,7 @@ Page({
 	getRoster(){
 		let me = this;
 		let rosters = {
-			success: function(roster){
+			success(roster){
 				var member = [];
 				for(let i = 0; i < roster.length; i++){
 					if(roster[i].subscription == "both"){
@@ -51,6 +51,9 @@ Page({
 					key: "member",
 					data: me.data.member
 				});
+			},
+			error(err){
+				console.log("[main:getRoster]", err);
 			}
 		};
 		// WebIM.conn.setPresence()
@@ -135,7 +138,7 @@ Page({
 								key: delName + myName,
 								data: "",
 								success: function(){
-									console.log("清除" + delName + "会话成功")
+									console.log("清除" + delName + "会话成功");
 								}
 							});
 						},
