@@ -771,7 +771,7 @@ connection.prototype.open = function(options){
 		me.context.status = _code.STATUS_DOLOGIN_IM;
 		me.context.restTokenData = data;
 		if(data.statusCode != "404" && data.statusCode != "400"){
-			options.success && options.success(data);
+			// options.success && options.success(data);
 			// data:
 			// 	access_token,
 			// 	expires_in,
@@ -791,7 +791,7 @@ connection.prototype.open = function(options){
 	}
 	function error(res, xhr, msg){
 		me.clear();
-		options.failure && options.failure(res);
+		// options.failure && options.failure(res);
 		if(res.error && res.error_description){
 			me.onError({
 				type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
