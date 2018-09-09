@@ -129,8 +129,9 @@ Strophe.Websocket.prototype._onMessage = function(message){
 
 	// handle unavailable presence stanza before disconnecting
 	if(this._conn.disconnecting &&
-								elem.firstChild.nodeName === "presence" &&
-								elem.firstChild.getAttribute("type") === "unavailable"){
+		elem.firstChild.nodeName === "presence" &&
+		elem.firstChild.getAttribute("type") === "unavailable"
+	){
 		this._conn.xmlInput(elem);
 		this._conn.rawInput(Strophe.serialize(elem));
 		// if we are already disconnecting we will ignore the unavailable stanza and
@@ -357,8 +358,7 @@ function _loginCallback(status, msg, conn){
 		// client offline, ping/pong timeout, server quit, server offline
 		error = {
 			type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,              // 客户端网络离线
-			msg: msg,
-			reconnect: true
+			msg: msg
 		};
 
 		conflict && (error.conflict = true);
@@ -445,12 +445,11 @@ function _loginCallback(status, msg, conn){
 				conn.reconnect();
 				return;
 			}
-			conn.stopHeartBeat();
+			// conn.stopHeartBeat();
 			conn.context.status = _code.STATUS_CLOSING;
 			error = {
 				type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
-				msg: msg,
-				reconnect: true
+				msg: msg
 			};
 			conflict && (error.conflict = true);
 			conn.onError(error);
@@ -487,7 +486,7 @@ function _loginCallback(status, msg, conn){
 		conflict && (error.conflict = true);
 		conn.onError(error);
 	}
-	conn.context.status_now = status;
+	// conn.context.status_now = status;
 }
 
 function _login(options, conn){
@@ -695,26 +694,25 @@ connection.prototype.listen = function(options){
 
 	_listenNetwork(this.onOnline, this.onOffline);
 };
+connection.prototype.heartBeatID = 0;
 connection.prototype.heartBeat = function(){
 	var me = this;
-	// IE8: strophe auto switch from ws to BOSH, need heartbeat
-	var isNeed = !/^ws|wss/.test(me.url);
-	// || /mobile/.test(navigator.userAgent)
-	if(this.heartBeatID || !isNeed){
-		return;
-	}
-	let options = {
-		toJid: this.domain,
-		type: "normal"
-	};
+	// // IE8: strophe auto switch from ws to BOSH, need heartbeat
+	// var isNeed = !/^ws|wss/.test(me.url);
+	// // || /mobile/.test(navigator.userAgent)
+	// if(this.heartBeatID || !isNeed){
+	// 	return;
+	// }
+	this.stopHeartBeat();
 	this.heartBeatID = setInterval(function(){
-		me.ping(options);
+		me.ping({
+			toJid: me.domain,
+			type: "normal"
+		});
 	}, this.heartBeatWait);
 };
 connection.prototype.stopHeartBeat = function(){
-	if(typeof this.heartBeatID == "number"){
-		this.heartBeatID = clearInterval(this.heartBeatID);
-	}
+	clearInterval(this.heartBeatID);
 };
 connection.prototype.sendReceiptsMessage = function(options){
 	var dom = StropheAll.$msg({
@@ -739,7 +737,6 @@ connection.prototype.open = function(options){
 	if(me.isOpening() || me.isOpened()){
 		return;
 	}
-
 	if(options.accessToken){
 		options.access_token = options.accessToken;
 		this.token = options.access_token;
@@ -755,7 +752,6 @@ connection.prototype.open = function(options){
 		let appName = str[1];
 		this.orgName = orgName;
 		this.appName = appName;
-
 		this.context.status = _code.STATUS_DOLOGIN_USERGRID;
 		let loginJson = {
 			grant_type: "password",
@@ -811,6 +807,11 @@ connection.prototype.open = function(options){
 			});
 		}
 	}
+	// lastOpenEntry = function(){
+	// 	delete options.success;
+	// 	delete options.failure;
+	// 	me.open(options);
+	// };
 };
 // attach to xmpp server for BOSH
 connection.prototype.attach = function(options){
@@ -860,7 +861,7 @@ connection.prototype.attach = function(options){
 	stropheConn.attach(jid, sid, rid, callback, wait, hold, wind);
 };
 connection.prototype.close = function(reason){
-	this.stopHeartBeat();
+	// this.stopHeartBeat();
 	let status = this.context.status;
 	if(status == _code.STATUS_INIT){
 		return;
@@ -876,9 +877,9 @@ connection.prototype.addHandler = function(handler, ns, name, type, id, from, op
 };
 connection.prototype.notifyVersion = function(suc, fail){
 	var dom = StropheAll.$iq({
-		from: this.context.jid || ""
-		, to: this.domain
-		, type: "result"
+		from: this.context.jid || "",
+		to: this.domain,
+		type: "result"
 	})
 	.c("query", { xmlns: "jabber:iq:version" })
 	.c("name")
@@ -894,8 +895,8 @@ connection.prototype.notifyVersion = function(suc, fail){
 	let error = fail || this.onError;
 	let failFn = function(ele){
 		error({
-			type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR
-			, data: ele
+			type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR,
+			data: ele
 		});
 	};
 	this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
@@ -1469,8 +1470,7 @@ connection.prototype.sendCommand = function(dom, id){
 	}
 	else{
 		this.onError({
-			type: _code.WEBIM_CONNCTION_DISCONNECTED,
-			reconnect: true
+			type: _code.WEBIM_CONNCTION_DISCONNECTED
 		});
 	}
 };
@@ -1833,16 +1833,19 @@ connection.prototype.ping = function(options){
 	options = options || {};
 	let jid = _getJid(options, this);
 	let dom = StropheAll.$iq({
-		from: this.context.jid || ""
-		, to: jid
-		, type: "get"
-	}).c("ping", { xmlns: "urn:xmpp:ping" });
+		from: this.context.jid || "",
+		to: jid,
+		type: "get"
+	})
+	.c("ping", {
+		xmlns: "urn:xmpp:ping"
+	});
 	let suc = options.success || _utils.emptyfn;
 	let error = options.error || this.onError;
 	let failFn = function(ele){
 		error({
-			type: _code.WEBIM_CONNCTION_PING_ERROR
-			, data: ele
+			type: _code.WEBIM_CONNCTION_PING_ERROR,
+			data: ele
 		});
 	};
 	if(this.isOpened()){
@@ -2002,46 +2005,50 @@ connection.prototype.quitChatRoom = function(options){
 // 	};
 // 	this.onConfirmPop(options);
 // };
-connection.prototype._onReceiveInviteAcceptionFromGroup = function(info){
-	info = eval("(" + info + ")");
-	let options = {
-		title: "Group invitation response",
-		msg: info.user + " agreed to join into group:" + info.group_id,
-		agree: function agree(){
-		}
-	};
-	this.onConfirmPop(options);
-};
-connection.prototype._onReceiveInviteDeclineFromGroup = function(info){
-	info = eval("(" + info + ")");
-	let options = {
-		title: "Group invitation response",
-		msg: info.user + " rejected to join into group:" + info.group_id,
-		agree: function agree(){
-		}
-	};
-	this.onConfirmPop(options);
-};
-connection.prototype._onAutoAcceptInvitationFromGroup = function(info){
-	info = eval("(" + info + ")");
-	let options = {
-		title: "Group invitation",
-		msg: "You had joined into the group:" + info.group_name + " automatically.Inviter:" + info.user,
-		agree: function agree(){
-		}
-	};
-	this.onConfirmPop(options);
-};
-connection.prototype._onLeaveGroup = function(info){
-	info = eval("(" + info + ")");
-	let options = {
-		title: "Group notification",
-		msg: "You have been out of the group:" + info.group_id + ".Reason:" + info.msg,
-		agree: function agree(){
-		}
-	};
-	this.onConfirmPop(options);
-};
+
+
+// connection.prototype._onReceiveInviteAcceptionFromGroup = function(info){
+// 	info = eval("(" + info + ")");
+// 	let options = {
+// 		title: "Group invitation response",
+// 		msg: info.user + " agreed to join into group:" + info.group_id,
+// 		agree: function agree(){
+// 		}
+// 	};
+// 	this.onConfirmPop(options);
+// };
+// connection.prototype._onReceiveInviteDeclineFromGroup = function(info){
+// 	info = eval("(" + info + ")");
+// 	let options = {
+// 		title: "Group invitation response",
+// 		msg: info.user + " rejected to join into group:" + info.group_id,
+// 		agree: function agree(){
+// 		}
+// 	};
+// 	this.onConfirmPop(options);
+// };
+// connection.prototype._onAutoAcceptInvitationFromGroup = function(info){
+// 	info = eval("(" + info + ")");
+// 	let options = {
+// 		title: "Group invitation",
+// 		msg: "You had joined into the group:" + info.group_name + " automatically.Inviter:" + info.user,
+// 		agree: function agree(){
+// 		}
+// 	};
+// 	this.onConfirmPop(options);
+// };
+// connection.prototype._onLeaveGroup = function(info){
+// 	info = eval("(" + info + ")");
+// 	let options = {
+// 		title: "Group notification",
+// 		msg: "You have been out of the group:" + info.group_id + ".Reason:" + info.msg,
+// 		agree: function agree(){
+// 		}
+// 	};
+// 	this.onConfirmPop(options);
+// };
+
+
 // connection.prototype._onReceiveJoinGroupApplication = function(info){
 // 	info = eval("(" + info + ")");
 // 	let options = {
@@ -2062,26 +2069,30 @@ connection.prototype._onLeaveGroup = function(info){
 // 	};
 // 	this.onConfirmPop(options);
 // };
-connection.prototype._onReceiveAcceptionFromGroup = function(info){
-	info = eval("(" + info + ")");
-	let options = {
-		title: "Group notification",
-		msg: "You had joined into the group:" + info.group_name + ".",
-		agree: function agree(){
-		}
-	};
-	this.onConfirmPop(options);
-};
-connection.prototype._onReceiveRejectionFromGroup = function(info){
-	info = eval("(" + info + ")");
-	let options = {
-		title: "Group notification",
-		msg: "You have been rejected to join into the group:" + info.group_name + ".",
-		agree: function agree(){
-		}
-	};
-	this.onConfirmPop(options);
-};
+
+
+// connection.prototype._onReceiveAcceptionFromGroup = function(info){
+// 	info = eval("(" + info + ")");
+// 	let options = {
+// 		title: "Group notification",
+// 		msg: "You had joined into the group:" + info.group_name + ".",
+// 		agree: function agree(){
+// 		}
+// 	};
+// 	this.onConfirmPop(options);
+// };
+// connection.prototype._onReceiveRejectionFromGroup = function(info){
+// 	info = eval("(" + info + ")");
+// 	let options = {
+// 		title: "Group notification",
+// 		msg: "You have been rejected to join into the group:" + info.group_name + ".",
+// 		agree: function agree(){
+// 		}
+// 	};
+// 	this.onConfirmPop(options);
+// };
+
+
 connection.prototype._onUpdateMyGroupList = function(options){
 	this.onUpdateMyGroupList(options);
 };
@@ -2311,31 +2322,6 @@ connection.prototype.addToGroupBlackList = function(options){
 	this.context.stropheConn.sendIQ(iq.tree(), sucFn, errFn);
 };
 
-function _parseGroupBlacklist(iq){
-	var list = {};
-	var items = iq.getElementsByTagName("item");
-
-	if(items){
-		for(let i = 0; i < items.length; i++){
-			let item = items[i];
-			let jid = item.getAttribute("jid");
-			let affiliation = item.getAttribute("affiliation");
-			let nick = item.getAttribute("nick");
-			if(!jid){
-				continue;
-			}
-			let n = _parseNameFromJidFn(jid);
-			list[n] = {
-				jid: jid,
-				affiliation: affiliation,
-				nick: nick,
-				name: n
-			};
-		}
-	}
-	return list;
-}
-
 // used for blacklist
 connection.prototype.getGroupBlacklist = function(options){
 	var sucFn = options.success || _utils.emptyfn;
@@ -2350,6 +2336,31 @@ connection.prototype.getGroupBlacklist = function(options){
 	.c("item", {
 		affiliation: "outcast",
 	});
+
+	function _parseGroupBlacklist(iq){
+		var list = {};
+		var items = iq.getElementsByTagName("item");
+
+		if(items){
+			for(let i = 0; i < items.length; i++){
+				let item = items[i];
+				let jid = item.getAttribute("jid");
+				let affiliation = item.getAttribute("affiliation");
+				let nick = item.getAttribute("nick");
+				if(!jid){
+					continue;
+				}
+				let n = _parseNameFromJidFn(jid);
+				list[n] = {
+					jid: jid,
+					affiliation: affiliation,
+					nick: nick,
+					name: n
+				};
+			}
+		}
+		return list;
+	}
 
 	this.context.stropheConn.sendIQ(iq.tree(), function(msginfo){
 		sucFn(_parseGroupBlacklist(msginfo));
