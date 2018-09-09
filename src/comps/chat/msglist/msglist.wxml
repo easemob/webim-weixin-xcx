@@ -35,7 +35,8 @@
 		</view>
 		<view class="main" class="{{ item.style }}">
 			<view class="user">
-				<text class="user-text">{{ item.username }}</text>
+				<!-- yourname：就是消息的 from -->
+				<text class="user-text">{{ item.yourname }}</text>
 			</view>
 			<image class="avatar" src="../../../images/number.png"/>
 			<view class="msg">
