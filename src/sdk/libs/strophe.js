@@ -5551,40 +5551,40 @@ var $pres = null;
 			 *  Does nothing if there already is a WebSocket.
 			 */
 
-			_connect: function () {
+			_connect: function(){
 				// Ensure that there is no open WebSocket from a previous Connection.
-				//wx.closeSocket()
 				// Create the new WobSocket
-
-				this.socket = {}
 				var self = this;
-				//console.log('service', this._conn.service)
-
-				this.socket.onopen = this._onOpen;
-				this.socket.onmessage = this._connect_cb_wrapper;
-				this.socket.onerror = this._onError;
-				this.socket.onclose = this._onClose;
-				this.socket.send = function (str) {
-					wx.sendSocketMessage({data: str})
-				}
-				console.log('isSocketConnnected', isSocketConnnected)
+				this.socket = {
+					onopen: this._onOpen,
+					onmessage: this._connect_cb_wrapper,
+					onerror: this._onError,
+					onclose: this._onClose,
+					send: function(str){
+						wx.sendSocketMessage({ data: str });
+					},
+				};
+				// console.log("isSocketConnnected", isSocketConnnected);
 				wx.onSocketOpen(function (res) {
-					console.log('WebSocket 连接已打开！')
+					console.log("WebSocket 连接已打开！");
 					isSocketConnnected = true
 					// wx.sendSocketMessage({
 					//     data: "Hello,World:"
-					// })
-					self.socket.onopen.call(self)
+					// });
+					self.socket.onopen.call(self);
 				});
-				wx.onSocketMessage(function (msg) {
-					// //console.log('onSocketMessage', msg, JSON.stringify(msg))
+				wx.onSocketMessage(function(msg){
+					console.log("onSocketMessage", msg, JSON.stringify(msg));
 					self.socket.onmessage.call(self, msg);
 				});
-				wx.onSocketClose(function (e) {
-					console.log('WebSocket 连接已经关闭!')
+				wx.onSocketClose(function(e){
+					console.log("WebSocket 连接已经关闭！");
 					self.socket.onclose.call(self);
 				});
-				wx.connectSocket({ url: self._conn.service, method: "GET" });
+				wx.connectSocket({
+					url: self._conn.service,
+					method: "GET"
+				});
 			},
 
 			/** PrivateFunction: _connect_cb
@@ -5738,7 +5738,7 @@ var $pres = null;
 			 */
 			_doDisconnect: function () {
 				Strophe.info("WebSockets _doDisconnect was called");
-				this._closeSocket();
+				this._closeSocket && this._closeSocket();
 			},
 
 			/** PrivateFunction _streamWrap
@@ -5822,8 +5822,8 @@ var $pres = null;
 			 * (Object) error - The websocket error.
 			 */
 			_onError: function (error) {
-				wx.onSocketError(function (res) {
-					//console.log('WebSocket连接打开失败，请检查！')
+				wx.onSocketError(function(res){
+					// console.log('WebSocket连接打开失败，请检查！')
 				})
 				// Strophe.error("Websocket error " + error);
 				// this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "The WebSocket connection could not be established or was disconnected.");

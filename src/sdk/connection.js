@@ -39,20 +39,9 @@ Strophe.Request.prototype._newXHR = function(){
 	return xhr;
 };
 
+let reOpenEntry = function(){};
 Strophe.Websocket.prototype._closeSocket = function(){
-	var me = this;
-	if(this.socket){
-		setTimeout(function(){
-			try{
-				me.socket.close();
-			}
-			catch(e){
-			}
-		}, 0);
-	}
-	else{
-		this.socket = null;
-	}
+	reOpenEntry();
 };
 
 /**
@@ -357,7 +346,7 @@ function _loginCallback(status, msg, conn){
 	if(status == Strophe.Status.CONNFAIL){
 		// client offline, ping/pong timeout, server quit, server offline
 		error = {
-			type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,              // 客户端网络离线
+			type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,		// 客户端网络离线
 			msg: msg
 		};
 
@@ -367,7 +356,6 @@ function _loginCallback(status, msg, conn){
 	else if(status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED){
 		conn.autoReconnectNumTotal = 0;
 		// client should limit the speed of sending ack messages  up to 5/s
-		// console.log('_loginCallback 2')
 		conn.intervalId = setInterval(function(){
 			conn.handelSendQueue();
 		}, 200);
@@ -383,7 +371,6 @@ function _loginCallback(status, msg, conn){
 			}
 			conn.handleMessage(msginfo);
 			return true;
-
 		};
 		let handlePresence = function(msginfo){
 			conn.handlePresence(msginfo);
@@ -771,7 +758,6 @@ connection.prototype.open = function(options){
 		me.context.status = _code.STATUS_DOLOGIN_IM;
 		me.context.restTokenData = data;
 		if(data.statusCode != "404" && data.statusCode != "400"){
-			// options.success && options.success(data);
 			// data:
 			// 	access_token,
 			// 	expires_in,
@@ -791,7 +777,6 @@ connection.prototype.open = function(options){
 	}
 	function error(res, xhr, msg){
 		me.clear();
-		// options.failure && options.failure(res);
 		if(res.error && res.error_description){
 			me.onError({
 				type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
@@ -807,11 +792,9 @@ connection.prototype.open = function(options){
 			});
 		}
 	}
-	// lastOpenEntry = function(){
-	// 	delete options.success;
-	// 	delete options.failure;
-	// 	me.open(options);
-	// };
+	reOpenEntry = function(){
+		me.open(options);
+	};
 };
 // attach to xmpp server for BOSH
 connection.prototype.attach = function(options){
