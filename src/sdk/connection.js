@@ -776,6 +776,17 @@ connection.prototype.open = function(options){
 		me.context.restTokenData = data;
 		if(data.statusCode != "404" && data.statusCode != "400"){
 			options.success && options.success(data);
+			// data:
+			// 	access_token,
+			// 	expires_in,
+			// 	user:
+			// 		activated,
+			// 		created,
+			// 		modified,
+			// 		nickname,
+			// 		type,
+			// 		username,
+			// 		uuid,
 			_login(data.data, me);
 		}
 		else{
