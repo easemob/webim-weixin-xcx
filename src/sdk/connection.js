@@ -1112,7 +1112,6 @@ connection.prototype.handlePresence = function(msginfo){
 			&& !isMemberJoin
 			&& !isDecline
 		){
-			// console.log(2222222, msginfo, info, isApply);
 			// info.type = 'joinPublicGroupSuccess';
 		}
 		// There is no roomtype when a chat room is deleted.
@@ -1124,13 +1123,18 @@ connection.prototype.handlePresence = function(msginfo){
 			// Dismissed by group.
 			else if(info.code == 307 || info.code == 321){
 				let nick = msginfo.getAttribute("nick");
-				if(!nick) info.type = "leaveGroup";
-				else info.type = "removedFromGroup";
+				if(!nick){
+					info.type = "leaveGroup";
+				}
+				else{
+					info.type = "removedFromGroup";
+				}
 			}
 		}
 	}
 	this.onPresence(info, msginfo);
 };
+
 // connection.prototype.handlePing = function(e){
 // 	if(this.isClosed()){
 // 		return;
@@ -1143,6 +1147,7 @@ connection.prototype.handlePresence = function(msginfo){
 // 	});
 // 	this.sendCommand(dom.tree());
 // };
+
 connection.prototype.handleIq = function(iq){
 	return true;
 };
@@ -1174,13 +1179,13 @@ connection.prototype.handleMessage = function(msginfo){
 		return;
 	}
 	let id = msginfo.getAttribute("id") || "";
-	// cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
+	// cache ack into sendQueue first, handelSendQueue will do the send thing with the speed of 5/s
 	this.cacheReceiptsMessage({
 		id: id
 	});
-	// //console.log('handlePresence', msginfo)
+	// console.log('handlePresence', msginfo)
 	let parseMsgData = _parseResponseMessage(msginfo);
-	// //console.log('parseMsgData', parseMsgData)
+	// console.log('parseMsgData', parseMsgData)
 	if(parseMsgData.errorMsg){
 		this.handlePresence(msginfo);
 		return;
@@ -1405,8 +1410,8 @@ connection.prototype.handleReceivedMessage = function(message){
 	}
 	catch(e){
 		this.onError({
-			type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-			, data: e
+			type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+			data: e
 		});
 	}
 	let rcv = message.getElementsByTagName("received");
@@ -1427,8 +1432,8 @@ connection.prototype.handleReceivedMessage = function(message){
 		}
 		catch(e){
 			this.onError({
-				type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-				, data: e
+				type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+				data: e
 			});
 		}
 		delete _msgHash[id];
@@ -1487,10 +1492,18 @@ connection.prototype.getUniqueId = function(prefix){
 connection.prototype.send = function(message){
 	if(WebIM.config.isWindowSDK){
 		WebIM.doQuery(
-			"{\"type\":\"sendMessage\",\"to\":\"" + message.to + "\",\"message_type\":\"" + message.type + "\",\"msg\":\"" + encodeURI(message.msg) + "\",\"chatType\":\"" + message.chatType + "\"}",
+			JSON.stringify({
+				type: "sendMessage",
+				to: message.to,
+				message_type: message.type,
+				msg: encodeURI(message.msg),
+				chatType: message.chatType,
+			}),
 			function(response){
+
 			},
 			function(code, msg){
+
 			}
 		);
 	}
@@ -1532,7 +1545,14 @@ connection.prototype.addRoster = function(options){
 };
 connection.prototype.removeRoster = function(options){
 	var jid = _getJid(options, this);
-	var iq = StropheAll.$iq({ type: "set" }).c("query", { xmlns: "jabber:iq:roster" }).c("item", {
+	var iq = StropheAll
+	.$iq({
+		type: "set"
+	})
+	.c("query", {
+		xmlns: "jabber:iq:roster"
+	})
+	.c("item", {
 		jid: jid,
 		subscription: "remove"
 	});
@@ -1576,7 +1596,6 @@ connection.prototype.subscribe = function(options){
 	var jid = _getJid(options, this);
 	var pres = StropheAll.$pres({ to: jid, type: "subscribe" });
 	if(options.message){
-		console.log("ggggggggg", pres, options.message);
 		pres.c("status").t(options.message).up();
 	}
 	if(options.nick){
@@ -1622,6 +1641,7 @@ connection.prototype.createRoom = function(options){
 	.c("x", { xmlns: "jabber:x:data", type: "submit" });
 	return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
 };
+
 // connection.prototype.joinPublicGroup = function(options){
 // 	var roomJid = this.context.appKey + "_" + options.roomId + "@conference." + this.domain;
 // 	var room_nick = roomJid + "/" + this.context.userId;
@@ -1640,6 +1660,7 @@ connection.prototype.createRoom = function(options){
 // 	.c("x", { xmlns: Strophe.NS.MUC });
 // 	this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 // };
+
 connection.prototype.listRooms = function(options){
 	var iq = StropheAll.$iq({
 		to: options.server || "conference." + this.domain,
@@ -1674,11 +1695,15 @@ connection.prototype.listRooms = function(options){
 connection.prototype.queryRoomMember = function(options){
 	var members = [];
 	var iq = StropheAll.$iq({
-		to: this.context.appKey + "_" + options.roomId + "@conference." + this.domain
-		, type: "get"
+		to: this.context.appKey + "_" + options.roomId + "@conference." + this.domain,
+		type: "get"
 	})
-	.c("query", { xmlns: Strophe.NS.MUC + "#admin" })
-	.c("item", { affiliation: "member" });
+	.c("query", {
+		xmlns: Strophe.NS.MUC + "#admin"
+	})
+	.c("item", {
+		affiliation: "member"
+	});
 	var suc = options.success || _utils.emptyfn;
 	var completeFn = function(result){
 		var items = result.getElementsByTagName("item");
@@ -1708,11 +1733,12 @@ connection.prototype.queryRoomInfo = function(options){
 	var iq = StropheAll.$iq({
 		to: this.context.appKey + "_" + options.roomId + "@conference." + domain,
 		type: "get"
-	}).c("query", { xmlns: Strophe.NS.DISCO_INFO });
-
+	})
+	.c("query", {
+		xmlns: Strophe.NS.DISCO_INFO
+	});
 	var suc = options.success || _utils.emptyfn;
 	var members = [];
-
 	var completeFn = function(result){
 		var settings = "";
 		var features = result.getElementsByTagName("feature");
@@ -1777,8 +1803,8 @@ connection.prototype.queryRoomInfo = function(options){
 	var err = options.error || _utils.emptyfn;
 	var errorFn = function(ele){
 		err({
-			type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR
-			, data: ele
+			type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR,
+			data: ele
 		});
 	};
 	this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
@@ -1793,17 +1819,17 @@ connection.prototype.queryRoomOccupants = function(options){
 	var err = options.error || _utils.emptyfn;
 	var errorFn = function(ele){
 		err({
-			type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR
-			, data: ele
+			type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR,
+			data: ele
 		});
 	};
 	var attrs = {
 		xmlns: Strophe.NS.DISCO_ITEMS
 	};
 	var info = StropheAll.$iq({
-		from: this.context.jid
-		, to: this.context.appKey + "_" + options.roomId + "@conference." + this.domain
-		, type: "get"
+		from: this.context.jid,
+		to: this.context.appKey + "_" + options.roomId + "@conference." + this.domain,
+		type: "get"
 	}).c("query", attrs);
 	this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
 };
@@ -1940,8 +1966,8 @@ connection.prototype.joinChatRoom = function(options){
 	var err = options.error || _utils.emptyfn;
 	var errorFn = function(ele){
 		err({
-			type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR
-			, data: ele
+			type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR,
+			data: ele
 		});
 	};
 	var pres = StropheAll.$pres({
@@ -1949,10 +1975,16 @@ connection.prototype.joinChatRoom = function(options){
 		to: room_nick
 	});
 	pres.c("x", { xmlns: Strophe.NS.MUC + "#user" })
-	.c("item", { affiliation: "member", role: "participant" })
+	.c("item", {
+		affiliation: "member",
+		role: "participant"
+	})
 	.up()
 	.up()
-	.c("roomtype", { xmlns: "easemob:x:roomtype", type: "chatroom" });
+	.c("roomtype", {
+		xmlns: "easemob:x:roomtype",
+		type: "chatroom"
+	});
 	this.context.stropheConn.sendIQ(pres.tree(), suc, errorFn);
 };
 connection.prototype.quitChatRoom = function(options){
@@ -1962,8 +1994,8 @@ connection.prototype.quitChatRoom = function(options){
 	var err = options.error || _utils.emptyfn;
 	var errorFn = function(ele){
 		err({
-			type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR
-			, data: ele
+			type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR,
+			data: ele
 		});
 	};
 	var pres = StropheAll.$pres({
@@ -1971,7 +2003,8 @@ connection.prototype.quitChatRoom = function(options){
 		to: room_nick,
 		type: "unavailable"
 	});
-	pres.c("x", { xmlns: Strophe.NS.MUC + "#user" })
+	pres
+	.c("x", { xmlns: Strophe.NS.MUC + "#user" })
 	.c("item", { affiliation: "none", role: "none" })
 	.up()
 	.up()
@@ -2236,7 +2269,8 @@ connection.prototype.getBlacklist = function(options){
 	let errFn = options.error || _utils.emptyfn;
 	let me = this;
 
-	iq.c("query", { xmlns: "jabber:iq:privacy" })
+	iq
+	.c("query", { xmlns: "jabber:iq:privacy" })
 	.c("list", { name: "special" });
 
 	this.context.stropheConn.sendIQ(iq.tree(), function(iq){
@@ -2254,7 +2288,8 @@ connection.prototype.addToBlackList = function(options){
 	var blacklist = options.list || {};
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
-	var piece = iq.c("query", { xmlns: "jabber:iq:privacy" })
+	var piece = iq
+	.c("query", { xmlns: "jabber:iq:privacy" })
 	.c("list", { name: "special" });
 
 	var keys = Object.keys(blacklist);
@@ -2265,7 +2300,8 @@ connection.prototype.addToBlackList = function(options){
 		let item = blacklist[keys[i]];
 		let type = item.type || "jid";
 		let jid = item.jid;
-		piece = piece.c("item", { action: "deny", order: order++, type: type, value: jid })
+		piece = piece
+		.c("item", { action: "deny", order: order++, type: type, value: jid })
 		.c("message");
 		if(i !== len - 1){
 			piece = piece.up().up();
@@ -2280,7 +2316,8 @@ connection.prototype.removeFromBlackList = function(options){
 	var blacklist = options.list || {};
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
-	var piece = iq.c("query", { xmlns: "jabber:iq:privacy" })
+	var piece = iq
+	.c("query", { xmlns: "jabber:iq:privacy" })
 	.c("list", { name: "special" });
 
 	var keys = Object.keys(blacklist);
@@ -2292,7 +2329,8 @@ connection.prototype.removeFromBlackList = function(options){
 		let jid = item.jid;
 		let order = item.order;
 
-		piece = piece.c("item", { action: "deny", order: order, type: type, value: jid })
+		piece = piece
+		.c("item", { action: "deny", order: order, type: type, value: jid })
 		.c("message");
 		if(i !== len - 1){
 			piece = piece.up().up();
@@ -2314,7 +2352,10 @@ connection.prototype.addToGroupBlackList = function(options){
 	var to = this._getGroupJid(options.roomId);
 	var iq = StropheAll.$iq({ type: "set", to: to });
 
-	iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
+	iq
+	.c("query", {
+		xmlns: "http://jabber.org/protocol/muc#" + affiliation
+	})
 	.c("item", {
 		affiliation: "outcast",
 		jid: jid
@@ -2333,7 +2374,10 @@ connection.prototype.getGroupBlacklist = function(options){
 	var to = this._getGroupJid(options.roomId);
 	var iq = StropheAll.$iq({ type: "get", to: to });
 
-	iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
+	iq
+	.c("query", {
+		xmlns: "http://jabber.org/protocol/muc#" + affiliation
+	})
 	.c("item", {
 		affiliation: "outcast",
 	});
@@ -2380,7 +2424,10 @@ connection.prototype.removeGroupMemberFromBlacklist = function(options){
 	var to = this._getGroupJid(options.roomId);
 	var iq = StropheAll.$iq({ type: "set", to: to });
 
-	iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
+	iq
+	.c("query", {
+		xmlns: "http://jabber.org/protocol/muc#" + affiliation
+	})
 	.c("item", {
 		affiliation: "member",
 		jid: jid
@@ -2408,7 +2455,8 @@ connection.prototype.changeGroupSubject = function(options){
 	var to = this._getGroupJid(options.roomId);
 	var iq = StropheAll.$iq({ type: "set", to: to });
 
-	iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
+	iq
+	.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
 	.c("x", { type: "submit", xmlns: "jabber:x:data" })
 	.c("field", { "var": "FORM_TYPE" })
 	.c("value")
@@ -2444,7 +2492,8 @@ connection.prototype.destroyGroup = function(options){
 	var to = this._getGroupJid(options.roomId);
 	var iq = StropheAll.$iq({ type: "set", to: to });
 
-	iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
+	iq
+	.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
 	.c("destroy");
 
 	this.context.stropheConn.sendIQ(iq.tree(), function(msginfo){
@@ -2471,7 +2520,8 @@ connection.prototype.leaveGroupBySelf = function(options){
 	var to = this._getGroupJid(options.roomId);
 	var iq = StropheAll.$iq({ type: "set", to: to });
 
-	iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
+	iq
+	.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
 	.c("item", {
 		affiliation: "none",
 		jid: jid
