@@ -49,6 +49,14 @@ App({
 			onOpened(message){
 				console.log("onOpened", message);
 				WebIM.conn.setPresence();
+
+				let pages = getCurrentPages(); //获取加载的页面
+				let currentPage = pages[pages.length-1]; //获取当前页面的对象
+				let url = currentPage.route; //当前页面url
+
+				if(url == "pages/login/login"){
+					me.onLoginSuccess(pages[0].data);
+				}
 			},
 			onInviteMessage(message){
 				console.log("onInviteMessage", message);
@@ -223,6 +231,19 @@ App({
 				}
 			},
 		});
+	},
+
+	onLoginSuccess: function(data){
+		wx.showToast({
+			title: "登录成功",
+			icon: "success",
+			duration: 1000
+		});
+		setTimeout(function(){
+			wx.redirectTo({
+				url: "../main/main?myName=" + data.name
+			});
+		}, 1000);
 	},
 
 	getUserInfo(cb){

@@ -48,32 +48,7 @@ Page({
 			user: __test_account__ || this.data.name,
 			pwd: __test_psword__ || this.data.psd,
 			grant_type: this.data.grant_type,
-			appKey: WebIM.config.appkey,
-			success: (data) => this.onLoginSuccess(data),
-			failure: (data) => this.onLoginFailure(data),
+			appKey: WebIM.config.appkey
 		});
-	},
-
-	onLoginSuccess: function(data){
-		var me = this;
-		wx.showToast({
-			title: "登录成功",
-			icon: "success",
-			duration: 1000
-		});
-		setTimeout(function(){
-			wx.redirectTo({
-				url: "../main/main?myName=" + (__test_account__ || me.data.name)
-			});
-		}, 1000);
-	},
-
-	onLoginFailure: function(data){
-		wx.showModal({
-			title: "用户名或密码错误!",
-			showCancel: false,
-			confirmText: "OK"
-		});
-	},
-
+	}
 });
