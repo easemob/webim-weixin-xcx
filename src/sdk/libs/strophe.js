@@ -5554,7 +5554,7 @@ var $pres = null;
 			_connect: function(){
 				// Ensure that there is no open WebSocket from a previous Connection.
 				// Create the new WobSocket
-				var self = this;
+				var me = this;
 				this.socket = {
 					onopen: this._onOpen,
 					onmessage: this._connect_cb_wrapper,
@@ -5571,18 +5571,20 @@ var $pres = null;
 					// wx.sendSocketMessage({
 					//     data: "Hello,World:"
 					// });
-					self.socket.onopen.call(self);
+					me.socket.onopen.call(me);
 				});
 				wx.onSocketMessage(function(msg){
 					console.log("onSocketMessage", msg, JSON.stringify(msg));
-					self.socket.onmessage.call(self, msg);
+					me.socket.onmessage.call(me, msg);
 				});
 				wx.onSocketClose(function(e){
 					console.log("WebSocket 连接已经关闭！");
-					self.socket.onclose.call(self);
+					me.socket.onclose.call(me);
+					// 外部回调，需要设计一个更合适的
+					me._onSocketClose && me._onSocketClose(e);
 				});
 				wx.connectSocket({
-					url: self._conn.service,
+					url: this._conn.service,
 					method: "GET"
 				});
 			},

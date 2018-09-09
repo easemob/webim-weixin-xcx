@@ -40,8 +40,10 @@ Strophe.Request.prototype._newXHR = function(){
 };
 
 let reOpenEntry = function(){};
-Strophe.Websocket.prototype._closeSocket = function(){
-	reOpenEntry();
+Strophe.Websocket.prototype._onSocketClose = function(e){
+	if(e.code != 1000){
+		reOpenEntry();
+	}
 };
 
 /**
