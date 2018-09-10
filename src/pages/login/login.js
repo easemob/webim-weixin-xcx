@@ -5,8 +5,8 @@ let __test_account__, __test_psword__;
 
 Page({
 	data: {
-		name: "easezy",
-		psd: "111111",
+		name: "",
+		psd: "",
 		grant_type: "password"
 	},
 
