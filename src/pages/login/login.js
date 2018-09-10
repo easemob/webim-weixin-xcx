@@ -5,8 +5,8 @@ let __test_account__, __test_psword__;
 
 Page({
 	data: {
-		name: "",
-		psd: "",
+		name: "easezy",
+		psd: "111111",
 		grant_type: "password"
 	},
 
@@ -43,7 +43,7 @@ Page({
 			key: "myUsername",
 			data: __test_account__ || this.data.name
 		});
-		WebIM.conn.open({
+		getApp().conn.open({
 			apiUrl: WebIM.config.apiURL,
 			user: __test_account__ || this.data.name,
 			pwd: __test_psword__ || this.data.psd,

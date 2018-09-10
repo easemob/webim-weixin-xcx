@@ -37,6 +37,21 @@ App({
 		saveFriendList: []
 	},
 
+	conn: {
+		closed: false,
+		curOpenOpt: {},
+		open(opt){
+			this.curOpenOpt = opt;
+			WebIM.conn.open(opt);
+			this.closed = false;
+		},
+		reopen(){
+			if(this.closed){
+				this.open(this.curOpenOpt);
+			}
+		},
+	},
+
 	// getPage(pageName){
 	// 	var pages = getCurrentPages();
 	// 	return pages.find(function(page){
@@ -58,6 +73,9 @@ App({
 				if(getCurrentRoute() == "pages/login/login"){
 					me.onLoginSuccess(wx.getStorageSync("myUsername"));
 				}
+			},
+			onClosed(){
+				me.conn.closed = true;
 			},
 			onInviteMessage(message){
 				console.log("onInviteMessage", message);
@@ -232,6 +250,9 @@ App({
 				}
 			},
 		});
+	},
+	onShow(){
+		this.conn.reopen();
 	},
 
 	onLoginSuccess: function(myName){

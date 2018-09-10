@@ -39,9 +39,7 @@ Strophe.Request.prototype._newXHR = function(){
 	return xhr;
 };
 
-let reOpenEntry = function(){};
 Strophe.Websocket.prototype._onSocketClose = function(e){
-	reOpenEntry();
 	// if(e.code && e.code == 1000){
 	//
 	// }
@@ -785,9 +783,9 @@ connection.prototype.open = function(options){
 			});
 		}
 	}
-	reOpenEntry = function(){
-		me.open(options);
-	};
+	// reOpenEntry = function(){
+	// 	me.open(options);
+	// };
 };
 // attach to xmpp server for BOSH
 connection.prototype.attach = function(options){
