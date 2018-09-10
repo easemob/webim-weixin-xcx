@@ -599,7 +599,6 @@
 		ajax: function(options){
 			var suc = options.success || EMPTYFN;
 			var error = options.error || EMPTYFN;
-
 			var type = options.type || "POST",
 				data = options.data || null,
 				tempData = "";
@@ -615,18 +614,26 @@
 				data = null;
 				tempData = null;
 			}
+			console.log("wx.request", options.url);
 			wx.request({
 				url: options.url,
 				data: options.data,
 				header: options.headers,
 				method: type,
 				success: function(res){
+					console.log("wx.request.success", arguments);
 					if(res.statusCode == "200"){
 						suc(res);
 					}
 					else{
 						error(res);
 					}
+				},
+				complete(){
+					console.log("wx.request.complete", arguments);
+				},
+				fail(){
+					console.log("wx.request.fail", arguments);
 				}
 			});
 		},
@@ -655,5 +662,5 @@
 	};
 
 	exports.utils = utils;
-	
+
 }());

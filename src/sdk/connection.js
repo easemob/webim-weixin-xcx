@@ -41,9 +41,13 @@ Strophe.Request.prototype._newXHR = function(){
 
 let reOpenEntry = function(){};
 Strophe.Websocket.prototype._onSocketClose = function(e){
-	if(e.code != 1000){
-		reOpenEntry();
-	}
+	reOpenEntry();
+	// if(e.code && e.code == 1000){
+	//
+	// }
+	// else{
+	// 	reOpenEntry();
+	// }
 };
 
 /**
@@ -341,17 +345,14 @@ function _handleMessageQueue(conn){
 }
 
 function _loginCallback(status, msg, conn){
-	var conflict, error;
-	if(msg === "conflict"){
-		conflict = true;
-	}
+	var error;
+	var conflict = msg === "conflict";
 	if(status == Strophe.Status.CONNFAIL){
 		// client offline, ping/pong timeout, server quit, server offline
 		error = {
 			type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,		// 客户端网络离线
 			msg: msg
 		};
-
 		conflict && (error.conflict = true);
 		conn.onError(error);
 	}
@@ -430,12 +431,11 @@ function _loginCallback(status, msg, conn){
 	}
 	else if(status == Strophe.Status.DISCONNECTING){
 		if(conn.isOpened()){
-			if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
-				conn.reconnect();
-				return;
-			}
+			// if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
+			// 	conn.reconnect();
+			// 	return;
+			// }
 			// conn.stopHeartBeat();
-			conn.context.status = _code.STATUS_CLOSING;
 			error = {
 				type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
 				msg: msg
@@ -443,13 +443,14 @@ function _loginCallback(status, msg, conn){
 			conflict && (error.conflict = true);
 			conn.onError(error);
 		}
+		conn.context.status = _code.STATUS_CLOSING;
 	}
 	else if(status == Strophe.Status.DISCONNECTED){
 		if(conn.isOpened()){
-			if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
-				conn.reconnect();
-				return;
-			}
+			// if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
+			// 	conn.reconnect();
+			// 	return;
+			// }
 			error = {
 				type: _code.WEBIM_CONNCTION_DISCONNECTED
 			};
@@ -475,7 +476,6 @@ function _loginCallback(status, msg, conn){
 		conflict && (error.conflict = true);
 		conn.onError(error);
 	}
-	// conn.context.status_now = status;
 }
 
 function _login(options, conn){
@@ -490,23 +490,11 @@ function _login(options, conn){
 	}
 	conn.context.accessToken = options.access_token;
 	conn.context.accessTokenExpires = options.expires_in;
-	if(conn.isOpening() && conn.context.stropheConn){
-		stropheConn = conn.context.stropheConn;
-	}
-	else if(conn.isOpened() && conn.context.stropheConn){
-		stropheConn = new Strophe.Connection(conn.url, {
-			inactivity: conn.inactivity,
-			maxRetries: conn.maxRetries,
-			pollingTime: conn.pollingTime
-		});
-	}
-	else{
-		stropheConn = new Strophe.Connection(conn.url, {
-			inactivity: conn.inactivity,
-			maxRetries: conn.maxRetries,
-			pollingTime: conn.pollingTime
-		});
-	}
+	stropheConn = new Strophe.Connection(conn.url, {
+		inactivity: conn.inactivity,
+		maxRetries: conn.maxRetries,
+		pollingTime: conn.pollingTime
+	});
 	conn.context.stropheConn = stropheConn;
 	if(conn.route){
 		stropheConn.connect(conn.context.jid, "$t$" + accessToken, callback, conn.wait, conn.hold, conn.route);
@@ -514,8 +502,8 @@ function _login(options, conn){
 	else{
 		stropheConn.connect(conn.context.jid, "$t$" + accessToken, callback, conn.wait, conn.hold);
 	}
-
 	function callback(status, msg){
+		console.log("connection stat change", status, msg);
 		_loginCallback(status, msg, conn);
 	}
 }
@@ -718,44 +706,47 @@ connection.prototype.cacheReceiptsMessage = function(options){
 	this.sendQueue.push(options);
 };
 connection.prototype.open = function(options){
-	var me = this;
-	var pass = _validCheck(options, this);
-	if(!pass){
+	let me = this;
+	console.log("open", this.isOpening());
+	// 防止重复初始化
+	if(this.isOpening() || this.isOpened()){
+		console.log("can't open [1]");
 		return;
 	}
-	if(me.isOpening() || me.isOpened()){
+	if(!_validCheck(options, this)){
+		console.log("can't open [2]");
 		return;
 	}
-	if(options.accessToken){
-		options.access_token = options.accessToken;
-		this.token = options.access_token;
-		_login(options, me);
-	}
-	else{
-		let apiUrl = options.apiUrl;
-		let userId = options.user;
-		let pwd = options.pwd || "";
-		let appkey = options.appKey;
-		let str = appkey.split("#");
-		let orgName = str[0];
-		let appName = str[1];
-		this.orgName = orgName;
-		this.appName = appName;
-		this.context.status = _code.STATUS_DOLOGIN_USERGRID;
-		let loginJson = {
-			grant_type: "password",
-			username: userId,
-			password: pwd,
-			timestamp: +new Date()
-		};
-		let loginfo = _utils.stringify(loginJson);
-		_utils.ajax({
-			url: apiUrl + "/" + orgName + "/" + appName + "/token",
-			data: loginfo,
-			success: suc || _utils.emptyfn,
-			error: error || _utils.emptyfn
-		});
-	}
+	// if(options.accessToken){
+	// 	options.access_token = options.accessToken;
+	// 	this.token = options.access_token;
+	// 	_login(options, me);
+	// }
+	// else{
+	let apiUrl = options.apiUrl;
+	let userId = options.user;
+	let pwd = options.pwd || "";
+	let appkey = options.appKey;
+	let str = appkey.split("#");
+	let orgName = str[0];
+	let appName = str[1];
+	this.orgName = orgName;
+	this.appName = appName;
+	this.context.status = _code.STATUS_DOLOGIN_USERGRID;
+	let loginJson = {
+		grant_type: "password",
+		username: userId,
+		password: pwd,
+		timestamp: +new Date()
+	};
+	let loginfo = _utils.stringify(loginJson);
+	_utils.ajax({
+		url: apiUrl + "/" + orgName + "/" + appName + "/token",
+		data: loginfo,
+		success: suc || _utils.emptyfn,
+		error: error || _utils.emptyfn
+	});
+	// }
 	function suc(data, xhr, myName){
 		me.context.status = _code.STATUS_DOLOGIN_IM;
 		me.context.restTokenData = data;
@@ -1873,8 +1864,8 @@ connection.prototype.isOpened = function(){
 	return this.context.status == _code.STATUS_OPENED;
 };
 connection.prototype.isOpening = function(){
-	var status = this.context.status;
-	return status == _code.STATUS_DOLOGIN_USERGRID || status == _code.STATUS_DOLOGIN_IM;
+	var ctxstatus = this.context.status;
+	return ctxstatus == _code.STATUS_DOLOGIN_USERGRID || ctxstatus == _code.STATUS_DOLOGIN_IM;
 };
 connection.prototype.isClosing = function(){
 	return this.context.status == _code.STATUS_CLOSING;
@@ -2118,19 +2109,19 @@ connection.prototype._onUpdateMyGroupList = function(options){
 connection.prototype._onUpdateMyRoster = function(options){
 	this.onUpdateMyRoster(options);
 };
-connection.prototype.reconnect = function(){
-	var me = this;
-	setTimeout(
-		function(){
-			_login(me.context.restTokenData, me);
-		}, (
-			this.autoReconnectNumTotal == 0
-				? 0
-				: this.autoReconnectInterval
-		) * 1000
-	);
-	this.autoReconnectNumTotal++;
-};
+// connection.prototype.reconnect = function(){
+// 	var me = this;
+// 	setTimeout(
+// 		function(){
+// 			_login(me.context.restTokenData, me);
+// 		}, (
+// 			this.autoReconnectNumTotal == 0
+// 				? 0
+// 				: this.autoReconnectInterval
+// 		) * 1000
+// 	);
+// 	this.autoReconnectNumTotal++;
+// };
 // connection.prototype.closed = function(){
 // 	IM.api.init();
 // };
