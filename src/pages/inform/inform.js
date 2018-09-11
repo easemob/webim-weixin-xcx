@@ -56,10 +56,10 @@ Page({
 			to: event.currentTarget.dataset.from,
 			message: "[resp:true]",
 		});
-		wx.showToast({
-			title: "OK",
-			duration: 1000
-		});
+		// wx.showToast({
+		// 	title: "OK",
+		// 	duration: 1000
+		// });
 		setTimeout(function(){
 			me.removeAndRefresh(event.currentTarget.dataset.from);
 		}, 1000);
