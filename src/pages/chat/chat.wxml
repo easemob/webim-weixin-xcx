@@ -15,6 +15,7 @@
 <view wx:for="{{ arr }}" wx:key="time" class="chat_list">
 	<view class="list_left" bindtap="into_chatRoom" data-username="{{ item.username }}">
 		<view class="list_pic">
+			<view class="em-msgNum" wx:if="{{ item.unReadCount > 0 || item.unReadCount == '...' }}">{{ item.unReadCount }}</view>
 			<image src="../../images/number.png"></image>
 		</view>
 		<view class="list_text">
@@ -40,6 +41,7 @@
 		<image src="../../images/contacts.png" ></image>
 	</view>
 	<view class="chats">
+		<view wx:if="{{ unReadSpot }}" class="em-unread-spot"></view>
 		<image src="../../images/chatsActive.png"></image>
 	</view>
 	<view class="settings" bindtap="tab_setting">

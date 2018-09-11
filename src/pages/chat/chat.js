@@ -1,23 +1,49 @@
+let disp = require("../../utils/broadcast");
+
 Page({
 	data: {
 		search_btn: true,
 		search_chats: false,
 		show_mask: false,
 		yourname: "",
+		unReadSpot: false,
 		arr: []
 	},
 
-	onShow: function(){
+	onLoad(){
+		let me = this;
+		disp.on("em.xmpp.unreadspot", function(count){
+			me.setData({
+				arr: me.getChatList(),
+				unReadSpot: count > 0
+			});
+		});
+	},
+
+	getChatList(){
+		var array = [];
 		var member = wx.getStorageSync("member");
 		var myName = wx.getStorageSync("myUsername");
-		var array = [];
 		for(let i = 0; i < member.length; i++){
-			if(wx.getStorageSync(member[i].name + myName) != ""){
-				array.push(wx.getStorageSync(member[i].name + myName)[wx.getStorageSync(member[i].name + myName).length - 1]);
+			let newChatMsgs = wx.getStorageSync(member[i].name + myName) || [];
+			let historyChatMsgs = wx.getStorageSync("rendered_" + member[i].name + myName) || [];
+			let curChatMsgs = historyChatMsgs.concat(newChatMsgs);
+			if(curChatMsgs.length){
+				let lastChatMsg = curChatMsgs[curChatMsgs.length - 1];
+				lastChatMsg.unReadCount = newChatMsgs.length;
+				if(lastChatMsg.unReadCount > 10) {
+					lastChatMsg.unReadCount = "...";
+				}
+				array.push(lastChatMsg);
 			}
 		}
+		return array;
+	},
+
+	onShow: function(){
 		this.setData({
-			arr: array
+			arr: this.getChatList(),
+			unReadSpot: getApp().globalData.unReadSpot,
 		});
 	},
 
@@ -79,15 +105,12 @@ Page({
 			confirmText: "删除",
 			success: function(res){
 				if(res.confirm){
-					wx.setStorage({
-						key: nameList.your + myName,
-						data: "",
-						success: function(){
-							if(currentPage[0]){
-								currentPage[0].onShow();
-							}
-						}
-					});
+					wx.setStorageSync(nameList.your + myName, "");
+					wx.setStorageSync("rendered_" + nameList.your + myName, "");
+					if(currentPage[0]){
+						currentPage[0].onShow();
+					}
+					disp.fire("em.chat.session.remove");
 				}
 			},
 			fail: function(err){

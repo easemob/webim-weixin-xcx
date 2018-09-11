@@ -1,3 +1,5 @@
+let disp = require("../../utils/broadcast");
+
 Page({
 	data: {
 		username: {
@@ -13,4 +15,9 @@ Page({
 			title: username.your
 		});
 	},
+
+	onUnload(){
+		disp.fire("em.chatroom.leave");
+	},
+
 });

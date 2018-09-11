@@ -9,12 +9,13 @@ Component({
 		username: {
 			type: Object,
 			value: {},
-		}
+		},
 	},
 	data: {
 		view: LIST_STATUS.NORMAL,
 		toView: "",
 		chatMsg: [],
+		__visibility__: false,
 	},
 	methods: {
 		normalScroll(){
@@ -40,20 +41,28 @@ Component({
 			});
 		},
 
-		renderMsg(renderableMsg, type, curChatMsg){
+		renderMsg(renderableMsg, type, curChatMsg, sessionKey){
+			var historyChatMsgs = wx.getStorageSync("rendered_" + sessionKey) || [];
+			historyChatMsgs = historyChatMsgs.concat(curChatMsg);
 			this.setData({
-				chatMsg: curChatMsg,
+				chatMsg: historyChatMsgs,
 				// 跳到最后一条
-				toView: curChatMsg[curChatMsg.length - 1].mid,
+				toView: historyChatMsgs[historyChatMsgs.length - 1].mid,
 			});
+			wx.setStorageSync("rendered_" + sessionKey, historyChatMsgs);
+			wx.setStorageSync(sessionKey, null);
 		},
 	},
 
 	// lifetimes
 	created(){},
-	attached(){},
+	attached(){
+		this.__visibility__ = true;
+	},
 	moved(){},
-	detached(){},
+	detached(){
+		this.__visibility__ = false;
+	},
 	ready(){
 		let me = this;
 		let username = this.data.username;
@@ -62,20 +71,18 @@ Component({
 			? username.groupId + myUsername
 			: username.your + myUsername;
 		let chatMsg = wx.getStorageSync(sessionKey) || [];
-		chatMsg.length && this.setData({
-			chatMsg: chatMsg,
-			toView: chatMsg[chatMsg.length - 1].mid,
-		});
+		this.renderMsg(null, null, chatMsg, sessionKey);
 		msgStorage.on("newChatMsg", function(renderableMsg, type, curChatMsg){
+			if(!this.__visibility__) return;
 			// 判断是否属于当前会话
 			if(username.groupId){
 				// 群消息的 to 是 id，from 是 name
 				if(renderableMsg.info.from == username.groupId || renderableMsg.info.to == username.groupId){
-					me.renderMsg(renderableMsg, type, curChatMsg);
+					me.renderMsg(renderableMsg, type, curChatMsg, sessionKey);
 				}
 			}
 			else if(renderableMsg.info.from == username.your || renderableMsg.info.to == username.your){
-				me.renderMsg(renderableMsg, type, curChatMsg);
+				me.renderMsg(renderableMsg, type, curChatMsg, sessionKey);
 			}
 		});
 	},

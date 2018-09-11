@@ -31,8 +31,20 @@ function getCurrentRoute(){
 	return currentPage.route;
 }
 
+function calcUnReadSpot(){
+	let myName = wx.getStorageSync("myUsername");
+	let members = wx.getStorageSync("member") || [];
+	let count = members.reduce(function(result, curMember, idx){
+		let chatMsgs = wx.getStorageSync(curMember.name + myName) || [];
+		return result + chatMsgs.length;
+	}, 0);
+	getApp().globalData.unReadSpot = count > 0;
+	disp.fire("em.xmpp.unreadspot", count);
+}
+
 App({
 	globalData: {
+		unReadSpot: false,
 		userInfo: null,
 		saveFriendList: []
 	},
@@ -66,6 +78,18 @@ App({
 		logs.unshift(Date.now());
 		wx.setStorageSync("logs", logs);
 
+		// 
+		disp.on("em.main.ready", function(){
+			calcUnReadSpot();
+		});
+		disp.on("em.chatroom.leave", function(){
+			calcUnReadSpot();
+		});
+		disp.on("em.chat.session.remove", function(){
+			calcUnReadSpot();
+		});
+
+		// 
 		WebIM.conn.listen({
 			onOpened(message){
 				console.log("onOpened", message);
@@ -181,6 +205,7 @@ App({
 					if(onMessageError(message)){
 						msgStorage.saveReceiveMsg(message, msgType.AUDIO);
 					}
+					calcUnReadSpot();
 					ack(message);
 				}
 			},
@@ -198,6 +223,7 @@ App({
 					if(onMessageError(message)){
 						msgStorage.saveReceiveMsg(message, msgType.TEXT);
 					}
+					calcUnReadSpot();
 					ack(message);
 				}
 			},
@@ -208,6 +234,7 @@ App({
 					if(onMessageError(message)){
 						msgStorage.saveReceiveMsg(message, msgType.EMOJI);
 					}
+					calcUnReadSpot();
 					ack(message);
 				}
 			},
@@ -218,6 +245,7 @@ App({
 					if(onMessageError(message)){
 						msgStorage.saveReceiveMsg(message, msgType.IMAGE);
 					}
+					calcUnReadSpot();
 					ack(message);
 				}
 			},

@@ -17,7 +17,7 @@
 		<view class="chat" bindtap="into_inform">
 			<image src="../../images/chat.png"></image>
 			<text>申请与通知</text>
-			<text wx:if="{{ messageNum > 0 }}" class="msgNum">{{ messageNum }}</text>
+			<text wx:if="{{ messageNum > 0 }}" class="em-msgNum">{{ messageNum }}</text>
 		</view>
 		<view class="chat_groups" bindtap="into_groups">
 			<image src="../../images/chat-list.png"></image>
@@ -48,6 +48,7 @@
 		<image src="../../images/contactsActive.png"></image>
 	</view>
 	<view class="chats" bindtap="tab_chat">
+		<view wx:if="{{ unReadSpot }}" class="em-unread-spot"></view>
 		<image src="../../images/chats.png"></image>
 	</view>
 	<view class="settings" bindtap="tab_setting">

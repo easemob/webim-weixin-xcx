@@ -88,20 +88,32 @@
 	font-size: 14px;
 }
 .list_pic {
-	width: 18%;
-	height: 100%;
+	position: relative;
 	float: left;
 	margin-top: 15px;
 	margin-right: 14px;
-	
 }
 .list_pic image {
 	display: block;
-	width: 88%;
-	height: 56%;
+	width: 40px;
+	height: 40px;
+	box-sizing: border-box;
 	border: 1px solid rgb(0,186,110);
 	margin-left: 10px;
 	padding-top: 2px;
+}
+.em-msgNum {
+	position: absolute;
+	right: -10px;
+	top: -10px;
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	background: #f04134;
+	color: #fff;
+	line-height: 20px;
+	font-size: 14px;
+	text-align: center;
 }
 .list_word {
 	height: 20px;
@@ -135,38 +147,4 @@
 .delChat {
 	width: 60px;
 	float: right;
-}
-
-
-
-
-
-.chatRoom_tab {
-	width: 100%;
-	height: 50px;
-	background-color: rgb(250,251,252);
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	border-top: 1px solid rgba(173,185,193,0.5);
-	display: flex;
-	justify-content: space-around;
-}
-.contacts,.settings {
-	width: 47px;
-	height: 37px;
-	margin-top: 8px;
-}
-.chats {
-	width: 40px;
-	height: 40px;
-	margin-top: 6px;
-}
-.contacts image,.settings image {
-	width: 100%;
-	height: 100%;
-}
-.chats image {
-	width: 100%;
-	height: 100%;
 }

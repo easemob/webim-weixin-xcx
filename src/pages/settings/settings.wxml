@@ -48,6 +48,7 @@
 		<image src="../../images/contacts.png"></image>
 	</view>
 	<view class="chats" bindtap="tab_chat">
+		<view wx:if="{{ unReadSpot }}" class="em-unread-spot"></view>
 		<image src="../../images/chats.png"></image>
 	</view>
 	<view class="settings">

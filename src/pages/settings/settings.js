@@ -1,13 +1,25 @@
 let WebIM = require("../../utils/WebIM")["default"];
+let disp = require("../../utils/broadcast");
 
 Page({
 	data: {
-		username: ""
+		username: "",
+		unReadSpot: false,
 	},
 	onLoad: function(){
 		var myUsername = wx.getStorageSync("myUsername");
 		this.setData({
 			username: myUsername
+		});
+		disp.on("em.xmpp.unreadspot", function(count){
+			me.setData({
+				unReadSpot: count > 0
+			});
+		});
+	},
+	onShow(){
+		this.setData({
+			unReadSpot: getApp().globalData.unReadSpot,
 		});
 	},
 	tab_contact: function(){

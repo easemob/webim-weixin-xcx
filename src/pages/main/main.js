@@ -1,5 +1,6 @@
 let WebIM = require("../../utils/WebIM")["default"];
 let disp = require("../../utils/broadcast");
+let systemReady = false;
 
 Page({
 	data: {
@@ -8,7 +9,8 @@ Page({
 		show_mask: false,
 		myName: "",
 		member: [],
-		messageNum: ""
+		messageNum: "",
+		unReadSpot: false,
 	},
 
 	onLoad(option){
@@ -22,6 +24,11 @@ Page({
 			// 个人操作，不用判断 curPage
 			me.getRoster();
 		});
+		disp.on("em.xmpp.unreadspot", function(count){
+			me.setData({
+				unReadSpot: count > 0
+			});
+		});
 		this.setData({
 			myName: option.myName
 		});
@@ -29,7 +36,8 @@ Page({
 
 	onShow(){
 		this.setData({
-			messageNum: getApp().globalData.saveFriendList.length
+			messageNum: getApp().globalData.saveFriendList.length,
+			unReadSpot: getApp().globalData.unReadSpot,
 		});
 		this.getRoster();
 	},
@@ -51,6 +59,10 @@ Page({
 					key: "member",
 					data: me.data.member
 				});
+				if(!systemReady){
+					disp.fire("em.main.ready");
+					systemReady = true;
+				}
 			},
 			error(err){
 				console.log("[main:getRoster]", err);

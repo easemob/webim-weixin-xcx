@@ -88,7 +88,7 @@
 	height: 50%;
 	margin:0 13px 0 10px;
 }
-.chat .msgNum {
+.chat .em-msgNum {
 	position: absolute;
 	right: 10px;
 	height: 17px;
@@ -167,33 +167,3 @@
 
 
 
-
-.chatRoom_tab {
-	width: 100%;
-	height: 50px;
-	background-color: rgb(250,251,252);
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	border-top: 1px solid rgba(173,185,193,0.5);
-	display: flex;
-	justify-content: space-around;
-}
-.contacts,.settings {
-	width: 47px;
-	height: 37px;
-	margin-top: 8px;
-}
-.chats {
-	width: 37px;
-	height: 37px;
-	margin-top: 8px;
-}
-.contacts image,.settings image {
-	width: 100%;
-	height: 100%;
-}
-.chats image {
-	width: 100%;
-	height: 100%;
-}
