@@ -19,7 +19,9 @@
 		</view>
 		<view class="list_text">
 			<text class="list_user">{{item.username}}</text>
-			<text class="list_word">{{item.msg.data[0].data}}</text>
+			<text class="list_word" wx:if="{{ item.msg.data[0].data }}">{{item.msg.data[0].data}}</text>
+			<text class="list_word" wx:if="{{ item.msg.type == 'img' }}">[图片]</text>
+			<text class="list_word" wx:if="{{ item.msg.type == 'audio' }}">[语音]</text>
 		</view>
 	</view>
 	<view class="list_right">
