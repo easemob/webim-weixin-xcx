@@ -276,6 +276,13 @@ App({
 						url: "../login/login"
 					});
 				}
+				if(error.type ==  WebIM.statusCode.WEBIM_CONNCTION_OPEN_ERROR){
+					wx.showModal({
+						title: "用户名或密码错误",
+						confirmText: "OK",
+						showCancel: false
+					});
+				}
 			},
 		});
 	},
