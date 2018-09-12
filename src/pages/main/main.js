@@ -146,13 +146,8 @@ Page({
 								title: "删除成功",
 							});
 							// 删除好友后 同时清空会话
-							wx.setStorage({
-								key: delName + myName,
-								data: "",
-								success: function(){
-									console.log("清除" + delName + "会话成功");
-								}
-							});
+							wx.setStorageSync(delName + myName, "");
+							wx.setStorageSync("rendered_" + delName + myName, "");
 						},
 						error: function(error){
 
