@@ -8,6 +8,7 @@ Page({
 	},
 	onLoad: function(){
 		var myUsername = wx.getStorageSync("myUsername");
+		var me = this;
 		this.setData({
 			username: myUsername
 		});
