@@ -73,7 +73,7 @@ Component({
 		let chatMsg = wx.getStorageSync(sessionKey) || [];
 		this.renderMsg(null, null, chatMsg, sessionKey);
 		msgStorage.on("newChatMsg", function(renderableMsg, type, curChatMsg){
-			if(!this.__visibility__) return;
+			if(!me.__visibility__) return;
 			// 判断是否属于当前会话
 			if(username.groupId){
 				// 群消息的 to 是 id，from 是 name
