@@ -44,6 +44,7 @@ Component({
 		renderMsg(renderableMsg, type, curChatMsg, sessionKey){
 			var historyChatMsgs = wx.getStorageSync("rendered_" + sessionKey) || [];
 			historyChatMsgs = historyChatMsgs.concat(curChatMsg);
+			if(!historyChatMsgs.length) return;
 			this.setData({
 				chatMsg: historyChatMsgs,
 				// 跳到最后一条
