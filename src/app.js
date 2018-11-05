@@ -209,6 +209,17 @@ App({
 					ack(message);
 				}
 			},
+			
+			onCmdMessage(message){
+				console.log("onCmdMessage", message);
+				if(message){
+					if(onMessageError(message)){
+						msgStorage.saveReceiveMsg(message, msgType.CMD);
+					}
+					calcUnReadSpot();
+					ack(message);
+				}
+			},
 
 			// onLocationMessage(message){
 			// 	console.log("Location message: ", message);
