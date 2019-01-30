@@ -2,6 +2,7 @@ let Disp = require("../../utils/Dispatcher");
 let msgPackager = require("msgpackager");
 let msgType = require("msgtype");
 let msgStorage = new Disp();
+let disp = require("../../utils/broadcast");
 msgStorage.saveReceiveMsg = function(receiveMsg, type){
 	let sendableMsg;
 	if(type == msgType.IMAGE){
@@ -121,6 +122,7 @@ msgStorage.saveMsg = function(sendableMsg, type, receiveMsg){
 			key: sessionKey,
 			data: curChatMsg,
 			success(){
+				disp.fire('em.chat.audio.fileLoaded');
 				me.fire("newChatMsg", renderableMsg, type, curChatMsg);
 			}
 		});
