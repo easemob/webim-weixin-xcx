@@ -88,6 +88,9 @@ App({
 		disp.on("em.chat.session.remove", function(){
 			calcUnReadSpot();
 		});
+		disp.on('em.chat.audio.fileLoaded', function(){
+			calcUnReadSpot()
+		});
 
 		// 
 		WebIM.conn.listen({
@@ -205,7 +208,7 @@ App({
 					if(onMessageError(message)){
 						msgStorage.saveReceiveMsg(message, msgType.AUDIO);
 					}
-					calcUnReadSpot();
+					//calcUnReadSpot();
 					ack(message);
 				}
 			},
