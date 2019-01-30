@@ -31,7 +31,7 @@ Page({
 			if(curChatMsgs.length){
 				let lastChatMsg = curChatMsgs[curChatMsgs.length - 1];
 				lastChatMsg.unReadCount = newChatMsgs.length;
-				if(lastChatMsg.unReadCount > 10) {
+				if(lastChatMsg.unReadCount > 99) {
 					lastChatMsg.unReadCount = "...";
 				}
 				array.push(lastChatMsg);
