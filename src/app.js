@@ -129,7 +129,14 @@ App({
 					}
 					else{
 						// pages[0].handleFriendMsg(message);
-						me.globalData.saveFriendList.push(message);
+						for (let i = 0; i < me.globalData.saveFriendList.length; i ++) {
+					      	if(me.globalData.saveFriendList[i].from === message.from){
+					      		me.globalData.saveFriendList[i] = message
+					      		disp.fire("em.xmpp.subscribe");
+					      		return;
+					 		}
+					    }
+					    me.globalData.saveFriendList.push(message);
 						disp.fire("em.xmpp.subscribe");
 					}
 					break;
