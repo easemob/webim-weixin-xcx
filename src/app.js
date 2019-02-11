@@ -136,7 +136,7 @@ App({
 					      		return;
 					 		}
 					    }
-					    me.globalData.saveFriendList.push(message);
+						me.globalData.saveFriendList.push(message);
 						disp.fire("em.xmpp.subscribe");
 					}
 					break;
