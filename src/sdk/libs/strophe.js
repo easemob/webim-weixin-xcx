@@ -6000,11 +6000,11 @@ var $pres = null;
 			//For backwards compatability
 			var n_callback = callback;
 			if (typeof requirejs === 'function') {
-				requirejs(["strophe"], function (o) {
+				requirejs(["./strophe"], function (o) {
 					n_callback(o.Strophe, o.$build, o.$msg, o.$iq, o.$pres);
 				});
 			} else {
-				require(["strophe"], function (o) {
+				require(["./strophe"], function (o) {
 					n_callback(o.Strophe, o.$build, o.$msg, o.$iq, o.$pres);
 				});
 			}
