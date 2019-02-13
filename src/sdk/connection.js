@@ -1,4 +1,4 @@
-import StropheAll from "libs/strophe";
+import StropheAll from "./libs/strophe";
 
 let WebIM = {};
 let Strophe = StropheAll.Strophe;
@@ -7,7 +7,7 @@ Strophe.log = function(level, msg){
 	// console.log(ts(), level, msg);
 };
 
-let xmldom = require("libs/xmldom/dom-parser");
+let xmldom = require("./libs/xmldom/dom-parser");
 // //console.log('xml',xmldom, typeof xmldom.DOMParser);
 let DOMParser = xmldom.DOMParser;
 let window = {};

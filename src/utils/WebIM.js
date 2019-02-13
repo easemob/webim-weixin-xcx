@@ -1,7 +1,7 @@
 import Strophe from "../sdk/libs/strophe";
 import xmldom from "../sdk/libs/xmldom/dom-parser";
 import websdk from "../sdk/connection";
-import config from "WebIMConfig";
+import config from "./WebIMConfig";
 
 console.group = console.group || {};
 console.groupEnd = console.groupEnd || {};
