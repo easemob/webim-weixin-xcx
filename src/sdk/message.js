@@ -1,4 +1,4 @@
-import StropheAll from "libs/strophe";
+var StropheAll = require("./libs/strophe");
 
 (function(){
 	var _utils = require("./utils").utils;
@@ -209,10 +209,34 @@ import StropheAll from "libs/strophe";
 	 * video message
 	 */
 	Message.video = function(id){
-
+		this.id = id;
+		this.type = "file";
+		this.body = {};
 	};
 	Message.video.prototype.set = function(opt){
+		opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
 
+		this.value = opt.file;
+		this.filename = opt.filename || this.value.filename;
+
+		this.body = {
+			id: this.id,
+			file: this.value,
+			filename: this.filename,
+			apiUrl: opt.apiUrl,
+			to: opt.to,
+			from: opt.from,
+			type: this.type,
+			ext: opt.ext || {},
+			roomType: opt.roomType,
+			onFileUploadError: opt.onFileUploadError,
+			onFileUploadComplete: opt.onFileUploadComplete,
+			success: opt.success,
+			fail: opt.fail,
+			flashUpload: opt.flashUpload,
+			body: opt.body
+		};
+		!opt.roomType && delete this.body.roomType;
 	};
 
 
