@@ -1,73 +1,68 @@
 .login {
 	width: 100%;
 	height: 100%;
-	/*background: -webkit-linear-gradient(top,rgb(36,61,85) 10%,  rgb(61,92,120) 50%,rgb(36,61,85) 80%);*/
 	background-color: #ffffff;
 }
-.login_img {
-	width: 160px;
-	height: 150px;
-	margin: 0 auto;
+.login_title {
+	height: 128rpx;
+	padding-left: 32rpx;
 }
-.login_img image {
-	width: 100%;
-	height: 55px;
-	padding-top: 55px;
+.login_title text{
+	font-size: 64rpx;
+	font-weight: 400;
+	line-height: 96rpx;
 }
-.login_user, .login_pwd {
-	width: 100%;
-	height: 50px;
+.login_user, .login_pwd, .login_btn {
+	display: flex;
 }
 .login_user input, .login_pwd input {
-	width: 70%;
-	height: 45px;
+	height: 96rpx;
 	background-color: #ffffff;
-	border: 1px solid rgb(173,185,193);
-	border-radius: 3px;
-	padding-left: 12px;
-	line-height: 15px;
-	font-size: 15px;
-	font-family: ".SFNSText-Regular";
+	border: 2rpx solid #999999;
+	border-radius: 8rpx;
+	box-sizing: border-box;
+	padding: 0 32rpx;
+	font-size: 34rpx;
+	color: #000;
+	margin: 0 64rpx;
+	display: inline-block;
+	flex: 1;
 }
 .login_user input {
-	margin: 30px auto 15px auto;
+	margin-top: 128rpx
 }
 .login_pwd input {
-	margin: 15px auto 0 auto;
+	margin-top: 32rpx;
+}
+.login_btn button{
+	flex: 1;
+	height: 96rpx;
+	margin: 32rpx 64rpx 0;
+	border-radius: 8rpx;
+	line-height: 96rpx;
+	color: rgb(255,255,255);
+	background-color: #0873DE;
+	font-size: 34rpx;
 }
 .login_text {
-	width: 100%;
-	height: 20px;
-	margin-top:30px;
+	height: 34rpx;
+	margin-top: 28rpx;
+	padding: 0 64rpx;
+	display: flex;
+	justify-content: space-between;
 }
-.login_text view {
-	width: 108px;
-	margin: 0 auto;
-}
-.login_text text {
-	font-size: 15px;
-	display: inline-block;
-	float: left;
-	color: rgb(173,185,193);
-}
+
 .login_text navigator {
-	font-size: 15px;
+	font-size: 24rpx;
+	color: #0873DE;
 	display: inline-block;
-	float: right;
-	color: black;
-	border-bottom: 1px solid black;
 }
-.login_btn {
-	width: 100%;
-	height: 50px;
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	border-radius: 0;
-	line-height: 50px;
-	color: rgb(255,255,255);
-	background-color: #1aa0e5;
-}
+
 .btn_hover {
-	background-color: #4F94CD;
+	background-color: #137DCD;
 }
+.nameFocus input, .psdFocus input{
+	border: 3rpx solid #0873DE;
+	box-sizing: border-box;
+}
+

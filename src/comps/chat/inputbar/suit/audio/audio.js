@@ -3,7 +3,8 @@ let msgType = require("../../../msgtype");
 let RECORD_CONST = require("record_status");
 let RecordStatus = RECORD_CONST.RecordStatus;
 let RecordDesc = RECORD_CONST.RecordDesc;
-
+let RunAnimation = false
+const InitHeight = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
 Component({
 	properties: {
 		username: {
@@ -20,6 +21,9 @@ Component({
 		recordStatus: RecordStatus.HIDE,
 		RecordStatus,
 		RecordDesc,		// 模板中有引用
+		radomheight: InitHeight,
+		recorderManager: wx.getRecorderManager(),
+		recordClicked: false
 	},
 	methods: {
 		toggleWithoutAction(e){
@@ -28,11 +32,13 @@ Component({
 
 		toggleRecordModal(){
 			this.setData({
-				recordStatus: this.data.recordStatus == RecordStatus.HIDE ? RecordStatus.SHOW : RecordStatus.HIDE
+				recordStatus: this.data.recordStatus == RecordStatus.HIDE ? RecordStatus.SHOW : RecordStatus.HIDE,
+				radomheight: InitHeight,
 			});
 		},
 
 		handleRecordingMove(e){
+			console.log('move')
 			var touches = e.touches[0];
 			var changedTouches = this.data.changedTouches;
 			if(!changedTouches){
@@ -57,45 +63,125 @@ Component({
 
 		handleRecording(e){
 			let me = this;
-			this.data.changedTouches = e.touches[0];
-			this.setData({
-				recordStatus: RecordStatus.HOLD
-			});
+		    me.setData({
+		      	recordClicked: true
+		    })
+		    setTimeout(() => {
+		      	if (me.data.recordClicked == true) {
+		        	executeRecord()
+		      	}
+		    }, 350)
+		    function executeRecord(){
+			    wx.getSetting({
+			      	success: (res) => {
+				        let recordAuth = res.authSetting['scope.record']
+				        if (recordAuth == false) { //已申请过授权，但是用户拒绝
+				          	wx.openSetting({
+					            success: function (res) {
+					              let recordAuth = res.authSetting['scope.record']
+					              if (recordAuth == true) {
+					                wx.showToast({
+							        	title: "授权成功",
+							        	icon: "success"
+							        })
+					              } else {
+					                wx.showToast({
+							        	title: "请授权录音",
+							        	icon: "none"
+							        })
+					              }
+					              me.setData({
+					                isLongPress: false
+					              })
+					            }
+				          	})
+				        } else if (recordAuth == true) { // 用户已经同意授权
+				          	startRecord()
+				        } else { // 第一次进来，未发起授权
+					        wx.authorize({
+					            scope: 'scope.record',
+					            success: () => {//授权成功
+					              	wx.showToast({
+							        	title: "授权成功",
+							        	icon: "success"
+							        })
+					            }
+					        })
+				        }
+				    },
+				    fail: function () {
+				        wx.showToast({
+				        	title: "鉴权失败，请重试",
+				        	icon: "none"
+				        })
+			      	}
+			    })
+		    }
 
-			let recorderManager = wx.getRecorderManager();
-			recorderManager.onStart(() => {
-				// console.log("开始录音...");
-			});
-			recorderManager.start({
-				format: "mp3"
-			});
-			// 超时
-			setTimeout(function(){
-				me.handleRecordingCancel();
-			}, 100000);
+			function startRecord(){
+				me.data.changedTouches = e.touches[0];
+				me.setData({
+					recordStatus: RecordStatus.HOLD
+				});
+				RunAnimation = true;
+				me.myradom();
+
+				let recorderManager = me.data.recorderManager || wx.getRecorderManager();
+				recorderManager.onStart(() => {
+					// console.log("开始录音...");
+				});
+				recorderManager.start({
+					format: "mp3"
+				});
+				// 超时
+				setTimeout(function(){
+					me.handleRecordingCancel();
+					RunAnimation = false
+				}, 100000);
+			}
 		},
 
 		handleRecordingCancel(){
+			RunAnimation = false
+			let recorderManager = this.data.recorderManager;
 			// 向上滑动状态停止：取消录音发放
 			if(this.data.recordStatus == RecordStatus.SWIPE){
+				console.log('swip')
 				this.setData({
 					recordStatus: RecordStatus.RELEASE
 				});
+				console.log(this.data.recordStatus)
 			}
 			else{
+				console.log('hide')
 				this.setData({
-					recordStatus: RecordStatus.HIDE
+					recordStatus: RecordStatus.HIDE,
+					recordClicked: false
 				});
+
+				console.log(this.data.recordStatus)
 			}
-			let recorderManager = wx.getRecorderManager();
+
 			recorderManager.onStop((res) => {
+				
+				console.log(this.data.recordStatus)
 				// console.log("结束录音...", res);
 				if(this.data.recordStatus == RecordStatus.RELEASE){
 					console.log("user canceled");
+					this.setData({
+						recordStatus: RecordStatus.HIDE
+					});
 					return;
 				}
-				// 上传
-				this.uploadRecord(res.tempFilePath);
+				if (res.duration < 1000) {
+			        wx.showToast({
+			        	title: "录音时间太短",
+			        	icon: "none"
+			        })
+			    } else {
+			        // 上传
+					this.uploadRecord(res.tempFilePath, res.duration);
+			    }
 			});
 			// 停止录音
 			recorderManager.stop();
@@ -109,7 +195,7 @@ Component({
 			return this.isGroupChat() ? this.data.username.groupId : this.data.username.your;
 		},
 
-		uploadRecord(tempFilePath){
+		uploadRecord(tempFilePath, dur){
 			var str = WebIM.config.appkey.split("#");
 			var me = this;
 			wx.uploadFile({
@@ -130,7 +216,8 @@ Component({
 							type: msgType.AUDIO,
 							url: dataObj.uri + "/" + dataObj.entities[0].uuid,
 							filetype: "",
-							filename: tempFilePath
+							filename: tempFilePath,
+							length: Math.ceil(dur / 1000)
 						},
 						from: me.data.username.myName,
 						to: me.getSendToParam(),
@@ -140,7 +227,9 @@ Component({
 					if(me.isGroupChat()){
 						msg.setGroup("groupchat");
 					}
+					msg.body.length = Math.ceil(dur / 1000);
 					WebIM.conn.send(msg.body);
+
 					me.triggerEvent(
 						"newAudioMsg",
 						{
@@ -155,6 +244,23 @@ Component({
 				}
 			});
 		},
+
+		myradom(){
+		    const that = this;
+		    var _radomheight = that.data.radomheight;
+		    for (var i = 0; i < that.data.radomheight.length; i++) {
+		      //+1是为了避免为0
+		     _radomheight[i] = (100 * Math.random().toFixed(2))+10;
+		    }
+		    that.setData({
+		        radomheight: _radomheight
+		    });
+		    if (RunAnimation) {
+		    	setTimeout(function () {that.myradom(); }, 500);
+		    }else{
+		    	return
+		    }
+	  	}
 	},
 
 	// lifetimes

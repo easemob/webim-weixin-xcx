@@ -1,29 +1,27 @@
 <view class="room_bar">
-
 	<chat-suit-emoji id="chat-suit-emoji" bind:newEmojiStr="emojiAction"></chat-suit-emoji>
 	<chat-suit-main id="chat-suit-main" username="{{ username }}" chatType="{{ chatType }}" bind:inputFocused="cancelEmoji"></chat-suit-main>
 	<chat-suit-image id="chat-suit-image" username="{{ username }}" chatType="{{ chatType }}"></chat-suit-image>
 	<!-- <chat-suit-location id="chat-suit-location" username="{{ username }}"></chat-suit-location> -->
 	<!-- <chat-suit-video id="chat-suit-video" username="{{ username }}"></chat-suit-video> -->
-
-	<view class="other_func">
-		<view class="open_emoji" bind:tap="openEmoji">
+	
+	<view class="other_func {{isIPX? 'other_func_X': ''}}">
+		<!-- <view class="open_emoji" bind:tap="openEmoji">
 			<image src="../../../images/Emoji.png"/>
-		</view>
-		<view class="send_image" bind:tap="sendImage">
-			<image src="../../../images/iconImage@2x.png" style="height:18px;"/>
-		</view>
-		<view class="open_camera" bind:tap="openCamera">
-			<image src="../../../images/iconCamera@2x.png" style="width:26px;"/>
-		</view>
+		</view> -->
 		<view class="v-record" bind:tap="toggleRecordModal">
 			<image
 				class="icon-record"
-				src="{{ recordStatus != RecordStatus.HIDE ? '../../../images/iconAudioActive@2x.png' : '../../../images/iconAudio@2x.png' }}" />
+				src="{{ recordStatus != RecordStatus.HIDE ? '../../../images/iconAudioActive@2x.png' : '../../../images/voice.png' }}" style="width:16px; height: 24px"/>
+		</view>
+		<view class="open_camera" bind:tap="openCamera">
+			<image src="../../../images/camora.png" style="width:24px; height: 18px"/>
+		</view>
+		<view class="send_image" bind:tap="sendImage">
+			<image src="../../../images/pic.png" style="height:20px; width: 20px"/>
 		</view>
 		<!-- <view class="send_image" bind:tap="sendLocation">
 			<image src="../../../images/iconLocation@2x.png" style="height:18px;"/>
 		</view> -->
 	</view>
-
 </view>

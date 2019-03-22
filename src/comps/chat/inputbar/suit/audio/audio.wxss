@@ -7,39 +7,67 @@
 	width: 100%;
 	height: 100%;
 	z-index: 999;
-	display: flex;
+	/*display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: center;*/
 }
 
 .modal-record .modal-body {
-	width: 164px;
-	height: 164px;
-	background-color: rgba(135, 152, 164, 0.8);
+	width: 480rpx;
+	height: 440rpx;
+	background-color: #fff;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	border-radius: 3px;
+	box-shadow: 0 0 32rpx rgba(0, 0, 0, 0.15);
+	position: fixed;
+	bottom: 480rpx;
+	left: 50%;
+	margin-left: -240rpx;
 }
 
 .modal-record .desc {
 	color: rgb(112, 126, 137);
 	font-size: 13px;
-	margin-bottom: 20px;
+	margin-bottom: 40rpx;
+	display: block;
+	height: 30rpx;
+	width: 100%;
+	text-align: center;
 }
 
 .modal-record .dot {
-	width: 70px;
-	height: 70px;
+	width: 128rpx;
+	height: 128rpx;
 	border-radius: 50%;
-	background-color: #fff;
+	background-color: #0873DE;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
 .dot image {
-	width:15px;
-	height:30px;
+	width: 44rpx;
+	height: 64rpx;
+}
+
+.sound-waves {
+  width: 100%;
+  box-sizing: border-box;
+  padding-left:10%;
+  margin-top: 80rpx;
+  height: 80rpx;
+  text-align: center;
+}
+ 
+.sound-waves view {
+  transition: all 0.5s;
+  width: 1%;
+  margin-left: 1.5%;
+  margin-right: 1.5%;
+  height: 160rpx;
+  background-color: #aaa;
+  float: left;
 }

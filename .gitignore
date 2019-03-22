@@ -1,4 +1,7 @@
 .idea/*
 .DS_Store
 .gitignore.swp
-/node_modules
+node_modules/
+build/
+.cache/
+

@@ -1,12 +1,10 @@
 import StropheAll from "./libs/strophe";
-
 let WebIM = {};
 let Strophe = StropheAll.Strophe;
 
-Strophe.log = function(level, msg){
+Strophe.log = function (level, msg) {
 	// console.log(ts(), level, msg);
 };
-
 let xmldom = require("./libs/xmldom/dom-parser");
 // //console.log('xml',xmldom, typeof xmldom.DOMParser);
 let DOMParser = xmldom.DOMParser;
@@ -18,20 +16,22 @@ let _msg = require("./message");
 let _message = _msg._msg;
 let _msgHash = {};
 let Queue = require("./queue").Queue;
-let location = window.location || { protocol: "https:" };
+let location = window.location || {
+	protocol: "https:"
+};
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
-if(window.XDomainRequest){
+if (window.XDomainRequest) {
 	XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
-	XDomainRequest.prototype.send = function(){
+	XDomainRequest.prototype.send = function () {
 		XDomainRequest.prototype.oldsend.apply(this, arguments);
 		this.readyState = 2;
 	};
 }
 
-Strophe.Request.prototype._newXHR = function(){
+Strophe.Request.prototype._newXHR = function () {
 	var xhr = _utils.xmlrequest(true);
-	if(xhr.overrideMimeType){
+	if (xhr.overrideMimeType) {
 		xhr.overrideMimeType("text/xml");
 	}
 	// use Function.bind() to prepend ourselves as an argument
@@ -39,7 +39,7 @@ Strophe.Request.prototype._newXHR = function(){
 	return xhr;
 };
 
-Strophe.Websocket.prototype._onSocketClose = function(e){
+Strophe.Websocket.prototype._onSocketClose = function (e) {
 	// if(e.code && e.code == 1000){
 	//
 	// }
@@ -61,17 +61,16 @@ Strophe.Websocket.prototype._onSocketClose = function(e){
  * this will trigger socket.onError, therefore _doDisconnect again.
  * Fix it by overide  _onMessage
  */
-Strophe.Websocket.prototype._onMessage = function(message){
+Strophe.Websocket.prototype._onMessage = function (message) {
 	var elem, data;
 	// WebIM && WebIM.config.isDebug && //console.log(WebIM.utils.ts() + 'recv:', message.data);
-	try{
-		if(WebIM && WebIM.config.isDebug){
+	try {
+		if (WebIM && WebIM.config.isDebug) {
 			console.group("%crecv # ", "color: green; font-size: large");
 			console.log("%c" + message.data, "color: green");
 			console.groupEnd();
 		}
-	}
-	catch(e){
+	} catch (e) {
 		// console.log('%crecv' + message.data, 'color: green');
 	}
 	// check for closing stream
@@ -87,44 +86,41 @@ Strophe.Websocket.prototype._onMessage = function(message){
 	// send and receive close xml: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/>
 	// so we can't judge whether message.data equals close by === simply.
 	// console.log('DOMParser connection')
-	if(message.data.indexOf("<close ") === 0){
+	if (message.data.indexOf("<close ") === 0) {
 		elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
 		let see_uri = elem.getAttribute("see-other-uri");
-		if(see_uri){
+		if (see_uri) {
 			this._conn._changeConnectStatus(Strophe.Status.REDIRECT, "Received see-other-uri, resetting connection");
 			this._conn.reset();
 			this._conn.service = see_uri;
 			this._connect();
-		}
-		else{
+		} else {
 			// if (!this._conn.disconnecting) {
 			this._conn._doDisconnect("receive <close> from server");
 			// }
 		}
 		return;
-	}
-	else if(message.data.search("<open ") === 0){
+	} else if (message.data.search("<open ") === 0) {
 		// This handles stream restarts
 		elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
-		if(!this._handleStreamStart(elem)){
+		if (!this._handleStreamStart(elem)) {
 			return;
 		}
-	}
-	else{
+	} else {
 		data = this._streamWrap(message.data);
 		elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
 	}
 
 	// console.log('DOMParser connection ed')
-	if(this._check_streamerror(elem, Strophe.Status.ERROR)){
+	if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
 		return;
 	}
 
 	// handle unavailable presence stanza before disconnecting
-	if(this._conn.disconnecting &&
+	if (this._conn.disconnecting &&
 		elem.firstChild.nodeName === "presence" &&
 		elem.firstChild.getAttribute("type") === "unavailable"
-	){
+	) {
 		this._conn.xmlInput(elem);
 		this._conn.rawInput(Strophe.serialize(elem));
 		// if we are already disconnecting we will ignore the unavailable stanza and
@@ -135,25 +131,22 @@ Strophe.Websocket.prototype._onMessage = function(message){
 };
 
 
-function _listenNetwork(onlineCallback, offlineCallback){
-	if(window.addEventListener){
+function _listenNetwork(onlineCallback, offlineCallback) {
+	if (window.addEventListener) {
 		window.addEventListener("online", onlineCallback);
 		window.addEventListener("offline", offlineCallback);
 
-	}
-	else if(window.attachEvent){
-		if(document.body){
+	} else if (window.attachEvent) {
+		if (document.body) {
 			document.body.attachEvent("ononline", onlineCallback);
 			document.body.attachEvent("onoffline", offlineCallback);
-		}
-		else{
-			window.attachEvent("load", function(){
+		} else {
+			window.attachEvent("load", function () {
 				document.body.attachEvent("ononline", onlineCallback);
 				document.body.attachEvent("onoffline", offlineCallback);
 			});
 		}
-	}
-	else{
+	} else {
 		/* var onlineTmp = window.ononline;
 		 var offlineTmp = window.onoffline;
 		 window.attachEvent('ononline', function () {
@@ -171,11 +164,11 @@ function _listenNetwork(onlineCallback, offlineCallback){
 	}
 }
 
-function _parseRoom(result){
+function _parseRoom(result) {
 	var rooms = [];
 	var items = result.getElementsByTagName("item");
-	if(items){
-		for(let i = 0; i < items.length; i++){
+	if (items) {
+		for (let i = 0; i < items.length; i++) {
 			let item = items[i];
 			let roomJid = item.getAttribute("jid");
 			let tmp = roomJid.split("@")[0];
@@ -190,11 +183,11 @@ function _parseRoom(result){
 	return rooms;
 }
 
-function _parseRoomOccupants(result){
+function _parseRoomOccupants(result) {
 	var occupants = [];
 	var items = result.getElementsByTagName("item");
-	if(items){
-		for(let i = 0; i < items.length; i++){
+	if (items) {
+		for (let i = 0; i < items.length; i++) {
 			let item = items[i];
 			let room = {
 				jid: item.getAttribute("jid"),
@@ -206,80 +199,78 @@ function _parseRoomOccupants(result){
 	return occupants;
 }
 
-function _parseResponseMessage(msginfo){
-	var parseMsgData = { errorMsg: true, data: [] };
+function _parseResponseMessage(msginfo) {
+	var parseMsgData = {
+		errorMsg: true,
+		data: []
+	};
 	// //console.log('msginfo', msginfo)
 	var msgBodies = msginfo.getElementsByTagName("body");
 	// //console.log('msginfo', msgBodies)
-	if(msgBodies){
-		for(let i = 0; i < msgBodies.length; i++){
+	if (msgBodies) {
+		for (let i = 0; i < msgBodies.length; i++) {
 			let msgBody = msgBodies[i];
 			let childNodes = msgBody.childNodes;
-			if(childNodes && childNodes.length > 0){
+			if (childNodes && childNodes.length > 0) {
 				let childNode = msgBody.childNodes[0];
-				if(childNode.nodeType == Strophe.ElementType.TEXT){
+				if (childNode.nodeType == Strophe.ElementType.TEXT) {
 					let jsondata = childNode.wholeText || childNode.nodeValue;
 					jsondata = jsondata.replace("\n", "<br>");
-					try{
+					try {
 						let data = JSON.parse(jsondata);
 						parseMsgData.errorMsg = false;
 						parseMsgData.data = [data];
-					}
-					catch(e){
-					}
+					} catch (e) {}
 				}
 			}
 		}
 		let delayTags = msginfo.getElementsByTagName("delay");
-		if(delayTags && delayTags.length > 0){
+		if (delayTags && delayTags.length > 0) {
 			let delayTag = delayTags[0];
 			let delayMsgTime = delayTag.getAttribute("stamp");
-			if(delayMsgTime){
+			if (delayMsgTime) {
 				parseMsgData.delayTimeStamp = delayMsgTime;
 			}
 		}
-	}
-	else{
+	} else {
 		let childrens = msginfo.childNodes;
-		if(childrens && childrens.length > 0){
+		if (childrens && childrens.length > 0) {
 			let child = msginfo.childNodes[0];
-			if(child.nodeType == Strophe.ElementType.TEXT){
-				try{
+			if (child.nodeType == Strophe.ElementType.TEXT) {
+				try {
 					let data = eval("(" + child.nodeValue + ")");
 					parseMsgData.errorMsg = false;
 					parseMsgData.data = [data];
-				}
-				catch(e){
-				}
+				} catch (e) {}
 			}
 		}
 	}
 	return parseMsgData;
 }
 
-function _parseNameFromJidFn(jid, domain){
+function _parseNameFromJidFn(jid, domain) {
 	var tempstr = jid;
 	var findex = tempstr.indexOf("_");
 	domain = domain || "";
-	if(findex !== -1){
+	if (findex !== -1) {
 		tempstr = tempstr.substring(findex + 1);
 	}
 	let atindex = tempstr.indexOf("@" + domain);
-	if(atindex !== -1){
+	if (atindex !== -1) {
 		tempstr = tempstr.substring(0, atindex);
 	}
 	return tempstr;
 }
 
-function _parseFriend(queryTag, conn, from){
+function _parseFriend(queryTag, conn, from) {
 	var rouster = [];
 	var items = queryTag.getElementsByTagName("item");
-	if(items){
-		for(let i = 0; i < items.length; i++){
+	if (items) {
+		for (let i = 0; i < items.length; i++) {
 			let groups = [];
 			let item = items[i];
 			let jid = item.getAttribute("jid");
-			if(!jid){
+			if (!jid) {
 				continue;
 			}
 			let subscription = item.getAttribute("subscription");
@@ -288,28 +279,27 @@ function _parseFriend(queryTag, conn, from){
 				jid: jid
 			};
 			let ask = item.getAttribute("ask");
-			if(ask){
+			if (ask) {
 				friend.ask = ask;
 			}
 			let name = item.getAttribute("name");
-			if(name){
+			if (name) {
 				friend.name = name;
-			}
-			else{
+			} else {
 				friend.name = _parseNameFromJidFn(jid);
 			}
-			Strophe.forEachChild(item, "group", function(group){
+			Strophe.forEachChild(item, "group", function (group) {
 				groups.push(Strophe.getText(group));
 			});
 			friend.groups = groups;
 			rouster.push(friend);
 			// B 同意之后 -> B 订阅 A
-			if(conn && (subscription == "from")){
+			if (conn && (subscription == "from")) {
 				conn.subscribe({
 					toJid: jid
 				});
 			}
-			if(conn && (subscription == "to")){
+			if (conn && (subscription == "to")) {
 				conn.subscribed({
 					toJid: jid
 				});
@@ -319,61 +309,58 @@ function _parseFriend(queryTag, conn, from){
 	return rouster;
 }
 
-function _parseMessageType(msginfo){
+function _parseMessageType(msginfo) {
 	var msgtype = "normal";
 	var receiveinfo = msginfo.getElementsByTagName("received");
-	if(receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === "urn:xmpp:receipts"){
+	if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === "urn:xmpp:receipts") {
 		msgtype = "received";
-	}
-	else{
+	} else {
 		let inviteinfo = msginfo.getElementsByTagName("invite");
-		if(inviteinfo && inviteinfo.length > 0){
+		if (inviteinfo && inviteinfo.length > 0) {
 			msgtype = "invite";
 		}
 	}
 	return msgtype;
 }
 
-function _handleMessageQueue(conn){
-	for(let i in _msgHash){
-		if(Object.hasOwnProperty.call(_msgHash, i)){
+function _handleMessageQueue(conn) {
+	for (let i in _msgHash) {
+		if (Object.hasOwnProperty.call(_msgHash, i)) {
 			_msgHash[i].send(conn);
 		}
 	}
 }
 
-function _loginCallback(status, msg, conn){
+function _loginCallback(status, msg, conn) {
 	var error;
 	var conflict = msg === "conflict";
-	if(status == Strophe.Status.CONNFAIL){
+	if (status == Strophe.Status.CONNFAIL) {
 		// client offline, ping/pong timeout, server quit, server offline
 		error = {
-			type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,		// 客户端网络离线
+			type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR, // 客户端网络离线
 			msg: msg
 		};
 		conflict && (error.conflict = true);
 		conn.onError(error);
-	}
-	else if(status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED){
+	} else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
 		conn.autoReconnectNumTotal = 0;
 		// client should limit the speed of sending ack messages  up to 5/s
-		conn.intervalId = setInterval(function(){
+		conn.intervalId = setInterval(function () {
 			conn.handelSendQueue();
 		}, 200);
-		let handleMessage = function(msginfo){
+		let handleMessage = function (msginfo) {
 			var type = _parseMessageType(msginfo);
-			if(type === "received"){
+			if (type === "received") {
 				conn.handleReceivedMessage(msginfo);
 				return true;
-			}
-			else if(type === "invite"){
+			} else if (type === "invite") {
 				conn.handleInviteMessage(msginfo);
 				return true;
 			}
 			conn.handleMessage(msginfo);
 			return true;
 		};
-		let handlePresence = function(msginfo){
+		let handlePresence = function (msginfo) {
 			conn.handlePresence(msginfo);
 			return true;
 		};
@@ -381,15 +368,15 @@ function _loginCallback(status, msg, conn){
 		// 	conn.handlePing(msginfo);
 		// 	return true;
 		// };
-		let handleIqRoster = function(msginfo){
+		let handleIqRoster = function (msginfo) {
 			conn.handleIqRoster(msginfo);
 			return true;
 		};
-		let handleIqPrivacy = function(msginfo){
+		let handleIqPrivacy = function (msginfo) {
 			conn.handleIqPrivacy(msginfo);
 			return true;
 		};
-		let handleIq = function(msginfo){
+		let handleIq = function (msginfo) {
 			conn.handleIq(msginfo);
 			return true;
 		};
@@ -409,11 +396,11 @@ function _loginCallback(status, msg, conn){
 		let supportSedMessage = [
 			_code.WEBIM_MESSAGE_SED_TEXT
 		];
-		if(_utils.isCanDownLoadFile){
+		if (_utils.isCanDownLoadFile) {
 			supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
 			supportRecMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
 		}
-		if(_utils.isCanUploadFile){
+		if (_utils.isCanUploadFile) {
 			supportSedMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
 			supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
 		}
@@ -426,9 +413,8 @@ function _loginCallback(status, msg, conn){
 			canSend: supportSedMessage,
 			accessToken: conn.context.accessToken
 		});
-	}
-	else if(status == Strophe.Status.DISCONNECTING){
-		if(conn.isOpened()){
+	} else if (status == Strophe.Status.DISCONNECTING) {
+		if (conn.isOpened()) {
 			// if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
 			// 	conn.reconnect();
 			// 	return;
@@ -442,9 +428,8 @@ function _loginCallback(status, msg, conn){
 			conn.onError(error);
 		}
 		conn.context.status = _code.STATUS_CLOSING;
-	}
-	else if(status == Strophe.Status.DISCONNECTED){
-		if(conn.isOpened()){
+	} else if (status == Strophe.Status.DISCONNECTED) {
+		if (conn.isOpened()) {
 			// if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
 			// 	conn.reconnect();
 			// 	return;
@@ -457,16 +442,15 @@ function _loginCallback(status, msg, conn){
 		conn.context.status = _code.STATUS_CLOSED;
 		conn.clear();
 		conn.onClosed();
-	}
-	else if(status == Strophe.Status.AUTHFAIL){
+	} else if (status == Strophe.Status.AUTHFAIL) {
 		error = {
 			type: _code.WEBIM_CONNCTION_AUTH_ERROR
 		};
 		conflict && (error.conflict = true);
 		conn.onError(error);
 		conn.clear();
-	}
-	else if(status == Strophe.Status.ERROR){
+		wx.closeSocket();
+	} else if (status == Strophe.Status.ERROR) {
 		conn.context.status = _code.STATUS_ERROR;
 		error = {
 			type: _code.WEBIM_CONNCTION_SERVER_ERROR
@@ -476,10 +460,10 @@ function _loginCallback(status, msg, conn){
 	}
 }
 
-function _login(options, conn){
+function _login(options, conn) {
 	var stropheConn = null;
 	var accessToken = options.access_token || "";
-	if(accessToken == ""){
+	if (accessToken == "") {
 		conn.onError({
 			type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
 			data: options
@@ -494,24 +478,24 @@ function _login(options, conn){
 		pollingTime: conn.pollingTime
 	});
 	conn.context.stropheConn = stropheConn;
-	if(conn.route){
+	if (conn.route) {
 		stropheConn.connect(conn.context.jid, "$t$" + accessToken, callback, conn.wait, conn.hold, conn.route);
-	}
-	else{
+	} else {
 		stropheConn.connect(conn.context.jid, "$t$" + accessToken, callback, conn.wait, conn.hold);
 	}
-	function callback(status, msg){
+
+	function callback(status, msg) {
 		console.log("connection stat change", status, msg);
 		_loginCallback(status, msg, conn);
 	}
 }
 
-function _getJid(options, conn){
+function _getJid(options, conn) {
 	var jid = options.toJid || "";
-	if(jid === ""){
+	if (jid === "") {
 		let appKey = conn.context.appKey || "";
 		let toJid = appKey + "_" + options.to + "@" + conn.domain;
-		if(options.resource){
+		if (options.resource) {
 			toJid = toJid + "/" + options.resource;
 		}
 		jid = toJid;
@@ -519,15 +503,15 @@ function _getJid(options, conn){
 	return jid;
 }
 
-function _getJidByName(name, conn){
+function _getJidByName(name, conn) {
 	return _getJid({
 		to: name
 	}, conn);
 }
 
-function _validCheck(options, conn){
+function _validCheck(options, conn) {
 	options = options || {};
-	if(options.user == ""){
+	if (options.user == "") {
 		conn.onError({
 			type: _code.WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR
 		});
@@ -537,7 +521,7 @@ function _validCheck(options, conn){
 	let appKey = options.appKey || "";
 	let devInfos = appKey.split("#");
 
-	if(devInfos.length !== 2){
+	if (devInfos.length !== 2) {
 		conn.onError({
 			type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
 		});
@@ -546,13 +530,13 @@ function _validCheck(options, conn){
 	let orgName = devInfos[0];
 	let appName = devInfos[1];
 
-	if(!orgName){
+	if (!orgName) {
 		conn.onError({
 			type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
 		});
 		return false;
 	}
-	if(!appName){
+	if (!appName) {
 		conn.onError({
 			type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
 		});
@@ -561,7 +545,7 @@ function _validCheck(options, conn){
 
 	let jid = appKey + "_" + user.toLowerCase() + "@" + conn.domain;
 	let resource = options.resource || "webim";
-	if(conn.isMultiLoginSessions){
+	if (conn.isMultiLoginSessions) {
 		resource += user + new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000);
 	}
 	conn.context.jid = jid + "/" + resource;
@@ -574,8 +558,8 @@ function _validCheck(options, conn){
 	return true;
 }
 
-function _getXmppUrl(baseUrl, https){
-	if(/^(ws|http)s?:\/\/?/.test(baseUrl)){
+function _getXmppUrl(baseUrl, https) {
+	if (/^(ws|http)s?:\/\/?/.test(baseUrl)) {
 		return baseUrl;
 	}
 	let url = {
@@ -583,14 +567,12 @@ function _getXmppUrl(baseUrl, https){
 		base: "://" + baseUrl,
 		suffix: "/http-bind/"
 	};
-	if(https && _utils.isSupportWss){
+	if (https && _utils.isSupportWss) {
 		url.prefix = "wss";
 		url.suffix = "/ws/";
-	}
-	else if(https){
+	} else if (https) {
 		url.prefix = "https";
-	}
-	else if(window.WebSocket){
+	} else if (window.WebSocket) {
 		url.prefix = "ws";
 		url.suffix = "/ws/";
 	}
@@ -602,8 +584,8 @@ function _getXmppUrl(baseUrl, https){
 
 
 // CLASS
-function connection(options){
-	if(!(this instanceof connection)){
+function connection(options) {
+	if (!(this instanceof connection)) {
 		return new connection(options);
 	}
 	options = options || {};
@@ -624,23 +606,25 @@ function connection(options){
 	this.autoReconnectNumMax = options.autoReconnectNumMax || 0;
 	this.autoReconnectNumTotal = 0;
 	this.autoReconnectInterval = options.autoReconnectInterval || 0;
-	this.context = { status: _code.STATUS_INIT };
+	this.context = {
+		status: _code.STATUS_INIT
+	};
 	this.apiUrl = options.apiUrl || "";
 	// todo 接收的事件，放到数组里的时候，加上g.isInBackground字段。每帧执行一个事件的时候，如果g.isInBackground=true,就pass
-	this.sendQueue = new Queue();  // 接收到的事件队列
+	this.sendQueue = new Queue(); // 接收到的事件队列
 	this.intervalId = null;
 	this.orgName = "";
 	this.appName = "";
 	this.token = "";
 }
 
-connection.prototype.handelSendQueue = function(){
+connection.prototype.handelSendQueue = function () {
 	var options = this.sendQueue.pop();
-	if(options !== null){
+	if (options !== null) {
 		this.sendReceiptsMessage(options);
 	}
 };
-connection.prototype.listen = function(options){
+connection.prototype.listen = function (options) {
 	options.url && (this.url = _getXmppUrl(options.url, this.https));
 	this.onOpened = options.onOpened || _utils.emptyfn;
 	this.onClosed = options.onClosed || _utils.emptyfn;
@@ -670,7 +654,7 @@ connection.prototype.listen = function(options){
 	_listenNetwork(this.onOnline, this.onOffline);
 };
 connection.prototype.heartBeatID = 0;
-connection.prototype.heartBeat = function(){
+connection.prototype.heartBeat = function () {
 	var me = this;
 	// // IE8: strophe auto switch from ws to BOSH, need heartbeat
 	// var isNeed = !/^ws|wss/.test(me.url);
@@ -679,17 +663,17 @@ connection.prototype.heartBeat = function(){
 	// 	return;
 	// }
 	this.stopHeartBeat();
-	this.heartBeatID = setInterval(function(){
+	this.heartBeatID = setInterval(function () {
 		me.ping({
 			toJid: me.domain,
 			type: "normal"
 		});
 	}, this.heartBeatWait);
 };
-connection.prototype.stopHeartBeat = function(){
+connection.prototype.stopHeartBeat = function () {
 	clearInterval(this.heartBeatID);
 };
-connection.prototype.sendReceiptsMessage = function(options){
+connection.prototype.sendReceiptsMessage = function (options) {
 	var dom = StropheAll.$msg({
 		from: this.context.jid || "",
 		to: this.domain,
@@ -700,55 +684,56 @@ connection.prototype.sendReceiptsMessage = function(options){
 	});
 	this.sendCommand(dom.tree());
 };
-connection.prototype.cacheReceiptsMessage = function(options){
+connection.prototype.cacheReceiptsMessage = function (options) {
 	this.sendQueue.push(options);
 };
-connection.prototype.open = function(options){
+connection.prototype.open = function (options) {
 	let me = this;
 	console.log("open", this.isOpening());
 	// 防止重复初始化
-	if(this.isOpening() || this.isOpened()){
+	if (this.isOpening() || this.isOpened()) {
 		console.log("can't open [1]");
 		return;
 	}
-	if(!_validCheck(options, this)){
+	if (!_validCheck(options, this)) {
 		console.log("can't open [2]");
 		return;
 	}
-	// if(options.accessToken){
-	// 	options.access_token = options.accessToken;
-	// 	this.token = options.access_token;
-	// 	_login(options, me);
-	// }
-	// else{
-	let apiUrl = options.apiUrl;
-	let userId = options.user;
-	let pwd = options.pwd || "";
-	let appkey = options.appKey;
-	let str = appkey.split("#");
-	let orgName = str[0];
-	let appName = str[1];
-	this.orgName = orgName;
-	this.appName = appName;
-	this.context.status = _code.STATUS_DOLOGIN_USERGRID;
-	let loginJson = {
-		grant_type: "password",
-		username: userId,
-		password: pwd,
-		timestamp: +new Date()
-	};
-	let loginfo = _utils.stringify(loginJson);
-	_utils.ajax({
-		url: apiUrl + "/" + orgName + "/" + appName + "/token",
-		data: loginfo,
-		success: suc || _utils.emptyfn,
-		error: error || _utils.emptyfn
-	});
-	// }
-	function suc(data, xhr, myName){
+	if (options.accessToken) {
+		options.access_token = options.accessToken;
+		this.token = options.access_token;
+		_login(options, me);
+	} else {
+
+		let apiUrl = options.apiUrl;
+		let userId = options.user;
+		let pwd = options.pwd || "";
+		let appkey = options.appKey;
+		let str = appkey.split("#");
+		let orgName = str[0];
+		let appName = str[1];
+		this.orgName = orgName;
+		this.appName = appName;
+		this.context.status = _code.STATUS_DOLOGIN_USERGRID;
+		let loginJson = {
+			grant_type: "password",
+			username: userId,
+			password: pwd,
+			timestamp: +new Date()
+		};
+		let loginfo = _utils.stringify(loginJson);
+		_utils.ajax({
+			url: apiUrl + "/" + orgName + "/" + appName + "/token",
+			data: loginfo,
+			success: suc || _utils.emptyfn,
+			error: error || _utils.emptyfn
+		});
+	}
+
+	function suc(data, xhr, myName) {
 		me.context.status = _code.STATUS_DOLOGIN_IM;
 		me.context.restTokenData = data;
-		if(data.statusCode != "404" && data.statusCode != "400"){
+		if (data.statusCode != "404" && data.statusCode != "400") {
 			// data:
 			// 	access_token,
 			// 	expires_in,
@@ -761,21 +746,20 @@ connection.prototype.open = function(options){
 			// 		username,
 			// 		uuid,
 			_login(data.data, me);
-		}
-		else{
+		} else {
 			error({});
 		}
 	}
-	function error(res, xhr, msg){
+
+	function error(res, xhr, msg) {
 		me.clear();
-		if(res.error && res.error_description){
+		if (res.error && res.error_description) {
 			me.onError({
 				type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
 				data: res,
 				xhr: xhr
 			});
-		}
-		else{
+		} else {
 			me.onError({
 				type: _code.WEBIM_CONNCTION_OPEN_ERROR,
 				data: res,
@@ -788,29 +772,29 @@ connection.prototype.open = function(options){
 	// };
 };
 // attach to xmpp server for BOSH
-connection.prototype.attach = function(options){
+connection.prototype.attach = function (options) {
 	var me = this;
 	var pass = _validCheck(options, this);
-	if(!pass){
+	if (!pass) {
 		return;
 	}
 	options = options || {};
 	let accessToken = options.accessToken || "";
-	if(accessToken == ""){
+	if (accessToken == "") {
 		this.onError({
 			type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
 		});
 		return;
 	}
 	let sid = options.sid || "";
-	if(sid === ""){
+	if (sid === "") {
 		this.onError({
 			type: _code.WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR
 		});
 		return;
 	}
 	let rid = options.rid || "";
-	if(rid === ""){
+	if (rid === "") {
 		this.onError({
 			type: _code.WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR
 		});
@@ -825,7 +809,7 @@ connection.prototype.attach = function(options){
 	this.context.accessToken = accessToken;
 	this.context.stropheConn = stropheConn;
 	this.context.status = _code.STATUS_DOLOGIN_IM;
-	let callback = function(status, msg){
+	let callback = function (status, msg) {
 		_loginCallback(status, msg, me);
 	};
 	let jid = this.context.jid;
@@ -834,40 +818,42 @@ connection.prototype.attach = function(options){
 	let wind = this.wind || 5;
 	stropheConn.attach(jid, sid, rid, callback, wait, hold, wind);
 };
-connection.prototype.close = function(reason){
+connection.prototype.close = function (reason) {
 	// this.stopHeartBeat();
 	let status = this.context.status;
-	if(status == _code.STATUS_INIT){
+	if (status == _code.STATUS_INIT) {
 		return;
 	}
-	if(this.isClosed() || this.isClosing()){
+	if (this.isClosed() || this.isClosing()) {
 		return;
 	}
 	this.context.status = _code.STATUS_CLOSING;
 	this.context.stropheConn.disconnect(reason);
 };
-connection.prototype.addHandler = function(handler, ns, name, type, id, from, options){
+connection.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
 	this.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
 };
-connection.prototype.notifyVersion = function(suc, fail){
+connection.prototype.notifyVersion = function (suc, fail) {
 	var dom = StropheAll.$iq({
-		from: this.context.jid || "",
-		to: this.domain,
-		type: "result"
-	})
-	.c("query", { xmlns: "jabber:iq:version" })
-	.c("name")
-	.t("easemob")
-	.up()
-	.c("version")
-	.t(_version)
-	.up()
-	.c("os")
-	.t("webim");
+			from: this.context.jid || "",
+			to: this.domain,
+			type: "result"
+		})
+		.c("query", {
+			xmlns: "jabber:iq:version"
+		})
+		.c("name")
+		.t("easemob")
+		.up()
+		.c("version")
+		.t(_version)
+		.up()
+		.c("os")
+		.t("webim");
 
 	suc = suc || _utils.emptyfn;
 	let error = fail || this.onError;
-	let failFn = function(ele){
+	let failFn = function (ele) {
 		error({
 			type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR,
 			data: ele
@@ -876,8 +862,8 @@ connection.prototype.notifyVersion = function(suc, fail){
 	this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
 };
 // handle all types of presence message
-connection.prototype.handlePresence = function(msginfo){
-	if(this.isClosed()){
+connection.prototype.handlePresence = function (msginfo) {
+	if (this.isClosed()) {
 		return;
 	}
 	let from = msginfo.getAttribute("from") || "";
@@ -900,45 +886,45 @@ connection.prototype.handlePresence = function(msginfo){
 	};
 
 	let showTags = msginfo.getElementsByTagName("show");
-	if(showTags && showTags.length > 0){
+	if (showTags && showTags.length > 0) {
 		let showTag = showTags[0];
 		info.show = Strophe.getText(showTag);
 	}
 	let statusTags = msginfo.getElementsByTagName("status");
-	if(statusTags && statusTags.length > 0){
+	if (statusTags && statusTags.length > 0) {
 		let statusTag = statusTags[0];
 		info.status = Strophe.getText(statusTag);
 		info.code = statusTag.getAttribute("code");
 	}
 	let priorityTags = msginfo.getElementsByTagName("priority");
-	if(priorityTags && priorityTags.length > 0){
+	if (priorityTags && priorityTags.length > 0) {
 		let priorityTag = priorityTags[0];
 		info.priority = Strophe.getText(priorityTag);
 	}
 	let error = msginfo.getElementsByTagName("error");
-	if(error && error.length > 0){
+	if (error && error.length > 0) {
 		error = error[0];
 		info.error = {
 			code: error.getAttribute("code")
 		};
 	}
 	let destroy = msginfo.getElementsByTagName("destroy");
-	if(destroy && destroy.length > 0){
+	if (destroy && destroy.length > 0) {
 		destroy = destroy[0];
 		info.destroy = true;
 		let reason = destroy.getElementsByTagName("reason");
-		if(reason && reason.length > 0){
+		if (reason && reason.length > 0) {
 			info.reason = Strophe.getText(reason[0]);
 		}
 	}
 	let members = msginfo.getElementsByTagName("item");
-	if(members && members.length > 0){
+	if (members && members.length > 0) {
 		let member = members[0];
 		let role = member.getAttribute("role");
 		let jid = member.getAttribute("jid");
 		let affiliation = member.getAttribute("affiliation");
 		// dismissed by group
-		if(role == "none" && jid){
+		if (role == "none" && jid) {
 			let kickedMember = _parseNameFromJidFn(jid);
 			let actor = member.getElementsByTagName("actor")[0];
 			let actorNick = actor.getAttribute("nick");
@@ -946,8 +932,8 @@ connection.prototype.handlePresence = function(msginfo){
 			info.kicked = kickedMember;
 		}
 		// Service Acknowledges Room Creation `createGroupACK`
-		if(role == "moderator" && info.code == "201"){
-			if(affiliation === "owner"){
+		if (role == "moderator" && info.code == "201") {
+			if (affiliation === "owner") {
 				info.type = "createGroupACK";
 				isCreate = true;
 			}
@@ -956,7 +942,7 @@ connection.prototype.handlePresence = function(msginfo){
 		}
 	}
 	let x = msginfo.getElementsByTagName("x");
-	if(x && x.length > 0){
+	if (x && x.length > 0) {
 		// 加群申请
 		let apply = x[0].getElementsByTagName("apply");
 		// 加群成功
@@ -973,7 +959,7 @@ connection.prototype.handlePresence = function(msginfo){
 		let addMute = x[0].getElementsByTagName("add_mute");
 		// 取消禁言
 		let removeMute = x[0].getElementsByTagName("remove_mute");
-		if(apply && apply.length > 0){
+		if (apply && apply.length > 0) {
 			isApply = true;
 			info.toNick = apply[0].getAttribute("toNick");
 			info.type = "joinGroupNotifications";
@@ -981,66 +967,58 @@ connection.prototype.handlePresence = function(msginfo){
 			let gid = groupJid.split("@")[0].split("_");
 			gid = gid[gid.length - 1];
 			info.gid = gid;
-		}
-		else if(accept && accept.length > 0){
+		} else if (accept && accept.length > 0) {
 			info.type = "joinPublicGroupSuccess";
-		}
-		else if(item && item.length > 0){
+		} else if (item && item.length > 0) {
 			let affiliation = item[0].getAttribute("affiliation");
 			let role = item[0].getAttribute("role");
-			if(affiliation == "member" || role == "participant"){
+			if (affiliation == "member" || role == "participant") {
 				isMemberJoin = true;
 				info.mid = info.fromJid.split("/");
 				info.mid = info.mid[info.mid.length - 1];
 				info.type = "memberJoinPublicGroupSuccess";
 				let roomtype = msginfo.getElementsByTagName("roomtype");
-				if(roomtype && roomtype.length > 0){
+				if (roomtype && roomtype.length > 0) {
 					let type = roomtype[0].getAttribute("type");
-					if(type == "chatroom"){
+					if (type == "chatroom") {
 						info.type = "memberJoinChatRoomSuccess";
 					}
 				}
-			}
-			else if(affiliation == "none" || role == "none"){
+			} else if (affiliation == "none" || role == "none") {
 				let roomtype = msginfo.getElementsByTagName("roomtype");
-				if(roomtype && roomtype.length > 0){
+				if (roomtype && roomtype.length > 0) {
 					let type = roomtype[0].getAttribute("type");
-					if(type == "chatroom"){
+					if (type == "chatroom") {
 						info.type = "memberLeaveChatRoomSuccess";
 					}
 				}
 			}
-		}
-		else if(decline && decline.length){
+		} else if (decline && decline.length) {
 			isDecline = true;
 			let gid = decline[0].getAttribute("fromNick");
 			let owner = _parseNameFromJidFn(decline[0].getAttribute("from"));
 			info.type = "joinPublicGroupDeclined";
 			info.owner = owner;
 			info.gid = gid;
-		}
-		else if(addAdmin && addAdmin.length > 0){
+		} else if (addAdmin && addAdmin.length > 0) {
 			let gid = _parseNameFromJidFn(addAdmin[0].getAttribute("mucjid"));
 			let owner = _parseNameFromJidFn(addAdmin[0].getAttribute("from"));
 			info.owner = owner;
 			info.gid = gid;
 			info.type = "addAdmin";
-		}
-		else if(removeAdmin && removeAdmin.length > 0){
+		} else if (removeAdmin && removeAdmin.length > 0) {
 			let gid = _parseNameFromJidFn(removeAdmin[0].getAttribute("mucjid"));
 			let owner = _parseNameFromJidFn(removeAdmin[0].getAttribute("from"));
 			info.owner = owner;
 			info.gid = gid;
 			info.type = "removeAdmin";
-		}
-		else if(addMute && addMute.length > 0){
+		} else if (addMute && addMute.length > 0) {
 			let gid = _parseNameFromJidFn(addMute[0].getAttribute("mucjid"));
 			let owner = _parseNameFromJidFn(addMute[0].getAttribute("from"));
 			info.owner = owner;
 			info.gid = gid;
 			info.type = "addMute";
-		}
-		else if(removeMute && removeMute.length > 0){
+		} else if (removeMute && removeMute.length > 0) {
 			let gid = _parseNameFromJidFn(removeMute[0].getAttribute("mucjid"));
 			let owner = _parseNameFromJidFn(removeMute[0].getAttribute("from"));
 			info.owner = owner;
@@ -1048,59 +1026,55 @@ connection.prototype.handlePresence = function(msginfo){
 			info.type = "removeMute";
 		}
 	}
-	if(info.chatroom){
+	if (info.chatroom) {
 		info.presence_type = presence_type;
 		info.original_type = info.type;
 		let reflectUser = from.slice(from.lastIndexOf("/") + 1);
-		if(reflectUser === this.context.userId){
-			if(info.type === "" && !info.code){
+		if (reflectUser === this.context.userId) {
+			if (info.type === "" && !info.code) {
 				info.type = "joinChatRoomSuccess";
-			}
-			else if(presence_type === "unavailable" || info.type === "unavailable"){
+			} else if (presence_type === "unavailable" || info.type === "unavailable") {
 				// logout successfully.
-				if(!info.status){
+				if (!info.status) {
 					info.type = "leaveChatRoom";
 				}
 				// logout or dismissied by admin
-				else if(info.code == 110){
+				else if (info.code == 110) {
 					info.type = "leaveChatRoom";
 				}
 				// The chat room is full
-				else if(info.error && info.error.code == 406){
+				else if (info.error && info.error.code == 406) {
 					info.type = "reachChatRoomCapacity";
 				}
 			}
 		}
-	}
-	else{
+	} else {
 		info.presence_type = presence_type;
 		info.original_type = type;
-		if(/subscribe/.test(info.type)){
+		if (/subscribe/.test(info.type)) {
 			// subscribe | subscribed | unsubscribe | unsubscribed
-		}
-		else if(type == ""
-			&& !info.status
-			&& !info.error
-			&& !isCreate
-			&& !isApply
-			&& !isMemberJoin
-			&& !isDecline
-		){
+		} else if (type == "" &&
+			!info.status &&
+			!info.error &&
+			!isCreate &&
+			!isApply &&
+			!isMemberJoin &&
+			!isDecline
+		) {
 			// info.type = 'joinPublicGroupSuccess';
 		}
 		// There is no roomtype when a chat room is deleted.
-		else if(presence_type === "unavailable" || type === "unavailable"){
+		else if (presence_type === "unavailable" || type === "unavailable") {
 			// Group or Chat room Deleted.
-			if(info.destroy){
+			if (info.destroy) {
 				info.type = "deleteGroupChat";
 			}
 			// Dismissed by group.
-			else if(info.code == 307 || info.code == 321){
+			else if (info.code == 307 || info.code == 321) {
 				let nick = msginfo.getAttribute("nick");
-				if(!nick){
+				if (!nick) {
 					info.type = "leaveGroup";
-				}
-				else{
+				} else {
 					info.type = "removedFromGroup";
 				}
 			}
@@ -1122,34 +1096,38 @@ connection.prototype.handlePresence = function(msginfo){
 // 	this.sendCommand(dom.tree());
 // };
 
-connection.prototype.handleIq = function(iq){
+connection.prototype.handleIq = function (iq) {
 	return true;
 };
-connection.prototype.handleIqPrivacy = function(msginfo){
+connection.prototype.handleIqPrivacy = function (msginfo) {
 	var list = msginfo.getElementsByTagName("list");
-	if(list.length == 0){
+	if (list.length == 0) {
 		return;
 	}
 	this.getBlacklist();
 };
-connection.prototype.handleIqRoster = function(e){
+connection.prototype.handleIqRoster = function (e) {
 	var id = e.getAttribute("id");
 	var from = e.getAttribute("from") || "";
 	// var name = _parseNameFromJidFn(from);
 	var curJid = this.context.jid;
 	// var curUser = this.context.userId;
-	var iqresult = StropheAll.$iq({ type: "result", id: id, from: curJid });
+	var iqresult = StropheAll.$iq({
+		type: "result",
+		id: id,
+		from: curJid
+	});
 	this.sendCommand(iqresult.tree());
 	let msgBodies = e.getElementsByTagName("query");
-	if(msgBodies && msgBodies.length > 0){
+	if (msgBodies && msgBodies.length > 0) {
 		let queryTag = msgBodies[0];
 		let rouster = _parseFriend(queryTag, this, from);
 		this.onRoster(rouster);
 	}
 	return true;
 };
-connection.prototype.handleMessage = function(msginfo){
-	if(this.isClosed()){
+connection.prototype.handleMessage = function (msginfo) {
+	if (this.isClosed()) {
 		return;
 	}
 	let id = msginfo.getAttribute("id") || "";
@@ -1160,7 +1138,7 @@ connection.prototype.handleMessage = function(msginfo){
 	// console.log('handlePresence', msginfo)
 	let parseMsgData = _parseResponseMessage(msginfo);
 	// console.log('parseMsgData', parseMsgData)
-	if(parseMsgData.errorMsg){
+	if (parseMsgData.errorMsg) {
 		this.handlePresence(msginfo);
 		return;
 	}
@@ -1169,7 +1147,7 @@ connection.prototype.handleMessage = function(msginfo){
 	let errorCode = "";
 	let errorText = "";
 	let errorBool = false;
-	if(error.length > 0){
+	if (error.length > 0) {
 		errorBool = true;
 		errorCode = error[0].getAttribute("code");
 		let textDOM = error[0].getElementsByTagName("text");
@@ -1177,12 +1155,12 @@ connection.prototype.handleMessage = function(msginfo){
 		// log("handle error", errorCode, errorText);
 	}
 	let msgDatas = parseMsgData.data;
-	for(let i in msgDatas){
-		if(!Object.hasOwnProperty.call(msgDatas, i)){
+	for (let i in msgDatas) {
+		if (!Object.hasOwnProperty.call(msgDatas, i)) {
 			continue;
 		}
 		let msg = msgDatas[i];
-		if(!msg.from || !msg.to){
+		if (!msg.from || !msg.to) {
 			continue;
 		}
 		let from = (msg.from + "").toLowerCase();
@@ -1190,187 +1168,184 @@ connection.prototype.handleMessage = function(msginfo){
 		let extmsg = msg.ext || {};
 		let chattype = "";
 		let typeEl = msginfo.getElementsByTagName("roomtype");
-		if(typeEl.length){
+		if (typeEl.length) {
 			chattype = typeEl[0].getAttribute("type") || "chat";
-		}
-		else{
+		} else {
 			chattype = msginfo.getAttribute("type") || "chat";
 		}
 		let msgBodies = msg.bodies;
-		if(!msgBodies || msgBodies.length == 0){
+		if (!msgBodies || msgBodies.length == 0) {
 			continue;
 		}
 		let msgBody = msg.bodies[0];
 		let type = msgBody.type;
-		try{
-			switch(type){
-			case "txt":
-				let receiveMsg = msgBody.msg;
-				let emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
-				if(emojibody.isemoji){
+		try {
+			switch (type) {
+				case "txt":
+					let receiveMsg = msgBody.msg;
+					let emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
+					if (emojibody.isemoji) {
+						let msg = {
+							id: id,
+							type: chattype,
+							from: from,
+							to: too,
+							delay: parseMsgData.delayTimeStamp,
+							data: emojibody.body,
+							ext: extmsg
+						};
+						!msg.delay && delete msg.delay;
+						msg.error = errorBool;
+						msg.errorText = errorText;
+						msg.errorCode = errorCode;
+						this.onEmojiMessage(msg);
+					} else {
+						let msg = {
+							id: id,
+							type: chattype,
+							from: from,
+							to: too,
+							delay: parseMsgData.delayTimeStamp,
+							data: receiveMsg,
+							ext: extmsg
+						};
+						!msg.delay && delete msg.delay;
+						msg.error = errorBool;
+						msg.errorText = errorText;
+						msg.errorCode = errorCode;
+						this.onTextMessage(msg);
+					}
+					break;
+				case "img":
+					let rwidth = 0;
+					let rheight = 0;
+					if (msgBody.size) {
+						rwidth = msgBody.size.width;
+						rheight = msgBody.size.height;
+					}
 					let msg = {
 						id: id,
 						type: chattype,
 						from: from,
 						to: too,
-						delay: parseMsgData.delayTimeStamp,
-						data: emojibody.body,
-						ext: extmsg
+						url: msgBody.url,
+						secret: msgBody.secret,
+						filename: msgBody.filename,
+						thumb: msgBody.thumb,
+						thumb_secret: msgBody.thumb_secret,
+						file_length: msgBody.file_length || "",
+						width: rwidth,
+						height: rheight,
+						filetype: msgBody.filetype || "",
+						accessToken: this.context.accessToken || "",
+						ext: extmsg,
+						delay: parseMsgData.delayTimeStamp
 					};
 					!msg.delay && delete msg.delay;
 					msg.error = errorBool;
 					msg.errorText = errorText;
 					msg.errorCode = errorCode;
-					this.onEmojiMessage(msg);
-				}
-				else{
-					let msg = {
+					this.onPictureMessage(msg);
+					break;
+				case "audio":
+					msg = {
 						id: id,
 						type: chattype,
 						from: from,
 						to: too,
+						url: msgBody.url,
+						secret: msgBody.secret,
+						filename: msgBody.filename,
+						length: msgBody.length || "",
+						file_length: msgBody.file_length || "",
+						filetype: msgBody.filetype || "",
+						accessToken: this.context.accessToken || "",
+						ext: extmsg,
 						delay: parseMsgData.delayTimeStamp,
-						data: receiveMsg,
-						ext: extmsg
 					};
 					!msg.delay && delete msg.delay;
 					msg.error = errorBool;
 					msg.errorText = errorText;
 					msg.errorCode = errorCode;
-					this.onTextMessage(msg);
-				}
-				break;
-			case "img":
-				let rwidth = 0;
-				let rheight = 0;
-				if(msgBody.size){
-					rwidth = msgBody.size.width;
-					rheight = msgBody.size.height;
-				}
-				let msg = {
-					id: id,
-					type: chattype,
-					from: from,
-					to: too,
-					url: msgBody.url,
-					secret: msgBody.secret,
-					filename: msgBody.filename,
-					thumb: msgBody.thumb,
-					thumb_secret: msgBody.thumb_secret,
-					file_length: msgBody.file_length || "",
-					width: rwidth,
-					height: rheight,
-					filetype: msgBody.filetype || "",
-					accessToken: this.context.accessToken || "",
-					ext: extmsg,
-					delay: parseMsgData.delayTimeStamp
-				};
-				!msg.delay && delete msg.delay;
-				msg.error = errorBool;
-				msg.errorText = errorText;
-				msg.errorCode = errorCode;
-				this.onPictureMessage(msg);
-				break;
-			case "audio":
-				msg = {
-					id: id,
-					type: chattype,
-					from: from,
-					to: too,
-					url: msgBody.url,
-					secret: msgBody.secret,
-					filename: msgBody.filename,
-					length: msgBody.length || "",
-					file_length: msgBody.file_length || "",
-					filetype: msgBody.filetype || "",
-					accessToken: this.context.accessToken || "",
-					ext: extmsg,
-					delay: parseMsgData.delayTimeStamp,
-				};
-				!msg.delay && delete msg.delay;
-				msg.error = errorBool;
-				msg.errorText = errorText;
-				msg.errorCode = errorCode;
-				this.onAudioMessage(msg);
-				break;
-			case "file":
-				msg = {
-					id: id,
-					type: chattype,
-					from: from,
-					to: too,
-					url: msgBody.url,
-					secret: msgBody.secret,
-					filename: msgBody.filename,
-					file_length: msgBody.file_length,
-					accessToken: this.context.accessToken || "",
-					ext: extmsg,
-					delay: parseMsgData.delayTimeStamp,
-				};
-				!msg.delay && delete msg.delay;
-				msg.error = errorBool;
-				msg.errorText = errorText;
-				msg.errorCode = errorCode;
-				this.onFileMessage(msg);
-				break;
-			case "loc":
-				msg = {
-					id: id,
-					type: chattype,
-					from: from,
-					to: too,
-					addr: msgBody.addr,
-					lat: msgBody.lat,
-					lng: msgBody.lng,
-					ext: extmsg,
-					delay: parseMsgData.delayTimeStamp,
-				};
-				!msg.delay && delete msg.delay;
-				msg.error = errorBool;
-				msg.errorText = errorText;
-				msg.errorCode = errorCode;
-				this.onLocationMessage(msg);
-				break;
-			case "video":
-				msg = {
-					id: id,
-					type: chattype,
-					from: from,
-					to: too,
-					url: msgBody.url,
-					secret: msgBody.secret,
-					filename: msgBody.filename,
-					file_length: msgBody.file_length,
-					accessToken: this.context.accessToken || "",
-					ext: extmsg,
-					delay: parseMsgData.delayTimeStamp,
-				};
-				!msg.delay && delete msg.delay;
-				msg.error = errorBool;
-				msg.errorText = errorText;
-				msg.errorCode = errorCode;
-				this.onVideoMessage(msg);
-				break;
-			case "cmd":
-				msg = {
-					id: id,
-					from: from,
-					to: too,
-					action: msgBody.action,
-					ext: extmsg,
-					delay: parseMsgData.delayTimeStamp,
-				};
-				!msg.delay && delete msg.delay;
-				msg.error = errorBool;
-				msg.errorText = errorText;
-				msg.errorCode = errorCode;
-				this.onCmdMessage(msg);
-				break;
-			default:
-				break;
+					this.onAudioMessage(msg);
+					break;
+				case "file":
+					msg = {
+						id: id,
+						type: chattype,
+						from: from,
+						to: too,
+						url: msgBody.url,
+						secret: msgBody.secret,
+						filename: msgBody.filename,
+						file_length: msgBody.file_length,
+						accessToken: this.context.accessToken || "",
+						ext: extmsg,
+						delay: parseMsgData.delayTimeStamp,
+					};
+					!msg.delay && delete msg.delay;
+					msg.error = errorBool;
+					msg.errorText = errorText;
+					msg.errorCode = errorCode;
+					this.onFileMessage(msg);
+					break;
+				case "loc":
+					msg = {
+						id: id,
+						type: chattype,
+						from: from,
+						to: too,
+						addr: msgBody.addr,
+						lat: msgBody.lat,
+						lng: msgBody.lng,
+						ext: extmsg,
+						delay: parseMsgData.delayTimeStamp,
+					};
+					!msg.delay && delete msg.delay;
+					msg.error = errorBool;
+					msg.errorText = errorText;
+					msg.errorCode = errorCode;
+					this.onLocationMessage(msg);
+					break;
+				case "video":
+					msg = {
+						id: id,
+						type: chattype,
+						from: from,
+						to: too,
+						url: msgBody.url,
+						secret: msgBody.secret,
+						filename: msgBody.filename,
+						file_length: msgBody.file_length,
+						accessToken: this.context.accessToken || "",
+						ext: extmsg,
+						delay: parseMsgData.delayTimeStamp,
+					};
+					!msg.delay && delete msg.delay;
+					msg.error = errorBool;
+					msg.errorText = errorText;
+					msg.errorCode = errorCode;
+					this.onVideoMessage(msg);
+					break;
+				case "cmd":
+					msg = {
+						id: id,
+						from: from,
+						to: too,
+						action: msgBody.action,
+						ext: extmsg,
+						delay: parseMsgData.delayTimeStamp,
+					};
+					!msg.delay && delete msg.delay;
+					msg.error = errorBool;
+					msg.errorText = errorText;
+					msg.errorCode = errorCode;
+					this.onCmdMessage(msg);
+					break;
+				default:
+					break;
 			}
-		}
-		catch(e){
+		} catch (e) {
 			this.onError({
 				type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
 				data: e
@@ -1378,11 +1353,10 @@ connection.prototype.handleMessage = function(msginfo){
 		}
 	}
 };
-connection.prototype.handleReceivedMessage = function(message){
-	try{
+connection.prototype.handleReceivedMessage = function (message) {
+	try {
 		this.onReceivedMessage(message);
-	}
-	catch(e){
+	} catch (e) {
 		this.onError({
 			type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
 			data: e
@@ -1391,20 +1365,18 @@ connection.prototype.handleReceivedMessage = function(message){
 	let rcv = message.getElementsByTagName("received");
 	let id;
 	let mid;
-	if(rcv.length > 0){
-		if(rcv[0].childNodes && rcv[0].childNodes.length > 0){
+	if (rcv.length > 0) {
+		if (rcv[0].childNodes && rcv[0].childNodes.length > 0) {
 			id = rcv[0].childNodes[0].nodeValue;
-		}
-		else{
+		} else {
 			id = rcv[0].innerHTML || rcv[0].innerText;
 		}
 		mid = rcv[0].getAttribute("mid");
 	}
-	if(_msgHash[id]){
-		try{
+	if (_msgHash[id]) {
+		try {
 			_msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id, mid);
-		}
-		catch(e){
+		} catch (e) {
 			this.onError({
 				type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
 				data: e
@@ -1413,7 +1385,7 @@ connection.prototype.handleReceivedMessage = function(message){
 		delete _msgHash[id];
 	}
 };
-connection.prototype.handleInviteMessage = function(message){
+connection.prototype.handleInviteMessage = function (message) {
 	var form = null;
 	var invitemsg = message.getElementsByTagName("invite");
 	var reasonDom = message.getElementsByTagName("reason")[0];
@@ -1422,15 +1394,15 @@ connection.prototype.handleInviteMessage = function(message){
 	this.sendReceiptsMessage({
 		id: id
 	});
-	if(invitemsg && invitemsg.length > 0){
+	if (invitemsg && invitemsg.length > 0) {
 		let fromJid = invitemsg[0].getAttribute("from");
 		form = _parseNameFromJidFn(fromJid);
 	}
 	let xmsg = message.getElementsByTagName("x");
 	let roomid = null;
-	if(xmsg && xmsg.length > 0){
-		for(let i = 0; i < xmsg.length; i++){
-			if(xmsg[i].namespaceURI === "jabber:x:conference"){
+	if (xmsg && xmsg.length > 0) {
+		for (let i = 0; i < xmsg.length; i++) {
+			if (xmsg[i].namespaceURI === "jabber:x:conference") {
 				let roomjid = xmsg[i].getAttribute("jid");
 				roomid = _parseNameFromJidFn(roomjid);
 			}
@@ -1443,28 +1415,27 @@ connection.prototype.handleInviteMessage = function(message){
 		reason: reasonMsg
 	});
 };
-connection.prototype.sendCommand = function(dom, id){
-	if(this.isOpened()){
+connection.prototype.sendCommand = function (dom, id) {
+	if (this.isOpened()) {
 		this.context.stropheConn.send(dom);
-	}
-	else{
+	} else {
 		this.onError({
 			type: _code.WEBIM_CONNCTION_DISCONNECTED
 		});
 	}
 };
-connection.prototype.getUniqueId = function(prefix){
+connection.prototype.getUniqueId = function (prefix) {
 	var cdate = new Date();
 	var offdate = new Date(2010, 1, 1);
 	var offset = cdate.getTime() - offdate.getTime();
 	var hexd = parseInt(offset).toString(16);
-	if(typeof prefix === "string" || typeof prefix === "number"){
+	if (typeof prefix === "string" || typeof prefix === "number") {
 		return prefix + "_" + hexd;
 	}
 	return "WEBIM_" + hexd;
 };
-connection.prototype.send = function(message){
-	if(WebIM.config.isWindowSDK){
+connection.prototype.send = function (message) {
+	if (WebIM.config.isWindowSDK) {
 		WebIM.doQuery(
 			JSON.stringify({
 				type: "sendMessage",
@@ -1473,43 +1444,48 @@ connection.prototype.send = function(message){
 				msg: encodeURI(message.msg),
 				chatType: message.chatType,
 			}),
-			function(response){
+			function (response) {
 
 			},
-			function(code, msg){
+			function (code, msg) {
 
 			}
 		);
-	}
-	else if(Object.prototype.toString.call(message) === "[object Object]"){
+	} else if (Object.prototype.toString.call(message) === "[object Object]") {
 		let appKey = this.context.appKey || "";
 		let toJid = appKey + "_" + message.to + "@" + this.domain;
-		if(message.group){
+		if (message.group) {
 			toJid = appKey + "_" + message.to + "@conference." + this.domain;
 		}
-		if(message.resource){
+		if (message.resource) {
 			toJid = toJid + "/" + message.resource;
 		}
 		message.toJid = toJid;
 		message.id = message.id || this.getUniqueId();
 		_msgHash[message.id] = new _message(message);
 		_msgHash[message.id].send(this);
-	}
-	else if(typeof message === "string"){
+	} else if (typeof message === "string") {
 		_msgHash[message] && _msgHash[message].send(this);
 	}
 };
-connection.prototype.addRoster = function(options){
+connection.prototype.addRoster = function (options) {
 	var jid = _getJid(options, this);
 	var name = options.name || "";
 	var groups = options.groups || "";
 
-	var iq = StropheAll.$iq({ type: "set" });
-	iq.c("query", { xmlns: "jabber:iq:roster" });
-	iq.c("item", { jid: jid, name: name });
+	var iq = StropheAll.$iq({
+		type: "set"
+	});
+	iq.c("query", {
+		xmlns: "jabber:iq:roster"
+	});
+	iq.c("item", {
+		jid: jid,
+		name: name
+	});
 
-	if(groups){
-		for(let i = 0; i < groups.length; i++){
+	if (groups) {
+		for (let i = 0; i < groups.length; i++) {
 			iq.c("group").t(groups[i]).up();
 		}
 	}
@@ -1517,102 +1493,120 @@ connection.prototype.addRoster = function(options){
 	let error = options.error || _utils.emptyfn;
 	this.context.stropheConn.sendIQ(iq.tree(), suc, error);
 };
-connection.prototype.removeRoster = function(options){
+connection.prototype.removeRoster = function (options) {
 	var jid = _getJid(options, this);
 	var iq = StropheAll
-	.$iq({
-		type: "set"
-	})
-	.c("query", {
-		xmlns: "jabber:iq:roster"
-	})
-	.c("item", {
-		jid: jid,
-		subscription: "remove"
-	});
+		.$iq({
+			type: "set"
+		})
+		.c("query", {
+			xmlns: "jabber:iq:roster"
+		})
+		.c("item", {
+			jid: jid,
+			subscription: "remove"
+		});
 	var suc = options.success || _utils.emptyfn;
 	var error = options.error || _utils.emptyfn;
 	this.context.stropheConn.sendIQ(iq, suc, error);
 };
-connection.prototype.getRoster = function(options){
+connection.prototype.getRoster = function (options) {
 	let dom = StropheAll.$iq({
-		type: "get"
-	})
-	.c("query", {
-		xmlns: "jabber:iq:roster"
-	});
+			type: "get"
+		})
+		.c("query", {
+			xmlns: "jabber:iq:roster"
+		});
 	options = options || {};
 	let suc = options.success || this.onRoster;
 	let error = options.error || this.onError;
-	if(this.isOpened()){
-		this.context.stropheConn.sendIQ(dom.tree(), function(ele){
+	if (this.isOpened()) {
+		this.context.stropheConn.sendIQ(dom.tree(), function (ele) {
 			var rouster = [];
 			var msgBodies = ele.getElementsByTagName("query");
-			if(msgBodies && msgBodies.length > 0){
+			if (msgBodies && msgBodies.length > 0) {
 				let queryTag = msgBodies[0];
 				rouster = _parseFriend(queryTag);
 			}
 			suc(rouster, ele);
-		}, function(ele){
+		}, function (ele) {
 			error({
 				type: _code.WEBIM_CONNCTION_GETROSTER_ERROR,
 				data: ele
 			});
 		});
-	}
-	else{
+	} else {
 		error({
 			type: _code.WEBIM_CONNCTION_DISCONNECTED
 		});
 	}
 };
-connection.prototype.subscribe = function(options){
+connection.prototype.subscribe = function (options) {
 	var jid = _getJid(options, this);
-	var pres = StropheAll.$pres({ to: jid, type: "subscribe" });
-	if(options.message){
+	var pres = StropheAll.$pres({
+		to: jid,
+		type: "subscribe"
+	});
+	if (options.message) {
 		pres.c("status").t(options.message).up();
 	}
-	if(options.nick){
+	if (options.nick) {
 		pres
-		.c("nick", { xmlns: "http://jabber.org/protocol/nick" })
-		.t(options.nick);
+			.c("nick", {
+				xmlns: "http://jabber.org/protocol/nick"
+			})
+			.t(options.nick);
 	}
 	this.sendCommand(pres.tree());
 };
-connection.prototype.subscribed = function(options){
+connection.prototype.subscribed = function (options) {
 	var jid = _getJid(options, this);
-	var pres = StropheAll.$pres({ to: jid, type: "subscribed" });
-	if(options.message){
+	var pres = StropheAll.$pres({
+		to: jid,
+		type: "subscribed"
+	});
+	if (options.message) {
 		pres.c("status").t(options.message).up();
 	}
 	this.sendCommand(pres.tree());
 };
-connection.prototype.unsubscribe = function(options){
+connection.prototype.unsubscribe = function (options) {
 	var jid = _getJid(options, this);
-	var pres = StropheAll.$pres({ to: jid, type: "unsubscribe" });
-	if(options.message){
+	var pres = StropheAll.$pres({
+		to: jid,
+		type: "unsubscribe"
+	});
+	if (options.message) {
 		pres.c("status").t(options.message);
 	}
 	this.sendCommand(pres.tree());
 };
-connection.prototype.unsubscribed = function(options){
+connection.prototype.unsubscribed = function (options) {
 	var jid = _getJid(options, this);
-	var pres = StropheAll.$pres({ to: jid, type: "unsubscribed" });
-	if(options.message){
+	var pres = StropheAll.$pres({
+		to: jid,
+		type: "unsubscribed"
+	});
+	if (options.message) {
 		pres.c("status").t(options.message).up();
 	}
 	this.sendCommand(pres.tree());
 };
-connection.prototype.createRoom = function(options){
+connection.prototype.createRoom = function (options) {
 	var suc = options.success || _utils.emptyfn;
 	var err = options.error || _utils.emptyfn;
 	var roomiq;
 	roomiq = StropheAll.$iq({
-		to: options.roomName,
-		type: "set"
-	})
-	.c("query", { xmlns: Strophe.NS.MUC_OWNER })
-	.c("x", { xmlns: "jabber:x:data", type: "submit" });
+			to: options.roomName,
+			type: "set"
+		})
+		.c("query", {
+			xmlns: Strophe.NS.MUC_OWNER
+		})
+		.c("x", {
+			xmlns: "jabber:x:data",
+			type: "submit"
+		});
 	return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
 };
 
@@ -1635,22 +1629,23 @@ connection.prototype.createRoom = function(options){
 // 	this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 // };
 
-connection.prototype.listRooms = function(options){
+connection.prototype.listRooms = function (options) {
 	var iq = StropheAll.$iq({
-		to: options.server || "conference." + this.domain,
-		from: this.context.jid,
-		type: "get"
-	})
-	.c("query", { xmlns: Strophe.NS.DISCO_ITEMS });
+			to: options.server || "conference." + this.domain,
+			from: this.context.jid,
+			type: "get"
+		})
+		.c("query", {
+			xmlns: Strophe.NS.DISCO_ITEMS
+		});
 	var suc = options.success || _utils.emptyfn;
 	var error = options.error || this.onError;
-	var completeFn = function(result){
+	var completeFn = function (result) {
 		var rooms = [];
 		rooms = _parseRoom(result);
-		try{
+		try {
 			suc(rooms);
-		}
-		catch(e){
+		} catch (e) {
 			error({
 				type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
 				data: e
@@ -1658,31 +1653,31 @@ connection.prototype.listRooms = function(options){
 		}
 	};
 	var err = options.error || _utils.emptyfn;
-	var errorFn = function(ele){
+	var errorFn = function (ele) {
 		err({
-			type: _code.WEBIM_CONNCTION_GETROOM_ERROR
-			, data: ele
+			type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
+			data: ele
 		});
 	};
 	this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
 };
-connection.prototype.queryRoomMember = function(options){
+connection.prototype.queryRoomMember = function (options) {
 	var members = [];
 	var iq = StropheAll.$iq({
-		to: this.context.appKey + "_" + options.roomId + "@conference." + this.domain,
-		type: "get"
-	})
-	.c("query", {
-		xmlns: Strophe.NS.MUC + "#admin"
-	})
-	.c("item", {
-		affiliation: "member"
-	});
+			to: this.context.appKey + "_" + options.roomId + "@conference." + this.domain,
+			type: "get"
+		})
+		.c("query", {
+			xmlns: Strophe.NS.MUC + "#admin"
+		})
+		.c("item", {
+			affiliation: "member"
+		});
 	var suc = options.success || _utils.emptyfn;
-	var completeFn = function(result){
+	var completeFn = function (result) {
 		var items = result.getElementsByTagName("item");
-		if(items){
-			for(let i = 0; i < items.length; i++){
+		if (items) {
+			for (let i = 0; i < items.length; i++) {
 				let item = items[i];
 				let mem = {
 					jid: item.getAttribute("jid"),
@@ -1694,7 +1689,7 @@ connection.prototype.queryRoomMember = function(options){
 		suc(members);
 	};
 	var err = options.error || _utils.emptyfn;
-	var errorFn = function(ele){
+	var errorFn = function (ele) {
 		err({
 			type: _code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR,
 			data: ele
@@ -1702,63 +1697,63 @@ connection.prototype.queryRoomMember = function(options){
 	};
 	this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
 };
-connection.prototype.queryRoomInfo = function(options){
+connection.prototype.queryRoomInfo = function (options) {
 	var domain = this.domain;
 	var iq = StropheAll.$iq({
-		to: this.context.appKey + "_" + options.roomId + "@conference." + domain,
-		type: "get"
-	})
-	.c("query", {
-		xmlns: Strophe.NS.DISCO_INFO
-	});
+			to: this.context.appKey + "_" + options.roomId + "@conference." + domain,
+			type: "get"
+		})
+		.c("query", {
+			xmlns: Strophe.NS.DISCO_INFO
+		});
 	var suc = options.success || _utils.emptyfn;
 	var members = [];
-	var completeFn = function(result){
+	var completeFn = function (result) {
 		var settings = "";
 		var features = result.getElementsByTagName("feature");
-		if(features){
+		if (features) {
 			settings = features[1].getAttribute("var") + "|" + features[3].getAttribute("var") + "|" + features[4].getAttribute("var");
 		}
-		switch(settings){
-		case "muc_public|muc_membersonly|muc_notallowinvites":
-			settings = "PUBLIC_JOIN_APPROVAL";
-			break;
-		case "muc_public|muc_open|muc_notallowinvites":
-			settings = "PUBLIC_JOIN_OPEN";
-			break;
-		case "muc_hidden|muc_membersonly|muc_allowinvites":
-			settings = "PRIVATE_MEMBER_INVITE";
-			break;
-		case "muc_hidden|muc_membersonly|muc_notallowinvites":
-			settings = "PRIVATE_OWNER_INVITE";
-			break;
-		default:
-			break;
+		switch (settings) {
+			case "muc_public|muc_membersonly|muc_notallowinvites":
+				settings = "PUBLIC_JOIN_APPROVAL";
+				break;
+			case "muc_public|muc_open|muc_notallowinvites":
+				settings = "PUBLIC_JOIN_OPEN";
+				break;
+			case "muc_hidden|muc_membersonly|muc_allowinvites":
+				settings = "PRIVATE_MEMBER_INVITE";
+				break;
+			case "muc_hidden|muc_membersonly|muc_notallowinvites":
+				settings = "PRIVATE_OWNER_INVITE";
+				break;
+			default:
+				break;
 		}
 		let fields = result.getElementsByTagName("field");
 		let fieldValues = {};
-		if(fields){
-			for(let i = 0; i < fields.length; i++){
+		if (fields) {
+			for (let i = 0; i < fields.length; i++) {
 				let field = fields[i];
 				let fieldVar = field.getAttribute("var");
 				let fieldSimplify = fieldVar.split("_")[1];
-				switch(fieldVar){
-				case "muc#roominfo_occupants":
-				case "muc#roominfo_maxusers":
-				case "muc#roominfo_affiliations":
-				case "muc#roominfo_description":
-					fieldValues[fieldSimplify] = (field.textContent || field.text || "");
-					break;
-				case "muc#roominfo_owner":
-					let mem = {
-						jid: (field.textContent || field.text) + "@" + domain,
-						affiliation: "owner"
-					};
-					members.push(mem);
-					fieldValues[fieldSimplify] = (field.textContent || field.text);
-					break;
-				default:
-					break;
+				switch (fieldVar) {
+					case "muc#roominfo_occupants":
+					case "muc#roominfo_maxusers":
+					case "muc#roominfo_affiliations":
+					case "muc#roominfo_description":
+						fieldValues[fieldSimplify] = (field.textContent || field.text || "");
+						break;
+					case "muc#roominfo_owner":
+						let mem = {
+							jid: (field.textContent || field.text) + "@" + domain,
+							affiliation: "owner"
+						};
+						members.push(mem);
+						fieldValues[fieldSimplify] = (field.textContent || field.text);
+						break;
+					default:
+						break;
 				}
 				// if (field.getAttribute('label') === 'owner') {
 				//     var mem = {
@@ -1775,7 +1770,7 @@ connection.prototype.queryRoomInfo = function(options){
 		suc(settings, members, fieldValues);
 	};
 	var err = options.error || _utils.emptyfn;
-	var errorFn = function(ele){
+	var errorFn = function (ele) {
 		err({
 			type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR,
 			data: ele
@@ -1783,15 +1778,15 @@ connection.prototype.queryRoomInfo = function(options){
 	};
 	this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
 };
-connection.prototype.queryRoomOccupants = function(options){
+connection.prototype.queryRoomOccupants = function (options) {
 	var suc = options.success || _utils.emptyfn;
-	var completeFn = function(result){
+	var completeFn = function (result) {
 		var occupants = [];
 		occupants = _parseRoomOccupants(result);
 		suc(occupants);
 	};
 	var err = options.error || _utils.emptyfn;
-	var errorFn = function(ele){
+	var errorFn = function (ele) {
 		err({
 			type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR,
 			data: ele
@@ -1807,103 +1802,107 @@ connection.prototype.queryRoomOccupants = function(options){
 	}).c("query", attrs);
 	this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
 };
-connection.prototype.setUserSig = function(desc){
-	var dom = StropheAll.$pres({ xmlns: "jabber:client" });
+connection.prototype.setUserSig = function (desc) {
+	var dom = StropheAll.$pres({
+		xmlns: "jabber:client"
+	});
 	desc = desc || "";
 	dom.c("status").t(desc);
 	this.sendCommand(dom.tree());
 };
-connection.prototype.setPresence = function(type, status){
-	var dom = StropheAll.$pres({ xmlns: "jabber:client" });
-	if(type){
-		if(status){
+connection.prototype.setPresence = function (type, status) {
+	var dom = StropheAll.$pres({
+		xmlns: "jabber:client"
+	});
+	if (type) {
+		if (status) {
 			dom.c("show").t(type);
 			dom.up().c("status").t(status);
-		}
-		else{
+		} else {
 			dom.c("show").t(type);
 		}
 	}
 	this.sendCommand(dom.tree());
 };
-connection.prototype.getPresence = function(){
-	var dom = StropheAll.$pres({ xmlns: "jabber:client" });
+connection.prototype.getPresence = function () {
+	var dom = StropheAll.$pres({
+		xmlns: "jabber:client"
+	});
 	this.sendCommand(dom.tree());
 };
-connection.prototype.ping = function(options){
+connection.prototype.ping = function (options) {
 	options = options || {};
 	let jid = _getJid(options, this);
 	let dom = StropheAll.$iq({
-		from: this.context.jid || "",
-		to: jid,
-		type: "get"
-	})
-	.c("ping", {
-		xmlns: "urn:xmpp:ping"
-	});
+			from: this.context.jid || "",
+			to: jid,
+			type: "get"
+		})
+		.c("ping", {
+			xmlns: "urn:xmpp:ping"
+		});
 	let suc = options.success || _utils.emptyfn;
 	let error = options.error || this.onError;
-	let failFn = function(ele){
+	let failFn = function (ele) {
 		error({
 			type: _code.WEBIM_CONNCTION_PING_ERROR,
 			data: ele
 		});
 	};
-	if(this.isOpened()){
+	if (this.isOpened()) {
 		this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
-	}
-	else{
+	} else {
 		error({
 			type: _code.WEBIM_CONNCTION_DISCONNECTED
 		});
 	}
 };
-connection.prototype.isOpened = function(){
+connection.prototype.isOpened = function () {
 	return this.context.status == _code.STATUS_OPENED;
 };
-connection.prototype.isOpening = function(){
+connection.prototype.isOpening = function () {
 	var ctxstatus = this.context.status;
 	return ctxstatus == _code.STATUS_DOLOGIN_USERGRID || ctxstatus == _code.STATUS_DOLOGIN_IM;
 };
-connection.prototype.isClosing = function(){
+connection.prototype.isClosing = function () {
 	return this.context.status == _code.STATUS_CLOSING;
 };
-connection.prototype.isClosed = function(){
+connection.prototype.isClosed = function () {
 	return this.context.status == _code.STATUS_CLOSED;
 };
-connection.prototype.clear = function(){
+connection.prototype.clear = function () {
 	var key = this.context.appKey;
-	if(this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED){
+	if (this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
 		this.context = {
 			status: _code.STATUS_INIT,
 			appKey: key
 		};
 	}
-	if(this.intervalId){
+	if (this.intervalId) {
 		clearInterval(this.intervalId);
 	}
-	if(this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1){
+	if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
 
 	}
 };
-connection.prototype.getChatRooms = function(options){
+connection.prototype.getChatRooms = function (options) {
 	let me = this;
 	let token = options.accessToken || this.context.accessToken;
-	if(token){
+	if (token) {
 		let apiUrl = this.apiUrl;
 		let appName = this.context.appName;
 		let orgName = this.context.orgName;
-		if(!appName || !orgName){
+		if (!appName || !orgName) {
 			me.onError({
 				type: _code.WEBIM_CONNCTION_AUTH_ERROR
 			});
 			return;
 		}
-		let suc = function(data, xhr){
+		let suc = function (data, xhr) {
 			typeof options.success === "function" && options.success(data);
 		};
-		let error = function(res, xhr, msg){
-			if(res.error && res.error_description){
+		let error = function (res, xhr, msg) {
+			if (res.error && res.error_description) {
 				me.onError({
 					type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,
 					msg: res.error_description,
@@ -1920,25 +1919,26 @@ connection.prototype.getChatRooms = function(options){
 			url: apiUrl + "/" + orgName + "/" + appName + "/chatrooms",
 			dataType: "json",
 			type: "GET",
-			header: { Authorization: "Bearer " + token },
+			header: {
+				Authorization: "Bearer " + token
+			},
 			data: pageInfo,
 			success: suc || _utils.emptyfn,
 			fail: error || _utils.emptyfn
 		};
 		wx.request(opts);
-	}
-	else{
+	} else {
 		me.onError({
 			type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
 		});
 	}
 };
-connection.prototype.joinChatRoom = function(options){
+connection.prototype.joinChatRoom = function (options) {
 	var roomJid = this.context.appKey + "_" + options.roomId + "@conference." + this.domain;
 	var room_nick = roomJid + "/" + this.context.userId;
 	var suc = options.success || _utils.emptyfn;
 	var err = options.error || _utils.emptyfn;
-	var errorFn = function(ele){
+	var errorFn = function (ele) {
 		err({
 			type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR,
 			data: ele
@@ -1948,25 +1948,27 @@ connection.prototype.joinChatRoom = function(options){
 		from: this.context.jid,
 		to: room_nick
 	});
-	pres.c("x", { xmlns: Strophe.NS.MUC + "#user" })
-	.c("item", {
-		affiliation: "member",
-		role: "participant"
-	})
-	.up()
-	.up()
-	.c("roomtype", {
-		xmlns: "easemob:x:roomtype",
-		type: "chatroom"
-	});
+	pres.c("x", {
+			xmlns: Strophe.NS.MUC + "#user"
+		})
+		.c("item", {
+			affiliation: "member",
+			role: "participant"
+		})
+		.up()
+		.up()
+		.c("roomtype", {
+			xmlns: "easemob:x:roomtype",
+			type: "chatroom"
+		});
 	this.context.stropheConn.sendIQ(pres.tree(), suc, errorFn);
 };
-connection.prototype.quitChatRoom = function(options){
+connection.prototype.quitChatRoom = function (options) {
 	var roomJid = this.context.appKey + "_" + options.roomId + "@conference." + this.domain;
 	var room_nick = roomJid + "/" + this.context.userId;
 	var suc = options.success || _utils.emptyfn;
 	var err = options.error || _utils.emptyfn;
-	var errorFn = function(ele){
+	var errorFn = function (ele) {
 		err({
 			type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR,
 			data: ele
@@ -1978,11 +1980,19 @@ connection.prototype.quitChatRoom = function(options){
 		type: "unavailable"
 	});
 	pres
-	.c("x", { xmlns: Strophe.NS.MUC + "#user" })
-	.c("item", { affiliation: "none", role: "none" })
-	.up()
-	.up()
-	.c("roomtype", { xmlns: "easemob:x:roomtype", type: "chatroom" });
+		.c("x", {
+			xmlns: Strophe.NS.MUC + "#user"
+		})
+		.c("item", {
+			affiliation: "none",
+			role: "none"
+		})
+		.up()
+		.up()
+		.c("roomtype", {
+			xmlns: "easemob:x:roomtype",
+			type: "chatroom"
+		});
 	this.context.stropheConn.sendIQ(pres.tree(), suc, errorFn);
 };
 // connection.prototype._onReceiveInviteFromGroup = function(info){
@@ -2101,10 +2111,10 @@ connection.prototype.quitChatRoom = function(options){
 // };
 
 
-connection.prototype._onUpdateMyGroupList = function(options){
+connection.prototype._onUpdateMyGroupList = function (options) {
 	this.onUpdateMyGroupList(options);
 };
-connection.prototype._onUpdateMyRoster = function(options){
+connection.prototype._onUpdateMyRoster = function (options) {
 	this.onUpdateMyRoster(options);
 };
 // connection.prototype.reconnect = function(){
@@ -2125,14 +2135,12 @@ connection.prototype._onUpdateMyRoster = function(options){
 // };
 
 // 通过Rest列出群组的所有成员
-connection.prototype.listGroupMember = function(opt){
-	if(isNaN(opt.pageNum) || opt.pageNum <= 0){
+connection.prototype.listGroupMember = function (opt) {
+	if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
 		throw new Error("The parameter \"pageNum\" should be a positive number");
-	}
-	else if(isNaN(opt.pageSize) || opt.pageSize <= 0){
+	} else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
 		throw new Error("The parameter \"pageSize\" should be a positive number");
-	}
-	else if(opt.groupId === null && typeof opt.groupId === "undefined"){
+	} else if (opt.groupId === null && typeof opt.groupId === "undefined") {
 		throw new Error("The parameter \"groupId\" should be added");
 	}
 	let requestData = [];
@@ -2155,7 +2163,7 @@ connection.prototype.listGroupMember = function(opt){
 };
 
 // 通过 Rest 接口创建群组
-connection.prototype.createGroupNew = function(opt){
+connection.prototype.createGroupNew = function (opt) {
 	// opt.data.owner = this.user;
 	opt.data.invite_need_confirm = false;
 	let options = {
@@ -2168,7 +2176,7 @@ connection.prototype.createGroupNew = function(opt){
 			"Content-Type": "application/json"
 		}
 	};
-	options.success = function(respData){
+	options.success = function (respData) {
 		opt.success(respData);
 		this.onCreateGroup(respData);
 	}.bind(this);
@@ -2177,7 +2185,7 @@ connection.prototype.createGroupNew = function(opt){
 };
 
 // 通过Rest根据groupid获取群组详情
-connection.prototype.getGroupInfo = function(opt){
+connection.prototype.getGroupInfo = function (opt) {
 	var options = {
 		url: this.apiUrl + "/" + this.orgName + "/" + this.appName + "/chatgroups/" + opt.groupId,
 		type: "GET",
@@ -2193,7 +2201,7 @@ connection.prototype.getGroupInfo = function(opt){
 };
 
 // 通过Rest解散群组
-connection.prototype.dissolveGroup = function(opt){
+connection.prototype.dissolveGroup = function (opt) {
 	var groupId = opt.groupId;
 	var options = {
 		url: this.apiUrl + "/" + this.orgName + "/" + this.appName + "/chatgroups/" + groupId + "?version=v3",
@@ -2210,17 +2218,17 @@ connection.prototype.dissolveGroup = function(opt){
 };
 
 // used for blacklist
-function _parsePrivacy(iq){
+function _parsePrivacy(iq) {
 	var list = [];
 	var items = iq.getElementsByTagName("item");
 
-	if(items){
-		for(let i = 0; i < items.length; i++){
+	if (items) {
+		for (let i = 0; i < items.length; i++) {
 			let item = items[i];
 			let jid = item.getAttribute("value");
 			let order = item.getAttribute("order");
 			let type = item.getAttribute("type");
-			if(!jid){
+			if (!jid) {
 				continue;
 			}
 			let n = _parseNameFromJidFn(jid);
@@ -2236,48 +2244,65 @@ function _parsePrivacy(iq){
 }
 
 // used for blacklist
-connection.prototype.getBlacklist = function(options){
+connection.prototype.getBlacklist = function (options) {
 	options = (options || {});
-	let iq = StropheAll.$iq({ type: "get" });
+	let iq = StropheAll.$iq({
+		type: "get"
+	});
 	let sucFn = options.success || _utils.emptyfn;
 	let errFn = options.error || _utils.emptyfn;
 	let me = this;
 
 	iq
-	.c("query", { xmlns: "jabber:iq:privacy" })
-	.c("list", { name: "special" });
+		.c("query", {
+			xmlns: "jabber:iq:privacy"
+		})
+		.c("list", {
+			name: "special"
+		});
 
-	this.context.stropheConn.sendIQ(iq.tree(), function(iq){
+	this.context.stropheConn.sendIQ(iq.tree(), function (iq) {
 		me.onBlacklistUpdate(_parsePrivacy(iq));
 		sucFn();
-	}, function(){
+	}, function () {
 		me.onBlacklistUpdate([]);
 		errFn();
 	});
 };
 
 // used for blacklist
-connection.prototype.addToBlackList = function(options){
-	var iq = StropheAll.$iq({ type: "set" });
+connection.prototype.addToBlackList = function (options) {
+	var iq = StropheAll.$iq({
+		type: "set"
+	});
 	var blacklist = options.list || {};
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
 	var piece = iq
-	.c("query", { xmlns: "jabber:iq:privacy" })
-	.c("list", { name: "special" });
+		.c("query", {
+			xmlns: "jabber:iq:privacy"
+		})
+		.c("list", {
+			name: "special"
+		});
 
 	var keys = Object.keys(blacklist);
 	var len = keys.length;
 	var order = 2;
 
-	for(let i = 0; i < len; i++){
+	for (let i = 0; i < len; i++) {
 		let item = blacklist[keys[i]];
 		let type = item.type || "jid";
 		let jid = item.jid;
 		piece = piece
-		.c("item", { action: "deny", order: order++, type: type, value: jid })
-		.c("message");
-		if(i !== len - 1){
+			.c("item", {
+				action: "deny",
+				order: order++,
+				type: type,
+				value: jid
+			})
+			.c("message");
+		if (i !== len - 1) {
 			piece = piece.up().up();
 		}
 	}
@@ -2285,88 +2310,105 @@ connection.prototype.addToBlackList = function(options){
 };
 
 // used for blacklist
-connection.prototype.removeFromBlackList = function(options){
-	var iq = StropheAll.$iq({ type: "set" });
+connection.prototype.removeFromBlackList = function (options) {
+	var iq = StropheAll.$iq({
+		type: "set"
+	});
 	var blacklist = options.list || {};
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
 	var piece = iq
-	.c("query", { xmlns: "jabber:iq:privacy" })
-	.c("list", { name: "special" });
+		.c("query", {
+			xmlns: "jabber:iq:privacy"
+		})
+		.c("list", {
+			name: "special"
+		});
 
 	var keys = Object.keys(blacklist);
 	var len = keys.length;
 
-	for(let i = 0; i < len; i++){
+	for (let i = 0; i < len; i++) {
 		let item = blacklist[keys[i]];
 		let type = item.type || "jid";
 		let jid = item.jid;
 		let order = item.order;
 
 		piece = piece
-		.c("item", { action: "deny", order: order, type: type, value: jid })
-		.c("message");
-		if(i !== len - 1){
+			.c("item", {
+				action: "deny",
+				order: order,
+				type: type,
+				value: jid
+			})
+			.c("message");
+		if (i !== len - 1) {
 			piece = piece.up().up();
 		}
 	}
 	this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
 };
-connection.prototype._getGroupJid = function(to){
+connection.prototype._getGroupJid = function (to) {
 	var appKey = this.context.appKey || "";
 	return appKey + "_" + to + "@conference." + this.domain;
 };
 
 // used for blacklist
-connection.prototype.addToGroupBlackList = function(options){
+connection.prototype.addToGroupBlackList = function (options) {
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
 	var jid = _getJid(options, this);
-	var affiliation = "admin";// options.affiliation || 'admin';
+	var affiliation = "admin"; // options.affiliation || 'admin';
 	var to = this._getGroupJid(options.roomId);
-	var iq = StropheAll.$iq({ type: "set", to: to });
+	var iq = StropheAll.$iq({
+		type: "set",
+		to: to
+	});
 
 	iq
-	.c("query", {
-		xmlns: "http://jabber.org/protocol/muc#" + affiliation
-	})
-	.c("item", {
-		affiliation: "outcast",
-		jid: jid
-	});
+		.c("query", {
+			xmlns: "http://jabber.org/protocol/muc#" + affiliation
+		})
+		.c("item", {
+			affiliation: "outcast",
+			jid: jid
+		});
 
 	this.context.stropheConn.sendIQ(iq.tree(), sucFn, errFn);
 };
 
 // used for blacklist
-connection.prototype.getGroupBlacklist = function(options){
+connection.prototype.getGroupBlacklist = function (options) {
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
 
 	// var jid = _getJid(options, this);
-	var affiliation = "admin";// options.affiliation || 'admin';
+	var affiliation = "admin"; // options.affiliation || 'admin';
 	var to = this._getGroupJid(options.roomId);
-	var iq = StropheAll.$iq({ type: "get", to: to });
-
-	iq
-	.c("query", {
-		xmlns: "http://jabber.org/protocol/muc#" + affiliation
-	})
-	.c("item", {
-		affiliation: "outcast",
+	var iq = StropheAll.$iq({
+		type: "get",
+		to: to
 	});
 
-	function _parseGroupBlacklist(iq){
+	iq
+		.c("query", {
+			xmlns: "http://jabber.org/protocol/muc#" + affiliation
+		})
+		.c("item", {
+			affiliation: "outcast",
+		});
+
+	function _parseGroupBlacklist(iq) {
 		var list = {};
 		var items = iq.getElementsByTagName("item");
 
-		if(items){
-			for(let i = 0; i < items.length; i++){
+		if (items) {
+			for (let i = 0; i < items.length; i++) {
 				let item = items[i];
 				let jid = item.getAttribute("jid");
 				let affiliation = item.getAttribute("affiliation");
 				let nick = item.getAttribute("nick");
-				if(!jid){
+				if (!jid) {
 					continue;
 				}
 				let n = _parseNameFromJidFn(jid);
@@ -2381,35 +2423,38 @@ connection.prototype.getGroupBlacklist = function(options){
 		return list;
 	}
 
-	this.context.stropheConn.sendIQ(iq.tree(), function(msginfo){
+	this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 		sucFn(_parseGroupBlacklist(msginfo));
-	}, function(){
+	}, function () {
 		errFn();
 	});
 };
 
 // used for blacklist
-connection.prototype.removeGroupMemberFromBlacklist = function(options){
+connection.prototype.removeGroupMemberFromBlacklist = function (options) {
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
 
 	var jid = _getJid(options, this);
-	var affiliation = "admin";		// options.affiliation || 'admin';
+	var affiliation = "admin"; // options.affiliation || 'admin';
 	var to = this._getGroupJid(options.roomId);
-	var iq = StropheAll.$iq({ type: "set", to: to });
-
-	iq
-	.c("query", {
-		xmlns: "http://jabber.org/protocol/muc#" + affiliation
-	})
-	.c("item", {
-		affiliation: "member",
-		jid: jid
+	var iq = StropheAll.$iq({
+		type: "set",
+		to: to
 	});
 
-	this.context.stropheConn.sendIQ(iq.tree(), function(msginfo){
+	iq
+		.c("query", {
+			xmlns: "http://jabber.org/protocol/muc#" + affiliation
+		})
+		.c("item", {
+			affiliation: "member",
+			jid: jid
+		});
+
+	this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 		sucFn();
-	}, function(){
+	}, function () {
 		errFn();
 	});
 };
@@ -2420,34 +2465,48 @@ connection.prototype.removeGroupMemberFromBlacklist = function(options){
  * @param options
  */
 
-connection.prototype.changeGroupSubject = function(options){
+connection.prototype.changeGroupSubject = function (options) {
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
 
 	// must be `owner`
 	var affiliation = "owner";
 	var to = this._getGroupJid(options.roomId);
-	var iq = StropheAll.$iq({ type: "set", to: to });
+	var iq = StropheAll.$iq({
+		type: "set",
+		to: to
+	});
 
 	iq
-	.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
-	.c("x", { type: "submit", xmlns: "jabber:x:data" })
-	.c("field", { "var": "FORM_TYPE" })
-	.c("value")
-	.t("http://jabber.org/protocol/muc#roomconfig")
-	.up()
-	.up()
-	.c("field", { "var": "muc#roomconfig_roomname" })
-	.c("value")
-	.t(options.subject)
-	.up()
-	.up()
-	.c("field", { "var": "muc#roomconfig_roomdesc" })
-	.c("value")
-	.t(options.description);
-	this.context.stropheConn.sendIQ(iq.tree(), function(msginfo){
+		.c("query", {
+			xmlns: "http://jabber.org/protocol/muc#" + affiliation
+		})
+		.c("x", {
+			type: "submit",
+			xmlns: "jabber:x:data"
+		})
+		.c("field", {
+			"var": "FORM_TYPE"
+		})
+		.c("value")
+		.t("http://jabber.org/protocol/muc#roomconfig")
+		.up()
+		.up()
+		.c("field", {
+			"var": "muc#roomconfig_roomname"
+		})
+		.c("value")
+		.t(options.subject)
+		.up()
+		.up()
+		.c("field", {
+			"var": "muc#roomconfig_roomdesc"
+		})
+		.c("value")
+		.t(options.description);
+	this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 		sucFn();
-	}, function(){
+	}, function () {
 		errFn();
 	});
 };
@@ -2457,22 +2516,27 @@ connection.prototype.changeGroupSubject = function(options){
  *
  * @param options
  */
-connection.prototype.destroyGroup = function(options){
+connection.prototype.destroyGroup = function (options) {
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
 
 	// must be `owner`
 	var affiliation = "owner";
 	var to = this._getGroupJid(options.roomId);
-	var iq = StropheAll.$iq({ type: "set", to: to });
+	var iq = StropheAll.$iq({
+		type: "set",
+		to: to
+	});
 
 	iq
-	.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
-	.c("destroy");
+		.c("query", {
+			xmlns: "http://jabber.org/protocol/muc#" + affiliation
+		})
+		.c("destroy");
 
-	this.context.stropheConn.sendIQ(iq.tree(), function(msginfo){
+	this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 		sucFn();
-	}, function(){
+	}, function () {
 		errFn();
 	});
 };
@@ -2483,7 +2547,7 @@ connection.prototype.destroyGroup = function(options){
  * @param options
  */
 
-connection.prototype.leaveGroupBySelf = function(options){
+connection.prototype.leaveGroupBySelf = function (options) {
 	var me = this;
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
@@ -2492,20 +2556,28 @@ connection.prototype.leaveGroupBySelf = function(options){
 	var jid = _getJid(options, this);
 	var affiliation = "admin";
 	var to = this._getGroupJid(options.roomId);
-	var iq = StropheAll.$iq({ type: "set", to: to });
-
-	iq
-	.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation })
-	.c("item", {
-		affiliation: "none",
-		jid: jid
+	var iq = StropheAll.$iq({
+		type: "set",
+		to: to
 	});
 
-	this.context.stropheConn.sendIQ(iq.tree(), function(msgInfo){
+	iq
+		.c("query", {
+			xmlns: "http://jabber.org/protocol/muc#" + affiliation
+		})
+		.c("item", {
+			affiliation: "none",
+			jid: jid
+		});
+
+	this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
 		sucFn(msgInfo);
-		let pres = StropheAll.$pres({ type: "unavailable", to: to + "/" + me.context.userId });
+		let pres = StropheAll.$pres({
+			type: "unavailable",
+			to: to + "/" + me.context.userId
+		});
 		me.sendCommand(pres.tree());
-	}, function(errInfo){
+	}, function (errInfo) {
 		errFn(errInfo);
 	});
 };
@@ -2555,17 +2627,22 @@ connection.prototype.leaveGroupBySelf = function(options){
  * @param options
  */
 
-connection.prototype.addGroupMembers = function(options){
+connection.prototype.addGroupMembers = function (options) {
 	var sucFn = options.success || _utils.emptyfn;
 	var errFn = options.error || _utils.emptyfn;
 	var list = options.list || [];
 	var affiliation = "admin";
 	var to = this._getGroupJid(options.roomId);
-	var iq = StropheAll.$iq({ type: "set", to: to });
-	var piece = iq.c("query", { xmlns: "http://jabber.org/protocol/muc#" + affiliation });
+	var iq = StropheAll.$iq({
+		type: "set",
+		to: to
+	});
+	var piece = iq.c("query", {
+		xmlns: "http://jabber.org/protocol/muc#" + affiliation
+	});
 	var len = list.length;
 
-	for(let i = 0; i < len; i++){
+	for (let i = 0; i < len; i++) {
 		let name = list[i];
 		let jid = _getJidByName(name, this);
 
@@ -2575,22 +2652,22 @@ connection.prototype.addGroupMembers = function(options){
 		}).up();
 
 		let dom = StropheAll.$msg({
-			to: to
-		})
-		.c("x", {
-			xmlns: "http://jabber.org/protocol/muc#user"
-		})
-		.c("invite", {
-			to: jid
-		})
-		.c("reason")
-		.t(options.reason || "");
+				to: to
+			})
+			.c("x", {
+				xmlns: "http://jabber.org/protocol/muc#user"
+			})
+			.c("invite", {
+				to: jid
+			})
+			.c("reason")
+			.t(options.reason || "");
 
 		this.sendCommand(dom.tree());
 	}
-	this.context.stropheConn.sendIQ(iq.tree(), function(msgInfo){
+	this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
 		sucFn(msgInfo);
-	}, function(errInfo){
+	}, function (errInfo) {
 		errFn(errInfo);
 	});
 };
@@ -2601,8 +2678,8 @@ connection.prototype.addGroupMembers = function(options){
  *
  * @param options
  */
-connection.prototype.acceptInviteFromGroup = function(options){
-	options.success = function(){
+connection.prototype.acceptInviteFromGroup = function (options) {
+	options.success = function () {
 		// then send sendAcceptInviteMessage
 		// connection.prototype.sendAcceptInviteMessage(optoins);
 	};
@@ -2616,7 +2693,7 @@ connection.prototype.acceptInviteFromGroup = function(options){
  *
  * @param options
  */
-connection.prototype.rejectInviteFromGroup = function(options){
+connection.prototype.rejectInviteFromGroup = function (options) {
 
 };
 //
@@ -2763,8 +2840,8 @@ WebIM.connection = connection;
 WebIM.utils = _utils;
 WebIM.statusCode = _code;
 WebIM.message = _msg.message;
-WebIM.doQuery = function(str, suc, fail){
-	if(typeof window.cefQuery === "undefined"){
+WebIM.doQuery = function (str, suc, fail) {
+	if (typeof window.cefQuery === "undefined") {
 		return;
 	}
 	window.cefQuery({
@@ -2772,12 +2849,11 @@ WebIM.doQuery = function(str, suc, fail){
 		persistent: false,
 		onSuccess: suc,
 		onFailure: fail
-	}
-	);
+	});
 };
 
 module.exports = WebIM;
 
-if(module.hot){
+if (module.hot) {
 	module.hot.accept();
 }

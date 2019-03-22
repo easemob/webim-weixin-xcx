@@ -16,6 +16,7 @@ Component({
 		inputMessage: "",		// render input 的值
 		userMessage: "",		// input 的实时值
 	},
+
 	methods: {
 		focus(){
 			this.triggerEvent("inputFocused", null, { bubbles: true });

@@ -1,0 +1,88 @@
+page{
+	background-color: #FAFAFA;
+}
+.defaultText{
+	color: #E3E3E3;
+	font-size: 32rpx;
+	text-align: center;
+	display: block;
+	margin: 300rpx auto 0 auto;
+}
+.itemBar{
+	margin: 20rpx 40rpx;
+	min-height: 252rpx;
+	background-color: #fff;
+	border: 1px solid #FAFAFA;
+	border-radius: 10rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+.notInfoDetContent{
+	min-height: 160rpx;
+	width: 100%;
+	border-bottom: 1px solid #FAFAFA;
+}
+.headContent{
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 50%;
+	margin: 24rpx 30rpx 0;
+	float: left;
+}
+.headContent image{
+	width: 72rpx;
+	height: 72rpx;
+}
+.infoContent{
+	display: flex;
+	flex-direction: column;
+}
+.infoContent text{
+	min-height: 54rpx;
+	line-height: 54rpx;
+	font-size: 28rpx;
+	color: #9B9B9B;
+}
+.infoContent .itemName{
+	height: 62rpx;
+	font-size: 32rpx;
+	line-height: 62rpx;
+	color: #000;
+	margin-top: 24rpx;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.buttonContent{
+	display: inline-flex;
+	width: 100%;
+	flex: 1;
+	height: 72rpx;
+}
+.buttonContent .agreeBtn, .buttonContent .rejectBtn{
+	flex: 1;
+	font-size: 32rpx;
+	background-color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.agreeBtn{
+	color: #0873DE;
+}
+.rejectBtn{
+	color: #666666;
+}
+.centerLine{
+	border-right: 1px solid #FAFAFA;
+}
+.actionDone{
+	flex: 1;
+	font-size: 32rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #999999;
+}

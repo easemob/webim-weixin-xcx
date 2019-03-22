@@ -20,4 +20,12 @@ Page({
 		disp.fire("em.chatroom.leave");
 	},
 
+	onPullDownRefresh: function () {
+	  	wx.showNavigationBarLoading();
+	    this.selectComponent('#chat').getMore()
+	    // 停止下拉动作
+	    wx.hideNavigationBarLoading();
+	    wx.stopPullDownRefresh();
+  	},
+
 });

@@ -1,17 +1,19 @@
 {
-	"miniprogramRoot": "./src",
+	"miniprogramRoot": "src/",
 	"packOptions": {
 		"ignore": []
 	},
 	"setting": {
-		"urlCheck": true,
+		"urlCheck": false,
 		"es6": true,
 		"postcss": true,
 		"minified": true,
-		"newFeature": true
+		"newFeature": true,
+		"autoAudits": false,
+		"nodeModules": true
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.2.5",
+	"libVersion": "2.6.2",
 	"appid": "wxc4ee73bd631ccad8",
 	"projectname": "%E7%8E%AF%E4%BF%A1%E5%8D%B3%E6%97%B6%E9%80%9A%E8%AE%AF%E4%BA%91",
 	"isGameTourist": false,

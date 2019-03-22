@@ -1,5 +1,5 @@
 <template name="txt">
-	<text class="msg-text" style="float:left; margin-top:2px;">{{ item.data }}</text>
+	<text class="msg-text" style="float:left;">{{ item.data }}</text>
 </template>
 <template name="emoji">
 	<image
@@ -24,22 +24,28 @@
 </template>
 
 
-<scroll-view
+<!-- view 换成 scroll-view效果更好 用view是为了要stopPullDownRefresh -->
+<view
 	scroll-y="true"
-	class="{{ view }}"
+	class="{{ view }} wrap {{isIPX?'scroll_view_X': ''}}"
 	bind:tap="onTap"
+	bindscroll="scrollmore"
+	bindscrolltoupper="refresh"
+	upper-threshold='-50'
 	scroll-into-view="{{ toView }}">
-	<view class="message" wx:for="{{ chatMsg }}" wx:key="" id="{{ item.mid }}">
-		<view class="time">
+	<view class="message" wx:for="{{ chatMsg }}" wx:key="{{ item.mid }}" id="{{ item.mid }}">
+		<!-- <view class="time">
 			<text class="time-text">{{ item.time }}</text>
-		</view>
+		</view> -->
 		<view class="main" class="{{ item.style }}">
 			<view class="user">
 				<!-- yourname：就是消息的 from -->
-				<text class="user-text">{{ item.yourname }}</text>
+				<text class="user-text">{{ item.yourname + ' ' + item.time}}</text>
 			</view>
-			<image class="avatar" src="../../../images/number.png"/>
+			<image class="avatar" src="../../../images/theme@2x.png"/>
 			<view class="msg">
+				<image wx:if="{{item.style == 'self'}}" src="../../../images/poprightarrow@2x.png" class="msg_poprightarrow"/>
+				<image wx:if="{{item.style == ''}}" src="../../../images/popleftarrow@2x.png" class="msg_popleftarrow"/>
 				<view wx:if="{{ item.msg.type == 'img' || item.msg.type == 'video' }}">
 					<template is="{{ item.msg.type }}" data="{{ item }}"/>
 				</view>
@@ -54,4 +60,5 @@
 			</view>
 		</view>
 	</view>
-</scroll-view>
+</view>
+<view style="height: 1px;"></view>

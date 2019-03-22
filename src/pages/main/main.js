@@ -9,26 +9,50 @@ Page({
 		show_mask: false,
 		myName: "",
 		member: [],
-		messageNum: "",
-		unReadSpot: false,
+		messageNum: "", //加好友申请数
+		unReadSpotNum: 0, //未读消息数
+		unReadNoticeNum: 0, //加群通知数
+		unReadTotalNotNum: 0, //总通知数：加好友申请数 + 加群通知数
+
+		isActive:null,   
+	    listMain:[],
+	    listTitles: [],
+	    fixedTitle:null,    
+	    toView: 'inToView0',
+	    oHeight:[],
+	    scroolHeight:0,
+		show_clear: false
 	},
 
 	onLoad(option){
-		var me = this;
+		const me = this;
+		const app = getApp();
+		new app.ToastPannel.ToastPannel();
+		//监听加好友申请
 		disp.on("em.xmpp.subscribe", function(){
 			me.setData({
-				messageNum: getApp().globalData.saveFriendList.length
+				messageNum: getApp().globalData.saveFriendList.length,
+				unReadTotalNotNum: getApp().globalData.saveFriendList.length + getApp().globalData.saveGroupInvitedList.length
 			});
 		});
 		disp.on("em.xmpp.contacts.remove", function(message){
 			// 个人操作，不用判断 curPage
 			me.getRoster();
 		});
-		disp.on("em.xmpp.unreadspot", function(count){
+		//监听未读“聊天”
+		disp.on("em.xmpp.unreadspot", function(){
 			me.setData({
-				unReadSpot: count > 0
+				unReadSpotNum: getApp().globalData.unReadMessageNum > 99 ? '99+' : getApp().globalData.unReadMessageNum,
 			});
 		});
+		//监听未读加群“通知”数
+		disp.on("em.xmpp.invite.joingroup", function(){
+			me.setData({
+				unReadNoticeNum: getApp().globalData.saveGroupInvitedList.length,
+				unReadTotalNotNum: getApp().globalData.saveFriendList.length + getApp().globalData.saveGroupInvitedList.length
+			});
+		});
+
 		this.setData({
 			myName: option.myName
 		});
@@ -37,8 +61,15 @@ Page({
 	onShow(){
 		this.setData({
 			messageNum: getApp().globalData.saveFriendList.length,
-			unReadSpot: getApp().globalData.unReadSpot,
+			unReadSpotNum: getApp().globalData.unReadMessageNum > 99 ? '99+' : getApp().globalData.unReadMessageNum,
+			unReadNoticeNum: getApp().globalData.saveGroupInvitedList.length,
+			unReadTotalNotNum: getApp().globalData.saveFriendList.length + getApp().globalData.saveGroupInvitedList.length
 		});
+		if (getApp().globalData.isIPX) {
+			this.setData({
+				isIPX: true
+			})
+		}
 		this.getRoster();
 	},
 
@@ -52,17 +83,16 @@ Page({
 						member.push(roster[i]);
 					}
 				}
-				me.setData({
-					member: member
-				});
 				wx.setStorage({
 					key: "member",
-					data: me.data.member
+					data: member
 				});
+				me.setData({member: member});
 				if(!systemReady){
 					disp.fire("em.main.ready");
 					systemReady = true;
 				}
+				me.getBrands(member);
 			},
 			error(err){
 				console.log("[main:getRoster]", err);
@@ -70,6 +100,7 @@ Page({
 		};
 		// WebIM.conn.setPresence()
 		WebIM.conn.getRoster(rosters);
+
 	},
 
 	moveFriend: function(message){
@@ -128,7 +159,8 @@ Page({
 	},
 
 	delete_friend: function(event){
-		var delName = event.target.dataset.username;
+		const me = this;
+		var delName = event.currentTarget.dataset.username;
 		var myName = wx.getStorageSync("myUsername");// 获取当前用户名
 		wx.showModal({
 			title: "确认删除好友" + delName,
@@ -142,15 +174,17 @@ Page({
 							WebIM.conn.unsubscribed({
 								to: delName
 							});
-							wx.showToast({
-								title: "删除成功",
-							});
+							// wx.showToast({
+							// 	title: "删除成功",
+							// });
+							me.toastSuccess('删除成功');
 							// 删除好友后 同时清空会话
 							wx.setStorageSync(delName + myName, "");
 							wx.setStorageSync("rendered_" + delName + myName, "");
+							me.getRoster();
 						},
 						error: function(error){
-
+							me.toastSuccess('删除失败');
 						}
 					});
 				}
@@ -162,16 +196,51 @@ Page({
 		this.setData({
 			search_btn: false,
 			search_friend: true,
-			show_mask: true
+			show_mask: true,
+			gotop: true
 		});
+	},
+
+	clearInput: function(){
+		this.setData({
+			input_code: '',
+			show_clear: false
+		})
+	},
+
+	onInput: function(e){
+		let inputValue = e.detail.value
+		if (inputValue) {
+			this.setData({
+				show_clear: true
+			})
+		} else {
+			this.setData({
+				show_clear: false
+			})
+		}
 	},
 
 	cancel: function(){
 		this.setData({
 			search_btn: true,
 			search_friend: false,
-			show_mask: false
+			gotop: false
+			//show_mask: false
 		});
+		this.getBrands(this.data.member)
+	},
+
+	onSearch: function(val){
+		let searchValue = val.detail.value
+		let member = this.data.member;
+		let serchList = [];
+		member.forEach((item, index)=>{
+			if(String(item.name).indexOf(searchValue) != -1){
+				serchList.push(item)
+			}
+		})
+		this.getBrands(serchList)
 	},
 
 	add_new: function(){
@@ -190,19 +259,25 @@ Page({
 		this.setData({
 			search_btn: true,
 			search_friend: false,
-			show_mask: false
+			//show_mask: false
 		});
 	},
 
 	tab_setting: function(){
 		wx.redirectTo({
-			url: "../settings/settings"
+			url: "../setting/setting"
+		});
+	},
+
+	tab_notification: function(){
+		wx.redirectTo({
+			url: "../notification/notification"
 		});
 	},
 
 	into_inform: function(){
 		wx.navigateTo({
-			url: "../inform/inform?myName=" + this.data.myName
+			url: "../inform/inform?myName=" + this.data.myName //wx.getStorageSync("myUsername")
 		});
 	},
 
@@ -228,4 +303,127 @@ Page({
 		});
 	},
 
+	//点击右侧字母导航定位触发
+	scrollToViewFn: function (e) {
+	    let that = this;
+	    let _id = e.target.dataset.id;
+	    for (let i = 0; i < that.data.listMain.length; ++i) {
+		    if (that.data.listMain[i].id === _id) {
+		        that.setData({
+		          	isActive: _id,
+		          	toView: 'inToView' + _id
+		        })
+		        break
+		    }
+	    }
+	},
+
+	// 页面滑动时触发
+	onPageScroll: function(e){
+	  	if (e.detail){
+		    // this.setData({
+		    //   scroolHeight: e.detail.scrollTop
+		    // });
+		    if (e.detail.scrollTop > 149) {
+		    	this.setData({
+			      	showFixedTitile: true
+			    });
+		    }else{
+		    	this.setData({
+			      	showFixedTitile: false
+			    });
+		    }
+		    for (let i in this.data.oHeight){
+		      	if (e.detail.scrollTop - 149 < this.data.oHeight[i].height){
+			        this.setData({
+			          	isActive: this.data.oHeight[i].key,
+			          	fixedTitle: this.data.oHeight[i].name
+			        });
+			        return false;
+		      	}
+		    }
+	    }
+	},
+
+	// 处理数据格式，及获取分组高度
+  	getBrands:function(member){
+    	const that = this;
+    	const reg = /[a-z]/i;
+    		// member = [
+	    	// 	{
+	    	// 		groups: [],
+	    	// 		jid: "easemob-demo#chatdemoui_zdtest2@easemob.com",
+	    	// 		name: "adtest2",
+	    	// 		subscription:"both"
+    		// 	}
+    		// ]
+
+    		member.forEach((item) => {
+    			if (reg.test(item.name.substring(0, 1))) {
+    				item.initial = item.name.substring(0, 1).toUpperCase();
+    			}else{
+    				item.initial = '#'
+    			}
+    		})
+    		member.sort((a, b) => a.initial.charCodeAt(0) - b.initial.charCodeAt(0))
+          	var someTtitle = null;
+          	var someArr=[];
+          	for(var i=0; i< member.length; i++){
+            	var newBrands = { brandId: member[i].jid, name: member[i].name };
+            	if (member[i].initial == '#') {
+            		var lastObj = {
+		                id: i,
+		                region: '#',
+		                brands: []
+		            };
+		            lastObj.brands.push(newBrands);
+            	} else {
+            		if (member[i].initial != someTtitle){
+	              		someTtitle = member[i].initial
+			            var newObj = {
+			                id: i,
+			                region: someTtitle,
+			                brands: []
+			            };
+	              		someArr.push(newObj)
+	            	}
+	            	newObj.brands.push(newBrands);
+	            }
+          	};
+          	someArr.sort((a, b) => a.region.charCodeAt(0) - b.region.charCodeAt(0))
+          	if (lastObj) {someArr.push(lastObj)}
+		//  someArr = [
+		// 	{
+		//         id: "1", region: "A",
+		//         brands: [
+		//           	{ brandId: "..", name: "阿明" },
+		//           	{ brandId: "..", name: "奥特曼" },
+		//           	{ brandId: "..", name: "安庆" },
+		//           	{ brandId: "..", name: "阿曼" }
+		//         ]
+		//     },
+		// ]
+
+         //赋值给列表值
+        that.setData({
+            listMain:someArr
+        });
+         //赋值给当前高亮的isActive
+        that.setData({
+            isActive: someArr[0].id,
+            fixedTitle: someArr[0].region
+        });
+ 
+          //计算分组高度,wx.createSelectotQuery()获取节点信息
+        let number = 0;
+          	for (let j = 0; j < someArr.length; ++j) {
+            wx.createSelectorQuery().select('#inToView' + someArr[j].id).boundingClientRect(function (rect) {
+              	number = rect.height + number;
+              	var newArry = [{ 'height': number, 'key': rect.dataset.id, "name": someArr[j].region}]
+              	that.setData({
+                	oHeight: that.data.oHeight.concat(newArry)
+              	})
+            }).exec();
+        };
+    },
 });

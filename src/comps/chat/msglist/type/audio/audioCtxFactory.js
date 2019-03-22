@@ -29,11 +29,11 @@ function proxier(ctx){
 module.exports = {
 	getCtx(mid){
 		let returnCtx = allCtx[mid];
-		if(!returnCtx){
+		//if(!returnCtx){
 			returnCtx = wx.createInnerAudioContext();
 			allCtx[mid] = returnCtx;
 			proxier(returnCtx);
-		}
+		//}
 		return returnCtx;
 	}
 };

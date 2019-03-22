@@ -1,5 +1,5 @@
 import Strophe from "../sdk/libs/strophe";
-import xmldom from "../sdk/libs/xmldom/dom-parser";
+//import xmldom from "../sdk/libs/xmldom/dom-parser";
 import websdk from "../sdk/connection";
 import config from "./WebIMConfig";
 
@@ -9,33 +9,44 @@ console.groupEnd = console.groupEnd || {};
 var window = {};
 let WebIM = window.WebIM = websdk;
 window.WebIM.config = config;
-var DOMParser = window.DOMParser = xmldom.DOMParser;
-let document = window.document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", "text/xml");
+//var DOMParser = window.DOMParser = xmldom.DOMParser;
+//let document = window.document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", "text/xml");
 
-if(WebIM.config.isDebug){
+WebIM.isDebug = function(option){
+	if (option) {
+		WebIM.config.isDebug = option.isDebug
+		openDebug(WebIM.config.isDebug)
+	} 
 
-	function ts(){
-		var d = new Date();
-		var Hours = d.getHours(); // 获取当前小时数(0-23)
-		var Minutes = d.getMinutes(); // 获取当前分钟数(0-59)
-		var Seconds = d.getSeconds(); // 获取当前秒数(0-59)
-		return (Hours < 10 ? "0" + Hours : Hours) + ":" + (Minutes < 10 ? "0" + Minutes : Minutes) + ":" + (Seconds < 10 ? "0" + Seconds : Seconds) + " ";
+	function openDebug(value){
+		function ts(){
+			var d = new Date();
+			var Hours = d.getHours(); // 获取当前小时数(0-23)
+			var Minutes = d.getMinutes(); // 获取当前分钟数(0-59)
+			var Seconds = d.getSeconds(); // 获取当前秒数(0-59)
+			return (Hours < 10 ? "0" + Hours : Hours) + ":" + (Minutes < 10 ? "0" + Minutes : Minutes) + ":" + (Seconds < 10 ? "0" + Seconds : Seconds) + " ";
+		}
+
+		Strophe.Strophe.log = function(level, msg){
+			// console.log(ts(), level, msg);
+		};
+
+		if (value) {
+			Strophe.Strophe.Connection.prototype.rawOutput = function(data){
+				try{
+					console.group("%csend # " + ts(), "color: blue; font-size: large");
+					console.log("%c" + data, "color: blue");
+					console.groupEnd();
+				}
+				catch(e){
+					console.log(e);
+				}
+			};
+		}else{
+			Strophe.Strophe.Connection.prototype.rawOutput = function(){};
+		}
+		
 	}
-
-	Strophe.Strophe.log = function(level, msg){
-		// console.log(ts(), level, msg);
-	};
-
-	Strophe.Strophe.Connection.prototype.rawOutput = function(data){
-		try{
-			console.group("%csend # " + ts(), "color: blue; font-size: large");
-			console.log("%c" + data, "color: blue");
-			console.groupEnd();
-		}
-		catch(e){
-			console.log(e);
-		}
-	};
 }
 
 /**
@@ -96,9 +107,7 @@ WebIM.parseEmoji = function(msg){
 			objList.push(obj);
 		}
 	}
-	console.log(objList);
 	return objList;
-
 };
 
 WebIM.time = function(){
@@ -219,7 +228,6 @@ WebIM.conn = new WebIM.connection({
 	autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
 	autoReconnectInterval: WebIM.config.autoReconnectInterval
 });
-
 
 // async response
 // WebIM.conn.listen({

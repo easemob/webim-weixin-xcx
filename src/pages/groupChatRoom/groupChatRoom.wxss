@@ -1,1 +1,4 @@
-/* pages/groupChatRoom/groupChatRoom.wxss */
+page{
+	height: 100%;
+	background-color: #FAFAFA;
+}

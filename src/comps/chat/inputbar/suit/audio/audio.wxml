@@ -1,13 +1,18 @@
 <view wx:if="{{ recordStatus != RecordStatus.HIDE }}" class="modal modal-record" bind:tap="toggleRecordModal">
 	<view class="modal-body" catch:tap="toggleWithoutAction">
+
+		<view class='sound-waves'>
+		  	<view wx:for="{{radomheight}}" wx:key="item" style='height:{{item}}rpx;margin-top:-{{item/2}}rpx'></view>
+		  	<view style='clear:both;width:0;height:0;'></view>
+		</view>
 		<text class="desc">{{ RecordDesc[recordStatus] }}</text>
-		<view
+		<button
 			class="dot"
 			catch:touchstart="handleRecording"
 			catch:touchmove="handleRecordingMove"
 			catch:touchend="handleRecordingCancel"
 			catch:touchcancel="handleRecordingCancel">
-			<image class="icon-mic" src="../../../../../images/mic@2x.png"/>
-		</view>
+			<image class="icon-mic" src="../../../../../images/send.png"/>
+		</button>
 	</view>
 </view>

@@ -37,19 +37,22 @@ Component({
 			msgStorage.saveMsg(evt.detail.msg, evt.detail.type);
 			this.data.__comps__.inputbar.cancelEmoji();
 		},
-	},
+
+		getMore(){
+			this.selectComponent('#chat-msglist').getHistoryMsg()
+		},
+  	},
+
 	// lifetimes
-	created(){ console.log("created"); },
-	attached(){ console.log("attached"); },
+	created(){},
+	attached(){},
 	ready(){
-		console.log("ready");
 		this.data.__comps__.inputbar = this.selectComponent("#chat-inputbar");
 		this.data.__comps__.msglist = this.selectComponent("#chat-msglist");
 		this.data.__comps__.audio = this.selectComponent("#chat-suit-audio");
 	},
-	moved(){ console.log("moved"); },
+	moved(){},
 	detached(){
-		console.log("detached");
 	},
 
 });

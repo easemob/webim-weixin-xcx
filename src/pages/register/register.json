@@ -1,5 +1,6 @@
 {
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
-    "backgroundTextStyle": "light"
+    "backgroundTextStyle": "light",
+    "navigationBarTitleText": "Easemob IM"
 }

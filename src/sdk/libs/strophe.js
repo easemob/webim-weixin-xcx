@@ -5574,7 +5574,7 @@ var $pres = null;
 					me.socket.onopen.call(me);
 				});
 				wx.onSocketMessage(function(msg){
-					console.log("onSocketMessage", msg, JSON.stringify(msg));
+					//console.log("onSocketMessage", msg, JSON.stringify(msg));
 					me.socket.onmessage.call(me, msg);
 				});
 				wx.onSocketClose(function(e){

@@ -1,1 +1,3 @@
-/* pages/chatroom/chatroom.wxss */
+page{
+	background-color: #FAFAFA;
+}

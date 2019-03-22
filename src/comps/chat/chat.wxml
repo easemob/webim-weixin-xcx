@@ -9,7 +9,7 @@
 		id="chat-msglist"
 		username="{{ username }}"
 		bind:msglistTap="normalScroll"></chat-msglist>
-
+</view>
 	<chat-inputbar
 		id="chat-inputbar"
 		username="{{ username }}"
@@ -23,4 +23,4 @@
 
 		bind:inputFocused="shortScroll"
 		bind:inputBlured="normalScroll"></chat-inputbar>
-</view>
+

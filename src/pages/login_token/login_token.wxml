@@ -1,0 +1,20 @@
+<import src="../../comps/toast/toast.wxml"/>
+<view class="login">
+	<view class="login_title">
+		<text>使用token登录</text>
+	</view>
+	<view class="login_user {{nameFocus}}">
+		<input type="text" placeholder="用户ID" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername" bindfocus="onFocusName" bindblur="onBlurName"/>
+	</view>
+	<view class="login_pwd {{psdFocus}}">
+		<input type="text" placeholder="token" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword" bindfocus="onFocusPsd" bindblur="onBlurPsd"/>
+	</view>
+	<view class="login_btn">
+		<button hover-class="btn_hover" bind:tap="login">登录</button>
+	</view>
+	<view class="login_text">
+		<navigator url="../register/register" open-type="redirect" hover-class="navigator-hover">新用户注册</navigator>
+		<navigator url="../login/login" open-type="redirect" hover-class="navigator-hover">使用密码登录</navigator>
+	</view>
+	<template is="toast" data="{{ ..._toast_ }}"></template>
+</view>
