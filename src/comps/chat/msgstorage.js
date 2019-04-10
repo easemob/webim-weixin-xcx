@@ -84,13 +84,15 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 				to: receiveMsg.to,
 				type: receiveMsg.type,
 				ext: receiveMsg.ext,
-				chatType: receiveMsg.chatType,
+				chatType: type,
 				toJid: "",
 				body: {
 					type: type,
 					url: receiveMsg.url,
 					filename: receiveMsg.filename,
 					filetype: receiveMsg.filetype,
+					from: receiveMsg.from,
+					to: receiveMsg.to
 				},
 			},
 		};
@@ -150,7 +152,9 @@ msgStorage.saveMsg = function(sendableMsg, type, receiveMsg){
 			key: sessionKey,
 			data: curChatMsg,
 			success(){
-				//disp.fire('em.chat.audio.fileLoaded');
+				if (type == msgType.AUDIO || type == msgType.VIDEO) {
+					disp.fire('em.chat.audio.fileLoaded');
+				}
 				me.fire("newChatMsg", renderableMsg, type, curChatMsg);
 			}
 		});

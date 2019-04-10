@@ -415,25 +415,36 @@ function _loginCallback(status, msg, conn) {
 		});
 	} else if (status == Strophe.Status.DISCONNECTING) {
 		if (conn.isOpened()) {
-			// if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
-			// 	conn.reconnect();
-			// 	return;
-			// }
-			// conn.stopHeartBeat();
-			error = {
-				type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
-				msg: msg
-			};
-			conflict && (error.conflict = true);
-			conn.onError(error);
+			if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
+
+				if (conn.autoReconnectNumTotal == 0) {conn.onReconnect()}
+				conn.reconnect();
+				return;
+			} else if(conn.autoReconnectNumTotal == conn.autoReconnectNumMax){
+				error = {
+					type: _code.WEBIM_CONNCTION_DISCONNECTED
+				};
+				conn.onError(error);
+				conn.context.status = _code.STATUS_CLOSED;
+				conn.clear();
+				conn.onClosed();
+			}
+			conn.stopHeartBeat();
+			// error = {
+			// 	type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+			// 	msg: msg
+			// };
+			// conflict && (error.conflict = true);
+			// conn.onError(error);
 		}
 		conn.context.status = _code.STATUS_CLOSING;
 	} else if (status == Strophe.Status.DISCONNECTED) {
 		if (conn.isOpened()) {
-			// if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
-			// 	conn.reconnect();
-			// 	return;
-			// }
+			if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
+				if (conn.autoReconnectNumTotal == 0) {conn.onReconnect()}
+				conn.reconnect();
+				return;
+			}
 			error = {
 				type: _code.WEBIM_CONNCTION_DISCONNECTED
 			};
@@ -475,9 +486,9 @@ function _login(options, conn) {
 	stropheConn = new Strophe.Connection(conn.url, {
 		inactivity: conn.inactivity,
 		maxRetries: conn.maxRetries,
-		pollingTime: conn.pollingTime
-	});
-	conn.context.stropheConn = stropheConn;
+		pollingTime: conn.pollingTime});
+
+		conn.context.stropheConn = stropheConn;
 	if (conn.route) {
 		stropheConn.connect(conn.context.jid, "$t$" + accessToken, callback, conn.wait, conn.hold, conn.route);
 	} else {
@@ -628,6 +639,7 @@ connection.prototype.listen = function (options) {
 	options.url && (this.url = _getXmppUrl(options.url, this.https));
 	this.onOpened = options.onOpened || _utils.emptyfn;
 	this.onClosed = options.onClosed || _utils.emptyfn;
+	this.onReconnect = options.onReconnect || _utils.emptyfn;
 	this.onTextMessage = options.onTextMessage || _utils.emptyfn;
 	this.onEmojiMessage = options.onEmojiMessage || _utils.emptyfn;
 	this.onPictureMessage = options.onPictureMessage || _utils.emptyfn;
@@ -2117,22 +2129,23 @@ connection.prototype._onUpdateMyGroupList = function (options) {
 connection.prototype._onUpdateMyRoster = function (options) {
 	this.onUpdateMyRoster(options);
 };
-// connection.prototype.reconnect = function(){
-// 	var me = this;
-// 	setTimeout(
-// 		function(){
-// 			_login(me.context.restTokenData, me);
-// 		}, (
-// 			this.autoReconnectNumTotal == 0
-// 				? 0
-// 				: this.autoReconnectInterval
-// 		) * 1000
-// 	);
-// 	this.autoReconnectNumTotal++;
-// };
-// connection.prototype.closed = function(){
-// 	IM.api.init();
-// };
+
+connection.prototype.reconnect = function(){
+	var me = this;
+	setTimeout(
+		function(){
+			_login(me.context.restTokenData&&me.context.restTokenData.data, me);
+		}, (
+			this.autoReconnectNumTotal == 0
+				? 0
+				: this.autoReconnectInterval
+		) * 1000
+	);
+	this.autoReconnectNumTotal++;
+};
+connection.prototype.closed = function(){
+	IM.api.init();
+};
 
 // 通过Rest列出群组的所有成员
 connection.prototype.listGroupMember = function (opt) {

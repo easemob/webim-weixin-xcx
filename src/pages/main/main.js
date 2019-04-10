@@ -1,7 +1,7 @@
 let WebIM = require("../../utils/WebIM")["default"];
 let disp = require("../../utils/broadcast");
 let systemReady = false;
-
+let canPullDownreffesh = true;
 Page({
 	data: {
 		search_btn: true,
@@ -21,7 +21,8 @@ Page({
 	    toView: 'inToView0',
 	    oHeight:[],
 	    scroolHeight:0,
-		show_clear: false
+		show_clear: false,
+		isHideLoadMore: true
 	},
 
 	onLoad(option){
@@ -35,10 +36,11 @@ Page({
 				unReadTotalNotNum: getApp().globalData.saveFriendList.length + getApp().globalData.saveGroupInvitedList.length
 			});
 		});
+
 		disp.on("em.xmpp.contacts.remove", function(message){
-			// 个人操作，不用判断 curPage
 			me.getRoster();
 		});
+		
 		//监听未读“聊天”
 		disp.on("em.xmpp.unreadspot", function(){
 			me.setData({
@@ -52,7 +54,10 @@ Page({
 				unReadTotalNotNum: getApp().globalData.saveFriendList.length + getApp().globalData.saveGroupInvitedList.length
 			});
 		});
-
+		disp.on("em.xmpp.subscribed", function(){
+			me.getRoster();
+		});
+		
 		this.setData({
 			myName: option.myName
 		});
@@ -182,6 +187,7 @@ Page({
 							wx.setStorageSync(delName + myName, "");
 							wx.setStorageSync("rendered_" + delName + myName, "");
 							me.getRoster();
+							disp.fire('em.main.deleteFriend')
 						},
 						error: function(error){
 							me.toastSuccess('删除失败');

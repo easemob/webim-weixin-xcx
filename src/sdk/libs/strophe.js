@@ -3260,6 +3260,7 @@ var $pres = null;
 			 *  connection and alerts the user's connection callback.
 			 */
 			_doDisconnect: function (condition) {
+				//console.log('_doDisconnect 14', condition)
 				if (typeof this._idleTimeout == "number") {
 					clearTimeout(this._idleTimeout);
 				}
@@ -3341,6 +3342,7 @@ var $pres = null;
 
 				// handle graceful disconnect
 				if (this.disconnecting && this._proto._emptyQueue()) {
+					//console.log('_doDisconnect 1')
 					this._doDisconnect();
 					return;
 				}
@@ -3467,11 +3469,9 @@ var $pres = null;
 
 				//console.log('hasFeatures', hasFeatures, bodyWrap, _callback)
 				if (!hasFeatures) {
-					//console.log('hasFeatures2')
 					try {
 						this._proto._no_auth_received(_callback);
 					} catch (e) {
-						//console.log('_no_auth_received')
 					}
 
 					return;
@@ -5579,14 +5579,31 @@ var $pres = null;
 				});
 				wx.onSocketClose(function(e){
 					console.log("WebSocket 连接已经关闭！");
+					me._conn.connected = true;
 					me.socket.onclose.call(me);
 					// 外部回调，需要设计一个更合适的
 					me._onSocketClose && me._onSocketClose(e);
+					//me._conn._changeConnectStatus(Strophe.Status.DISCONNECTED, e);
 				});
-				wx.connectSocket({
-					url: this._conn.service,
-					method: "GET"
-				});
+
+				function creatSocket () {
+					setTimeout(()=>{
+						var SocketTask = wx.connectSocket({
+							url: me._conn.service,
+							fail: function (e) {
+								console.log('连接失败', e)
+								//部分机型从后台切回前台状态有延迟 希望腾讯早点解决吧
+								if (e.errMsg.indexOf('suspend') != -1) {
+									creatSocket()
+								}
+							},
+							success: function (e) {
+								console.log('连接成功', e)
+							}
+						});
+					}, 1000)
+				}
+				creatSocket()
 			},
 
 			/** PrivateFunction: _connect_cb

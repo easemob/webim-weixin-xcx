@@ -18,40 +18,75 @@ Component({
 	},
 	methods: {
 		audioPlay(){
-			if (this.data.curStatus == playStatus.STOP) {
-				this.data.curStatus = playStatus.PLAYING
-				let audioCtx = wx.createInnerAudioContext();
+			//if (this.data.curStatus == playStatus.STOP){
+			let id = this.data.msg.mid;
+			let audioCtx = this.data.__comps__.audioCtx;
+			let allCtx = JSON.parse(wx.getStorageSync("allCtx"))
+			this.setData({
+				opcity: 1
+			})
+			allCtx.map((elem, index)=>{
+					//if (elem!=id) {
+						clearInterval(wx.inter)
+						this.allCtx[elem].stop()
+
+					//}
+				})
+			if (this.data.curStatus == playStatus.PLAYING ) {
+				return this.audioPause()
+			} else if (this.data.curStatus == playStatus.STOP) {
+				
+				
 
 				audioCtx.src = this.data.msg.msg.url;
 				audioCtx.autoplay = false;
 				audioCtx.loop = false;
+				
 
 				audioCtx.play();
+				audioCtx.isend = false
+				this.data.curStatus = playStatus.PLAYING
 				audioCtx.onTimeUpdate(()=>{
 
 				})
 				audioCtx.onPlay(()=>{
-					this.inter = setInterval(() => {
+					if (this.data.curStatus == playStatus.PLAYING) {
+					wx.inter = setInterval(() => {
 						let opcity = this.data.opcity;
 						this.setData({
 							opcity: opcity == 1 ? 0.4 : 1
 						})
+						this.id = id
 					}, 500)
-
+					audioCtx.offPlay();
+				}
 				})
+
 				audioCtx.onEnded(() => {
 					this.data.curStatus = playStatus.STOP
-					clearInterval(this.inter)
+					audioCtx.isend = true
+					clearInterval(wx.inter)
+
 					this.setData({
 						opcity: 1
 					})
+					audioCtx.offEnded();
 				})
+
 			}
 		},
 
 		audioPause(){
 			let audioCtx = this.data.__comps__.audioCtx;
 			audioCtx.pause();
+			this.data.curStatus = playStatus.STOP
+			clearInterval(audioCtx.inter)
+			this.setData({
+				opcity: 1
+			})
+			audioCtx.isend = false
+			audioCtx.offEnded();
+			audioCtx.offPause();
 		},
 
 		addEvent(){
@@ -104,12 +139,20 @@ Component({
 	moved(){
 	},
 	detached(){
-		// this.audioPause();
+		 this.audioPause();
+		 this.setData({
+			opcity: 1
+		})
 		// this.delEvent();
 	},
 	ready(){
 		//console.log('render 消息', this.properties.msg)
-		let audioCtx = wx.createInnerAudioContext();
+		let audioCtx
+			= this.data.__comps__.audioCtx
+			= audioCtxFc.getCtx(this.data.msg.mid);
+		this.allCtx = audioCtxFc.getAllCtx();
+		this.allComm = audioCtxFc.getCommponet(this.data.msg.mid, this);
+		//let audioCtx = wx.createInnerAudioContext();
 
 			audioCtx.src = this.data.msg.msg.url;
 			audioCtx.autoplay = false;
