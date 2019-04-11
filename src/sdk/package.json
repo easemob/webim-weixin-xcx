@@ -4,7 +4,7 @@
   "description": "",
   "main": "connection.js",
   "scripts": {
-    "build": "parcel build src/connection.js NODE_ENV=production -d build/output; node package.buildxcx.js"
+    "build": "parcel build connection.js NODE_ENV=production -d build/output; node package.buildxcx.js"
   },
   "keywords": [
     "sdk"

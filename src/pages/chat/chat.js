@@ -41,6 +41,14 @@ Page({
 			});
 		});
 
+		disp.on("em.xmpp.contacts.remove", function(){
+			me.getRoster();
+			// me.setData({
+			// 	arr: me.getChatList(),
+			// 	unReadSpotNum: getApp().globalData.unReadMessageNum > 99 ? '99+' : getApp().globalData.unReadMessageNum,
+			// });
+		});
+
 		this.getRoster();
 	},
 
@@ -76,6 +84,14 @@ Page({
 				});
 				me.setData({member: member});
 				me.listGroups()
+				//if(!systemReady){
+					disp.fire("em.main.ready");
+					//systemReady = true;
+				//}
+				me.setData({
+					arr: me.getChatList(),
+					unReadSpotNum: getApp().globalData.unReadMessageNum > 99 ? '99+' : getApp().globalData.unReadMessageNum,
+				});
 			},
 			error(err){
 				console.log(err);
@@ -102,12 +118,12 @@ Page({
 				}
 				let dateArr = lastChatMsg.time.split(' ')[0].split('-')
 				let timeArr = lastChatMsg.time.split(' ')[1].split(':')
-				lastChatMsg.dateTimeNum = `${dateArr[1]}${dateArr[2]}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+				let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
+				lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
 				lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
 				array.push(lastChatMsg);
 			}
 		}
-
 		for(let i = 0; i < listGroups.length; i++){
 			let newChatMsgs = wx.getStorageSync(listGroups[i].roomId + myName) || [];
 			let historyChatMsgs = wx.getStorageSync("rendered_" + listGroups[i].roomId + myName) || [];
@@ -120,9 +136,9 @@ Page({
 				}
 				let dateArr = lastChatMsg.time.split(' ')[0].split('-')
 				let timeArr = lastChatMsg.time.split(' ')[1].split(':')
-
+				let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
 				lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
-				lastChatMsg.dateTimeNum = `${dateArr[1]}${dateArr[2]}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+				lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
 				lastChatMsg.groupName = listGroups[i].name
 				array.push(lastChatMsg);
 			}
@@ -247,7 +263,8 @@ Page({
 
 	into_chatRoom: function(event){
 		let detail = event.currentTarget.dataset.item;
-		if (detail.chatType == 'groupchat' || detail.chatType == 'chatRoom') {
+		//群聊的chatType居然是singlechat？脏数据？ 等sdk重写后整理一下字段
+		if (detail.chatType == 'groupchat' || detail.chatType == 'chatRoom' || detail.groupName) {
 			this.into_groupChatRoom(detail)
 		} else {
 			this.into_singleChatRoom(detail)

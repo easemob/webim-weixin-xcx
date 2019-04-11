@@ -17,7 +17,12 @@
 	</view> -->
 <view>
 	<!-- 左侧列表内容部分 -->
-	<scroll-view class="content {{gotop? (isIPX? 'goTopX': 'goTop'): 'goback'}}" enable-back-to-top scroll-into-view="{{toView}}" scroll-y="true" scroll-with-animation="true" bindscroll="onPageScroll" style="padding-bottom: {{isIPX?'270rpx':'226rpx'}}"> 
+	<scroll-view
+	class="content {{gotop? (isIPX? 'goTopX': 'goTop'): 'goback'}}" 
+	enable-back-to-top scroll-into-view="{{toView}}" 
+	scroll-y="true" scroll-with-animation="true" 
+	bindscroll="onPageScroll" 
+	style="padding-bottom: {{isIPX?'270rpx':'226rpx'}}"> 
 		<!-- search -->
 		<view class="search" wx:if="{{ search_btn }}">
 			<view bindtap="openSearch">

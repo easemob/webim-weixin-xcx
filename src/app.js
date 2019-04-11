@@ -5,7 +5,7 @@ let msgStorage = require("comps/chat/msgstorage");
 let msgType = require("comps/chat/msgtype");
 let ToastPannel = require("./comps/toast/toast");
 let disp = require("utils/broadcast");
-
+let logout = false;
 function ack(receiveMsg){
 	// 处理未读消息回执
 	var bodyId = receiveMsg.id;         // 需要发送已读回执的消息id
@@ -45,7 +45,6 @@ function calcUnReadSpot(message){
 		}else{
 			chatMsgs = wx.getStorageSync(curMember.name.toLowerCase() + myName.toLowerCase()) || [];
 		}
-		
 		return result + chatMsgs.length;
 	}, 0);
 	getApp().globalData.unReadMessageNum = count;
@@ -112,6 +111,14 @@ App({
 			calcUnReadSpot()
 		});
 
+		disp.on('em.main.deleteFriend', function(){
+			calcUnReadSpot()
+		});
+		disp.on('em.chat.audio.fileLoaded', function(){
+			calcUnReadSpot()
+		});
+		
+
 		// 
 		WebIM.conn.listen({
 			onOpened(message){
@@ -120,8 +127,22 @@ App({
 					me.onLoginSuccess(wx.getStorageSync("myUsername").toLowerCase());
 				}
 			},
+			onReconnect(){
+				wx.showToast({
+					title: "重连中...",
+					duration: 2000
+				});
+			},
 			onClosed(){
+				wx.showToast({
+					title: "网络已断开连接",
+					duration: 2000
+				});
+				wx.redirectTo({
+						url: "../login/login"
+					});
 				me.conn.closed = true;
+				WebIM.conn.close();
 			},
 			onInviteMessage(message){
 				me.globalData.saveGroupInvitedList.push(message);
@@ -165,6 +186,7 @@ App({
 						title: "添加成功",
 						duration: 1000
 					});
+					disp.fire("em.xmpp.subscribed");
 					break;
 				case "unsubscribed":
 					// wx.showToast({
@@ -190,7 +212,8 @@ App({
 				// 	break;
 				// 删除好友
 				case "unavailable":
-					disp.fire("em.xmpp.contacts.remove", message);
+					console.log('delete')
+					disp.fire("em.xmpp.contacts.remove");
 					break;
 
 				// case "joinChatRoomSuccess":
@@ -303,11 +326,8 @@ App({
 
 			// 各种异常
 			onError(error){
-
 				// 16: server-side close the websocket connection
-				console.log(error)
-
-				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED){
+				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED && !logout){
 					if(WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax){
 						return;
 					}
@@ -318,6 +338,7 @@ App({
 					wx.redirectTo({
 						url: "../login/login"
 					});
+					logout = true
 					return;
 				}
 				// 8: offline by multi login
@@ -349,6 +370,14 @@ App({
 	},
 	onShow(){
 		this.conn.reopen();
+	},
+
+	onUnload(){
+		WebIM.conn.close();
+		WebIM.conn.stopHeartBeat();
+		wx.redirectTo({
+			url: "../login/login?myName=" + myName
+		});
 	},
 
 	onLoginSuccess: function(myName){
