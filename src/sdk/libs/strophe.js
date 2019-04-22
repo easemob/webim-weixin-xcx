@@ -5864,10 +5864,8 @@ var $pres = null;
 						if (data[i] !== null) {
 							var stanza, rawStanza;
 							if (data[i] === "restart") {
-								console.log('_onIdle 1')
 								stanza = this._buildStream().tree();
 							} else {
-								console.log('_onIdle 2')
 								stanza = data[i];
 							}
 							rawStanza = Strophe.serialize(stanza);
