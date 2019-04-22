@@ -5561,6 +5561,7 @@ var $pres = null;
 					onerror: this._onError,
 					onclose: this._onClose,
 					send: function(str){
+						console.log('_connect _connect _connect')
 						wx.sendSocketMessage({ data: str });
 					},
 				};
@@ -5742,6 +5743,7 @@ var $pres = null;
 					var closeString = Strophe.serialize(close);
 					this._conn.rawOutput(closeString);
 					try {
+						console.log('发送')
 						this.socket.send(closeString);
 					} catch (e) {
 						Strophe.info("Couldn't send <close /> tag.");
@@ -5861,16 +5863,26 @@ var $pres = null;
 						if (data[i] !== null) {
 							var stanza, rawStanza;
 							if (data[i] === "restart") {
+								console.log('_onIdle 1')
 								stanza = this._buildStream().tree();
 							} else {
+								console.log('_onIdle 2')
 								stanza = data[i];
 							}
 							rawStanza = Strophe.serialize(stanza);
+
+							console.log('_onIdle stanza' ,stanza)
 							this._conn.xmlOutput(stanza);
 							this._conn.rawOutput(rawStanza);
 
 							// onsend todo
-							wx.sendSocketMessage({data: rawStanza})
+							try{
+								wx.sendSocketMessage({data: rawStanza})
+							} catch (e){
+								console.log('eeeeeeee', e)
+								this._changeConnectStatus(Strophe.Status.DISCONNECTED, null);
+							}
+							
 							//this.socket.send(rawStanza);
 						}
 					}
@@ -5958,6 +5970,7 @@ var $pres = null;
 				this._conn.rawOutput(startString);
 				// onsend todo
 				//console.log('startString', startString)
+				console.log('_onOpen _onOpen _onOpen')
 				wx.sendSocketMessage({data: startString})
 				//this.socket.send(rawStanza);
 				// this.socket.send(startString);
