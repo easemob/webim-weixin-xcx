@@ -5590,6 +5590,9 @@ var $pres = null;
 				})
 
 				function creatSocket () {
+					wx.connectSocket({
+						url: me._conn.service,
+					})
 					setTimeout(()=>{
 						var SocketTask = wx.connectSocket({
 							url: me._conn.service,
