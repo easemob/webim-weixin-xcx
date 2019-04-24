@@ -5586,7 +5586,7 @@ var $pres = null;
 					//me._conn._changeConnectStatus(Strophe.Status.DISCONNECTED, e);
 				});
 				wx.onSocketError(function(e){
-					creatSocket()
+					me.socket.onclose.call(me);
 				})
 
 				function creatSocket () {

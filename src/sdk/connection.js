@@ -439,20 +439,23 @@ function _loginCallback(status, msg, conn) {
 		}
 		conn.context.status = _code.STATUS_CLOSING;
 	} else if (status == Strophe.Status.DISCONNECTED) {
-		if (conn.isOpened()) {
+		//if (conn.isOpened()) {
 			if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
 				if (conn.autoReconnectNumTotal == 0) {conn.onReconnect()}
 				conn.reconnect();
 				return;
+			} else if (conn.autoReconnectNumTotal == conn.autoReconnectNumMax) {
+				conn.context.status = _code.STATUS_CLOSED;
+				conn.clear();
+				conn.onClosed();
+				conn.stopHeartBeat();
 			}
 			error = {
 				type: _code.WEBIM_CONNCTION_DISCONNECTED
 			};
 			conn.onError(error);
-		}
-		conn.context.status = _code.STATUS_CLOSED;
-		conn.clear();
-		conn.onClosed();
+		//}
+		
 	} else if (status == Strophe.Status.AUTHFAIL) {
 		error = {
 			type: _code.WEBIM_CONNCTION_AUTH_ERROR

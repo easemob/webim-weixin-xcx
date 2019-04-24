@@ -372,6 +372,11 @@ App({
 		this.conn.reopen();
 	},
 
+	onhide(){
+		WebIM.conn.close();
+		WebIM.conn.stopHeartBeat();
+	},
+
 	onUnload(){
 		WebIM.conn.close();
 		WebIM.conn.stopHeartBeat();
