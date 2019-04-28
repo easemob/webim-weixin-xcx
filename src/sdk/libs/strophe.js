@@ -5404,6 +5404,7 @@ var $pres = null;
 		}
 	}(this, function (Strophe, $build) {
 		//console.log(Strophe)
+		var _socketTask = undefined;
 		/** Class: Strophe.WebSocket
 		 *  _Private_ helper class that handles WebSocket Connections
 		 *
@@ -5588,9 +5589,11 @@ var $pres = null;
 				wx.onSocketError(function(e){
 					me.socket.onclose.call(me);
 				})
-
 				function creatSocket () {
-					wx.closeSocket()
+					if (_socketTask) {
+						_socketTask.close();
+						_socketTask = undefined;
+					}
 					setTimeout(()=>{
 						var SocketTask = wx.connectSocket({
 							url: me._conn.service,
@@ -5605,6 +5608,7 @@ var $pres = null;
 								console.log('连接成功', e)
 							}
 						});
+						_socketTask = SocketTask;
 					}, 1000)
 				}
 				creatSocket()
