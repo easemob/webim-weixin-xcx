@@ -375,7 +375,7 @@ function appendElement(el, domBuilder, parseStack) {
         } else {
             localName = qName;
             prefix = null
-            nsPrefix = qName === 'xmlns' && ''
+            nsPrefix = ''
         }
         //can not set prefix,because prefix !== ''
         a.localName = localName;
