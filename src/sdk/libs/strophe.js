@@ -2858,7 +2858,7 @@ var $pres = null;
 			 *     [XMLElement] |
 			 *     Strophe.Builder) elem - The stanza to send.
 			 */
-			send: function (elem) {
+			send: function (elem, fail) {
 				// console.log(elem)
 				if (elem === null) {
 					return;
@@ -2868,13 +2868,11 @@ var $pres = null;
 						this._queueData(elem[i]);
 					}
 				} else if (typeof(elem.tree) === "function") {
-					//console.log("ffffffffffff")
 					this._queueData(elem.tree());
 				} else {
 					this._queueData(elem);
 				}
-
-				this._proto._send();
+				this._proto._send(fail);
 			},
 
 			/** Function: flush
@@ -2885,11 +2883,11 @@ var $pres = null;
 			 *  several send()s are called in succession. flush() can be used to
 			 *  immediately send all pending data.
 			 */
-			flush: function () {
+			flush: function (fail) {
 				// cancel the pending idle period and run the idle function
 				// immediately
 				clearTimeout(this._idleTimeout);
-				this._onIdle();
+				this._onIdle(fail);
 			},
 
 			/** Function: sendIQ
@@ -3985,7 +3983,7 @@ var $pres = null;
 			 *  This handler is called every 100ms to fire timed handlers that
 			 *  are ready and keep poll requests going.
 			 */
-			_onIdle: function () {
+			_onIdle: function (fail) {
 				var i, thand, since, newList;
 
 				// add timed handlers scheduled for addition
@@ -4024,13 +4022,13 @@ var $pres = null;
 
 				clearTimeout(this._idleTimeout);
 
-				this._proto._onIdle();
+				this._proto._onIdle(fail);
 
 				// reactivate the timer only if connected
 				if (this.connected) {
 					// XXX: setTimeout should be called only with function expressions (23974bc1)
 					this._idleTimeout = setTimeout(function () {
-						this._onIdle();
+						this._onIdle(fail);
 					}.bind(this), 100);
 				}
 			}
@@ -5327,13 +5325,13 @@ var $pres = null;
 			 *
 			 * Just triggers the RequestHandler to send the messages that are in the queue
 			 */
-			_send: function () {
+			_send: function (fail) {
 				clearTimeout(this._conn._idleTimeout);
 				this._throttledRequestHandler();
 
 				// XXX: setTimeout should be called only with function expressions (23974bc1)
 				this._conn._idleTimeout = setTimeout(function () {
-					this._onIdle();
+					this._onIdle(fail);
 				}.bind(this._conn), 100);
 			},
 
@@ -5555,6 +5553,16 @@ var $pres = null;
 			_connect: function(){
 				// Ensure that there is no open WebSocket from a previous Connection.
 				// Create the new WobSocket
+				var isAndroid = false
+				var res = wx.getSystemInfoSync()
+				if(res.platform == "devtools"){
+				   isAndroid = false
+			    }else if(res.platform == "ios"){
+			       isAndroid = false
+			    }else if(res.platform == "android"){
+			       isAndroid = true
+			    }
+
 				var me = this;
 				this.socket = {
 					onopen: this._onOpen,
@@ -5565,41 +5573,20 @@ var $pres = null;
 						wx.sendSocketMessage({ data: str });
 					},
 				};
-				// console.log("isSocketConnnected", isSocketConnnected);
-				wx.onSocketOpen(function (res) {
-					console.log("WebSocket 连接已打开！");
-					isSocketConnnected = true
-					// wx.sendSocketMessage({
-					//     data: "Hello,World:"
-					// });
-					me.socket.onopen.call(me);
-				});
-				wx.onSocketMessage(function(msg){
-					//console.log("onSocketMessage", msg, JSON.stringify(msg));
-					me.socket.onmessage.call(me, msg);
-				});
-				wx.onSocketClose(function(e){
-					console.log("WebSocket 连接已经关闭！");
-					me._conn.connected = true;
-					me.socket.onclose.call(me);
-					// 外部回调，需要设计一个更合适的
-					me._onSocketClose && me._onSocketClose(e);
-					//me._conn._changeConnectStatus(Strophe.Status.DISCONNECTED, e);
-				});
-				wx.onSocketError(function(e){
-					me.socket.onclose.call(me);
-				})
+				
 				function creatSocket () {
 					if (_socketTask) {
+						console.log('有sockettask了。。。')
 						_socketTask.close();
 						_socketTask = undefined;
 					}
+
 					setTimeout(()=>{
 						var SocketTask = wx.connectSocket({
 							url: me._conn.service,
 							fail: function (e) {
 								console.log('连接失败', e)
-								//部分机型从后台切回前台状态有延迟 希望腾讯早点解决吧
+								//部分机型从后台切回前台状态有延迟
 								if (e.errMsg.indexOf('suspend') != -1) {
 									creatSocket()
 								}
@@ -5609,9 +5596,49 @@ var $pres = null;
 							}
 						});
 						_socketTask = SocketTask;
+
+						_socketTask.onOpen(function (res) {
+							console.log("WebSocket 连接已打开！");
+							isSocketConnnected = true
+							// wx.sendSocketMessage({
+							//     data: "Hello,World:"
+							// });
+							me.socket.onopen.call(me);
+						});
+						_socketTask.onMessage(function(msg){
+							//console.log("onSocketMessage", msg, JSON.stringify(msg));
+							me.socket.onmessage.call(me, msg);
+						});
+						_socketTask.onClose(function(e){
+							console.log("WebSocket 连接已经关闭！");
+							isSocketConnnected = false
+							me._conn.connected = true;
+							me.socket.onclose.call(me);
+							// 外部回调，需要设计一个更合适的
+							me._onSocketClose && me._onSocketClose(e);
+							//me._conn._changeConnectStatus(Strophe.Status.DISCONNECTED, e);
+						});
+						_socketTask.onError(function(e){
+							console.log('出错了 出错了')
+							
+						    if (isAndroid) {
+						    	console.log('安卓')
+						       	//这个是安卓操作系统
+						       	isSocketConnnected = false
+								me._conn.connected = true;
+								me.socket.onclose.call(me);
+								// 外部回调，需要设计一个更合适的
+								me._onSocketClose && me._onSocketClose(e);
+						    }else{
+						    	me.socket.onclose.call(me);
+						    }
+							
+						})
+
 					}, 1000)
 				}
 				creatSocket()
+
 			},
 
 			/** PrivateFunction: _connect_cb
@@ -5862,7 +5889,7 @@ var $pres = null;
 			 *
 			 *  sends all queued stanzas
 			 */
-			_onIdle: function () {
+			_onIdle: function (fail) {
 				var data = this._conn._data;
 				if (data.length > 0 && !this._conn.paused) {
 					for (var i = 0; i < data.length; i++) {
@@ -5877,13 +5904,24 @@ var $pres = null;
 
 							this._conn.xmlOutput(stanza);
 							this._conn.rawOutput(rawStanza);
-
 							// onsend todo
-							try{
-								wx.sendSocketMessage({data: rawStanza})
-							} catch (e){
-								this._changeConnectStatus(Strophe.Status.DISCONNECTED, null);
-							}
+								if (isSocketConnnected) {
+									wx.sendSocketMessage({
+										data: rawStanza,
+										fail: function(){
+											console.log('socjet发送失败')
+											fail&&fail('socket error')
+										},
+										success: function(){
+
+										}
+									})
+								}else{
+									//this._conn._doDisconnect();
+									isSocketConnnected = false
+									fail&&fail('socket disconnnected')
+									//this._changeConnectStatus(Strophe.Status.DISCONNECTED, null);
+								}
 							
 							//this.socket.send(rawStanza);
 						}
@@ -5972,6 +6010,7 @@ var $pres = null;
 				this._conn.rawOutput(startString);
 				// onsend todo
 				//console.log('startString', startString)
+				//_socketTask.send({data: startString})
 				wx.sendSocketMessage({data: startString})
 				//this.socket.send(rawStanza);
 				// this.socket.send(startString);
@@ -5997,8 +6036,8 @@ var $pres = null;
 			 *
 			 * Just flushes the messages that are in the queue
 			 */
-			_send: function () {
-				this._conn.flush();
+			_send: function (flush) {
+				this._conn.flush(flush);
 			},
 
 			/** PrivateFunction: _sendRestart

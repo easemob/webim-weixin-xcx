@@ -1,28 +1,28 @@
 {
-	"pages": [
-		"pages/login/login",
-		"pages/notification_groupDetail/groupDetail",
-		"pages/notification_friendDetail/friendDetail",
-		
-		"pages/login_token/login_token",
-		"pages/main/main",
-		"pages/chatroom/chatroom",
-		"pages/index/index",
-		"pages/register/register",
-		"pages/add_new/add_new",
-		"pages/chat/chat",
-		"pages/notification/notification",
-		"pages/setting_general/setting_general",
-		"pages/groups/groups",
-		"pages/inform/inform",
-		"pages/setting/setting",
-		"pages/add_groups/add_groups",
-		"pages/groupChatRoom/groupChatRoom",
-		"pages/groupSetting/groupSetting"
-	],
-	"window": {
-		"backgroundTextStyle": "dark",
-		"navigationBarBackgroundColor": "#fff", 
-		"navigationBarTextStyle": "black"
-	}
+  "pages": [
+    "pages/login/login",
+    "pages/notification_groupDetail/groupDetail",
+    "pages/notification_friendDetail/friendDetail",
+    "pages/login_token/login_token",
+    "pages/main/main",
+    "pages/chatroom/chatroom",
+    "pages/index/index",
+    "pages/register/register",
+    "pages/add_new/add_new",
+    "pages/chat/chat",
+    "pages/notification/notification",
+    "pages/setting_general/setting_general",
+    "pages/groups/groups",
+    "pages/inform/inform",
+    "pages/setting/setting",
+    "pages/add_groups/add_groups",
+    "pages/groupChatRoom/groupChatRoom",
+    "pages/groupSetting/groupSetting"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json"
 }

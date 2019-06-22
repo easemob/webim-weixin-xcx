@@ -91,6 +91,7 @@ App({
 
 	onLaunch(){
 		// 调用 API 从本地缓存中获取数据
+		wx.setInnerAudioOption({obeyMuteSwitch: false})
 		var me = this;
 		var logs = wx.getStorageSync("logs") || [];
 		logs.unshift(Date.now());
@@ -133,9 +134,16 @@ App({
 					duration: 2000
 				});
 			},
+			onSocketConnected(){
+				wx.showToast({
+					title: "socket连接成功",
+					duration: 2000
+				});
+			},
 			onClosed(){
 				wx.showToast({
-					title: "网络已断开连接",
+					title: "网络已断开",
+					icon: 'none',
 					duration: 2000
 				});
 				wx.redirectTo({
@@ -212,10 +220,21 @@ App({
 				// 	break;
 				// 删除好友
 				case "unavailable":
-					console.log('delete')
 					disp.fire("em.xmpp.contacts.remove");
+					disp.fire("em.xmpp.group.leaveGroup", message);
 					break;
 
+				case 'deleteGroupChat':
+					disp.fire("em.xmpp.invite.deleteGroup", message);
+					break;
+
+				case "leaveGroup": 
+					disp.fire("em.xmpp.group.leaveGroup", message);
+					break;
+
+				case "removedFromGroup": 
+					disp.fire("em.xmpp.group.leaveGroup", message);
+					break;
 				// case "joinChatRoomSuccess":
 				// 	wx.showToast({
 				// 		title: "JoinChatRoomSuccess",
@@ -244,12 +263,14 @@ App({
 				// }
 			},
 
-			// onVideoMessage(message){
-			// 	console.log("onVideoMessage: ", message);
-			// 	if(message){
-			// 		msgStorage.saveReceiveMsg(message, msgType.VIDEO);
-			// 	}
-			// },
+			onVideoMessage(message){
+				console.log("onVideoMessage: ", message);
+				if(message){
+					msgStorage.saveReceiveMsg(message, msgType.VIDEO);
+				}
+				calcUnReadSpot(message);
+				ack(message);
+			},
 
 			onAudioMessage(message){
 				console.log("onAudioMessage", message);
@@ -326,6 +347,7 @@ App({
 
 			// 各种异常
 			onError(error){
+				console.log(error)
 				// 16: server-side close the websocket connection
 				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED && !logout){
 					if(WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax){
@@ -364,26 +386,36 @@ App({
 					wx.hideLoading()
 					disp.fire("em.xmpp.error.tokenErr");
 				}
+				if (error.type == 'socket_error') {///sendMsgError
+					console.log('socket_errorsocket_error', error)
+					wx.showToast({
+						title: "网络已断开",
+						icon: 'none',
+						duration: 2000
+					});
+					disp.fire("em.xmpp.error.sendMsgErr", error);
+				}
 			},
 		});
 		this.checkIsIPhoneX();
 	},
-	onShow(){
-		this.conn.reopen();
-	},
+	// onShow(){
+	// 	WebIM.conn.reconnect();
+	// },
 
-	onhide(){
-		WebIM.conn.close();
-		WebIM.conn.stopHeartBeat();
-	},
+	// onHide(){
 
-	onUnload(){
-		WebIM.conn.close();
-		WebIM.conn.stopHeartBeat();
-		wx.redirectTo({
-			url: "../login/login?myName=" + myName
-		});
-	},
+	// 	WebIM.conn.close();
+	// 	WebIM.conn.stopHeartBeat();
+	// },
+
+	// onUnload(){
+	// 	WebIM.conn.close();
+	// 	WebIM.conn.stopHeartBeat();
+	// 	wx.redirectTo({
+	// 		url: "../login/login?myName=" + myName
+	// 	});
+	// },
 
 	onLoginSuccess: function(myName){
 		wx.hideLoading()
@@ -424,3 +456,4 @@ App({
 	},
 
 });
+

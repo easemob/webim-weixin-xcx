@@ -1,5 +1,5 @@
 var WebIM = require("../../utils/WebIM")["default"];
-
+let disp = require("../../utils/broadcast");
 Page({
 	data: {
 		roomId: "",			// 群id
@@ -13,10 +13,20 @@ Page({
 	},
 
 	onLoad: function(options){
+		let me = this;
 		this.setData({
 			roomId: JSON.parse(options.groupInfo).roomId,
 			groupName: JSON.parse(options.groupInfo).groupName,
 			currentName: JSON.parse(options.groupInfo).myName
+		});
+
+		disp.on("em.xmpp.group.leaveGroup", function(){
+			var pageStack = getCurrentPages();
+			// 判断是否当前路由是本页
+			if(pageStack[pageStack.length - 1].route === me.route){
+				me.getGroupMember();
+				this.getGroupInfo();
+			}
 		});
 		// console.log(this.data.roomId, this.data.groupName, this.data.currentName);
 		// 获取群成员
@@ -139,6 +149,7 @@ Page({
 						}), 2000);
 					},
 				});
+				disp.fire("em.xmpp.invite.deleteGroup");//退群
 			},
 			error: function(err){
 				wx.showToast({

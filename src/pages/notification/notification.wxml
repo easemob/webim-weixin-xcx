@@ -14,7 +14,7 @@
 
 <view class="{{isIPX?'chatRoom_tab_X':'chatRoom_tab'}}">
 	<view class="tableBar" bindtap="tab_chat">
-		<view wx:if="{{ unReadSpotNum > 0 }}" class="em-unread-spot">{{ unReadSpotNum }}</view>
+		<view wx:if="{{ unReadSpotNum > 0 }}" class="em-unread-spot {{unReadSpotNum == '99+'?'em-unread-spot-litleFont':''}}">{{ unReadSpotNum }}</view>
 		<image class="{{unReadSpotNum > 0 ? 'haveSpot': ''}}" src="../../images/session@2x.png"></image>
 		<text>聊天</text>
 	</view>

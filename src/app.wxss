@@ -31,9 +31,12 @@ page {
 	left: 110rpx;
 	top: 4rpx;
 	color: #fff;
-	font-size: 12px;
+	font-size: 24rpx;
 	text-align: center;
 	line-height: 32rpx;
+}
+.em-unread-spot-litleFont {
+	font-size: 16rpx;
 }
 .chatRoom_tab {
 	width: 100%;

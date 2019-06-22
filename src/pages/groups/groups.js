@@ -19,6 +19,15 @@ Page({
 				me.listGroups();
 			}
 		});
+
+		disp.on("em.xmpp.invite.deleteGroup", function(){
+			var pageStack = getCurrentPages();
+			// 判断是否当前路由是本页
+			if(pageStack[pageStack.length - 1].route === me.route){
+				me.listGroups();
+			}
+		});
+		
 		this.setData({
 			myName: option.myName
 		});

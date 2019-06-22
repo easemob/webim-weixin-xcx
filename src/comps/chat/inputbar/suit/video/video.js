@@ -27,6 +27,7 @@ Component({
 		// 未启用
 		sendVideo(){
 			var me = this;
+			var token = WebIM.conn.context.accessToken
 			wx.chooseVideo({
 				sourceType: ["album", "camera"],
 				maxDuration: 60,
@@ -39,7 +40,8 @@ Component({
 						filePath: tempFilePaths,
 						name: "file",
 						header: {
-							"Content-Type": "multipart/form-data"
+							"Content-Type": "multipart/form-data",
+							Authorization: "Bearer " + token
 						},
 						success(res){
 							var data = res.data;

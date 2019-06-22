@@ -1,4 +1,5 @@
 let msgStorage = require("../msgstorage");
+let disp = require("../../../utils/broadcast");
 let LIST_STATUS = {
 	SHORT: "scroll_view_change",
 	NORMAL: "scroll_view"
@@ -6,7 +7,8 @@ let LIST_STATUS = {
 
 let page = 0;
 let Index = 0;
-
+let curMsgMid = ''
+let isFail = false
 Component({
 	properties: {
 		username: {
@@ -67,7 +69,28 @@ Component({
 		},
 
 		renderMsg(renderableMsg, type, curChatMsg, sessionKey, isnew){
+			let me = this
+			if (curChatMsg.length > 1) {
+				this.data.chatMsg.map(function(elem, index) {
+					curChatMsg.map(function(item, i) {
+						if(elem.mid == item.mid){
+							//me.data.chatMsg.splice(index, 1)
+							curChatMsg.splice(i, 1)
+						}
+					})
+				})
+			}
+			
+
 			var historyChatMsgs = wx.getStorageSync("rendered_" + sessionKey) || [];
+			// if (curChatMsg.length) {
+			// 	console.log(curMsgMid.substring(curMsgMid.length - 10) , curChatMsg[0].mid.substring(curChatMsg[0].mid.length - 10))
+			// }
+			
+			// if(curChatMsg.length && curMsgMid.substring(curMsgMid.length - 10) == curChatMsg[curChatMsg.length - 1].mid.substring(curChatMsg[0].mid.length - 10)){
+			// 	//curChatMsg[curChatMsg.length - 1].msg.data[0].isSuc = true
+			// 	curChatMsg[curChatMsg.length - 1].isSuc = true
+			// }
 			historyChatMsgs = historyChatMsgs.concat(curChatMsg);
 
 			//console.log('当前历史',renderableMsg)
@@ -87,14 +110,48 @@ Component({
 				});
 			}
 			
-
 			wx.setStorageSync("rendered_" + sessionKey, historyChatMsgs);
-			wx.setStorageSync(sessionKey, null);
+
+			let chatMsg = wx.getStorageSync(sessionKey) || [];
+			chatMsg.map(function(item, index) {
+				curChatMsg.map(function(item2, index2) {
+					if (item2.mid == item.mid) {
+						chatMsg.splice(index, 1)
+					}
+				})
+			})
+			
+
+			wx.setStorageSync(sessionKey, chatMsg);
 			Index = historyChatMsgs.slice(-10).length;
 			wx.pageScrollTo({
 			  	scrollTop: 9999,
 			})
+
+			if (isFail) {
+				this.renderFail(sessionKey)
+			}
 		},
+		renderFail(sessionKey){
+			let me = this
+			let msgList = me.data.chatMsg
+			msgList.map((item) =>{
+				if (item.mid.substring(item.mid.length - 10) == curMsgMid.substring(curMsgMid.length - 10)) {
+					item.msg.data[0].isFail = true
+					item.isFail = true
+
+					me.setData({
+						chatMsg: msgList
+					})
+				}
+			})
+			if (me.curChatMsg[0].mid == curMsgMid) {
+				me.curChatMsg[0].msg.data[0].isShow = false;
+				me.curChatMsg[0].isShow = false
+			}
+			wx.setStorageSync("rendered_" + sessionKey, msgList);
+			isFail = false
+		}
 	},
 
 	// lifetimes
@@ -126,18 +183,73 @@ Component({
 		let chatMsg = wx.getStorageSync(sessionKey) || [];
 
 		this.renderMsg(null, null, chatMsg, sessionKey);
+		wx.setStorageSync(sessionKey, null);
+		// disp.on("em.chat.sendSuccess", function(mid){
+		// 	curMsgMid = mid
+		// 	console.log('发送过去了', mid)
+		// 	let msgList = me.data.chatMsg
+		// 	msgList.map((item) =>{
+		// 		if (item.mid.substring(item.mid.length - 10) == mid.substring(mid.length - 10)) {
 
-		msgStorage.on("newChatMsg", function(renderableMsg, type, curChatMsg){
+		// 			console.log(111111, item)
+
+		// 			item.msg.data[0].isSuc = true
+		// 			item.isSuc = true
+
+		// 			me.setData({
+		// 				chatMsg: msgList
+		// 			})
+		// 		}
+		// 	})
+		// 	if (me.curChatMsg[0].mid == curMsgMid) {
+		// 		me.curChatMsg[0].msg.data[0].isShow = true
+		// 		me.curChatMsg[0].isShow = true
+		// 	}
+		// 	wx.setStorageSync("rendered_" + sessionKey, msgList);
+		// 	console.log('msgList', msgList)
+			
+		// })
+
+		disp.on('em.xmpp.error.sendMsgErr', function(err) {
+			curMsgMid = err.data.mid
+			isFail = true
+			return
+			console.log('发送失败了')
+			let msgList = me.data.chatMsg
+			msgList.map((item) =>{
+				if (item.mid.substring(item.mid.length - 10) == curMsgMid.substring(curMsgMid.length - 10)) {
+					item.msg.data[0].isFail = true
+					item.isFail = true
+
+					me.setData({
+						chatMsg: msgList
+					})
+				}
+			})
+			if (me.curChatMsg[0].mid == curMsgMid) {
+				me.curChatMsg[0].msg.data[0].isShow = false;
+				me.curChatMsg[0].isShow = false
+			}
+			wx.setStorageSync("rendered_" + sessionKey, msgList);
+		});
+
+		msgStorage.on("newChatMsg", function(renderableMsg, type, curChatMsg, sesskey){
+			me.curChatMsg = curChatMsg;
 			if(!me.__visibility__) return;
 			// 判断是否属于当前会话
 			if(username.groupId){
 				// 群消息的 to 是 id，from 是 name
 				if(renderableMsg.info.from == username.groupId || renderableMsg.info.to == username.groupId){
-					me.renderMsg(renderableMsg, type, curChatMsg, sessionKey, 'newMsg');
+					if (sesskey == sessionKey) {
+						me.renderMsg(renderableMsg, type, curChatMsg, sessionKey, 'newMsg');
+					}
+					
 				}
 			}
 			else if(renderableMsg.info.from == username.your || renderableMsg.info.to == username.your){
-				me.renderMsg(renderableMsg, type, curChatMsg, sessionKey, 'newMsg');
+				if (sesskey == sessionKey) {
+					me.renderMsg(renderableMsg, type, curChatMsg, sessionKey, 'newMsg');
+				}
 			}
 
 		});
