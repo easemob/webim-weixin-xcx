@@ -44,6 +44,10 @@
 			</view>
 			<image class="avatar" src="../../../images/theme@2x.png"/>
 			<view class="msg">
+				<image
+				class="err {{(item.style == 'self' && item.isFail) ? 'show' : 'hide'}}"
+				src="../../../images/msgerr.png"/>
+
 				<image wx:if="{{item.style == 'self'}}" src="../../../images/poprightarrow@2x.png" class="msg_poprightarrow"/>
 				<image wx:if="{{item.style == ''}}" src="../../../images/popleftarrow@2x.png" class="msg_popleftarrow"/>
 				<view wx:if="{{ item.msg.type == 'img' || item.msg.type == 'video' }}">

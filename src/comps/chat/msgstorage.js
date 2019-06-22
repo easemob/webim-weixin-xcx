@@ -77,6 +77,7 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 		sendableMsg = {
 			id: receiveMsg.id,
 			type: type,
+			accessToken: receiveMsg.token || receiveMsg.accessToken,
 			body: {
 				id: receiveMsg.id,
 				length: receiveMsg.length,
@@ -119,34 +120,40 @@ msgStorage.saveMsg = function(sendableMsg, type, receiveMsg){
 	}
 	let curChatMsg = wx.getStorageSync(sessionKey) || [];
 	let renderableMsg = msgPackager(sendableMsg, type, myName);
-	if(type == msgType.AUDIO) renderableMsg.msg.length = sendableMsg.body.length;
+	if(type == msgType.AUDIO) {
+		renderableMsg.msg.length = sendableMsg.body.length;
+		renderableMsg.msg.token = sendableMsg.accessToken;
+	}
 	curChatMsg.push(renderableMsg);
 	//console.log('renderableMsgrenderableMsg', renderableMsg)
 	if(type == msgType.AUDIO){
-		// 如果是音频则请求服务器转码
-		wx.downloadFile({
-			url: sendableMsg.body.body.url,
-			header: {
-				"X-Requested-With": "XMLHttpRequest",
-				Accept: "audio/mp3",
-				Authorization: "Bearer " + sendableMsg.accessToken
-			},
-			success(res){
-				// wx.playVoice({
-				// 	filePath: res.tempFilePath
-				// });
-				renderableMsg.msg.url = res.tempFilePath;
+		renderableMsg.msg.token = sendableMsg.accessToken;
+		//如果是音频则请求服务器转码
+		// wx.downloadFile({
+		// 	url: sendableMsg.body.body.url,
+		// 	header: {
+		// 		"X-Requested-With": "XMLHttpRequest",
+		// 		Accept: "audio/mp3",
+		// 		Authorization: "Bearer " + sendableMsg.accessToken
+		// 	},
+		// 	success(res){
+		// 		// wx.playVoice({
+		// 		// 	filePath: res.tempFilePath
+		// 		// });
+		// 		renderableMsg.msg.url = res.tempFilePath;
 				
-				save();
-			},
-			fail(e){
-				console.log("downloadFile failed", e);
-			}
-		});
+		// 		save();
+		// 	},
+		// 	fail(e){
+		// 		console.log("downloadFile failed", e);
+		// 	}
+		// });
 	}
-	else{
-		save();
-	}
+	// else{
+	// 	save();
+	// }
+
+	save();
 	function save(){
 		wx.setStorage({
 			key: sessionKey,
@@ -155,7 +162,7 @@ msgStorage.saveMsg = function(sendableMsg, type, receiveMsg){
 				if (type == msgType.AUDIO || type == msgType.VIDEO) {
 					disp.fire('em.chat.audio.fileLoaded');
 				}
-				me.fire("newChatMsg", renderableMsg, type, curChatMsg);
+				me.fire("newChatMsg", renderableMsg, type, curChatMsg, sessionKey);
 			}
 		});
 	}

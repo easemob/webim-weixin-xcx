@@ -140,3 +140,15 @@
 .template {
 	display: inline;
 }
+.err{
+	width: 32rpx;
+	height: 32rpx;
+	position: absolute;
+	left: -40rpx;
+}
+.hide{
+	display: none;
+}
+.show{
+	display: block;
+}

@@ -3,6 +3,7 @@ let msgType = require("../../../msgtype");
 let RECORD_CONST = require("record_status");
 let RecordStatus = RECORD_CONST.RecordStatus;
 let RecordDesc = RECORD_CONST.RecordDesc;
+let disp = require("../../../../../utils/broadcast");
 let RunAnimation = false
 const InitHeight = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
 Component({
@@ -38,7 +39,6 @@ Component({
 		},
 
 		handleRecordingMove(e){
-			console.log('move')
 			var touches = e.touches[0];
 			var changedTouches = this.data.changedTouches;
 			if(!changedTouches){
@@ -146,25 +146,18 @@ Component({
 			let recorderManager = this.data.recorderManager;
 			// 向上滑动状态停止：取消录音发放
 			if(this.data.recordStatus == RecordStatus.SWIPE){
-				console.log('swip')
 				this.setData({
 					recordStatus: RecordStatus.RELEASE
 				});
-				console.log(this.data.recordStatus)
 			}
 			else{
-				console.log('hide')
 				this.setData({
 					recordStatus: RecordStatus.HIDE,
 					recordClicked: false
 				});
-
-				console.log(this.data.recordStatus)
 			}
 
 			recorderManager.onStop((res) => {
-				
-				console.log(this.data.recordStatus)
 				// console.log("结束录音...", res);
 				if(this.data.recordStatus == RecordStatus.RELEASE){
 					console.log("user canceled");
@@ -198,36 +191,45 @@ Component({
 		uploadRecord(tempFilePath, dur){
 			var str = WebIM.config.appkey.split("#");
 			var me = this;
+			var token = WebIM.conn.context.accessToken
 			wx.uploadFile({
 				url: "https://a1.easemob.com/" + str[0] + "/" + str[1] + "/chatfiles",
 				filePath: tempFilePath,
 				name: "file",
 				header: {
-					"Content-Type": "multipart/form-data"
+					"Content-Type": "multipart/form-data",
+					Authorization: "Bearer " + token
 				},
 				success(res){
 					// 发送 xmpp 消息
-					var msg = new WebIM.message(msgType.AUDIO, WebIM.conn.getUniqueId());
+					var id = WebIM.conn.getUniqueId();
+					var msg = new WebIM.message(msgType.AUDIO, id);
 					var dataObj = JSON.parse(res.data);
 					// 接收消息对象
 					msg.set({
 						apiUrl: WebIM.config.apiURL,
+						accessToken: token,
 						body: {
 							type: msgType.AUDIO,
 							url: dataObj.uri + "/" + dataObj.entities[0].uuid,
 							filetype: "",
 							filename: tempFilePath,
+							accessToken: token,
 							length: Math.ceil(dur / 1000)
 						},
 						from: me.data.username.myName,
 						to: me.getSendToParam(),
 						roomType: false,
 						chatType: me.data.chatType,
+						success: function (argument) {
+							disp.fire('em.chat.sendSuccess', id);
+						}
 					});
 					if(me.isGroupChat()){
 						msg.setGroup("groupchat");
 					}
 					msg.body.length = Math.ceil(dur / 1000);
+					//console.log('发送的语音消息', msg.body)
 					WebIM.conn.send(msg.body);
 
 					me.triggerEvent(

@@ -4,16 +4,17 @@
 		<input
 			class="f news"
 			type="text"
+			value="{{ inputMessage }}"
 			cursor-spacing="65"
 			confirm-type="send"
 			bindconfirm="sendMessage"
-			value="{{ inputMessage }}"
+			bindinput="bindMessage"
+			bindtap="focus"
+			bindfocus="focus"
+			bindblur="blur"
 			placeholder="输入新消息"
 			placeholder-style="color:#CFCFCF; padding-left:5px;"
-			bindinput="bindMessage"
-			bind:tap="focus"
-			bind:focus="focus"
-			bind:blur="blur" />
+			 />
 
 		<!-- <button class="send_btn" bind:tap="sendMessage">发送</button> -->
 

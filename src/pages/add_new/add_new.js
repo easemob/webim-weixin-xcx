@@ -51,8 +51,9 @@ Page({
 
 	add_friend: function(){
 		let me = this;
+		let myName = wx.getStorageSync("myUsername");
 		console.log(me.data.friend_name)
-		if(me.data.friend_name == ""){
+		if(me.data.friend_name == "" || me.data.friend_name.toLowerCase() == myName.toLowerCase()){
 			me.toastFilled('添加失败')
 			return;
 		}

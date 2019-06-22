@@ -2,6 +2,7 @@ let WebIM = require("../../utils/WebIM")["default"];
 let disp = require("../../utils/broadcast");
 let systemReady = false;
 let canPullDownreffesh = true;
+let oHeight = [];
 Page({
 	data: {
 		search_btn: true,
@@ -38,7 +39,10 @@ Page({
 		});
 
 		disp.on("em.xmpp.contacts.remove", function(message){
-			me.getRoster();
+			var pageStack = getCurrentPages();
+			if(pageStack[pageStack.length - 1].route === me.route){
+				me.getRoster();
+			}
 		});
 		
 		//监听未读“聊天”
@@ -55,7 +59,10 @@ Page({
 			});
 		});
 		disp.on("em.xmpp.subscribed", function(){
-			me.getRoster();
+			var pageStack = getCurrentPages();
+			if(pageStack[pageStack.length - 1].route === me.route){
+				me.getRoster();
+			}
 		});
 		
 		this.setData({
@@ -339,11 +346,11 @@ Page({
 			      	showFixedTitile: false
 			    });
 		    }
-		    for (let i in this.data.oHeight){
-		      	if (e.detail.scrollTop - 149 < this.data.oHeight[i].height){
+		    for (let i in oHeight){
+		      	if (e.detail.scrollTop - 149 < oHeight[i].height){
 			        this.setData({
-			          	isActive: this.data.oHeight[i].key,
-			          	fixedTitle: this.data.oHeight[i].name
+			          	isActive: oHeight[i].key,
+			          	fixedTitle: oHeight[i].name
 			        });
 			        return false;
 		      	}
@@ -374,14 +381,18 @@ Page({
     		member.sort((a, b) => a.initial.charCodeAt(0) - b.initial.charCodeAt(0))
           	var someTtitle = null;
           	var someArr=[];
+
           	for(var i=0; i< member.length; i++){
             	var newBrands = { brandId: member[i].jid, name: member[i].name };
+
             	if (member[i].initial == '#') {
-            		var lastObj = {
-		                id: i,
-		                region: '#',
-		                brands: []
-		            };
+            		if (!lastObj) {
+            			var lastObj = {
+			                id: i,
+			                region: '#',
+			                brands: []
+			            };
+            		}
 		            lastObj.brands.push(newBrands);
             	} else {
             		if (member[i].initial != someTtitle){
@@ -426,9 +437,9 @@ Page({
             wx.createSelectorQuery().select('#inToView' + someArr[j].id).boundingClientRect(function (rect) {
               	number = rect.height + number;
               	var newArry = [{ 'height': number, 'key': rect.dataset.id, "name": someArr[j].region}]
-              	that.setData({
-                	oHeight: that.data.oHeight.concat(newArry)
-              	})
+              	//that.setData({
+                	oHeight = oHeight.concat(newArry)
+              	//})
             }).exec();
         };
     },

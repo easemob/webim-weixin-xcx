@@ -154,6 +154,7 @@ var StropheAll = require("./libs/strophe");
 			file: this.value,
 			filename: this.filename,
 			apiUrl: opt.apiUrl,
+			accessToken: opt.accessToken,
 			to: opt.to,
 			from: opt.from,
 			type: this.type,

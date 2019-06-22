@@ -25,6 +25,16 @@ Page({
 			});
 		});
 
+		//监听解散群
+		disp.on("em.xmpp.invite.deleteGroup", function(){
+			me.listGroups();
+			me.getRoster();
+			me.setData({
+				arr: me.getChatList(),
+				messageNum: getApp().globalData.saveFriendList.length
+			});
+		});
+
 		//监听未读消息数
 		disp.on("em.xmpp.unreadspot", function(message){
 			me.setData({

@@ -413,14 +413,15 @@ function _loginCallback(status, msg, conn) {
 			canSend: supportSedMessage,
 			accessToken: conn.context.accessToken
 		});
+		conn.onSocketConnected()
 	} else if (status == Strophe.Status.DISCONNECTING) {
 		if (conn.isOpened()) {
 			if(conn.autoReconnectNumTotal < conn.autoReconnectNumMax){
-
 				if (conn.autoReconnectNumTotal == 0) {conn.onReconnect()}
 				conn.reconnect();
 				return;
 			} else if(conn.autoReconnectNumTotal == conn.autoReconnectNumMax){
+				console.log("Err 3")
 				error = {
 					type: _code.WEBIM_CONNCTION_DISCONNECTED
 				};
@@ -450,6 +451,7 @@ function _loginCallback(status, msg, conn) {
 				conn.onClosed();
 				conn.stopHeartBeat();
 			}
+			console.log("Err 4")
 			error = {
 				type: _code.WEBIM_CONNCTION_DISCONNECTED
 			};
@@ -463,6 +465,7 @@ function _loginCallback(status, msg, conn) {
 		conflict && (error.conflict = true);
 		conn.onError(error);
 		conn.clear();
+		conn.stopHeartBeat();
 		wx.closeSocket();
 	} else if (status == Strophe.Status.ERROR) {
 		conn.context.status = _code.STATUS_ERROR;
@@ -471,6 +474,7 @@ function _loginCallback(status, msg, conn) {
 		};
 		conflict && (error.conflict = true);
 		conn.onError(error);
+		conn.stopHeartBeat();
 	}
 }
 
@@ -643,6 +647,7 @@ connection.prototype.listen = function (options) {
 	this.onOpened = options.onOpened || _utils.emptyfn;
 	this.onClosed = options.onClosed || _utils.emptyfn;
 	this.onReconnect = options.onReconnect || _utils.emptyfn;
+	this.onSocketConnected = options.onSocketConnected || _utils.emptyfn;
 	this.onTextMessage = options.onTextMessage || _utils.emptyfn;
 	this.onEmojiMessage = options.onEmojiMessage || _utils.emptyfn;
 	this.onPictureMessage = options.onPictureMessage || _utils.emptyfn;
@@ -834,7 +839,7 @@ connection.prototype.attach = function (options) {
 	stropheConn.attach(jid, sid, rid, callback, wait, hold, wind);
 };
 connection.prototype.close = function (reason) {
-	// this.stopHeartBeat();
+	this.stopHeartBeat();
 	let status = this.context.status;
 	if (status == _code.STATUS_INIT) {
 		return;
@@ -1094,6 +1099,10 @@ connection.prototype.handlePresence = function (msginfo) {
 				}
 			}
 		}
+	}
+	//自己加自己
+	if (info.type == 'subscribe' && info.from == info.to) {
+		return
 	}
 	this.onPresence(info, msginfo);
 };
@@ -1431,9 +1440,20 @@ connection.prototype.handleInviteMessage = function (message) {
 	});
 };
 connection.prototype.sendCommand = function (dom, id) {
+	var me = this;
 	if (this.isOpened()) {
-		this.context.stropheConn.send(dom);
+		var fail = function(reason){
+			var data = {}
+			data.mid = id
+			data.reason = reason
+			me.onError({
+				type: 'socket_error',
+				data: data
+			})
+		}
+		this.context.stropheConn.send(dom, fail);
 	} else {
+		console.log("Err 5")
 		this.onError({
 			type: _code.WEBIM_CONNCTION_DISCONNECTED
 		});
@@ -1478,7 +1498,12 @@ connection.prototype.send = function (message) {
 		message.toJid = toJid;
 		message.id = message.id || this.getUniqueId();
 		_msgHash[message.id] = new _message(message);
-		_msgHash[message.id].send(this);
+		try{
+			_msgHash[message.id].send(this);
+		} catch (e) {
+			console.log('发送失败')
+		}
+		
 	} else if (typeof message === "string") {
 		_msgHash[message] && _msgHash[message].send(this);
 	}

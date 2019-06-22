@@ -1,6 +1,6 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
 let msgType = require("../../../msgtype");
-
+let disp = require("../../../../../utils/broadcast");
 Component({
 	properties: {
 		username: {
@@ -51,6 +51,7 @@ Component({
 		upLoadImage(res){
 			var me = this;
 			var tempFilePaths = res.tempFilePaths;
+			var token = WebIM.conn.context.accessToken
 			wx.getImageInfo({
 				src: res.tempFilePaths[0],
 				success(res){
@@ -71,7 +72,8 @@ Component({
 							filePath: tempFilePaths[0],
 							name: "file",
 							header: {
-								"Content-Type": "multipart/form-data"
+								"Content-Type": "multipart/form-data",
+								Authorization: "Bearer " + token
 							},
 							success(res){
 								var data = res.data;
@@ -95,6 +97,9 @@ Component({
 									to: me.getSendToParam(),
 									roomType: false,
 									chatType: me.data.chatType,
+									success: function (argument) {
+										disp.fire('em.chat.sendSuccess', id);
+									}
 								});
 								if(me.data.chatType == msgType.chatType.CHAT_ROOM){
 									msg.setGroup("groupchat");
