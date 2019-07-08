@@ -356,6 +356,8 @@ function _loginCallback(status, msg, conn) {
 			} else if (type === "invite") {
 				conn.handleInviteMessage(msginfo);
 				return true;
+			} else if(type === "normal") {
+				conn.handleReadMessage(msginfo);
 			}
 			conn.handleMessage(msginfo);
 			return true;
@@ -648,6 +650,7 @@ connection.prototype.listen = function (options) {
 	this.onClosed = options.onClosed || _utils.emptyfn;
 	this.onReconnect = options.onReconnect || _utils.emptyfn;
 	this.onSocketConnected = options.onSocketConnected || _utils.emptyfn;
+	this.onReadMessage = options.onReadMessage || _utils.emptyfn;
 	this.onTextMessage = options.onTextMessage || _utils.emptyfn;
 	this.onEmojiMessage = options.onEmojiMessage || _utils.emptyfn;
 	this.onPictureMessage = options.onPictureMessage || _utils.emptyfn;
@@ -1376,6 +1379,18 @@ connection.prototype.handleMessage = function (msginfo) {
 			});
 		}
 	}
+};
+connection.prototype.handleReadMessage = function (message) {
+	let id = message.getAttribute("id") || "";
+	let parseMsgData = _parseResponseMessage(message);
+    var body = message.getElementsByTagName('body');
+    var mid = 0;
+    mid = body[0].innerHTML;
+    var msg = {
+        id: id,
+        data: parseMsgData
+    };
+    this.onReadMessage(msg)
 };
 connection.prototype.handleReceivedMessage = function (message) {
 	try {
