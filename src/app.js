@@ -165,6 +165,9 @@ App({
 				// 	}
 				// });
 			},
+			onReadMessage(message){
+				//console.log('已读', message)
+			},
 			onPresence(message){
 				//console.log("onPresence", message);
 				switch(message.type){
