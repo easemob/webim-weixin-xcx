@@ -309,19 +309,44 @@ function _parseFriend(queryTag, conn, from) {
 	return rouster;
 }
 
-function _parseMessageType(msginfo) {
-	var msgtype = "normal";
-	var receiveinfo = msginfo.getElementsByTagName("received");
-	if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === "urn:xmpp:receipts") {
-		msgtype = "received";
-	} else {
-		let inviteinfo = msginfo.getElementsByTagName("invite");
-		if (inviteinfo && inviteinfo.length > 0) {
-			msgtype = "invite";
-		}
-	}
-	return msgtype;
-}
+var _parseMessageType = function (msginfo) {
+    var receiveinfo = msginfo.getElementsByTagName('received'),
+        inviteinfo = msginfo.getElementsByTagName('invite'),
+        deliveryinfo = msginfo.getElementsByTagName('delivery'),
+        acked = msginfo.getElementsByTagName('acked'),
+        error = msginfo.getElementsByTagName('error'),
+        msgtype = 'normal';
+    if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
+        msgtype = 'received';
+    } else if (inviteinfo && inviteinfo.length > 0) {
+        msgtype = 'invite';
+    } else if (deliveryinfo && deliveryinfo.length > 0) {
+        msgtype = 'delivery';           // 消息送达
+    } else if (acked && acked.length) {
+        msgtype = 'acked';              // 消息已读
+    } else if (error && error.length) {
+        var errorItem = error[0],
+            userMuted = errorItem.getElementsByTagName('user-muted');
+        if (userMuted && userMuted.length) {
+            msgtype = 'userMuted';
+        }
+    }
+    return msgtype;
+};
+
+// function _parseMessageType(msginfo) {
+// 	var msgtype = "normal";
+// 	var receiveinfo = msginfo.getElementsByTagName("received");
+// 	if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === "urn:xmpp:receipts") {
+// 		msgtype = "received";
+// 	} else {
+// 		let inviteinfo = msginfo.getElementsByTagName("invite");
+// 		if (inviteinfo && inviteinfo.length > 0) {
+// 			msgtype = "invite";
+// 		}
+// 	}
+// 	return msgtype;
+// }
 
 function _handleMessageQueue(conn) {
 	for (let i in _msgHash) {
@@ -356,8 +381,9 @@ function _loginCallback(status, msg, conn) {
 			} else if (type === "invite") {
 				conn.handleInviteMessage(msginfo);
 				return true;
-			} else if(type === "normal") {
+			} else if(type === "acked") {
 				conn.handleReadMessage(msginfo);
+				return true;
 			}
 			conn.handleMessage(msginfo);
 			return true;
@@ -1382,15 +1408,34 @@ connection.prototype.handleMessage = function (msginfo) {
 };
 connection.prototype.handleReadMessage = function (message) {
 	let id = message.getAttribute("id") || "";
-	let parseMsgData = _parseResponseMessage(message);
-    var body = message.getElementsByTagName('body');
+    var msgBodies = message.getElementsByTagName('body');
     var mid = 0;
-    mid = body[0].innerHTML;
+    if (msgBodies) {
+    	let msgBody = msgBodies[0];
+    	let childNodes = msgBody.childNodes;
+    	if (childNodes && childNodes.length > 0) {
+    		let childNode = msgBody.childNodes[0];
+    		if (childNode.nodeType == Strophe.ElementType.TEXT) {
+				let jsondata = childNode.wholeText || childNode.nodeValue;
+				jsondata = jsondata.replace("\n", "<br>");
+				try {
+					let data = JSON.parse(jsondata);
+					mid=data
+				} catch (e) {
+					console.log(2)
+				}
+			}
+    	}
+    }
+
     var msg = {
-        id: id,
-        data: parseMsgData
+        mid: mid
     };
-    this.onReadMessage(msg)
+
+    this.onReadMessage(msg);
+    this.sendReceiptsMessage({
+        id: id
+    });
 };
 connection.prototype.handleReceivedMessage = function (message) {
 	try {
