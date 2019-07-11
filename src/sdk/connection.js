@@ -1416,13 +1416,12 @@ connection.prototype.handleReadMessage = function (message) {
     	if (childNodes && childNodes.length > 0) {
     		let childNode = msgBody.childNodes[0];
     		if (childNode.nodeType == Strophe.ElementType.TEXT) {
-				let jsondata = childNode.wholeText || childNode.nodeValue;
-				jsondata = jsondata.replace("\n", "<br>");
-				try {
-					let data = JSON.parse(jsondata);
-					mid=data
+    			try {
+					let jsondata = childNode.wholeText || childNode.nodeValue;
+					jsondata = jsondata.replace("\n", "<br>");
+					mid=jsondata
 				} catch (e) {
-					console.log(2)
+					console.log(e)
 				}
 			}
     	}
