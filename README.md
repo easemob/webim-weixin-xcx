@@ -1,4 +1,4 @@
-#介绍
+# 介绍
 ******
 环信小程序demo是基于环信im SDK开发的一款即时通讯的小程序。这个demo可以帮助开发者们更轻松的集成环信SDK。可扫码体验：
 ![huanxinIM](./src/images/huanxindemo.jpg)
@@ -7,10 +7,10 @@ demo 包含以下功能
   - 通讯录
   - 通知（加好友、加群）
   - 设置
-#在本地跑起来
+# 在本地跑起来
 拉取代码，导入开发者工具即可运行起来。
 
-#数据结构
+# 数据结构
 ```
 登录页：
 		login: {
@@ -56,7 +56,7 @@ globalData:
    myUsername: ''    //缓存登录用户名	   
    yourname + myName:''  //以用户名跟好友名为key来缓存聊天记录
 ```
-#项目结构
+# 项目结构
 ```shell
 |- comps 自定义组件目录
     |- addfriend 添加好友页
@@ -86,10 +86,20 @@ globalData:
 |-app.wxss 一些全局样式
 |-project.config.json工程的一些配置，和开发者工具 “详情” 中的设置一样
 ```
-#可以复用的代码
+# 可以复用的代码
 如果想快速搭建起一个有im能力的小程序，可以选择复用demo中的代码，其中utils以帮助快速集成sdk，comps > chat是聊天页。当然其他部分需要复用的，如常见的测滑删除、联系人按字母分类、通知的订阅模式也可以去具体文件去找。
 
-#遇到的一些坑
+# 常见问题
++ 怎么发扩展消息？
+
+  构造消息的时候msg.set(option)， option中传人ext字段，即可发送扩展消息,具体可以查看[文档](http://docs-im.easemob.com/im/applet/message#%E5%8F%91%E9%80%81%E6%96%87%E6%9C%AC%E6%B6%88%E6%81%AF_%E5%8D%95%E8%81%8A)。
++ 使用mpvue集成报错?
+
+  .babelrc文件中修改 "plugins": ["transform-es2015-modules-commonjs"]，这里有一些开发者的[经验](https://blog.csdn.net/qq_43128835/article/details/95400888)。
++ 陌生人消息不上屏？
+
+  目前demo并没有去实现，现在的逻辑是会话列表是从好友列表去查的，可以看pages/chat/chat.js getChatList()。
+# 遇到的一些坑
 - 聊天页面布局，input focus时页面滑动，光标会错位，官方的说法是，input focus时不能使用动画。
 - 在scroll-view中无法触发onPullDownRefresh。
 - margin-bottom 只有在下面还有元素时才生效。
