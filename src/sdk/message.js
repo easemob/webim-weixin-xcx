@@ -75,7 +75,9 @@ var StropheAll = require("./libs/strophe");
 			msg: this.value,
 			type: this.type,
 			roomType: opt.roomType,
-			ext: opt.ext || {}
+			ext: opt.ext || {},
+			success: opt.success,
+			fail: opt.fail
 		};
 		!opt.roomType && delete this.body.roomType;
 	};
@@ -98,7 +100,9 @@ var StropheAll = require("./libs/strophe");
 			lat: opt.lat,
 			lng: opt.lng,
 			chatType: opt.chatType,
-			ext: opt.ext || {}
+			ext: opt.ext || {},
+			success: opt.success,
+			fail: opt.fail
 		};
 	};
 
