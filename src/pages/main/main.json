@@ -1,5 +1,5 @@
 {
-	"navigationBarBackgroundColor":"rgb(250,251,252)",
+	"navigationBarBackgroundColor":"#fafafa",
 	"navigationBarTextStyle":"black",
 	"navigationBarTitleText":"Easemob IM",
 	"enablePullDownRefresh": true,
