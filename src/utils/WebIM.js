@@ -1,4 +1,4 @@
-import Strophe from "../sdk/libs/strophe";
+
 //import xmldom from "../sdk/libs/xmldom/dom-parser";
 import websdk from "../sdk/connection";
 import config from "./WebIMConfig";
@@ -25,25 +25,6 @@ WebIM.isDebug = function(option){
 			var Minutes = d.getMinutes(); // 获取当前分钟数(0-59)
 			var Seconds = d.getSeconds(); // 获取当前秒数(0-59)
 			return (Hours < 10 ? "0" + Hours : Hours) + ":" + (Minutes < 10 ? "0" + Minutes : Minutes) + ":" + (Seconds < 10 ? "0" + Seconds : Seconds) + " ";
-		}
-
-		Strophe.Strophe.log = function(level, msg){
-			// console.log(ts(), level, msg);
-		};
-
-		if (value) {
-			Strophe.Strophe.Connection.prototype.rawOutput = function(data){
-				try{
-					console.group("%csend # " + ts(), "color: blue; font-size: large");
-					console.log("%c" + data, "color: blue");
-					console.groupEnd();
-				}
-				catch(e){
-					console.log(e);
-				}
-			};
-		}else{
-			Strophe.Strophe.Connection.prototype.rawOutput = function(){};
 		}
 		
 	}

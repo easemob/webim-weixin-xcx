@@ -1,5 +1,5 @@
 
-require("sdk/libs/strophe");
+// require("sdk/libs/strophe");
 let WebIM = require("utils/WebIM")["default"];
 let msgStorage = require("comps/chat/msgstorage");
 let msgType = require("comps/chat/msgtype");
@@ -123,7 +123,6 @@ App({
 		// 
 		WebIM.conn.listen({
 			onOpened(message){
-				WebIM.conn.setPresence();
 				if(getCurrentRoute() == "pages/login/login" || getCurrentRoute() == "pages/login_token/login_token"){
 					me.onLoginSuccess(wx.getStorageSync("myUsername").toLowerCase());
 				}

@@ -1,154 +1,151 @@
-(function(){
-	function Array_h(length){
-		this.array = length === undefined ? [] : new Array(length);
-	}
 
-	Array_h.prototype = {
-		/**
-		 * 返回数组长度
-		 *
-		 * @return {Number} length [数组长度]
-		 */
-		length: function(){
-			return this.array.length;
-		},
+    function Array_h(length) {
+        this.array = length === undefined ? [] : new Array(length);
+    }
 
-		at: function(index){
-			return this.array[index];
-		},
+    Array_h.prototype = {
+        /**
+         * 返回数组长度
+         *
+         * @return {Number} length [数组长度]
+         */
+        length: function () {
+            return this.array.length;
+        },
 
-		set: function(index, obj){
-			this.array[index] = obj;
-		},
+        at: function (index) {
+            return this.array[index];
+        },
 
-		/**
-		 * 向数组的末尾添加一个或多个元素，并返回新的长度。
-		 *
-		 * @param  {*} obj [description]
-		 * @return {Number} length [新数组的长度]
-		 */
-		push: function(obj){
-			return this.array.push(obj);
-		},
+        set: function (index, obj) {
+            this.array[index] = obj;
+        },
 
-		/**
-		 * 返回数组中选定的元素
-		 *
-		 * @param  {Number} start [开始索引值]
-		 * @param  {Number} end [结束索引值]
-		 * @return {Array} newArray  [新的数组]
-		 */
-		slice: function(start, end){
-			this.array = this.array.slice(start, end);
-			return this.array;
-		},
+        /**
+         * 向数组的末尾添加一个或多个元素，并返回新的长度。
+         *
+         * @param  {*} obj [description]
+         * @return {Number} length [新数组的长度]
+         */
+        push: function (obj) {
+            return this.array.push(obj);
+        },
 
-		concat: function(array){
-			this.array = this.array.concat(array);
-		},
+        /**
+         * 返回数组中选定的元素
+         *
+         * @param  {Number} start [开始索引值]
+         * @param  {Number} end [结束索引值]
+         * @return {Array} newArray  [新的数组]
+         */
+        slice: function (start, end) {
+            return this.array = this.array.slice(start, end);
+        },
 
-		remove: function(index, count){
-			count = count === undefined ? 1 : count;
-			this.array.splice(index, count);
-		},
+        concat: function (array) {
+            this.array = this.array.concat(array);
+        },
 
-		join: function(separator){
-			return this.array.join(separator);
-		},
+        remove: function (index, count) {
+            count = count === undefined ? 1 : count;
+            this.array.splice(index, count);
+        },
 
-		clear: function(){
-			this.array.length = 0;
-		}
-	};
+        join: function (separator) {
+            return this.array.join(separator);
+        },
 
-	/**
-	 * 先进先出队列 (First Input First Output)
-	 *
-	 * 一种先进先出的数据缓存器
-	 */
-	let Queue = function(){
-		this._array_h = new Array_h();
-	};
+        clear: function () {
+            this.array.length = 0;
+        }
+    };
 
-	Queue.prototype = {
-		_index: 0,
+    /**
+     * 先进先出队列 (First Input First Output)
+     *
+     * 一种先进先出的数据缓存器
+     */
+    var Queue = function () {
+        this._array_h = new Array_h();
+    };
 
-		/**
-		 * 排队
-		 *
-		 * @param  {Object} obj [description]
-		 * @return {[type]}     [description]
-		 */
-		push: function(obj){
-			this._array_h.push(obj);
-		},
+    Queue.prototype = {
+        _index: 0,
 
-		/**
-		 * 出队
-		 *
-		 * @return {Object} [description]
-		 */
-		pop: function(){
-			var ret = null;
-			if(this._array_h.length()){
-				ret = this._array_h.at(this._index);
-				if(++this._index * 2 >= this._array_h.length()){
-					this._array_h.slice(this._index);
-					this._index = 0;
-				}
-			}
-			return ret;
-		},
+        /**
+         * 排队
+         *
+         * @param  {Object} obj [description]
+         * @return {[type]}     [description]
+         */
+        push: function (obj) {
+            this._array_h.push(obj);
+        },
 
-		/**
-		 * 返回队列中头部(即最新添加的)的动态对象
-		 *
-		 * @return {Object} [description]
-		 */
-		head: function(){
-			var ret = null, len = this._array_h.length();
-			if(len){
-				ret = this._array_h.at(len - 1);
-			}
-			return ret;
-		},
+        /**
+         * 出队
+         *
+         * @return {Object} [description]
+         */
+        pop: function () {
+            var ret = null;
+            if (this._array_h.length()) {
+                ret = this._array_h.at(this._index);
+                if (++this._index * 2 >= this._array_h.length()) {
+                    this._array_h.slice(this._index);
+                    this._index = 0;
+                }
+            }
+            return ret;
+        },
 
-		/**
-		 * 返回队列中尾部(即最早添加的)的动态对象
-		 *
-		 * @return {Object} [description]
-		 */
-		tail: function(){
-			var ret = null, len = this._array_h.length();
-			if(len){
-				ret = this._array_h.at(this._index);
-			}
-			return ret;
-		},
+        /**
+         * 返回队列中头部(即最新添加的)的动态对象
+         *
+         * @return {Object} [description]
+         */
+        head: function () {
+            var ret = null, len = this._array_h.length();
+            if (len) {
+                ret = this._array_h.at(len - 1);
+            }
+            return ret;
+        },
 
-		/**
-		 * 返回数据队列长度
-		 *
-		 * @return {Number} [description]
-		 */
-		length: function(){
-			return this._array_h.length() - this._index;
-		},
+        /**
+         * 返回队列中尾部(即最早添加的)的动态对象
+         *
+         * @return {Object} [description]
+         */
+        tail: function () {
+            var ret = null, len = this._array_h.length();
+            if (len) {
+                ret = this._array_h.at(this._index);
+            }
+            return ret;
+        },
 
-		/**
-		 * 队列是否为空
-		 *
-		 * @return {Boolean} [description]
-		 */
-		empty: function(){
-			return (this._array_h.length() === 0);
-		},
+        /**
+         * 返回数据队列长度
+         *
+         * @return {Number} [description]
+         */
+        length: function () {
+            return this._array_h.length() - this._index;
+        },
 
-		clear: function(){
-			this._array_h.clear();
-		}
-	};
+        /**
+         * 队列是否为空
+         *
+         * @return {Boolean} [description]
+         */
+        empty: function () {
+            return (this._array_h.length() === 0);
+        },
 
-	exports.Queue = Queue;
+        clear: function () {
+            this._array_h.clear();
+        }
+    };
+    export default Queue
 
-}());
