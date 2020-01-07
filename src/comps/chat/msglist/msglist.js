@@ -23,6 +23,12 @@ Component({
 		__visibility__: false,
 	},
 	methods: {
+		clickMsg(data){
+			console.log(1, data)
+			if(data.currentTarget.dataset.msg.ext&&data.currentTarget.dataset.msg.ext.msg_extension){
+				this.triggerEvent("clickMsg", data.currentTarget.dataset.msg.ext)
+			}
+		},
 		normalScroll(){
 			this.setData({
 				view: LIST_STATUS.NORMAL
@@ -124,10 +130,13 @@ Component({
 
 			wx.setStorageSync(sessionKey, chatMsg);
 			Index = historyChatMsgs.slice(-10).length;
-			wx.pageScrollTo({
-			  	scrollTop: 9999,
-			})
 
+			console.log('111111111', this.data.chatMsg)
+			wx.pageScrollTo({
+				scrollTop: 5000,
+				duration: 300,
+			})
+			this.triggerEvent('render')
 			if (isFail) {
 				this.renderFail(sessionKey)
 			}

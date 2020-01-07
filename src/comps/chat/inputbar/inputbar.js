@@ -21,6 +21,7 @@ Component({
 			image: null,
 			location: null,
 			//video: null,
+			ptopcall: null
 		},
 	},
 	methods: {
@@ -34,6 +35,14 @@ Component({
 					composed: true
 				}
 			);
+		},
+
+		onMakeVideoCall(){
+	  		this.triggerEvent('makeVideoCall', 'single')
+	  	},
+
+	  	onMakeAudioCall(){
+	  		this.triggerEvent('makeAudioCall', 'single')
 		},
 
 		// sendVideo(){
@@ -63,6 +72,11 @@ Component({
 		emojiAction(evt){
 			this.data.__comps__.main.emojiAction(evt.detail.msg);
 		},
+
+		callVideo(){
+			console.log('this.data.__comps__.ptopcall', this.data.__comps__.ptopcall)
+			this.data.__comps__.ptopcall.show()
+		}
 	},
 
 	// lifetimes
@@ -78,6 +92,7 @@ Component({
 		comps.main = this.selectComponent("#chat-suit-main");
 		comps.emoji = this.selectComponent("#chat-suit-emoji");
 		comps.image = this.selectComponent("#chat-suit-image");
+		comps.ptopcall = this.selectComponent("#chat-suit-ptopcall")
 		// comps.location = this.selectComponent("#chat-suit-location");
 		//comps.video = this.selectComponent("#chat-suit-video");
 	},

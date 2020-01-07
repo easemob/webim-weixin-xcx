@@ -3,6 +3,7 @@
 	<view class="login_title">
 		<text>登录</text>
 	</view>
+
 	<view class="login_user {{nameFocus}}">
 		<input type="text" placeholder="用户ID" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername" bindfocus="onFocusName" bindblur="onBlurName"/>
 	</view>

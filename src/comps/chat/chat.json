@@ -3,6 +3,9 @@
 	"usingComponents": {
 		"chat-msglist": "msglist/msglist",
 		"chat-inputbar": "inputbar/inputbar",
-		"chat-suit-audio": "inputbar/suit/audio/audio"
+		"chat-suit-audio": "inputbar/suit/audio/audio",
+		"chat-emedia": "emedia/emedia",
+		"chat-multiEmedia": "multiEmedia/multiEmedia",
+		"chat-emediaInvite": "emediaInvite/emediaInvite"
 	}
 }

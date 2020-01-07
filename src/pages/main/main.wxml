@@ -18,7 +18,7 @@
 <view>
 	<!-- 左侧列表内容部分 -->
 	<scroll-view
-	class="content {{gotop? (isIPX? 'goTopX': 'goTop'): 'goback'}}" 
+	class="content {{gotop? (isIPX? 'goTopX': 'goTop'): 'goback'}}"  
 	enable-back-to-top scroll-into-view="{{toView}}" 
 	scroll-y="true" scroll-with-animation="true" 
 	bindscroll="onPageScroll" 

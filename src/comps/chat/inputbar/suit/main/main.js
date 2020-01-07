@@ -93,6 +93,7 @@ Component({
 			if(this.data.chatType == msgType.chatType.CHAT_ROOM){
 				msg.setGroup("groupchat");
 			}
+			console.log('发送消息', msg)
 			WebIM.conn.send(msg.body);
 			this.triggerEvent(
 				"newTextMsg",

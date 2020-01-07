@@ -8,7 +8,16 @@ Page({
 	data: {
 		name: "",
 		psd: "",
-		grant_type: "password"
+		grant_type: "password",
+		rtcUrl: ''
+	},
+
+	statechange(e) {
+	    console.log('live-player code:', e.detail.code)
+	},
+
+	error(e) {
+	    console.error('live-player error:', e.detail.errMsg)
 	},
 
 	onLoad: function(){

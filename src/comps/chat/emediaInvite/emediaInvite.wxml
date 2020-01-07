@@ -1,0 +1,53 @@
+<view class="wraper">
+	<view class="search" wx:if="{{ search_btn }}">
+		<view bindtap="openSearch">
+			<icon type="search" size="13"></icon>
+			<text>搜索</text>
+		</view>
+	</view>
+
+	<view class="search_input" wx:if="{{ search_friend }}">
+		<view>
+			<icon type="search" size="13"></icon>
+			<input placeholder="搜索" 
+				placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" 
+				auto-focus
+				confirm-type="search"
+				type='text'
+				bindconfirm="onSearch"
+				bindinput="onInput"
+				value="{{input_code}}"
+				></input>
+				<icon type="clear" size="13" catchtap='clearInput' wx:if="{{ show_clear }}"></icon>
+		</view>
+		<text bindtap="cancel">取消</text>
+	</view>
+	
+	<scroll-view
+		class="content" 
+		enable-back-to-top
+		scroll-into-view="{{toView}}" 
+		scroll-y="true"
+		scroll-with-animation="true" 
+		style="height: {{second_height}}px"
+	> 
+
+	<checkbox-group wx:for="{{renderList}}" data-item="{{ item }}" wx:key="{{item.member||item.owner}}"  id="{{ itemid}}" data-id='{{group.id}}' bindchange="checkboxChange"> 
+
+		<view class="tap_mask" catchtap="into_room" data-username="{{ item.member||item.owner }}">
+          	<view class="address_bottom" data-username="{{ item.member||item.owner }}" catchtap="into_room">
+				<image src="../../../images/theme@2x.png" catchtap="into_room" data-username="{{ item.member||item.owner }}"></image>
+	          	<text catchtap="into_room" data-username="{{ item.member||item.owner }}">{{item.member||item.owner}}</text>
+	          	<checkbox value="{{item.member||item.owner}}" checked="{{item.checked}}" disabled="{{item.disabled}}"/>
+      		</view>
+  		</view>
+
+	</checkbox-group>
+	</scroll-view>
+
+	<view class="btnWraper">
+		<button class="button" bindtap="startConfr">{{buttonText}}</button>
+		<button class="button red" bindtap="goBack">返回</button>
+	</view>
+
+</view>

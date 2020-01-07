@@ -14,11 +14,13 @@ module.exports = function(sendableMsg, type, myName){
 			type: type,
 			url: sendableMsg.body.body.url,
 			data: getMsgData(sendableMsg, type),
+			ext: sendableMsg.body.ext
 		},
 		style: sendableMsg.body.from == myName ? "self" : "",
 		time: time,
 		mid: sendableMsg.type + sendableMsg.id,
-		chatType: sendableMsg.body.chatType
+		chatType: sendableMsg.body.chatType,
+		ext: sendableMsg.body.ext
 	};
 	if(type == msgType.IMAGE){
 		renderableMsg.msg.size = {

@@ -1,0 +1,16 @@
+<view>
+	<view wx:if="{{ visible }}" class="wraper">
+		<view>
+			<button type="default" bindtap="callVideo">会议模式</button>
+			<button
+				type="default"
+				size="{{defaultSize}}"
+				plain="{{false}}"
+		        disabled="{{false}}"
+		        bindtap="cancel"
+		        hover-class="other-button-hover"
+		        class="button-cancel"
+		    > 取消 </button>
+		</view>
+	</view>
+</view>

@@ -1,0 +1,100 @@
+<view class="wraper">
+	<view class="infoWraper">
+		<view class="infoConnecting">
+			多人会议
+		</view>
+		<view class="infoName">
+			{{wx.WebIM.conn.context.userId}}
+		</view>
+	</view>
+
+	<view class="contenWraper">
+		<view class="videoBox">
+			<live-pusher 
+				url="{{pubUrl}}" 
+				class="smallWindow" 
+				mode="RTC" 
+				device-position="{{devicePosition}}"
+				muted="{{muted}}"
+				background-mute="{{true}}"
+				autopush 
+			/>
+			
+			<live-player 
+				class="smallWindow"
+				src="{{subUrls[0]&&subUrls[0].subUrl}}" 
+				mode="RTC" 
+				autoplay 
+				binderror="error" 
+			/>
+		</view>
+		<view class="videoBox"> 
+			<live-player 
+				class="smallWindow"
+				src="rtmp://39.107.156.84:31707/IM3WGL545KAUTEAY6AW1400C3M3/RTC14__Of_IM3WGL545KAUTEAY6AW1400C3M44" 
+				mode="RTC" 
+				autoplay 
+				bindstatechange="statechange" />
+
+			<live-player 
+				class="smallWindow"
+				src="{{subUrls[2]&&subUrls[2].subUrl}}" 
+				mode="RTC" 
+				autoplay 
+				bindstatechange="statechange" />
+		</view>
+		<view class="videoBox">
+			<live-player 
+				class="smallWindow"
+				src="{{subUrls[3]&&subUrls[3].subUrl}}" 
+				mode="RTC" 
+				autoplay 
+				bindstatechange="statechange" />	
+			
+			<live-player 
+				class="smallWindow"
+				src="{{subUrls[4]&&subUrls[4].subUrl}}" 
+				mode="RTC" 
+				autoplay 
+				bindstatechange="statechange" />
+		</view>
+	</view>
+
+	<view class="controlContent">
+		<view class="emediaContrContent">
+			<view class="controlItem" bindtap="toggleCamera" style="color: {{devicePositionColor}}">
+				<image
+					class="icon-record"
+					src='../../../images/{{devicePositionIcon}}@2x.png' style="width:22px; height: 24px"/>
+				切换摄像头
+			</view>
+			<view class="controlItem" bindtap="toggleMuted" style="color: {{micphoneColor}}">
+				<image
+					class="icon-record"
+					src='../../../images/{{micphoneIcon}}@2x.png' style="width:22px; height: 24px"/>
+				麦克风</view>
+			<view class="controlItem" bindtap="togglePlay" style="color: {{videoColor}}">
+				<image
+					class="icon-record"
+					src='../../../images/{{videoIcon}}@2x.png' style="width:22px; height: 24px"/>
+				视频</view>
+			<!-- <view class="controlItem" bindtap="toggleVoice">
+				<image
+					class="icon-record"
+					src='../../../images/speaker_white@2x.png' style="width:16px; height: 24px"/>
+				扬声器</view> -->
+			<view class="controlItem" bindtap="inviteMember">
+				<image
+					class="icon-record"
+					src='../../../images/invite_white@2x.png' style="width:22px; height: 24px"/>
+				邀请</view>
+		</view>
+
+		<view class="hangup" bindtap="hangup">
+			<image
+				class="icon-record"
+				src='../../../images/hangup@2x.png'/>
+		</view>
+	</view>
+
+</view>
