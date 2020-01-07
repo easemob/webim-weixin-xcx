@@ -1,4 +1,4 @@
-<view class="main">
+<view class="main" wx:if="{{!showEmedia&&!showmultiEmedia}}">
 	<chat-suit-audio
 		id="chat-suit-audio"
 		username="{{ username }}"
@@ -8,13 +8,14 @@
 	<chat-msglist
 		id="chat-msglist"
 		username="{{ username }}"
+		bind:render="onRender"
+		bind:clickMsg="onClickInviteMsg"
 		bind:msglistTap="normalScroll"></chat-msglist>
 </view>
 	<chat-inputbar
 		id="chat-inputbar"
 		username="{{ username }}"
 		chatType="{{ chatType }}"
-
 		bind:newTextMsg="saveSendMsg"
 		bind:newImageMsg="saveSendMsg"
 		bind:newLocationMsg="saveSendMsg"
@@ -22,5 +23,32 @@
 		bind:tapSendAudio="toggleRecordModal"
 
 		bind:inputFocused="shortScroll"
-		bind:inputBlured="normalScroll"></chat-inputbar>
+		bind:inputBlured="normalScroll"
+		bind:makeVideoCall="onMakeVideoCall"
+		bind:makeAudioCall="onMakeAudioCall"
+		style="display: {{inputbarVisible}}"
+	></chat-inputbar>
+
+	<!-- <chat-emedia 
+		bind:createConfrSuccess="onCreateConfrSuccess"
+		username="{{ username }}"
+		wx:if="{{showEmedia}}"/> -->
+		
+	<chat-multiEmedia 
+		style="display: {{multiEmediaVisible}}"
+		username="{{ username }}" 
+		action="{{emediaAction}}"
+		bind:inviteMember="onInviteMember"
+		bind:createConfrSuccess="onCreateConfrSuccess"
+		bind:hangup="onHangup"
+		wx:if="{{showmultiEmedia}}"/>
+
+	<chat-emediaInvite 
+		username="{{ username }}" 
+		action="{{action}}"
+		bind:startConfr="onStartConfr"
+		bind:goBack="onGoBack"
+		wx:if="{{showEmediaInvite}}"/>
+
+
 

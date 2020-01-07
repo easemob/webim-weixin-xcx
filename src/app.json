@@ -1,5 +1,6 @@
 {
   "pages": [
+    
     "pages/login/login",
     "pages/notification_groupDetail/groupDetail",
     "pages/notification_friendDetail/friendDetail",
@@ -16,6 +17,7 @@
     "pages/inform/inform",
     "pages/setting/setting",
     "pages/add_groups/add_groups",
+    "pages/emediaInvite/emediaInvite",
     "pages/groupChatRoom/groupChatRoom",
     "pages/groupSetting/groupSetting"
   ],

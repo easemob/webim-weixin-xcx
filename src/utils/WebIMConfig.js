@@ -15,15 +15,15 @@ let config = {
 	/*
 	 * XMPP server
 	 */
-	xmppURL: "wss://im-api.easemob.com/ws/",
-	// xmppURL: '172.17.3.122:5280',
+	// xmppURL: "wss://im-api.easemob.com/ws/",
+	xmppURL: 'ws://39.107.156.84:5280/ws/',
 	/*
 	 * Backend REST API URL
 	 */
 	// apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
 	// ios must be https!!! by lwz
-	apiURL: "https://a1.easemob.com",
-	// apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//172.17.3.155:8080',
+	apiURL: "https://a1-hsb.easemob.com",
+	// apiURL: 'https://172.17.3.155:8080',
 	/*
 	 * Application AppKey
 	 */

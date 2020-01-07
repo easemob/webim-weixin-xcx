@@ -2,7 +2,7 @@
 <view class="setting_list">
 	<view class="setting_listContent">
 		<text>当前版本</text>
-		<text>1.2.0</text>
+		<text>1.2.1</text>
 	</view>
 </view>
 
