@@ -18,45 +18,59 @@
 				muted="{{muted}}"
 				background-mute="{{true}}"
 				autopush 
-			/>
+			>
+				<view class="userName">{{myName}}</view>
+			</live-pusher>
 			
 			<live-player 
 				class="smallWindow"
 				src="{{subUrls[0]&&subUrls[0].subUrl}}" 
 				mode="RTC" 
 				autoplay 
-				binderror="error" 
-			/>
+			>
+				<view class="userName">{{subUrls[0]&&subUrls[0].memName}}</view>
+			</live-player>
 		</view>
 		<view class="videoBox"> 
 			<live-player 
 				class="smallWindow"
-				src="rtmp://39.107.156.84:31707/IM3WGL545KAUTEAY6AW1400C3M3/RTC14__Of_IM3WGL545KAUTEAY6AW1400C3M44" 
+				src="{{subUrls[1]&&subUrls[1].subUrl}}" 
 				mode="RTC" 
+				object-fit="fillCrop"
 				autoplay 
-				bindstatechange="statechange" />
-
+			>
+			<view class="userName">{{subUrls[1]&&subUrls[1].memName}}</view>
+			</live-player>
 			<live-player 
 				class="smallWindow"
 				src="{{subUrls[2]&&subUrls[2].subUrl}}" 
 				mode="RTC" 
+				object-fit="fillCrop"
 				autoplay 
-				bindstatechange="statechange" />
+			>
+			<view class="userName">{{subUrls[2]&&subUrls[2].memName}}</view>
+			</live-player>
 		</view>
 		<view class="videoBox">
 			<live-player 
 				class="smallWindow"
 				src="{{subUrls[3]&&subUrls[3].subUrl}}" 
 				mode="RTC" 
+				object-fit="fillCrop"
 				autoplay 
-				bindstatechange="statechange" />	
-			
+			>	
+			<view class="userName">{{subUrls[3]&&subUrls[3].memName}}</view>
+			</live-player>
+
 			<live-player 
 				class="smallWindow"
 				src="{{subUrls[4]&&subUrls[4].subUrl}}" 
 				mode="RTC" 
+				object-fit="fillCrop"
 				autoplay 
-				bindstatechange="statechange" />
+			>
+			<view class="userName">{{subUrls[4]&&subUrls[4].memName}}</view>
+			</live-player>
 		</view>
 	</view>
 

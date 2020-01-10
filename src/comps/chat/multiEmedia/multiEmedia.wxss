@@ -81,3 +81,13 @@
 	align-items: center;
 	justify-content: center;
 }
+.userName{
+	color: #fff;
+	overflow: hidden;
+	font-size: 12px;
+	height: 14px;
+	/* background: rgba(0, 0, 0, 0.3); */
+	margin-top: 8px;
+	line-height: 14px;
+	padding-left: 3px;
+}

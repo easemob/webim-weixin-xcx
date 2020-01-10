@@ -2,11 +2,15 @@ const WebIM = wx.WebIM
 Component({
 	properties: {//接收父组件传过来的值
 	    username: null,//定义接收参数变量及允许传入参数类型
-	    action: null
+		action: null
 	},
 	lifetimes: {
 	    attached: function() {
-	    	var me = this
+			this.setData({
+				myName: wx.WebIM.conn.context.userId
+			})
+			var me = this
+			let subUrls = []
 	    	console.log('%c 初始化...', 'color:green')
 			var service = this.service = new wx.emedia.XService({
 			    listeners: { //以下监听，this object == me == service.current
@@ -59,9 +63,6 @@ Component({
 			            }
 			        },
 
-			        onAddMember: function (member) {
-			            console.info("onAddMember", this);
-			        },
 			        onRemoveMember: function (member, reason) {
 			            //console.info("onRemoveMember", this);
 			        },
@@ -69,16 +70,7 @@ Component({
 			        onAddStream: function (stream) {
 			        	console.log('%c onAddStream', 'color:green')
 			            console.info(stream);
-			   //          me.setData({
-						// 	subUrl: stream.rtmp
-						// })
-					},
-					onPub: function(cver, memId, memObj){
-						console.log('%c onPub', 'color:green')
-						console.info(memObj);
-
-						let streamId = memObj.id
-						let subUrls = []
+						let streamId = stream.id
 						setTimeout(() => {
 							wx.emedia.mgr.subStream({
 								streamId: streamId,
@@ -88,40 +80,87 @@ Component({
 
 									let subUrl = {
 										streamId: streamId,
-										subUrl: data.rtmp
+										subUrl: data.rtmp,
+										memName: stream.memName.split("_")[1].split("@")[0]
 									}
 
 									if(subUrls.length == 0){
 										subUrls.push(subUrl)
+										console.log('%c subUrls 11 ....', "background:yellow")
+										console.log(subUrls)
 									}else{
 										subUrls.forEach((item) => {
 											if(item.streamId != streamId){
+												console.log('11111', streamId)
 												subUrls.push(subUrl)
 											}else{
+												console.log(2222, streamId)
 												item = subUrl
 											}
 										})
+
+										console.log('%c subUrls 22 ....', "background:yellow")
+										console.log(subUrls)
 									}
 									
 									me.setData({
 										subUrls: subUrls,
 										showInvite: false
 									})
-
-									// wx.emedia.mgr.pubStream({
-									// 	rtcId: wx.emedia.util.getRtcId(),
-									// 	success: function(data){
-									// 		console.log('获取到的sub-url', data)
-								
-									// 		me.setData({
-									// 			pubUrl: data.rtmp
-									// 		})
-									// 	}
-									// })
 								}
 							})
-						}, 2000)
+						}, 1000)
 					},
+					// onPub: function(cver, memId, memObj){
+					// 	console.log('%c onPub。。。。。。。', 'color:green')
+					// 	console.info(memObj);
+
+					// 	let streamId = memObj.id
+					// 	let subUrls = []
+					// 	// if()
+					// 	setTimeout(() => {
+					// 		wx.emedia.mgr.subStream({
+					// 			streamId: streamId,
+					// 			success: function(data){
+					// 				console.log('%c 订阅流成功', 'color:green')
+					// 				console.log(data)
+
+					// 				let subUrl = {
+					// 					streamId: streamId,
+					// 					subUrl: data.rtmp
+					// 				}
+
+					// 				if(subUrls.length == 0){
+					// 					subUrls.push(subUrl)
+					// 				}else{
+					// 					subUrls.forEach((item) => {
+					// 						if(item.streamId != streamId){
+					// 							subUrls.push(subUrl)
+					// 						}else{
+					// 							item = subUrl
+					// 						}
+					// 					})
+					// 				}
+									
+					// 				me.setData({
+					// 					subUrls: subUrls,
+					// 					showInvite: false
+					// 				})
+
+					// 				// wx.emedia.mgr.pubStream({
+					// 				// 	rtcId: wx.emedia.util.getRtcId(),
+					// 				// 	success: function(data){
+					// 				// 		console.log('获取到的sub-url', data)
+								
+					// 				// 		me.setData({
+					// 				// 			pubUrl: data.rtmp
+					// 				// 		})
+					// 				// 	}
+					// 				// })
+					// 			}
+					// 		})
+					// 	}, 2000)
+					// },
 					subscribeStream: function(stream){
 						console.log('%c subscribeStream', 'color:green')
 						console.info(stream);
@@ -137,17 +176,16 @@ Component({
 			            //displayEvent("当前通话连接质量不佳");
 			        },
 			        onNotSupportPublishVideoCodecs: function (stream) {
-			            //console.info("onNotSupportPublishVideoCodecs", this);
+			            console.info("onNotSupportPublishVideoCodecs", this);
 			        },
 			      
 			        onNotifyEvent: function (evt) {
 			 
 			        },
-			        onEnter: function(cver, mem){
-			        	console.log('%c onEnter', 'color:green')
-						console.log(mem)
-						
-						if(mem.isSelf){
+			        onAddMember: function(mem){
+						console.log('onAddMember', mem)
+						let identityName = wx.WebIM.conn.context.jid.split("/")[0]
+						if(mem.name == identityName){
 							wx.emedia.mgr.pubStream({
 								rtcId: wx.emedia.util.getRtcId(),
 								success: function(data){
@@ -158,8 +196,7 @@ Component({
 								}
 							})
 						}
-			        },
-			        onAddMember: function(){console.log('onAddMember')},    
+					},    
 			        onRemoveMember: function(){console.log('onRemoveMember')},  
 			        onRemoveStream: function(){console.log('onRemoveStream')},  
 			        onClose: function(){console.log('onClose')}
@@ -174,7 +211,7 @@ Component({
 		  	}
 
 	      	console.log('多人视频页面收到的参数', this.properties)
-	      	
+			  
 	    },
 	    detached: function() {
 	      this.service&&this.service.exit()
@@ -193,7 +230,8 @@ Component({
   		micphoneIcon: 'micphone_white',
   		micphoneColor: '#fff',
   		videoIcon: 'video_white',
-  		videoColor: '#fff'
+		videoColor: '#fff',
+		myName: ''
 	},
 
 	methods: {
@@ -273,6 +311,7 @@ Component({
 		},
 
 		joinConf(data){
+			console.log('加入会议 ————-------————')
 			let me = this
 			let identityToken = wx.WebIM.conn.context.accessToken
 			let identityName = wx.WebIM.conn.context.jid.split("/")[0]
@@ -283,56 +322,57 @@ Component({
 		        password: data.password,
 		        success: function(data){
 		        	console.log('申请reqTkt成功', data)
-		        	let ticket = data.data.ticket || {}
+					let ticket = data.data.ticket || {}
+					let tktObj = JSON.parse(ticket)
 		        	me.service.setup(ticket)
 
 					me.service.join()
-
-					me.triggerEvent('createConfrSuccess', {confrId: data.confrId, groupId: me.data.username.groupId})
 					
-					wx.emedia.onAddStream2=function(data, mem){
-						console.log('%c onAddStream22', 'color:green')
-						console.log(data)
-						console.log(mem)
+					me.triggerEvent('createConfrSuccess', {confrId: tktObj.confrId, groupId: me.data.username.groupId})
+					
+					// wx.emedia.onAddStream2=function(data, mem){
+					// 	console.log('%c onAddStream22', 'color:green')
+					// 	console.log(data)
+					// 	console.log(mem)
 
-						let streamId = data.pubS.id
-						let subUrls = []
+					// 	let streamId = data.pubS.id
+					// 	let subUrls = []
 
-						setTimeout(() => {
+					// 	setTimeout(() => {
 
-							wx.emedia.mgr.subStream({
-								streamId: streamId,
-								success: function(data){
-									console.log('%c 订阅流成功', 'color:green')
-									console.log(data)
+					// 		wx.emedia.mgr.subStream({
+					// 			streamId: streamId,
+					// 			success: function(data){
+					// 				console.log('%c 订阅流成功', 'color:green')
+					// 				console.log(data)
 
-									let subUrl = {
-										streamId: streamId,
-										subUrl: data.rtmp
-									}
+					// 				let subUrl = {
+					// 					streamId: streamId,
+					// 					subUrl: data.rtmp
+					// 				}
 
-									if(subUrls.length == 0){
-										subUrls.push(subUrl)
-									}else{
-										subUrls.forEach((item) => {
-											if(item.streamId != streamId){
-												subUrls.push(subUrl)
-											}else{
-												item = subUrl
-											}
-										})
-									}
+					// 				if(subUrls.length == 0){
+					// 					subUrls.push(subUrl)
+					// 				}else{
+					// 					subUrls.forEach((item) => {
+					// 						if(item.streamId != streamId){
+					// 							subUrls.push(subUrl)
+					// 						}else{
+					// 							item = subUrl
+					// 						}
+					// 					})
+					// 				}
 									
-									me.setData({
-										subUrls: subUrls,
-										showInvite: false
-									})
-								}
-							})
+					// 				me.setData({
+					// 					subUrls: subUrls,
+					// 					showInvite: false
+					// 				})
+					// 			}
+					// 		})
 
-						}, 3000)
+					// 	}, 3000)
 						
-					}
+					// }
 		        }
 	    	}
 	    	wx.emedia.mgr.reqTkt(params)
@@ -359,8 +399,9 @@ Component({
 				devicePosition: this.data.devicePosition == 'fron' ? 'back' : 'front',
 				devicePositionIcon: this.data.devicePositionIcon =='switchCamera_white'?'switchCamera_gray': 'switchCamera_white',
 				devicePositionColor: this.data.devicePositionColor == '#fff'? '#aaa':'#fff'
+			}, () => {
+				this.LivePusherContext.switchCamera()
 			})
-			this.LivePusherContext.switchCamera()
 		},
 
 		toggleMuted(){

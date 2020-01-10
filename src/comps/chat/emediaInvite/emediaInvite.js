@@ -104,7 +104,7 @@ Component({
 			})
 
 			serchList.forEach((item) => {
-				if(item.member == wx.WebIM.conn.context.userId){
+				if(item.member == wx.WebIM.conn.context.userId || item.owner == wx.WebIM.conn.context.userId){
 					item.disabled = true
 				}
 			})
@@ -198,9 +198,15 @@ Component({
 
 		startConfr(){
 			this.triggerEvent('startConfr', {confrMember: this.data.checkedValue, action: this.data.action, groupId: this.data.username.groupId})
+			this.setData({
+				checkedValue: []
+			})
 		},
 
 		goBack(){
+			this.setData({
+				checkedValue: []
+			})
 			this.triggerEvent('goBack')
 		}
 
