@@ -55,7 +55,8 @@ Component({
 		onMakeVideoCall(){
 			this.setData({
 				showEmediaInvite: true,
-				inputbarVisible: 'none'
+				inputbarVisible: 'none',
+				action: 'create'
 				//showEmedia: true
 			})
 		},
@@ -83,6 +84,7 @@ Component({
 				showmultiEmedia: true,
 				multiEmediaVisible: 'block',
 				inputbarVisible: 'none',
+				confrMember: []
 			})
 		},
 
@@ -114,19 +116,21 @@ Component({
 		},
 
 		sendInviteMsg(members, confrId){
+			console.log("&c members","background: green")
+			console.log(members)
 			members&&members.forEach((value) => {
 				let id = WebIM.conn.getUniqueId();
 				let msg = new WebIM.message('txt', id);
 
 				msg.set({
-					msg: this.data.username.myName + ' invite you to video call',
-					from: this.data.username.myName,
+					msg: wx.WebIM.conn.context.userId + ' invite you to video call',
+					from: wx.WebIM.conn.context.userId,
 					to: value,
 					roomType: false,
 					chatType: 'chat',
 					ext: {
 						msg_extension: JSON.stringify({
-							inviter: this.data.username.myName,
+							inviter: wx.WebIM.conn.context.userId,
 							group_id: this.data.username.groupId
 						}),
 						password: '',
@@ -143,6 +147,7 @@ Component({
 				// if(this.data.chatType == msgType.chatType.CHAT_ROOM){
 				// 	msg.setGroup("groupchat");
 				// }
+				console.log('发送邀请')
 				WebIM.conn.send(msg.body);
 
 			})
@@ -150,9 +155,10 @@ Component({
 
 		onClickInviteMsg(data){
 			console.log('收到邀请消息')
+			console.log(data)
 			let confrId = data.detail.conferenceId
-			let msg_extension = JSON.parse(data.detail.msg_extension)
-			let password = data.detail.password
+			let msg_extension = typeof(data.detail.msg_extension) == 'string'?JSON.parse(data.detail.msg_extension):data.detail.msg_extension
+			let password = data.detail.password || ''
 			this.setData({
 				emediaAction: {
 					action: 'join',
@@ -162,6 +168,9 @@ Component({
 				showEmediaInvite: false,
 				showmultiEmedia: true,
 				inputbarVisible: 'none',
+				username: {
+					groupId: msg_extension.group_id
+				}
 			})
 		},
 		onHangup(){
