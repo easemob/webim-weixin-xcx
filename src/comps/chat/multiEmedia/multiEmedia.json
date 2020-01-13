@@ -1,5 +1,6 @@
 {
 	"component": true,
 	"username": null,
-	"action": null
+	"action": null,
+	"usingComponents": {}
 }
