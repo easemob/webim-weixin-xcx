@@ -11,6 +11,7 @@ Component({
 			})
 			var me = this
 			let subUrls = []
+			let obj = {};
 	    	console.log('%c 初始化...', 'color:green')
 			var service = this.service = new wx.emedia.XService({
 			    listeners: { //以下监听，this object == me == service.current
@@ -77,11 +78,12 @@ Component({
 								success: function(data){
 									console.log('%c 订阅流成功', 'color:green')
 									console.log(data)
-
+									let playContext = wx.createLivePlayerContext(streamId, me)
 									let subUrl = {
 										streamId: streamId,
 										subUrl: data.rtmp,
-										memName: stream.memName.split("_")[1].split("@")[0]
+										memName: stream.memName.split("_")[1].split("@")[0],
+										playContext: playContext
 									}
 
 									if(subUrls.length == 0){
@@ -90,13 +92,17 @@ Component({
 										console.log(subUrls)
 									}else{
 										subUrls.forEach((item) => {
-											if(item.streamId != streamId){
-												console.log('11111', streamId)
+											if(!obj[item.streamId]){
+												obj[item.streamId] = true
 												subUrls.push(subUrl)
-											}else{
-												console.log(2222, streamId)
-												item = subUrl
 											}
+											// if(item.streamId != streamId){
+											// 	console.log('11111', streamId)
+											// 	subUrls.push(subUrl)
+											// }else{
+											// 	console.log(2222, streamId)
+											// 	item = subUrl
+											// }
 										})
 
 										console.log('%c subUrls 22 ....', "background:yellow")
@@ -106,67 +112,38 @@ Component({
 									me.setData({
 										subUrls: subUrls,
 										showInvite: false
+									}, function(){
+										playContext.stop()
+										playContext.play()
 									})
 								}
 							})
-						}, 1000)
+						}, 2000)
 					},
-					// onPub: function(cver, memId, memObj){
-					// 	console.log('%c onPub。。。。。。。', 'color:green')
-					// 	console.info(memObj);
 
-					// 	let streamId = memObj.id
-					// 	let subUrls = []
-					// 	// if()
-					// 	setTimeout(() => {
-					// 		wx.emedia.mgr.subStream({
-					// 			streamId: streamId,
-					// 			success: function(data){
-					// 				console.log('%c 订阅流成功', 'color:green')
-					// 				console.log(data)
-
-					// 				let subUrl = {
-					// 					streamId: streamId,
-					// 					subUrl: data.rtmp
-					// 				}
-
-					// 				if(subUrls.length == 0){
-					// 					subUrls.push(subUrl)
-					// 				}else{
-					// 					subUrls.forEach((item) => {
-					// 						if(item.streamId != streamId){
-					// 							subUrls.push(subUrl)
-					// 						}else{
-					// 							item = subUrl
-					// 						}
-					// 					})
-					// 				}
-									
-					// 				me.setData({
-					// 					subUrls: subUrls,
-					// 					showInvite: false
-					// 				})
-
-					// 				// wx.emedia.mgr.pubStream({
-					// 				// 	rtcId: wx.emedia.util.getRtcId(),
-					// 				// 	success: function(data){
-					// 				// 		console.log('获取到的sub-url', data)
-								
-					// 				// 		me.setData({
-					// 				// 			pubUrl: data.rtmp
-					// 				// 		})
-					// 				// 	}
-					// 				// })
-					// 			}
-					// 		})
-					// 	}, 2000)
-					// },
 					subscribeStream: function(stream){
 						console.log('%c subscribeStream', 'color:green')
 						console.info(stream);
 					},
 			        onRemoveStream: function (stream) {
-			            //console.info("onRemoveStream", this);
+						console.info("onRemoveStream", this);
+						console.log('onRemoveStream', stream)
+						subUrls = subUrls.filter((item) => {
+							if(item.streamId != stream.id){
+								return item
+							}else{
+								item.playContext.stop({
+									success: function(){
+										console.log('关闭成功')
+									}
+								})
+							}
+						})
+						obj[stream.id] = false
+						me.setData({
+							subUrls: subUrls,
+						})
+						console.log('subUrls', subUrls)
 			        },
 			        onUpdateStream: function (stream, update) {
 			            //console.info("onUpdateStream", this);
@@ -395,12 +372,15 @@ Component({
 
 		toggleCamera(){
 			console.log("%c toggleCamera", "color:green")
-			this.setData({
-				devicePosition: this.data.devicePosition == 'fron' ? 'back' : 'front',
-				devicePositionIcon: this.data.devicePositionIcon =='switchCamera_white'?'switchCamera_gray': 'switchCamera_white',
-				devicePositionColor: this.data.devicePositionColor == '#fff'? '#aaa':'#fff'
-			}, () => {
-				this.LivePusherContext.switchCamera()
+			let me = this
+			me.LivePusherContext.switchCamera({
+				success: function(){
+					me.setData({
+						devicePosition: me.data.devicePosition == 'fron' ? 'back' : 'front',
+						devicePositionIcon: me.data.devicePositionIcon =='switchCamera_white'?'switchCamera_gray': 'switchCamera_white',
+						devicePositionColor: me.data.devicePositionColor == '#fff'? '#aaa':'#fff'
+					})
+				}
 			})
 		},
 
