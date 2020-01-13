@@ -10,10 +10,13 @@
 
 	<view class="contenWraper">
 		<view class="videoBox">
+			<view class="smallWindow" >
 			<live-pusher 
+				wx:if="{{pubUrl}}"
 				url="{{pubUrl}}" 
 				class="smallWindow" 
-				mode="RTC" 
+				mode="live" 
+				aspect="9:16"
 				device-position="{{devicePosition}}"
 				muted="{{muted}}"
 				background-mute="{{true}}"
@@ -21,56 +24,74 @@
 			>
 				<view class="userName">{{myName}}</view>
 			</live-pusher>
-			
-			<live-player 
-				class="smallWindow"
-				src="{{subUrls[0]&&subUrls[0].subUrl}}" 
-				mode="RTC" 
-				autoplay 
-			>
-				<view class="userName">{{subUrls[0]&&subUrls[0].memName}}</view>
-			</live-player>
+			</view>
+
+			<view class="smallWindow" >
+				<live-player 
+					wx:if="{{subUrls[0]&&subUrls[0].streamId}}"
+					id="{{subUrls[0]&&subUrls[0].streamId}}"
+					class="smallWindow"
+					src="{{subUrls[0]&&subUrls[0].subUrl}}" 
+					mode="live" 
+					autoplay 
+				>
+					<view class="userName">{{subUrls[0]&&subUrls[0].memName}}</view>
+				</live-player>
+			</view>
 		</view>
 		<view class="videoBox"> 
+			<view class="smallWindow" >
 			<live-player 
+				wx:if="{{subUrls[1]&&subUrls[1].streamId}}"
+				id="{{subUrls[1]&&subUrls[1].streamId}}"
 				class="smallWindow"
 				src="{{subUrls[1]&&subUrls[1].subUrl}}" 
-				mode="RTC" 
+				mode="live" 
 				object-fit="fillCrop"
 				autoplay 
 			>
-			<view class="userName">{{subUrls[1]&&subUrls[1].memName}}</view>
+				<view class="userName">{{subUrls[1]&&subUrls[1].memName}}</view>
 			</live-player>
-			<live-player 
-				class="smallWindow"
-				src="{{subUrls[2]&&subUrls[2].subUrl}}" 
-				mode="RTC" 
-				object-fit="fillCrop"
-				autoplay 
-			>
-			<view class="userName">{{subUrls[2]&&subUrls[2].memName}}</view>
-			</live-player>
+			</view>
+			<view class="smallWindow" >
+				<live-player 
+					wx:if="{{subUrls[2]&&subUrls[2].streamId}}"
+					id="{{subUrls[2]&&subUrls[2].streamId}}"
+					class="smallWindow"
+					src="{{subUrls[2]&&subUrls[2].subUrl}}" 
+					mode="RTC" 
+					object-fit="fillCrop"
+					autoplay 
+				>
+					<view class="userName">{{subUrls[2]&&subUrls[2].memName}}</view>
+				</live-player>
+			</view>
 		</view>
 		<view class="videoBox">
+		<view class="smallWindow" >
 			<live-player 
+				wx:if="{{subUrls[3]&&subUrls[3].streamId}}"
 				class="smallWindow"
 				src="{{subUrls[3]&&subUrls[3].subUrl}}" 
 				mode="RTC" 
 				object-fit="fillCrop"
 				autoplay 
 			>	
-			<view class="userName">{{subUrls[3]&&subUrls[3].memName}}</view>
+				<view class="userName">{{subUrls[3]&&subUrls[3].memName}}</view>
 			</live-player>
-
+		</view>
+		<view class="smallWindow" >
 			<live-player 
+				wx:if="{{subUrls[4]&&subUrls[4].streamId}}"
 				class="smallWindow"
 				src="{{subUrls[4]&&subUrls[4].subUrl}}" 
 				mode="RTC" 
 				object-fit="fillCrop"
 				autoplay 
 			>
-			<view class="userName">{{subUrls[4]&&subUrls[4].memName}}</view>
+				<view class="userName">{{subUrls[4]&&subUrls[4].memName}}</view>
 			</live-player>
+		</view>
 		</view>
 	</view>
 

@@ -132,9 +132,14 @@ Component({
 							if(item.streamId != stream.id){
 								return item
 							}else{
+								console.log('%c ------', 'backgroukd:yellow')
+								console.log(item)
 								item.playContext.stop({
 									success: function(){
 										console.log('关闭成功')
+									},
+									complete: function(){
+										console.log('关闭成功22')
 									}
 								})
 							}
@@ -174,8 +179,6 @@ Component({
 							})
 						}
 					},    
-			        onRemoveMember: function(){console.log('onRemoveMember')},  
-			        onRemoveStream: function(){console.log('onRemoveStream')},  
 			        onClose: function(){console.log('onClose')}
 			    }
 			});
