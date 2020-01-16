@@ -76,6 +76,12 @@ Page({
 		});
 	},
 
+	goEmediaSetting: function(){
+		wx.navigateTo({
+			url: "../emediaSetting/emediaSetting"
+		});
+	},
+
 	logout: function(){
 		wx.showModal({
 			title: "是否退出登录",

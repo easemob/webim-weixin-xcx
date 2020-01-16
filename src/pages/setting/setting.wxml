@@ -20,6 +20,13 @@
 </view>
 
 <view class="setting_list">
+	<view class="setting_listContent" bindtap="goEmediaSetting">
+		<text>实时音视频</text>
+		<image class="list_right" src="../../images/next.png"></image>
+	</view>
+</view>
+
+<view class="setting_list">
 	<view class="setting_listContent" bindtap="logout">
 		<text class="setting_redtext">退出登录</text>
 	</view>
