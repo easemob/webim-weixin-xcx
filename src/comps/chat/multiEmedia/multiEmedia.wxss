@@ -37,11 +37,12 @@
 	justify-content: space-around;
 }
 .smallWindow {
-	width: 100px;
+	width: 100%;
 	height: 100px;
 	z-index: 9;
 	flex: 1;
 	margin: 1px;
+	background: #000;
 }
 
 .controlContent {

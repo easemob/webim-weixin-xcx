@@ -13,6 +13,7 @@
     "pages/chat/chat",
     "pages/notification/notification",
     "pages/setting_general/setting_general",
+    "pages/emediaSetting/emediaSetting",
     "pages/groups/groups",
     "pages/inform/inform",
     "pages/setting/setting",

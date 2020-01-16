@@ -1,0 +1,12 @@
+<view class="setting_list">
+	<view class="setting_listContent">
+		<text>开启服务器录制</text>
+		<switch checked="{{rec? true: false}}" color="#0873DE" bindchange="openRec"/>
+	</view>
+</view>
+<view class="setting_list">
+	<view class="setting_listContent">
+		<text>开启录制混流</text>
+		<switch checked="{{recMerge? true: false}}" color="#0873DE" bindchange="openRecMerge"/>
+	</view>
+</view>
