@@ -6,6 +6,7 @@ Component({
 	},
 	lifetimes: {
 	    attached: function() {
+			wx.setKeepScreenOn(true)
 			this.setData({
 				myName: wx.WebIM.conn.context.userId
 			})
@@ -159,6 +160,9 @@ Component({
 
 	methods: {
 		createConf(){
+
+			console.log('>>> createConf');
+			
 			var me = this
 			let rec = wx.getStorageSync("rec") || false;
 			let recMerge = wx.getStorageSync("recMerge") || false;

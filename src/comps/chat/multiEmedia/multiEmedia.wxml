@@ -20,6 +20,7 @@
 				device-position="{{devicePosition}}"
 				muted="{{muted}}"
 				background-mute="{{true}}"
+				orientation="vertical"
 				autopush 
 			>
 				<view class="userName">{{myName}}</view>
@@ -33,7 +34,7 @@
 					class="smallWindow"
 					src="{{subUrls[0]&&subUrls[0].subUrl}}" 
 					mode="RTC" 
-					object-fit="fillCrop"
+					object-fit="contain"
 					autoplay 
 				>
 					<view class="userName">{{subUrls[0]&&subUrls[0].memName}}</view>
