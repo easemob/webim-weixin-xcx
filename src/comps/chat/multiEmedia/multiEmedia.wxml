@@ -22,7 +22,7 @@
 				background-mute="{{true}}"
 				autopush 
 			>
-				<view class="userName">{{myName}}</view>
+				<cover-view class="userName">{{myName}}</cover-view>
 			</live-pusher>
 			</view>
 
@@ -36,7 +36,7 @@
 					object-fit="fillCrop"
 					autoplay 
 				>
-					<view class="userName">{{subUrls[0]&&subUrls[0].memName}}</view>
+					<cover-view class="userName">{{subUrls[0]&&subUrls[0].memName}}</cover-view>
 				</live-player>
 			</view>
 		</view>
@@ -51,7 +51,7 @@
 				object-fit="fillCrop"
 				autoplay 
 			>
-				<view class="userName">{{subUrls[1]&&subUrls[1].memName}}</view>
+				<cover-view class="userName">{{subUrls[1]&&subUrls[1].memName}}</cover-view>
 			</live-player>
 			</view>
 			<view class="smallWindow" >
@@ -64,7 +64,7 @@
 					object-fit="fillCrop"
 					autoplay 
 				>
-					<view class="userName">{{subUrls[2]&&subUrls[2].memName}}</view>
+					<cover-view class="userName">{{subUrls[2]&&subUrls[2].memName}}</cover-view>
 				</live-player>
 			</view>
 		</view>
@@ -78,7 +78,7 @@
 				object-fit="fillCrop"
 				autoplay 
 			>	
-				<view class="userName">{{subUrls[3]&&subUrls[3].memName}}</view>
+				<cover-view class="userName">{{subUrls[3]&&subUrls[3].memName}}</cover-view>
 			</live-player>
 		</view>
 		<view class="smallWindow" >
@@ -90,7 +90,7 @@
 				object-fit="fillCrop"
 				autoplay 
 			>
-				<view class="userName">{{subUrls[4]&&subUrls[4].memName}}</view>
+				<cover-view class="userName">{{subUrls[4]&&subUrls[4].memName}}</cover-view>
 			</live-player>
 		</view>
 		</view>
