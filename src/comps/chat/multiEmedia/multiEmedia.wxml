@@ -25,6 +25,7 @@
 			style="display:inline"
 			wx:if="{{subUrls.length > 0}}"
 			wx:for="{{subUrls}}">
+
 			<live-player 
 				id="{{item.streamId}}"
 				src="{{item.subUrl}}" 
