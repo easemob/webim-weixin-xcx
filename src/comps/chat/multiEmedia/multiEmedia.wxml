@@ -17,7 +17,7 @@
 			orientation="vertical"
 			autopush 
 		>
-			<view class="userName">{{myName}}</view>
+			<cover-view class="userName">{{myName}}</cover-view>
 		</live-pusher>
 
 
@@ -32,7 +32,7 @@
 				object-fit="contain"
 				autoplay 
 			>
-				<view class="userName">{{item.memName}}</view>
+				<cover-view class="userName">{{item.memName}}</cover-view>
 			</live-player>
 
 		</view>
