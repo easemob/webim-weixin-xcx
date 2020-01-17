@@ -1,101 +1,43 @@
 <view class="wraper">
-	<view class="infoWraper">
+	
+	<scroll-view
+		style="height:860rpx"
+		scroll-y = "true"
+	>
 		<view class="infoConnecting">
-			多人会议
+			多人会议 {{wx.WebIM.conn.context.userId}}
 		</view>
-		<view class="infoName">
-			{{wx.WebIM.conn.context.userId}}
-		</view>
-	</view>
+		<live-pusher 
+			url="{{pubUrl}}" 
+			mode="RTC" 
+			aspect="9:16"
+			device-position="{{devicePosition}}"
+			muted="{{muted}}"
+			background-mute="{{true}}"
+			orientation="vertical"
+			autopush 
+		>
+			<view class="userName">{{myName}}</view>
+		</live-pusher>
 
-	<view class="contenWraper">
-		<view class="videoBox">
-			<view class="smallWindow" >
-			<live-pusher 
-				wx:if="{{pubUrl}}"
-				url="{{pubUrl}}" 
-				class="smallWindow" 
-				mode="RTC" 
-				aspect="9:16"
-				device-position="{{devicePosition}}"
-				muted="{{muted}}"
-				background-mute="{{true}}"
-				orientation="vertical"
-				autopush 
-			>
-				<view class="userName">{{myName}}</view>
-			</live-pusher>
-			</view>
 
-			<view class="smallWindow" >
-				<live-player 
-					wx:if="{{subUrls[0]&&subUrls[0].streamId}}"
-					id="{{subUrls[0]&&subUrls[0].streamId}}"
-					class="smallWindow"
-					src="{{subUrls[0]&&subUrls[0].subUrl}}" 
-					mode="RTC" 
-					object-fit="contain"
-					autoplay 
-				>
-					<view class="userName">{{subUrls[0]&&subUrls[0].memName}}</view>
-				</live-player>
-			</view>
-		</view>
-		<view class="videoBox"> 
-			<view class="smallWindow" >
+		<view  
+			style="display:inline"
+			wx:if="{{subUrls.length > 0}}"
+			wx:for="{{subUrls}}">
 			<live-player 
-				wx:if="{{subUrls[1]&&subUrls[1].streamId}}"
-				id="{{subUrls[1]&&subUrls[1].streamId}}"
-				class="smallWindow"
-				src="{{subUrls[1]&&subUrls[1].subUrl}}" 
+				id="{{item.streamId}}"
+				src="{{item.subUrl}}" 
 				mode="RTC" 
-				object-fit="fillCrop"
+				object-fit="contain"
 				autoplay 
 			>
-				<view class="userName">{{subUrls[1]&&subUrls[1].memName}}</view>
+				<view class="userName">{{item.memName}}</view>
 			</live-player>
-			</view>
-			<view class="smallWindow" >
-				<live-player 
-					wx:if="{{subUrls[2]&&subUrls[2].streamId}}"
-					id="{{subUrls[2]&&subUrls[2].streamId}}"
-					class="smallWindow"
-					src="{{subUrls[2]&&subUrls[2].subUrl}}" 
-					mode="RTC" 
-					object-fit="fillCrop"
-					autoplay 
-				>
-					<view class="userName">{{subUrls[2]&&subUrls[2].memName}}</view>
-				</live-player>
-			</view>
+
 		</view>
-		<view class="videoBox">
-		<view class="smallWindow" >
-			<live-player 
-				wx:if="{{subUrls[3]&&subUrls[3].streamId}}"
-				class="smallWindow"
-				src="{{subUrls[3]&&subUrls[3].subUrl}}" 
-				mode="RTC" 
-				object-fit="fillCrop"
-				autoplay 
-			>	
-				<view class="userName">{{subUrls[3]&&subUrls[3].memName}}</view>
-			</live-player>
-		</view>
-		<view class="smallWindow" >
-			<live-player 
-				wx:if="{{subUrls[4]&&subUrls[4].streamId}}"
-				class="smallWindow"
-				src="{{subUrls[4]&&subUrls[4].subUrl}}" 
-				mode="RTC" 
-				object-fit="fillCrop"
-				autoplay 
-			>
-				<view class="userName">{{subUrls[4]&&subUrls[4].memName}}</view>
-			</live-player>
-		</view>
-		</view>
-	</view>
+	</scroll-view>
+
 
 	<view class="controlContent">
 		<view class="emediaContrContent">

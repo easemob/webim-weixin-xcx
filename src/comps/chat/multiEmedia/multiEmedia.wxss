@@ -7,19 +7,22 @@
 	z-index: 9;
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 }
-
+/* 
 .infoWraper {
 	height: 130rpx;
 	width: 100%;
 	color: #fff;
 	padding-left: 24rpx;
-}
+} */
 .infoConnecting {
 	font-size: 16px;
 	line-height: 80rpx;
+	color: #fff;
+	padding: 0 20rpx;
 }
-.infoName {
+/* .infoName {
 	font-size: 14px;
 	line-height: 50rpx;
 }
@@ -43,7 +46,7 @@
 	flex: 1;
 	margin: 1px;
 	background: #000;
-}
+} */
 
 .controlContent {
 	display: flex;
@@ -92,3 +95,19 @@
 	line-height: 14px;
 	padding-left: 3px;
 }
+
+
+/* modify style  start*/
+/* .video {
+	width: 48%;
+	height: 400rpx;
+	margin-left:10rpx;
+	display: inline-block;
+} */
+live-pusher, live-player {
+	width: 48%;
+	height: 400rpx;
+	margin-left:10rpx;
+	display: inline-block;
+}
+/* modify style  end*/
