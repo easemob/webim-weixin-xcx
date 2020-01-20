@@ -1,6 +1,5 @@
 import Long from 'long'
 var operatRoster = function(option, type, conn){
-    debugger
     var emptyMessage = [];
     var rosterBody = conn.context.root.lookup("easemob.pb.RosterBody");
     var rosterBodyJson = rosterBody.decode(emptyMessage);
@@ -26,7 +25,7 @@ var operatRoster = function(option, type, conn){
     var nameList = [];
     if(typeof option.to === "string"){
         nameList.push({
-            appKey: conn.appKey,
+            appKey: conn.context.appKey,
             name: option.to,
             domain: "easemob.com",
         });
@@ -34,7 +33,7 @@ var operatRoster = function(option, type, conn){
     else if(option.to instanceof Array){
         for(var i = 0; i < option.to.length; i++){
             nameList.push({
-                appKey: conn.appKey,
+                appKey: conn.context.appKey,
                 name: option.to[i],
                 domain: "easemob.com",
             });
@@ -42,7 +41,7 @@ var operatRoster = function(option, type, conn){
     }
     rosterBodyJson.to = nameList;
     // rosterBodyJson.to = [{
-    //     appKey: conn.appKey,
+    //     appKey: conn.context.appKey,
     //     name: option.to,
     //     domain: "easemob.com",
     //     // clientResource: conn.clientResource

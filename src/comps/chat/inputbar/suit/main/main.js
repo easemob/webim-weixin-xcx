@@ -83,7 +83,7 @@ Component({
 				roomType: false,
 				chatType: this.data.chatType,
 				success(id, serverMsgId){
-					//console.log('成功了')
+					console.log('成功了')
 					disp.fire('em.chat.sendSuccess', id, me.data.userMessage);
 				},
 				fail(id, serverMsgId){

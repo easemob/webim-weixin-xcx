@@ -93,7 +93,7 @@ var handleMessage = function(meta, status, conn){
             switch(msgBody.type){                               //contentsType 为消息类型 txt、img。。。
                 case 0:
                     var receiveMsg = thirdMessage.contents[i].text;
-                    var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
+                    var emojibody = _utils.parseTextMessage(receiveMsg, wx.WebIM.Emoji);
                     if (emojibody.isemoji) {
                         msg = {
                             id: msgId

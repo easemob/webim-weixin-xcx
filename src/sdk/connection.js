@@ -1,6 +1,3 @@
-// import getAll from './allnode'
-// import protobuf from './weichatPb/protobuf';
-import Base64 from 'Base64';
 import getCode from './status';
 import _utils from './utils'
 import _msg from './message';
@@ -70,42 +67,7 @@ var _parseNameFromJidFn = function (jid, domain) {     //*******删掉或者改�
     return jid.name;
 };
 
-// var _getSock = function(conn){
-//     if (conn.isHttpDNS) {
-//         var host = conn.xmppHosts[conn.xmppIndex];
-//         var domain = host.domain;
-//         var ip = host.ip;
-//         var url = "";
-//         if (ip) {
-//             url = ip;
-//             var port = host.port;
-//             if (port != '80') {
-//                 url += ':' + port;
-//             }
-//         } else {
-//             url = domain;
-//         }
-//         if(url){
-//             conn.url = "//" + url + "/ws";
-//         }
-//     }
-//     var sock = wx.connectSocket({
-//         url: url,
-//         fail: function (e) {
-//             console.log('连接失败', e)
-//             //部分机型从后台切回前台状态有延迟
-//             if (e.errMsg.indexOf('suspend') != -1) {
-//                 //重连
-//             }
-//         },
-//         success: function (e) {
-//             console.log('连接成功', e)
-//         }
-//     })
-//     return sock
-// }
 var _login = function (options, conn) {
-    debugger
     console.log('conn>>>',conn);
     if(!options){
         return;
@@ -115,15 +77,16 @@ var _login = function (options, conn) {
         header: {
             'content-type': 'application/json'
         },
+        success: function (e) {
+            console.log('连接成功', e)
+            !conn.logOut &&  conn.heartBeat(conn) //连接成功开始发送心跳
+        },
         fail: function (e) {
             console.log('连接失败', e)
             //部分机型从后台切回前台状态有延迟
             if (e.errMsg.indexOf('suspend') != -1) {
                 //重连
             }
-        },
-        success: function (e) {
-            console.log('连接成功', e)
         }
     })
 
@@ -170,11 +133,8 @@ var _login = function (options, conn) {
     });
 
     sock.onClose( function (e) {
-        if(!conn.logOut 
-            && conn.autoReconnectNumTotal <= conn.autoReconnectNumMax
-            && (conn.autoReconnectNumTotal <= conn.xmppHosts.length && conn.isHttpDNS || !conn.isHttpDNS)
-            // && conn.xmppIndex < conn.xmppHosts.length - 1
-        )
+        debugger
+        if(!conn.logOut && conn.autoReconnectNumTotal <= conn.autoReconnectNumMax && (conn.autoReconnectNumTotal <= conn.xmppHosts.length && conn.isHttpDNS || !conn.isHttpDNS))
         {
             conn.reconnect();
             var error = {
@@ -197,19 +157,9 @@ var _login = function (options, conn) {
     })
 
     sock.onMessage(function (e) {
-        console.log('e>>>>',e);
-        
-        var getmessage = Base64.atob(e.data);
-        var arr = [];
-        for (var i = 0, j = getmessage.length; i < j; ++i) {
-            arr.push(getmessage.charCodeAt(i));
-        }
         debugger
-        //var tmpUint8Array = new Uint8Array(arr);    //注释：ie9不兼容https://www.cnblogs.com/jiangxiaobo/p/6016431.html
         var mainMessage = root.lookup("easemob.pb.MSync");
-        console.log('mainMessage>>>',arr); // arr = [114, 90, 44, 123, 25, 165, 158, 208, 46, 174, 120, 158, 181, 250, 90, 173, 169, 172, 198, 105, 103, 179, 25, 169, 165, 250, 218, 154, 41, 224]
-        
-        var result = mainMessage.decode(arr);
+        var result = mainMessage.decode(e.data);
         switch (result.command) {
             case 0:
                 var CommSyncDLMessage = root.lookup("easemob.pb.CommSyncDL");
@@ -307,6 +257,7 @@ var _login = function (options, conn) {
                 }
                 break;
             case 1:
+                debugger
                 var CommUnreadDLMessage = root.lookup("easemob.pb.CommUnreadDL");
                 CommUnreadDLMessage = CommUnreadDLMessage.decode(result.payload);
                 if (CommUnreadDLMessage.unread.length === 0) {
@@ -330,7 +281,7 @@ var _login = function (options, conn) {
     })
 
     sock.onError(function(e){
-        console.log('onError', e);
+        console.log('sockOnError', e);
     })
     debugger
     var accessToken = options.access_token ||'';
@@ -374,7 +325,7 @@ var lastsession = function (nexkey, queue, conn) {
         };
         conn.onError(error);
     } else {
-
+        debugger
         base64transform(firstMessage);
     }
 }
@@ -453,6 +404,7 @@ var rebuild = function () {
  * 当服务器有新消息提示时进行返回queue
  * */
 var backqueue = function (backqueue, conn) {
+    debugger
     var emptyMessage = [];
     var commsynculMessage = root.lookup("easemob.pb.CommSyncUL");
     var secondMessage = commsynculMessage.decode(emptyMessage);
@@ -491,15 +443,8 @@ var unreadDeal = function (conn) {
 }
 
 var base64transform = function (str) {
-
-    var strr = "";
-    for (var i = 0; i < str.length; i++) {
-        var str0 = String.fromCharCode(str[i]);
-        strr = strr + str0;
-    }
-    strr = Base64.btoa(strr)
-    //strr = window.btoa(strr);
-    sock.send(strr);
+    let obj = {data:str}
+    sock.send(obj);
 }
 
 
@@ -656,7 +601,7 @@ var connection = function (options) {
     this.route = options.route || null;   //*** */
     // this.domain = options.domain || 'easemob.com';
     this.inactivity = options.inactivity || 30;     //****getStrophe */
-    this.heartBeatWait = options.heartBeatWait || 4500;   //*** */
+    this.heartBeatWait = options.heartBeatWait || 8000;   //心跳时间 */
     this.maxRetries = options.maxRetries || 5;     //*** getStrophe*/
     this.isAutoLogin = options.isAutoLogin === false ? false : true;      //**** */
     this.pollingTime = options.pollingTime || 800;    //****getStrophe */
@@ -877,6 +822,17 @@ connection.prototype.listen = function (options) {
     this.onBlacklistUpdate = options.onBlacklistUpdate || _utils.emptyfn;
 
     _listenNetwork(this.onOnline, this.onOffline);
+};
+connection.prototype.heartBeatID = 0;
+connection.prototype.heartBeat = function (conn) {
+    debugger
+	this.stopHeartBeat();
+	this.heartBeatID = setInterval(function () {
+        rebuild()
+	}, this.heartBeatWait);
+};
+connection.prototype.stopHeartBeat = function () {
+	clearInterval(this.heartBeatID);
 };
 
 
@@ -1180,10 +1136,12 @@ connection.prototype.login = function (options) {
  */
 
 connection.prototype.close = function (reason) {
+    debugger
     this.logOut = true;
     this.context.status = _code.STATUS_CLOSING;
     console.log('sock>>>>',sock);
-    
+    console.warn('断开原因>>',reason)
+    this.stopHeartBeat()
     sock.close();
 
     this.context.status = _code.STATUS_CLOSING;
@@ -1216,22 +1174,11 @@ connection.prototype.recallMessage = function(option){
  * @private
  */
 connection.prototype.sendMSync = function(str){     //
-    var strr = "";
-    // this.unSendMsgArr.push(dom);
-    for (var i = 0; i < str.length; i++) {
-        var str0 = String.fromCharCode(str[i]);
-        strr = strr + str0;
-    }
-    debugger
-    strr = Base64.btoa(strr);
-    //strr = window.btoa(strr);
-
-    //SockJS.OPEN = 1
-    if(sock.readyState === 1){
-        sock.send(strr);
-    }
-    else{
-        this.unSendMsgArr.push(strr);
+    let obj = {data:str}
+    if (sock.readyState === 1) {
+        sock.send(obj)
+    }else{
+        //sock重连
         if(
             !this.logOut 
             && this.autoReconnectNumTotal <= this.autoReconnectNumMax
@@ -1240,10 +1187,6 @@ connection.prototype.sendMSync = function(str){     //
             this.offLineSendConnecting = true;
             this.reconnect();
         }
-        this.onError({
-            type: _code.WEBIM_CONNCTION_DISCONNECTED,
-            reconnect: true
-        });
     }
 }
 
@@ -1276,6 +1219,7 @@ connection.prototype.getUniqueId = function (prefix) { //*******
 
 connection.prototype.send= function (messageOption) {
     var self = this;
+    self.appKey = self.context.appKey
     ChatMessage(messageOption, self);
     _msgHash[messageOption.id] = messageOption;
 };
@@ -1565,16 +1509,8 @@ var _fetchMessages = function(options,conn) {
                 _dataQueue.next_key = data.next_key;
 
                 var _parseMeta = function(meta){
-                    var arr = [];
-                    meta = Base64.atob(meta);
-                    for (var i = 0, j = meta.length; i < j; ++i) {
-                        arr.push(meta.charCodeAt(i));
-                    }
-                    //var tmpUint8Array = new Uint8Array(arr); 
-
                     var CommSyncDLMessage = conn.context.root.lookup("easemob.pb.Meta");
-                    CommSyncDLMessage = CommSyncDLMessage.decode(arr);
-
+                    CommSyncDLMessage = CommSyncDLMessage.decode(meta);
                     var status = {
                         errorCode: 0,
                         reason: ''

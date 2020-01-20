@@ -11,7 +11,8 @@
 			catch:touchstart="handleRecording"
 			catch:touchmove="handleRecordingMove"
 			catch:touchend="handleRecordingCancel"
-			catch:touchcancel="handleRecordingCancel">
+
+			>
 			<image class="icon-mic" src="../../../../../images/send.png"/>
 		</button>
 	</view>

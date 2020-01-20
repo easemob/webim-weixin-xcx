@@ -56,7 +56,6 @@ Page({
 				appKey: WebIM.config.appkey,
 				success: function(res){
 					console.log('res', res)	
-					if(res.statusCode == "200"){
 						that.toastSuccess('注册成功');
 						var data = {
 							apiUrl: WebIM.config.apiURL,
@@ -69,7 +68,6 @@ Page({
 							key: "myUsername",
 							data: that.data.username
 						});
-					}
 				},
 				error: function(res){
 					console.log('res', res)	
@@ -81,7 +79,7 @@ Page({
 					}
 				}
 			};
-			WebIM.utils.registerUser(options);
+			WebIM.conn.registerUser(options);
 		}
 	}
 });

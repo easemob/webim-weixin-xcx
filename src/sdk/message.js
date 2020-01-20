@@ -74,6 +74,7 @@ import _utils from './utils'
             , ext: opt.ext || {}
             , success: opt.success
             , fail: opt.fail
+            , from: opt.from
             , msgConfig: opt.msgConfig
         }
         !opt.msgConfig && delete this.body.msgConfig;
@@ -94,6 +95,7 @@ import _utils from './utils'
         this.body = {
             id: this.id,
             to: opt.to
+            , from: opt.from
             , action: opt.action
             , msg: this.value
             , type: this.type
@@ -116,6 +118,7 @@ import _utils from './utils'
         this.body = {
             id: this.id,
             to: opt.to
+            , from: opt.from
             , type: this.type
             , roomType: opt.roomType
             , addr: opt.addr
@@ -150,6 +153,7 @@ import _utils from './utils'
             onFileUploadComplete: opt.onFileUploadComplete,
             success: opt.success,
             fail: opt.fail,
+            from: opt.from,
             flashUpload: opt.flashUpload,
             width: opt.width,
             height: opt.height,
@@ -190,6 +194,7 @@ import _utils from './utils'
             , onFileUploadComplete: opt.onFileUploadComplete
             , success: opt.success
             , fail: opt.fail
+            , from: opt.from
             , flashUpload: opt.flashUpload
             , body: opt.body
         };
@@ -223,6 +228,7 @@ import _utils from './utils'
             , onFileUploadComplete: opt.onFileUploadComplete
             , success: opt.success
             , fail: opt.fail
+            , from: opt.from
             , flashUpload: opt.flashUpload
             , body: opt.body
 
@@ -261,6 +267,7 @@ import _utils from './utils'
         , onFileUploadComplete: opt.onFileUploadComplete
         , success: opt.success
         , fail: opt.fail
+        , from: opt.from
         , flashUpload: opt.flashUpload
         , body: opt.body
         };

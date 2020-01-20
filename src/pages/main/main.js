@@ -179,6 +179,7 @@ Page({
 			cancelText: "取消",
 			confirmText: "删除",
 			success(res){
+				debugger
 				if(res.confirm == true){
 					WebIM.conn.removeRoster({
 						to: delName,
@@ -189,6 +190,7 @@ Page({
 							// wx.showToast({
 							// 	title: "删除成功",
 							// });
+							debugger
 							me.toastSuccess('删除成功');
 							// 删除好友后 同时清空会话
 							wx.setStorageSync(delName + myName, "");
@@ -427,8 +429,8 @@ Page({
         });
          //赋值给当前高亮的isActive
         that.setData({
-            isActive: someArr[0].id,
-            fixedTitle: someArr[0].region
+            isActive:someArr.length>0? someArr[0].id:'',
+            fixedTitle:someArr.length>0? someArr[0].region:''
         });
  
           //计算分组高度,wx.createSelectotQuery()获取节点信息

@@ -12,7 +12,7 @@ module.exports = function(sendableMsg, type, myName){
 		yourname: sendableMsg.body.from,
 		msg: {
 			type: type,
-			url: sendableMsg.body.body.url,
+			url: sendableMsg.body.url?sendableMsg.body.url:'',
 			data: getMsgData(sendableMsg, type),
 		},
 		style: sendableMsg.body.from == myName ? "self" : "",
