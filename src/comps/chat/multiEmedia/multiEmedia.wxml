@@ -11,6 +11,7 @@
 			url="{{pubUrl}}" 
 			mode="RTC" 
 			aspect="9:16"
+			enable-camera="{{enableCamera}}"
 			device-position="{{devicePosition}}"
 			muted="{{muted}}"
 			background-mute="{{true}}"
