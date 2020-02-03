@@ -73,6 +73,9 @@ Component({
 			}else{
 				this.createConf()
 			}
+			wx.emedia.mgr.onMemberExited = function(reason){
+
+			};
 
 			wx.emedia.mgr.onMemberJoined = function(mem){
 				console.log("++++++++++ member", mem)
@@ -90,7 +93,7 @@ Component({
 			wx.emedia.mgr.onStreamAdded = function(stream){
 				console.log('%c onAddStream', 'color: green', stream)
 				let streamId = stream.id
-				setTimeout(() => {
+				// setTimeout(() => {
 					wx.emedia.mgr.subStream(streamId).then(function(data){
 						console.log('%c 订阅流成功', 'color:green', data)
 						// let playContext = wx.createLivePlayerContext(streamId, me)
@@ -109,7 +112,7 @@ Component({
 							showInvite: false
 						})
 					})
-				}, 2000)
+				// }, 2000)
 			}
 			wx.emedia.mgr.onStreamRemoved = function(stream){
 				console.log('%c onRemoveStream', 'color: red', stream)
@@ -155,7 +158,8 @@ Component({
   		videoIcon: 'video_white',
 		videoColor: '#fff',
 		myName: '',
-		confrId: ''
+		confrId: '',
+		enableCamera: true
 	},
 
 	methods: {
@@ -176,6 +180,10 @@ Component({
 				wx.emedia.mgr.joinConferenceWithTicket(confrId, ticket).then(function(res){
 					console.log('加入会议成功', res)
 				})
+				// wx.emedia.mgr.joinConference(confrId, '').then(function(res){
+				// 	console.log('加入会议成功', res)
+				// })
+				
 				me.setData({
 					confrId
 				})
@@ -201,14 +209,17 @@ Component({
 		},
 		
 		togglePlay(){
+			let me = this
 			console.log("%c togglePlay", "color:green")
 			
-			if (this.data.videoIcon == 'video_white') {
-				this.LivePusherContext.pause()
-			}else{
-				this.LivePusherContext.resume()
-			}
+			// if (this.data.videoIcon == 'video_white') {
+			// 	this.LivePusherContext.pause()
+			// }else{
+			// 	this.LivePusherContext.resume()
+			// }
 			this.setData({
+				enableCamera: !me.data.enableCamera,
+				pubUrl: me.data.pubUrl,
 				videoIcon: this.data.videoIcon == 'video_white'?'video_gray': 'video_white',
 				videoColor: this.data.videoColor == '#fff'? '#aaa': '#fff'
 			})
