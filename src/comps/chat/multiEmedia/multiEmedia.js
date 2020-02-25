@@ -94,6 +94,9 @@ Component({
 				console.log('%c onAddStream', 'color: green', stream)
 				let streamId = stream.id
 				// setTimeout(() => {
+					if(subUrls.length > 8){
+						return
+					}
 					wx.emedia.mgr.subStream(streamId).then(function(data){
 						console.log('%c 订阅流成功', 'color:green', data)
 						// let playContext = wx.createLivePlayerContext(streamId, me)
@@ -137,6 +140,9 @@ Component({
 					subUrls: subUrls,
 				})
 				console.log('subUrls', subUrls)
+			},
+			wx.emedia.mgr.onConfrAttrsUpdated = function(e){
+				console.log('onConfrAttrsUpdated: ', e)
 			}
 	    },
 	    detached: function() {
@@ -217,13 +223,15 @@ Component({
 			// }else{
 			// 	this.LivePusherContext.resume()
 			// }
+			this.LivePusherContext.stop()
 			this.setData({
 				enableCamera: !me.data.enableCamera,
 				pubUrl: me.data.pubUrl,
 				videoIcon: this.data.videoIcon == 'video_white'?'video_gray': 'video_white',
 				videoColor: this.data.videoColor == '#fff'? '#aaa': '#fff'
+			}, () => {
+				this.LivePusherContext.start()
 			})
-
 		},
 
 		toggleCamera(){
@@ -238,6 +246,15 @@ Component({
 					})
 				}
 			})
+
+			// 	测试更新会议属性
+			// wx.emedia.mgr.setConferenceAttrs({
+			// 	key: 'zdtest',
+			// 	val: 'change_status',
+			// 	success: function(){console.log('改变状态成功')},
+			// 	error: function(){console.log('改变状态失败')},
+			// 	confrId: this.data.confrId
+			// })
 		},
 
 		toggleMuted(){
@@ -262,6 +279,12 @@ Component({
 		},
 		inviteMember(){
 			this.triggerEvent('inviteMember')
+		},
+		statechange(e){
+			console.log('live-pusher code:', e.detail)
+		},
+		netstatusChange(e){
+			console.log('net status:', e.detail)
 		}
 	},
 
