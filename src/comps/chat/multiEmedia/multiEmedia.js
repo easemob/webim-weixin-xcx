@@ -88,6 +88,22 @@ Component({
 							pubUrl: res.data.rtmp
 						})
 					})
+
+					var enableCamera = me.data.enableCamera;
+				    console.warn("begin enable camera", me.data.enableCamera);
+
+				    //默认enableCamera为false  关闭摄像头时声音不会有延迟，否则有延迟
+				    //所以最好别用autopush
+					me.setData({
+						enableCamera: false,
+						pubUrl: me.data.url || 'https://domain/push_stream',
+					}, () => {
+				      	me.LivePusherContext.start({
+				        	success: function () {
+				          		enableCamera && me.setData({enableCamera: enableCamera})
+				        	}
+				        })
+				    })
 				}
 			}
 			wx.emedia.mgr.onStreamAdded = function(stream){
@@ -116,6 +132,7 @@ Component({
 						})
 					})
 				// }, 2000)
+
 			}
 			wx.emedia.mgr.onStreamRemoved = function(stream){
 				console.log('%c onRemoveStream', 'color: red', stream)
@@ -220,30 +237,15 @@ Component({
 			let me = this
 			console.log("%c togglePlay", "color:green")
 
-			this.LivePusherContext.stop()
-			// this.setData({
-			// 	enableCamera: !me.data.enableCamera,
-			// 	pubUrl: me.data.pubUrl,
-			// 	videoIcon: this.data.videoIcon == 'video_white'?'video_gray': 'video_white',
-			// 	videoColor: this.data.videoColor == '#fff'? '#aaa': '#fff'
-			// }, () => {
-			// 	//this.LivePusherContext.start()
-			// })
-
-			var enableCamera = me.data.enableCamera;
-		    console.warn("begin enable camera", me.data.enableCamera);
+			// this.LivePusherContext.stop()
 			this.setData({
-				enableCamera: false,
-				pubUrl: me.data.url || 'https://domain/push_stream',
+				enableCamera: !me.data.enableCamera,
+				pubUrl: me.data.pubUrl,
 				videoIcon: this.data.videoIcon == 'video_white'?'video_gray': 'video_white',
 				videoColor: this.data.videoColor == '#fff'? '#aaa': '#fff'
 			}, () => {
-		      	this.LivePusherContext.start({
-		        	success: function () {
-		          		enableCamera && me.setData({enableCamera: enableCamera})
-		        	}
-		        })
-		    })
+				// this.LivePusherContext.start()
+			})
 		},
 
 		toggleCamera(){

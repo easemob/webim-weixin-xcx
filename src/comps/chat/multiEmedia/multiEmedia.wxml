@@ -21,7 +21,6 @@
 			orientation="vertical"
 			bindstatechange="statechange"
 			bindnetstatus="netstatusChange"
-			autopush 
 		>
 			<view class="userName">{{myName}}</view>
 		</live-pusher>
