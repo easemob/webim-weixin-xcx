@@ -91,7 +91,6 @@ var _login = function (options, conn) {
     })
 
     sock.onOpen(function () {
-        debugger
         var emptyMessage = [];
         var time = (new Date()).valueOf();
         var provisionMessage = root.lookup("easemob.pb.Provision");
@@ -133,7 +132,6 @@ var _login = function (options, conn) {
     });
 
     sock.onClose( function (e) {
-        debugger
         if(!conn.logOut && conn.autoReconnectNumTotal <= conn.autoReconnectNumMax && (conn.autoReconnectNumTotal <= conn.xmppHosts.length && conn.isHttpDNS || !conn.isHttpDNS))
         {
             conn.reconnect();
@@ -157,7 +155,6 @@ var _login = function (options, conn) {
     })
 
     sock.onMessage(function (e) {
-        debugger
         var mainMessage = root.lookup("easemob.pb.MSync");
         var result = mainMessage.decode(e.data);
         switch (result.command) {
@@ -257,7 +254,6 @@ var _login = function (options, conn) {
                 }
                 break;
             case 1:
-                debugger
                 var CommUnreadDLMessage = root.lookup("easemob.pb.CommUnreadDL");
                 CommUnreadDLMessage = CommUnreadDLMessage.decode(result.payload);
                 if (CommUnreadDLMessage.unread.length === 0) {
@@ -283,7 +279,6 @@ var _login = function (options, conn) {
     sock.onError(function(e){
         console.log('sockOnError', e);
     })
-    debugger
     var accessToken = options.access_token ||'';
     if (accessToken == '') {
         var loginfo = _utils.stringify(options);
@@ -325,7 +320,6 @@ var lastsession = function (nexkey, queue, conn) {
         };
         conn.onError(error);
     } else {
-        debugger
         base64transform(firstMessage);
     }
 }
@@ -404,7 +398,6 @@ var rebuild = function () {
  * 当服务器有新消息提示时进行返回queue
  * */
 var backqueue = function (backqueue, conn) {
-    debugger
     var emptyMessage = [];
     var commsynculMessage = root.lookup("easemob.pb.CommSyncUL");
     var secondMessage = commsynculMessage.decode(emptyMessage);
@@ -443,7 +436,8 @@ var unreadDeal = function (conn) {
 }
 
 var base64transform = function (str) {
-    let obj = {data:str}
+    var init8arr = new Uint8Array(str)
+    let obj = {data:init8arr.buffer}
     sock.send(obj);
 }
 
@@ -601,7 +595,7 @@ var connection = function (options) {
     this.route = options.route || null;   //*** */
     // this.domain = options.domain || 'easemob.com';
     this.inactivity = options.inactivity || 30;     //****getStrophe */
-    this.heartBeatWait = options.heartBeatWait || 8000;   //心跳时间 */
+    this.heartBeatWait = options.heartBeatWait || 5000;   //心跳时间 */
     this.maxRetries = options.maxRetries || 5;     //*** getStrophe*/
     this.isAutoLogin = options.isAutoLogin === false ? false : true;      //**** */
     this.pollingTime = options.pollingTime || 800;    //****getStrophe */
@@ -825,7 +819,6 @@ connection.prototype.listen = function (options) {
 };
 connection.prototype.heartBeatID = 0;
 connection.prototype.heartBeat = function (conn) {
-    debugger
 	this.stopHeartBeat();
 	this.heartBeatID = setInterval(function () {
         rebuild()
@@ -1061,7 +1054,6 @@ connection.prototype.login = function (options) {
     if (conn.isOpened()) {    //** */
         return;
     }
-    debugger
     if (options.accessToken) {
         options.access_token = options.accessToken;
         // conn.context.restTokenData = options;
@@ -1136,7 +1128,6 @@ connection.prototype.login = function (options) {
  */
 
 connection.prototype.close = function (reason) {
-    debugger
     this.logOut = true;
     this.context.status = _code.STATUS_CLOSING;
     console.log('sock>>>>',sock);
@@ -1174,7 +1165,13 @@ connection.prototype.recallMessage = function(option){
  * @private
  */
 connection.prototype.sendMSync = function(str){     //
-    let obj = {data:str}
+    var init8arr = new Uint8Array(str)
+    let obj = {
+        data:init8arr.buffer,
+        fail: function(err) {
+           console.error('消息发送失败:',err)
+        }
+    }
     if (sock.readyState === 1) {
         sock.send(obj)
     }else{
@@ -1182,7 +1179,7 @@ connection.prototype.sendMSync = function(str){     //
         if(
             !this.logOut 
             && this.autoReconnectNumTotal <= this.autoReconnectNumMax
-            && (this.autoReconnectNumTotal <= this.xmppHosts.length && this.isHttpDNS || !this.isHttpDNS)
+            // && (this.autoReconnectNumTotal <= this.xmppHosts.length && this.isHttpDNS || !this.isHttpDNS)
         ){
             this.offLineSendConnecting = true;
             this.reconnect();
@@ -1245,7 +1242,6 @@ connection.prototype.removeRoster = function (options) {
  */
 
 connection.prototype.getRoster = function (options) {
-    debugger
     var options = options || {};
     var self = this;
     // if (!_utils.isCanSetRequestHeader) {
@@ -2017,7 +2013,6 @@ connection.prototype._onUpdateMyRoster = function (options) {
  *
  */
 connection.prototype.reconnect = function (v) {
-    // debugger
     // var that = this;
     // if(that.xmppIndex < that.xmppHosts.length - 1){
     //     that.xmppIndex++;       //重连时改变ip地址

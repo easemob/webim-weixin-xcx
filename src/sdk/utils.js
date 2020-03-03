@@ -618,7 +618,6 @@ var utils = {
     },
 
         ajax: function(options){
-            debugger
         var suc = options.success || EMPTYFN;
         var error = options.error || EMPTYFN;
         var type = options.type || "POST",

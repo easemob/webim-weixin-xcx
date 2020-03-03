@@ -1,5 +1,4 @@
 var sendChatMessage = function(messageOption, conn){
-    debugger
 	var self = conn;
 
 	var emptyMessage = [];

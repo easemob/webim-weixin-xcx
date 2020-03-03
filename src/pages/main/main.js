@@ -179,7 +179,6 @@ Page({
 			cancelText: "取消",
 			confirmText: "删除",
 			success(res){
-				debugger
 				if(res.confirm == true){
 					WebIM.conn.removeRoster({
 						to: delName,
@@ -190,7 +189,6 @@ Page({
 							// wx.showToast({
 							// 	title: "删除成功",
 							// });
-							debugger
 							me.toastSuccess('删除成功');
 							// 删除好友后 同时清空会话
 							wx.setStorageSync(delName + myName, "");

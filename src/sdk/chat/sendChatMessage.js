@@ -1,7 +1,6 @@
 import _utils from '../utils'
 
 var sendMessage = function(messageOption, conn){
-    debugger
     var self = conn;
     console.log('conn>>',conn);
     
@@ -313,7 +312,6 @@ var sendMessage = function(messageOption, conn){
 }
 
 var sendChatMessage = function(messageOption, conn){
-    debugger
     var me = conn || this;
     //var me = this;
     me.msg = messageOption;
@@ -353,7 +351,6 @@ var sendChatMessage = function(messageOption, conn){
                 , 
                 filetype: me.msg.filetype || me.msg.file.filetype
             }
-            debugger
             sendMessage(me.msg, conn);
             _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
         };

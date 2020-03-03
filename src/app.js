@@ -351,10 +351,11 @@ App({
 			onError(error){
 				console.log(error)
 				// 16: server-side close the websocket connection
-				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED && !logout){
-					if(WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax){
-						return;
-					}
+				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED ){
+				// if(error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED && !logout){
+					// if(WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax){
+					// 	return;
+					// }
 					wx.showToast({
 						title: "server-side close the websocket connection",
 						duration: 1000
