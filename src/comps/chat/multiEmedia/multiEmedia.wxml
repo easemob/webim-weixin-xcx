@@ -11,12 +11,16 @@
 			url="{{pubUrl}}" 
 			mode="RTC" 
 			aspect="9:16"
+			beauty="{{beauty}}"
+			whiteness="{{beauty}}"
 			max-bitrate="{{300}}"
 			enable-camera="{{enableCamera}}"
 			device-position="{{devicePosition}}"
 			muted="{{muted}}"
 			background-mute="{{true}}"
 			orientation="vertical"
+			bindstatechange="statechange"
+			bindnetstatus="netstatusChange"
 			autopush 
 		>
 			<view class="userName">{{myName}}</view>
@@ -60,11 +64,11 @@
 					class="icon-record"
 					src='../../../images/{{videoIcon}}@2x.png' style="width:22px; height: 24px"/>
 				视频</view>
-			<!-- <view class="controlItem" bindtap="toggleVoice">
+			<view class="controlItem" bindtap="toggleBeauty" style="color: {{beautyColor}}">
 				<image
 					class="icon-record"
-					src='../../../images/speaker_white@2x.png' style="width:16px; height: 24px"/>
-				扬声器</view> -->
+					src='../../../images/beauty@2x.png' style="width:16px; height: 24px"/>
+				美颜</view>
 			<view class="controlItem" bindtap="inviteMember">
 				<image
 					class="icon-record"

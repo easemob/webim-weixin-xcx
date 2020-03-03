@@ -163,6 +163,8 @@ Component({
   		micphoneColor: '#fff',
   		videoIcon: 'video_white',
 		videoColor: '#fff',
+		beauty: 0,
+		beautyColor: '#fff',
 		myName: '',
 		confrId: '',
 		enableCamera: true
@@ -217,32 +219,45 @@ Component({
 		togglePlay(){
 			let me = this
 			console.log("%c togglePlay", "color:green")
-			
-			// if (this.data.videoIcon == 'video_white') {
-			// 	this.LivePusherContext.pause()
-			// }else{
-			// 	this.LivePusherContext.resume()
-			// }
+
 			this.LivePusherContext.stop()
+			// this.setData({
+			// 	enableCamera: !me.data.enableCamera,
+			// 	pubUrl: me.data.pubUrl,
+			// 	videoIcon: this.data.videoIcon == 'video_white'?'video_gray': 'video_white',
+			// 	videoColor: this.data.videoColor == '#fff'? '#aaa': '#fff'
+			// }, () => {
+			// 	//this.LivePusherContext.start()
+			// })
+
+			var enableCamera = me.data.enableCamera;
+		    console.warn("begin enable camera", me.data.enableCamera);
 			this.setData({
-				enableCamera: !me.data.enableCamera,
-				pubUrl: me.data.pubUrl,
+				enableCamera: false,
+				pubUrl: me.data.url || 'https://domain/push_stream',
 				videoIcon: this.data.videoIcon == 'video_white'?'video_gray': 'video_white',
 				videoColor: this.data.videoColor == '#fff'? '#aaa': '#fff'
 			}, () => {
-				this.LivePusherContext.start()
-			})
+		      	this.LivePusherContext.start({
+		        	success: function () {
+		          		enableCamera && me.setData({enableCamera: enableCamera})
+		        	}
+		        })
+		    })
 		},
 
 		toggleCamera(){
 			console.log("%c toggleCamera", "color:green")
 			let me = this
+			me.LivePusherContext.stop()
 			me.LivePusherContext.switchCamera({
 				success: function(){
 					me.setData({
 						devicePosition: me.data.devicePosition == 'fron' ? 'back' : 'front',
 						devicePositionIcon: me.data.devicePositionIcon =='switchCamera_white'?'switchCamera_gray': 'switchCamera_white',
 						devicePositionColor: me.data.devicePositionColor == '#fff'? '#aaa':'#fff'
+					}, () => {
+						me.LivePusherContext.start()
 					})
 				}
 			})
@@ -273,7 +288,15 @@ Component({
 		// 	})
 		// },
 
+		toggleBeauty(){
+			this.setData({
+				beauty: this.data.beauty == 0 ? 9 : 0,
+				beautyColor: this.data.beautyColor == '#fff'? '#aaa': '#fff'
+			})
+		},
+
 		hangup(){
+			console.log('挂断', this.data.confrId)
 			wx.emedia.mgr.exitConference(this.data.confrId)
 			this.triggerEvent('hangup')
 		},
