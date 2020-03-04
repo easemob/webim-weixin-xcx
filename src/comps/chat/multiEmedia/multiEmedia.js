@@ -219,9 +219,9 @@ Component({
 		joinConf(data){
 			console.log('加入会议 ————-------————')
 			let me = this
-			wx.emedia.mgr.getConferenceTkt(data.confrId, data.password).then(function(data){
-				console.log('申请reqTkt成功', data.data)
-				let ticket = data.data.ticket || ''
+			wx.emedia.mgr.getConferenceTkt(data.confrId, data.password).then(function(res){
+				console.log('申请reqTkt成功', res.data)
+				let ticket = res.data.ticket || ''
 				let tktObj = JSON.parse(ticket)
 				wx.emedia.mgr.joinConferenceWithTicket(data.confrId, ticket).then(function(res){
 					console.log('加入会议成功', res)
@@ -251,7 +251,7 @@ Component({
 		toggleCamera(){
 			console.log("%c toggleCamera", "color:green")
 			let me = this
-			me.LivePusherContext.stop()
+			// me.LivePusherContext.stop()
 			me.LivePusherContext.switchCamera({
 				success: function(){
 					me.setData({
@@ -259,7 +259,7 @@ Component({
 						devicePositionIcon: me.data.devicePositionIcon =='switchCamera_white'?'switchCamera_gray': 'switchCamera_white',
 						devicePositionColor: me.data.devicePositionColor == '#fff'? '#aaa':'#fff'
 					}, () => {
-						me.LivePusherContext.start()
+						// me.LivePusherContext.start()
 					})
 				}
 			})
