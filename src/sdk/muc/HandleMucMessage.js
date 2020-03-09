@@ -20,6 +20,22 @@ var handleMessage = function(meta, status, conn){
         }
 
         return({
+            32: () => { //解除群组/聊天室一键禁言
+                info.type = thirdMessage.isChatroom ? 'rmChatRoomMute' : 'rmGroupMute';
+                conn.onPresence(info);
+            },
+            31: () => { //群组/聊天室一键禁言
+                info.type = thirdMessage.isChatroom ? 'muteChatRoom' : 'muteGroup';
+                conn.onPresence(info);
+            },
+            30: () => { //删除群/聊天室白名单成员
+                info.type = thirdMessage.isChatroom ? 'rmUserFromChatRoomWhiteList' : 'rmUserFromGroupWhiteList';
+                conn.onPresence(info);
+            },
+            29: () => { //增加群/聊天室组白名单成员
+                info.type = thirdMessage.isChatroom ? 'addUserToChatRoomWhiteList' : 'addUserToGroupWhiteList';
+                conn.onPresence(info);
+            },
             28: () => {
                 info.type = 'deleteFile';
                 conn.onPresence(info);

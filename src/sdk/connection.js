@@ -3143,6 +3143,313 @@ connection.prototype.getGroupBlacklistNew = function (opt) {
     options.error = opt.error || _utils.emptyfn;
     WebIM.utils.ajax(options);
 };
+
+/**
+ * 群一键禁言. 操作权限：app admin、群组owner、群组admin及以上身份
+ * @param {Object} opt -
+ * @param {string} opt.groupId - 群组ID
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.disableSendGroupMsg = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'ban',
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 聊天室一键禁言. 操作权限：app admin、群组owner、群组admin及以上身份
+ * @param {Object} opt -
+ * @param {string} opt.chatRoomId - 聊天室ID
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.disableSendChatRoomMsg = function (opt) {
+    var chatRoomId = opt.chatRoomId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatrooms' + '/' + chatRoomId + '/' + 'ban',
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 解除群一键禁言. 操作权限：app admin、群组owner、群组admin及以上身份
+ * @param {Object} opt -
+ * @param {string} opt.groupId - 群组ID
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.enableSendGroupMsg = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'ban',
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 聊天室除群一键禁言. 操作权限：app admin、群组owner、群组admin及以上身份
+ * @param {Object} opt -
+ * @param {string} opt.chatRoomId - 聊天室ID
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.enableSendChatRoomMsg = function (opt) {
+    var chatRoomId = opt.chatRoomId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatrooms' + '/' + chatRoomId + '/' + 'ban',
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 增加白名单群成员 操作权限：app admin、群组owner、群组admin及以上身份
+ * @param {Object} opt -
+ * @param {string} opt.groupId - 群组ID
+ * @param {Array} opt.users - 成员 ['username']
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.addUsersToGroupWhitelist = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {usernames: opt.users},
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/white/users',
+            type: 'POST',
+            data: JSON.stringify(requestData),
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 增加白名单群成员 操作权限：app admin、群组owner、群组admin及以上身份
+ * @param {Object} opt -
+ * @param {string} opt.chatRoomId - 聊天室ID
+ * @param {Array} opt.users - 成员 ['username']
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.addUsersToChatRoomWhitelist = function (opt) {
+    var chatRoomId = opt.chatRoomId,
+        requestData = {usernames: opt.users},
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatrooms' + '/' + chatRoomId + '/white/users',
+            type: 'POST',
+            data: JSON.stringify(requestData),
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+
+/**
+ * 删除白名单群成员 操作权限：app admin、群组owner、群组admin及以上身份
+ * @param {Object} opt -
+ * @param {string} opt.groupId - 群组ID
+ * @param {string} opt.userName - 成员
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.rmUsersFromGroupWhitelist = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {usernames: opt.users},
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/white/users/'+ opt.userName,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 删除白名单聊天室成员 操作权限：app admin、群组owner、群组admin及以上身份
+ * @param {Object} opt -
+ * @param {string} opt.chatRoomId - 聊天室ID
+ * @param {string} opt.userName - 成员
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.rmUsersFromChatRoomWhitelist = function (opt) {
+    var chatRoomId = opt.chatRoomId,
+        requestData = {usernames: opt.users},
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatrooms' + '/' + chatRoomId + '/white/users/'+ opt.userName,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 获取白名单群成员 操作权限：需app admin、群组admin及以上身份；
+ * @param {Object} opt -
+ * @param {string} opt.groupId - 群组ID
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.getGroupWhitelist = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {usernames: opt.users},
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/white/users',
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 获取白名单聊天室成员 操作权限：需app admin、群组admin及以上身份；
+ * @param {Object} opt -
+ * @param {string} opt.chatRoomId - 聊天室ID
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.getChatRoomWhitelist = function (opt) {
+    var chatRoomId = opt.chatRoomId,
+        requestData = {usernames: opt.users},
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatrooms' + '/' + chatRoomId + '/white/users',
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 查询群成员是否是白名单用户 操作权限：app admin可查询所有用户；app user可查询自己
+ * @param {Object} opt -
+ * @param {string} opt.groupId - 群组ID
+ * @param {string} opt.userName - 用户名
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.isGroupWhiteUser = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {usernames: opt.users},
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/white/users/' + opt.userName,
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * 查询聊天室成员是否是白名单用户 操作权限：app admin可查询所有用户；app user可查询自己
+ * @param {Object} opt -
+ * @param {string} opt.chatRoomId - 群组ID
+ * @param {string} opt.userName - 用户名
+ * @param {Function} opt.success - 成功之后的回调，默认为空
+ * @param {Function} opt.error - 失败之后的回调，默认为空
+ */
+connection.prototype.isChatRoomWhiteUser = function (opt) {
+    var chatRoomId = opt.chatRoomId,
+        requestData = {usernames: opt.users},
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatrooms' + '/' + chatRoomId + '/white/users/' + opt.userName,
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+
 connection.prototype.listRooms = function (options) {}
 
 

@@ -116,6 +116,15 @@ module.exports = {
                       "thumbnailSize": {
                         "type": "Size",
                         "id": 18
+                      },
+                      "customEvent": {
+                        "type": "string",
+                        "id": 19
+                      },
+                      "customExts": {
+                        "rule": "repeated",
+                        "type": "KeyValue",
+                        "id": 20
                       }
                     },
                     "nested": {
@@ -127,7 +136,8 @@ module.exports = {
                           "LOCATION": 3,
                           "VOICE": 4,
                           "FILE": 5,
-                          "COMMAND": 6
+                          "COMMAND": 6,
+                          "CUSTOM": 7
                         }
                       },
                       "Size": {
@@ -1014,4 +1024,5 @@ module.exports = {
         }
       }
     }
-}
+  }
+
