@@ -640,7 +640,7 @@ var connection = function (options) {
     this.userAgent = options.userAgent || 0;    //*** */
     this.pov = options.pov || 0;    /**** */
     this.command = options.command || 3;
-    this.deviceId = options.deviceId || "webim";
+    this.deviceId = options.deviceId || "miniProgram";
     this.encryptKey = options.encryptKey || "";
     this.firstPayload = options.firstPayload || [];   //*** */
     this.compressType = options.compressType || [0];
@@ -1170,20 +1170,28 @@ connection.prototype.sendMSync = function(str){     //
         data:init8arr.buffer,
         fail: function(err) {
            console.error('消息发送失败:',err)
+           if (err.errMsg === 'sendSocketMessage:fail taskID not exist') {
+               console.log('在这里处理ios重连');
+           }
         }
     }
     if (sock.readyState === 1) {
         sock.send(obj)
     }else{
+        this.unSendMsgArr.push(obj.data)
         //sock重连
         if(
             !this.logOut 
             && this.autoReconnectNumTotal <= this.autoReconnectNumMax
-            // && (this.autoReconnectNumTotal <= this.xmppHosts.length && this.isHttpDNS || !this.isHttpDNS)
+            && (this.autoReconnectNumTotal <= this.xmppHosts.length && this.isHttpDNS || !this.isHttpDNS)
         ){
             this.offLineSendConnecting = true;
             this.reconnect();
         }
+        this.onError({
+            type: _code.WEBIM_CONNCTION_DISCONNECTED,
+            reconnect: true
+        })
     }
 }
 
@@ -2013,14 +2021,14 @@ connection.prototype._onUpdateMyRoster = function (options) {
  *
  */
 connection.prototype.reconnect = function (v) {
-    // var that = this;
-    // if(that.xmppIndex < that.xmppHosts.length - 1){
-    //     that.xmppIndex++;       //重连时改变ip地址
-    // }
-    // setTimeout(function () {
-    //     _login({access_token: that.context.accessToken}, that);
-    // }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
-    // this.autoReconnectNumTotal++;
+    var that = this;
+    if(that.xmppIndex < that.xmppHosts.length - 1){
+        that.xmppIndex++;       //重连时改变ip地址
+    }
+    setTimeout(function () {
+        _login({access_token: that.context.accessToken}, that);
+    }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
+    this.autoReconnectNumTotal++;
 };
 
 /**
