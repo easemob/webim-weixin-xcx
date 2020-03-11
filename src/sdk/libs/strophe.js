@@ -5617,6 +5617,13 @@ var $pres = null;
 							// 外部回调，需要设计一个更合适的
 							me._onSocketClose && me._onSocketClose(e);
 							//me._conn._changeConnectStatus(Strophe.Status.DISCONNECTED, e);
+							
+							console.log("WebSocket 尝试重连");
+							wx.showToast({
+								icon:'none',
+								title:'当前网络环境不佳,正在重连中...'
+							})
+							creatSocket()
 						});
 						_socketTask.onError(function(e){
 							console.log('出错了 出错了')
