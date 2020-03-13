@@ -794,6 +794,7 @@ connection.prototype.listen = function (options) {
     this.onVideoMessage = options.onVideoMessage || _utils.emptyfn;
     this.onFileMessage = options.onFileMessage || _utils.emptyfn;
     this.onLocationMessage = options.onLocationMessage || _utils.emptyfn;
+    this.onCustomMessage = options.onCustomMessage || _utils.emptyfn;
     this.onCmdMessage = options.onCmdMessage || _utils.emptyfn;
     this.onStatisticMessage = options.onStatisticMessage || _utils.emptyfn;
     this.onPresence = options.onPresence || _utils.emptyfn;

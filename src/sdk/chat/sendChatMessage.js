@@ -1,5 +1,37 @@
 import _utils from '../utils'
+ function encodeKeyValueMsg(msg){
+        if (!msg || typeof msg != "object") { return }
+        var emptyMessage = [];
+        var keyValueBody = this.context.root.lookup("easemob.pb.KeyValue");
+        var keyValueBodyArr = [];
+        for (var key in msg) {
+            var keyValueBodyMessage = keyValueBody.decode(emptyMessage);
+            keyValueBodyMessage.key = key;
 
+            if(typeof msg[key] == "object"){
+                keyValueBodyMessage.type = 8;
+                keyValueBodyMessage.stringValue = JSON.stringify(msg[key]);
+            }
+            else if(typeof msg[key] == "string"){
+                keyValueBodyMessage.type = 7;
+                keyValueBodyMessage.stringValue = msg[key];
+            }
+            else if(typeof msg[key] == "boolean"){
+                keyValueBodyMessage.type = 1;
+                keyValueBodyMessage.varintValue = msg[key];
+            }
+            else if(Number.isInteger(msg[key])){
+                keyValueBodyMessage.type = 2;
+                keyValueBodyMessage.varintValue = msg[key];
+            }
+            else{
+                keyValueBodyMessage.type = 6;
+                keyValueBodyMessage.doubleValue = msg[key];
+            }
+            keyValueBodyArr.push(keyValueBodyMessage);
+        }
+        return keyValueBodyArr
+    }
 var sendMessage = function(messageOption, conn){
     var self = conn;
     console.log('conn>>',conn);
@@ -9,6 +41,10 @@ var sendMessage = function(messageOption, conn){
     console.log('contentMessage>>',contentMessage);
     var fifthMessage = contentMessage.decode(emptyMessage);
     console.log('fifthMessage>>',fifthMessage);
+
+    var keyValueBody = conn.context.root.lookup("easemob.pb.KeyValue");
+    var keyValueBodyArr = [];
+
     switch(messageOption.type){
         case 'txt':
             fifthMessage.type = 0;
@@ -62,6 +98,12 @@ var sendMessage = function(messageOption, conn){
             fifthMessage.type = 6;
             fifthMessage.action = messageOption.action;
             // fifthMessage.params = 
+            break;
+        case 'custom':
+            fifthMessage.type = 7;
+            //fifthMessage.params = encodeKeyValueMsg.call(conn, messageOption.customExts)
+            fifthMessage.customEvent = messageOption.customEvent;
+            fifthMessage.customExts = encodeKeyValueMsg.call(conn, messageOption.customExts)
             break;
         // default:
         //     fifthMessage.type = 0;

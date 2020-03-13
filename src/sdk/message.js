@@ -107,6 +107,32 @@ import _utils from './utils'
     };
 
     /*
+     * custom message
+     */
+    Message.custom = function (id) {
+        this.id = id;
+        this.type = 'custom';
+        this.body = {};
+    };
+    Message.custom.prototype.set = function (opt) {
+        this.value = '';
+
+        this.body = {
+            id: this.id,
+            to: opt.to
+            , action: opt.action
+            , customEvent: opt.customEvent
+            , customExts: opt.customExts
+            , msg: this.value
+            , type: this.type
+            , roomType: opt.roomType
+            , ext: opt.ext || {}
+            , success: opt.success
+        };
+        !opt.roomType && delete this.body.roomType;
+    };
+
+    /*
      * loc message
      */
     Message.location = function (id) {

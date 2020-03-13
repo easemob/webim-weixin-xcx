@@ -278,8 +278,19 @@ var handleMessage = function(meta, status, conn){
                 msg.errorCode = errorCode;
                 conn.onCmdMessage(msg);
                 break;
-            // default:
-            //     break;
+            case 7:
+                console.log(thirdMessage)
+                msg = {
+                    id: msgId,
+                    from: from,
+                    to: to,
+                    customEvent: msgBody.customEvent,
+                    customExts: msgBody.customExts
+                }
+                !ignoreCallback && conn.onCustomMessage(thirdMessage);
+                break;
+            default:
+                break;
             }
         } catch (e) {
             conn.onError({
