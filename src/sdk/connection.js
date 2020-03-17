@@ -2221,7 +2221,15 @@ connection.prototype.reconnect = function(){
 	var me = this;
 	setTimeout(
 		function(){
-			_login(me.context.restTokenData&&me.context.restTokenData.data, me);
+            if(me.context.restTokenData){
+                var rToken = me.context.restTokenData.data
+            }else{
+                var rToken = {
+                    access_token: me.context.accessToken,
+                    expires_in: ''
+                }
+            }
+			_login(rToken, me);
 		}, (
 			this.autoReconnectNumTotal == 0
 				? 0
