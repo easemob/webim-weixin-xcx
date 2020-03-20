@@ -384,7 +384,13 @@ function _loginCallback(status, msg, conn) {
 			} else if(type === "acked") {
 				conn.handleReadMessage(msginfo);
 				return true;
-			}
+			} else if (type === "userMuted"){
+                conn.onError({
+                    code: 412,
+                    msg: 'user muted'
+                })
+                return true;
+            }
 			conn.handleMessage(msginfo);
 			return true;
 		};
