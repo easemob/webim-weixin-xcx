@@ -251,11 +251,11 @@ if (typeof require == 'function') {
     var XMLReader = require('./sax').XMLReader;
     var DOMImplementation = exports.DOMImplementation = require('./dom').DOMImplementation;
     var XMLSerializer = exports.XMLSerializer = require('./dom').XMLSerializer;
-    exports.DOMParser = DOMParser;
-    var DOMParser = {
+    // exports.DOMParser = DOMParser;
+    var xmldom = {
         DOMImplementation: DOMImplementation,
         XMLSerializer: XMLSerializer,
         DOMParser: DOMParser
     }
-    module.exports = DOMParser
+    module.exports = xmldom
 }
