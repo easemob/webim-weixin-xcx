@@ -11,6 +11,7 @@
 			url="{{pubUrl}}" 
 			mode="RTC" 
 			aspect="9:16"
+			enable-mic="{{true}}"
 			beauty="{{beauty}}"
 			whiteness="{{beauty}}"
 			max-bitrate="{{300}}"
@@ -37,6 +38,7 @@
 				mode="RTC" 
 				object-fit="contain"
 				autoplay 
+				debug="{{true}}"
 			>
 				<view class="userName">{{item.memName}}</view>
 			</live-player>

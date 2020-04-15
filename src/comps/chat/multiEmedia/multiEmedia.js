@@ -96,13 +96,27 @@ Component({
 				    //所以最好别用autopush
 					me.setData({
 						enableCamera: false,
-						pubUrl: me.data.url || 'https://domain/push_stream',
+						pubUrl: me.data.url + 'record_type=audio' || 'https://domain/push_stream',
 					}, () => {
-				      	me.LivePusherContext.start({
-				        	success: function () {
-				          		enableCamera && me.setData({enableCamera: enableCamera})
-				        	}
-				        })
+						// var enableCameraDefault = true
+				        //if(!enableCameraDefault){ //治疗不推流的毛病
+				        	// console.log('关闭摄像头推流')
+				        	setTimeout(() => {
+						    	me.LivePusherContext.start({
+						    		success: function () {
+						        		// console.log('关闭摄像头推流', enableCamera)
+						        		enableCamera && me.setData({enableCamera: enableCamera})
+						        	}
+						    	})
+						    }, 1500)
+				        // }else{
+				        // 	me.LivePusherContext.start({
+					       //  	success: function () {
+					       //  		console.log('开始推流了', enableCamera)
+					       //    		enableCamera && me.setData({enableCamera: enableCamera})
+					       //  	}
+					       //  })
+				        // }
 				    })
 				}
 			}
@@ -196,7 +210,7 @@ Component({
 			let rec = wx.getStorageSync("rec") || false;
 			let recMerge = wx.getStorageSync("recMerge") || false;
 			//参数：会议类型 密码 是否录制 是否合并
-			wx.emedia.mgr.createConference(11, '', rec, recMerge).then(function(data){
+			wx.emedia.mgr.createConference(10, '', rec, recMerge).then(function(data){
 				console.log('成功', data)
 				let ticket = data.data.ticket
 				let ticketJosn = JSON.parse(ticket)
@@ -244,7 +258,7 @@ Component({
 				videoIcon: this.data.videoIcon == 'video_white'?'video_gray': 'video_white',
 				videoColor: this.data.videoColor == '#fff'? '#aaa': '#fff'
 			}, () => {
-				// this.LivePusherContext.start()
+				this.LivePusherContext.start()
 			})
 		},
 
