@@ -36,11 +36,11 @@ function getCurrentRoute(){
 function calcUnReadSpot(message){
 	let myName = wx.getStorageSync("myUsername");
 	let members = wx.getStorageSync("member") || []; //好友
-	var listGroups = wx.getStorageSync('listGroup')|| []; //群组
+	var listGroups = wx.getStorageSync('listGroup') || []; //群组
 	let allMembers = members.concat(listGroups)
 	let count = allMembers.reduce(function(result, curMember, idx){
 		let chatMsgs;
-		if (curMember.roomId) {
+		if (curMember.groupid) {
 			chatMsgs = wx.getStorageSync(curMember.roomId + myName.toLowerCase()) || [];
 		}else{
 			chatMsgs = wx.getStorageSync(curMember.name.toLowerCase() + myName.toLowerCase()) || [];

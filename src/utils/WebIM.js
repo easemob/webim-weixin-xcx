@@ -1,13 +1,13 @@
 
-//import xmldom from "../sdk/libs/xmldom/dom-parser";
-import websdk from "../sdk/connection";
+// import websdk from "../sdk/connection";
+import websdk from "../newSDK/webimSDK3.0.10";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
 console.groupEnd = console.groupEnd || {};
 
 var window = {};
-let WebIM = window.WebIM = websdk;
+let WebIM = window.WebIM = wx.WebIM = websdk;
 window.WebIM.config = config;
 //var DOMParser = window.DOMParser = xmldom.DOMParser;
 //let document = window.document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", "text/xml");
@@ -200,6 +200,7 @@ WebIM.EmojiObj = {
 // wx.connectSocket({url: WebIM.config.xmppURL, method: "GET"})
 
 WebIM.conn = new WebIM.connection({
+	appKey: "easemob-demo#chatdemoui",
 	isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
 	https: typeof WebIM.config.https === "boolean" ? WebIM.config.https : location.protocol === "https:",
 	url: WebIM.config.xmppURL,
