@@ -40,10 +40,12 @@ Page({
 	// 列出所有群组 (调用 listRooms 函数获取当前登录用户加入的群组列表)
 	listGroups(){
 		var me = this;
-		WebIM.conn.listRooms({
-			success: function(rooms){
+		console.log('listGroups')
+		WebIM.conn.listGroups({
+			limit: 100,
+			success: function(res){
 				me.setData({
-					groupList: rooms
+					groupList: res.data
 				});
 				// 好像也没有别的官方通道共享数据啊
 				getApp().globalData.groupList = rooms || [];
