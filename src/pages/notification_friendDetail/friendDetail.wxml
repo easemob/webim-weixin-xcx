@@ -2,7 +2,7 @@
 
 	<text class="defaultText" wx:if="{{ !friendList.length > 0 }}">暂时没有新的通知</text>
 
-	<view wx:for="{{ friendList }}" wx:key="{{item.from}}" class="itemBar">
+	<view wx:for="{{ friendList }}" wx:key="from" class="itemBar">
 
 		<view class="notInfoDetContent">
 			<view class="headContent">

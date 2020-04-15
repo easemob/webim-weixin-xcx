@@ -2,7 +2,7 @@
 
 	<text class="defaultText" wx:if="{{ !groupList.length > 0 }}">暂时没有新的通知</text>
 
-	<view wx:for="{{ groupList }}" wx:key="{{item.from}}" class="itemBar">
+	<view wx:for="{{ groupList }}" wx:key="from" class="itemBar">
 
 		<view class="notInfoDetContent">
 			<view class="headContent">
