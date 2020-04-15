@@ -58,7 +58,8 @@ Page({
 			return;
 		}
 		WebIM.conn.subscribe({
-			to: me.data.friend_name
+			to: me.data.friend_name,
+			message: myName+'请求添加好友'
 		});
 
 		// 判断当前是否存在该好友

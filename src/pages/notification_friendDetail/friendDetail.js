@@ -80,10 +80,10 @@ Page({
 			message: "[resp:true]",
 		});
 		// 需要反向添加对方好友（无回调）
-		WebIM.conn.subscribe({
-			to: event.currentTarget.dataset.from,
-			message: "[resp:true]",
-		});
+		// WebIM.conn.subscribe({
+		// 	to: event.currentTarget.dataset.from,
+		// 	message: "[resp:true]",
+		// });
 
 		this.data.friendList.forEach((item) => {
 			if (item.from == event.currentTarget.dataset.from) {
