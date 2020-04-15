@@ -70,9 +70,9 @@
 			</view> -->
 		</view>
 
-	    <view wx:for="{{listMain}}" wx:for-item="group" wx:key="{{group.id}}"  id="{{ 'inToView'+group.id}}" data-id='{{group.id}}'> 
+	    <view wx:for="{{listMain}}" wx:for-item="group" wx:key="id"  id="{{ 'inToView'+group.id}}" data-id='{{group.id}}'> 
 	      <view class="address_top" >{{group.region}}</view> 
-	        <view wx:for="{{group.brands}}" wx:for-item="item" wx:key="{{item.brandId}}" data-username="{{ item.name }}" catchtap="delete_friend"> 
+	        <view wx:for="{{group.brands}}" wx:for-item="item" wx:key="brandId" data-username="{{ item.name }}" catchtap="delete_friend"> 
 				<swipe-delete >
 					<view class="tap_mask" catchtap="into_room" data-username="{{ item.name }}">
 			          	<view class="address_bottom" data-username="{{ item.name }}" catchtap="into_room">
@@ -93,7 +93,7 @@
 	  <!-- 右侧字母导航 -->
 	  <view class="orientation_region"> 
 	   <!--  <view class="orientation">#</view> --> 
-	     	 <block wx:for="{{listMain}}"  wx:key="{{item.id}}"> 
+	     	 <block wx:for="{{listMain}}"  wx:key="id"> 
 		        <view class="orientation_city {{isActive==item.id ? 'active':'' }}" bindtap="scrollToViewFn" data-id="{{item.id}}" >{{item.region}}
 		        </view> 
 	    	</block> 

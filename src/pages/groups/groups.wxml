@@ -22,7 +22,7 @@
 	</view> -->
 	<!-- <view class="line"></view> -->
 	<!-- 群聊列表 -->
-	<view wx:for="{{ groupList }}" class="groupList" wx:key="">
+	<view wx:for="{{ groupList }}" class="groupList" wx:key="groupid">
 		<view class="nbr_header"></view>
 		<view class="info" bindtap="into_info">
 			<image src="../../images/number.png"  data-username="{{ item.groupname }}"></image>
