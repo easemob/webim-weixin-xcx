@@ -10,7 +10,7 @@
 				<image
 					wx:for="{{ emojiObj.map1 }}"
 					src="{{ emojiObj.path + item }}"
-					wx:key=""
+					wx:key="item"
 					bind:tap="sendEmoji"
 					data-emoji="{{ index }}" />
 			</view>
@@ -18,7 +18,7 @@
 				<image
 					wx:for="{{ emojiObj.map2 }}"
 					src="{{ emojiObj.path + item }}"
-					wx:key=""
+					wx:key="item"
 					bind:tap="sendEmoji"
 					data-emoji="{{ index }}" />
 			</view>
@@ -26,7 +26,7 @@
 				<image
 					wx:for="{{ emojiObj.map3 }}"
 					src="{{ emojiObj.path + item }}"
-					wx:key=""
+					wx:key="item"
 					bind:tap="sendEmoji"
 					data-emoji="{{ index }}" />
 			</view>
@@ -38,7 +38,7 @@
 				<image
 					wx:for="{{ emojiObj.map4 }}"
 					src="{{ emojiObj.path + item }}"
-					wx:key=""
+					wx:key="item"
 					bind:tap="sendEmoji"
 					data-emoji="{{ index }}" />
 			</view>
@@ -46,7 +46,7 @@
 				<image
 					wx:for="{{ emojiObj.map5 }}"
 					src="{{ emojiObj.path + item }}"
-					wx:key=""
+					wx:key="item"
 					bind:tap="sendEmoji"
 					data-emoji="{{ index }}" />
 			</view>
@@ -54,7 +54,7 @@
 				<image
 					wx:for="{{ emojiObj.map6 }}"
 					src="{{ emojiObj.path + item }}"
-					wx:key=""
+					wx:key="item"
 					bind:tap="sendEmoji"
 					data-emoji="{{ index }}" />
 			</view>
