@@ -6,7 +6,7 @@ let msgType = require("comps/chat/msgtype");
 let ToastPannel = require("./comps/toast/toast");
 let disp = require("utils/broadcast");
 let logout = false;
-const emedia = wx.emedia = require("./emedia/emedia_for_miniProgram")
+const emedia = wx.emedia = require("./emedia/emedia_for_miniProgram-test") //这个是沙箱环境测试版，线上环境请用emedia_for_miniProgram这个文件
 
 console.log('emedia', emedia)
 console.log('WebIM', WebIM)
@@ -45,8 +45,8 @@ function calcUnReadSpot(message){
 	let allMembers = members.concat(listGroups)
 	let count = allMembers.reduce(function(result, curMember, idx){
 		let chatMsgs;
-		if (curMember.roomId) {
-			chatMsgs = wx.getStorageSync(curMember.roomId + myName.toLowerCase()) || [];
+		if (curMember.groupid) {
+			chatMsgs = wx.getStorageSync(curMember.groupid + myName.toLowerCase()) || [];
 		}else{
 			chatMsgs = wx.getStorageSync(curMember.name.toLowerCase() + myName.toLowerCase()) || [];
 		}
@@ -127,7 +127,7 @@ App({
 		WebIM.conn.listen({
 			onOpened(message){
 				console.log('im登录成功')
-				WebIM.conn.setPresence();
+				// WebIM.conn.setPresence();
 				if(getCurrentRoute() == "pages/login/login" || getCurrentRoute() == "pages/login_token/login_token"){
 					me.onLoginSuccess(wx.getStorageSync("myUsername").toLowerCase());
 				}

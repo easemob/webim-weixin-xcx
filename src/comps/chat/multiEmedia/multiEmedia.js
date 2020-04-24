@@ -76,10 +76,20 @@ Component({
 			wx.emedia.mgr.onMemberExited = function(reason){
 
 			};
+ 
+			wx.emedia.mgr.onStreamControl = function(mem){
+				console.log('mem', mem)
+			}
+
+			wx.emedia.mgr.onStreamControl.onSoundChanage = function(a, b, c, d){
+				console.log('onSoundChanage')
+			}
 
 			wx.emedia.mgr.onMemberJoined = function(mem){
 				console.log("++++++++++ member", mem)
-				let identityName = wx.WebIM.conn.context.jid.split("/")[0]
+				var jid = wx.WebIM.conn.context.jid
+				let identityName = jid.appKey + '_' + jid.name+ '@' + jid.domain
+				// let identityName = wx.WebIM.conn.context.jid.split("/")[0]
 				// 如果是自己进入会议了，开始发布流
 				if(mem.name == identityName){
 					let rtcId = wx.emedia.util.getRtcId()

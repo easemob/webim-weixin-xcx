@@ -25,13 +25,13 @@
 	<view wx:for="{{ groupList }}" class="groupList" wx:key="">
 		<view class="nbr_header"></view>
 		<view class="info" bindtap="into_info">
-			<image src="../../images/number.png"  data-username="{{ item.name }}"></image>
+			<image src="../../images/number.png"  data-username="{{ item.groupname }}"></image>
 		</view>
-		<view class="nbr_body" data-username="{{ item.name }}" data-roomid="{{ item.roomId }}" bindtap="into_room">
-			<text data-username="{{ item.name }}">{{ item.name }}</text>
+		<view class="nbr_body" data-username="{{ item.groupname }}" data-roomid="{{ item.groupid }}" bindtap="into_room">
+			<text data-username="{{ item.groupname }}">{{ item.groupname }}</text>
 		</view>
-		<view class="edit" bind:tap="edit_group" data-username="{{ item.name }}" data-roomid="{{ item.roomId }}">
-			<image src="../../images/cell_groups.png"  data-username="{{ item.name }}"></image>
+		<view class="edit" bind:tap="edit_group" data-username="{{ item.groupname }}" data-roomid="{{ item.groupid }}">
+			<image src="../../images/cell_groups.png"  data-username="{{ item.groupname }}"></image>
 		</view>
 	</view>
 </view>

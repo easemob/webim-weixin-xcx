@@ -64,11 +64,12 @@ Page({
 
 	listGroups(){
 		var me = this;
-		return WebIM.conn.listRooms({
-			success: function(rooms){
+		return WebIM.conn.listGroups({
+			limit: 50,
+			success: function(res){
 				wx.setStorage({
 					key: "listGroup",
-					data: rooms
+					data: res.data
 				});
 				me.getChatList()
 			},

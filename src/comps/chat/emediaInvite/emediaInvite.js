@@ -39,20 +39,7 @@ Component({
 	data: {
 		search_btn: true,
 		search_friend: false,
-		groupMember: [
-			{member: 'zdtest', id: '1'},
-			{member: 'zdtest2', id: '12'},
-			{member: 'zdtest3', id: '13'},
-			{member: 'zdtest4', id: '14'},
-			{member: 'zdtest', id: '1'},
-			{member: 'zdtest2', id: '12'},
-			{member: 'zdtest3', id: '13'},
-			{member: 'zdtest4', id: '14'},
-			{member: 'zdtest', id: '1'},
-			{member: 'zdtest2', id: '12'},
-			{member: 'zdtest3', id: '13'},
-			{owner: 'zdtest4', id: '14'},
-		],
+		groupMember: [],
 		serchList: [],
 
 		checkedValue: [],
@@ -74,11 +61,11 @@ Component({
 				groupId: roomId,
 				success: function(resp){
 					console.log('获取群成员', resp)
-					if(resp && resp.data && resp.data.data){
+					if(resp && resp.data){
 						me.setData({
-							groupMember: resp.data.data
+							groupMember: resp.data
 						});
-						me.getRenderList(resp.data.data)
+						me.getRenderList(resp.data)
 					}
 				},
 				error: function(err){
