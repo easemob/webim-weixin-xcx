@@ -1,5 +1,5 @@
 
-require("sdk/libs/strophe");
+// require("sdk/libs/strophe");
 let WebIM = wx.WebIM = require("utils/WebIM")["default"];
 let msgStorage = require("comps/chat/msgstorage");
 let msgType = require("comps/chat/msgtype");
@@ -172,11 +172,11 @@ App({
 				});
 			},
 			onClosed(){
-				wx.showToast({
-					title: "网络已断开",
-					icon: 'none',
-					duration: 2000
-				});
+				// wx.showToast({
+				// 	title: "网络已断开",
+				// 	icon: 'none',
+				// 	duration: 2000
+				// });
 				wx.redirectTo({
 						url: "../login/login"
 					});
