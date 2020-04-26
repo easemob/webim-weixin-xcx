@@ -12,7 +12,7 @@ module.exports = function(sendableMsg, type, myName){
 		yourname: sendableMsg.body.from,
 		msg: {
 			type: type,
-			url: sendableMsg.body.body.url,
+			url: sendableMsg.body.body&&sendableMsg.body.body.url||'',
 			data: getMsgData(sendableMsg, type),
 			ext: sendableMsg.body.ext
 		},
@@ -24,8 +24,8 @@ module.exports = function(sendableMsg, type, myName){
 	};
 	if(type == msgType.IMAGE){
 		renderableMsg.msg.size = {
-			width: sendableMsg.body.body.size.width,
-			height: sendableMsg.body.body.size.height,
+			width: sendableMsg.body.body&&sendableMsg.body.body.size.width||'',
+			height: sendableMsg.body.body&&sendableMsg.body.body.size.height||'',
 		};
 	}else if (type == msgType.AUDIO) {
 		renderableMsg.msg.length = sendableMsg.body.length;
