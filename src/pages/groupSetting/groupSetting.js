@@ -45,9 +45,9 @@ Page({
 			pageSize: pageSize,
 			groupId: this.data.roomId,
 			success: function(resp){
-				if(resp && resp.data && resp.data.data){
+				if(resp && resp.data){
 					me.setData({
-						groupMember: resp.data.data
+						groupMember: resp.data
 					});
 				}
 				// console.log(me.data.groupMember);
@@ -65,13 +65,13 @@ Page({
 		var options = {
 			groupId: this.data.roomId,
 			success: function(resp){
-				if(resp && resp.data && resp.data.data){
+				if(resp && resp.data){
 					me.setData({
-						curOwner: resp.data.data[0].owner,
-						groupDec: resp.data.data[0].description
+						curOwner: resp.data[0].owner,
+						groupDec: resp.data[0].description
 					});
 
-					if(me.data.currentName == resp.data.data[0].owner){
+					if(me.data.currentName == resp.data[0].owner){
 						me.setData({
 							isOwner: true
 						});
@@ -97,8 +97,8 @@ Page({
 	addGroupMembers: function(){
 		var me = this;
 		var option = {
-			list: this.data.addFriendName,
-			roomId: this.data.roomId,
+			users: this.data.addFriendName,
+			groupId: this.data.roomId,
 			success: function(){
 				if(me.isExistGroup(me.data.addFriendName, me.data.groupMember)){
 					wx.showToast({
@@ -121,7 +121,7 @@ Page({
 				});
 			}
 		};
-		WebIM.conn.addGroupMembers(option);
+		WebIM.conn.inviteToGroup(option);
 	},
 
 	isExistGroup:function(name, list){
@@ -135,9 +135,9 @@ Page({
 
 	leaveGroup: function(){
 		var me = this;
-		WebIM.conn.leaveGroupBySelf({
-			to: this.data.currentName,
-			roomId: this.data.roomId,
+		WebIM.conn.quitGroup({
+			//to: this.data.currentName,
+			groupId: this.data.roomId,
 			success: function(){
 				wx.showToast({
 					title: "已退",
