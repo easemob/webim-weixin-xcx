@@ -55,33 +55,29 @@ Page({
 				nickname: "",
 				appKey: WebIM.config.appkey,
 				success: function(res){
-					console.log('res', res)	
-					if(res.statusCode == "200"){
-						that.toastSuccess('注册成功');
-						var data = {
-							apiUrl: WebIM.config.apiURL,
-							user: that.data.username.toLowerCase(),
-							pwd: that.data.password,
-							grant_type: "password",
-							appKey: WebIM.config.appkey
-						};
-						wx.setStorage({
-							key: "myUsername",
-							data: that.data.username
-						});
-					}
+					console.log('注册成功', res)	
+					that.toastSuccess('注册成功');
+					var data = {
+						apiUrl: WebIM.config.apiURL,
+						user: that.data.username.toLowerCase(),
+						pwd: that.data.password,
+						grant_type: "password",
+						appKey: WebIM.config.appkey
+					};
+					wx.setStorage({
+						key: "myUsername",
+						data: that.data.username
+					});
 				},
 				error: function(res){
-					console.log('res', res)	
-					if(res.statusCode !== "200"){
-						if (res.statusCode == '400' && res.data.error == 'illegal_argument') {
-							return that.toastFilled('用户名非法!')
-						}
-						that.toastFilled('用户名已被占用!')
+					console.log('注册失败', res)	
+					if (res.statusCode == '400' && res.data.error == 'illegal_argument') {
+						return that.toastFilled('用户名非法!')
 					}
+					that.toastFilled('用户名已被占用!')
 				}
 			};
-			WebIM.utils.registerUser(options);
+			WebIM.conn.registerUser(options);
 		}
 	}
 });
