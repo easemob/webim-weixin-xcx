@@ -64,7 +64,7 @@ Page({
 
 	listGroups(){
 		var me = this;
-		return WebIM.conn.listGroups({
+		return WebIM.conn.getGroup({
 			limit: 50,
 			success: function(res){
 				wx.setStorage({

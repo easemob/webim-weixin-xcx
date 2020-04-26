@@ -42,7 +42,7 @@ Page({
 
 	listGroups(){
 		var me = this;
-		return WebIM.conn.listRooms({
+		return WebIM.conn.getGroup({
 			success: function(rooms){
 				wx.setStorage({
 					key: "listGroup",

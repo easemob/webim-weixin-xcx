@@ -41,7 +41,7 @@ Page({
 	// 列出所有群组 (调用 listRooms 函数获取当前登录用户加入的群组列表)
 	listGroups(){
 		var me = this;
-		wx.WebIM.conn.listGroups({
+		wx.WebIM.conn.getGroup({
 			limit: 50,
 			success: function(res){
 				me.setData({
