@@ -15,16 +15,16 @@ let config = {
 	/*
 	 * XMPP server
 	 */
-	// xmppURL: "wss://im-api-hsb.easemob.com/ws/",
-	// xmppURL: 'wss://im-api-new-hsb.easemob.com/websocket',
-	//wss://im-api-new-hsb.easemob.com/websocket
-	xmppURL: 'wss://im-api-wechat.easemob.com/websocket',
+	// xmppURL: "wss://im-api.easemob.com/ws/", //小程序2.0sdk线上环境
+	// xmppURL: "wss://im-api-hsb.easemob.com/ws/", //小程序2.0sdk沙箱环境
+	// xmppURL: 'wss://im-api-new-hsb.easemob.com/websocket', //小程序沙箱环境
+	xmppURL: 'wss://im-api-wechat.easemob.com/websocket', //小程序线上环境
 	/*
 	 * Backend REST API URL
 	 */
 	// apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
-	// ios must be https!!! by lwz
-	apiURL: "https://a1.easemob.com",
+	apiURL: "https://a1.easemob.com", // 线上环境
+	// apiURL: "https://a1-hsb.easemob.com", // 沙箱环境
 	// apiURL: 'https://172.17.3.155:8080',
 	/*
 	 * Application AppKey

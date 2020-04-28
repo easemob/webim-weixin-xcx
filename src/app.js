@@ -6,7 +6,9 @@ let msgType = require("comps/chat/msgtype");
 let ToastPannel = require("./comps/toast/toast");
 let disp = require("utils/broadcast");
 let logout = false;
-const emedia = wx.emedia = require("./emedia/emedia_for_miniProgram") //这个是沙箱环境测试版，线上环境请用emedia_for_miniProgram这个文件
+
+//emedia_for_miniProgram-test是沙箱环境测试版，线上环境请用emedia_for_miniProgram这个文件
+const emedia = wx.emedia = require("./emedia/emedia_for_miniProgram") 
 
 console.log('emedia', emedia)
 console.log('WebIM', WebIM)
