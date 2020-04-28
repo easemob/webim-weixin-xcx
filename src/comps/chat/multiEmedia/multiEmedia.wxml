@@ -38,7 +38,6 @@
 				mode="RTC" 
 				object-fit="contain"
 				autoplay 
-				debug="{{true}}"
 			>
 				<view class="userName">{{item.memName}}</view>
 			</live-player>
