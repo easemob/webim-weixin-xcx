@@ -46,3 +46,12 @@
 + sdk增加onSocketConnected事件 – socket连接成功
 + sdk onError 增加type='sendMsgError'发送消息失败
 + sdk 重连时关闭上次的socket
+
+## v1.3.0 @ 2020-02-10
+### Feature
++ 增加音视频会议功能
+
+## v3.1.1 @ 2020-04-28
+### Feature
++ 更新 3.1.1 IM SDK
++ 更新 3.1.1 音视频SDK
