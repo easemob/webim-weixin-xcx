@@ -136,8 +136,8 @@ Page({
 			}
 		}
 		for(let i = 0; i < listGroups.length; i++){
-			let newChatMsgs = wx.getStorageSync(listGroups[i].roomId + myName) || [];
-			let historyChatMsgs = wx.getStorageSync("rendered_" + listGroups[i].roomId + myName) || [];
+			let newChatMsgs = wx.getStorageSync(listGroups[i].groupid + myName) || [];
+			let historyChatMsgs = wx.getStorageSync("rendered_" + listGroups[i].groupid + myName) || [];
 			let curChatMsgs = historyChatMsgs.concat(newChatMsgs);
 			if(curChatMsgs.length){
 				let lastChatMsg = curChatMsgs[curChatMsgs.length - 1];
@@ -150,7 +150,7 @@ Page({
 				let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
 				lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
 				lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
-				lastChatMsg.groupName = listGroups[i].name
+				lastChatMsg.groupName = listGroups[i].groupname
 				array.push(lastChatMsg);
 			}
 		}
