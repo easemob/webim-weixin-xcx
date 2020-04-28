@@ -53,5 +53,27 @@
 
 ## v3.1.1 @ 2020-04-28
 ### Feature
-+ 更新 3.1.1 IM SDK
-+ 更新 3.1.1 音视频SDK
++ [demo] 适配v3.1.1 IM SDK
++ [IM SDK] 更新私有协议, 与web端统一
++ [IM SDK] 增加漫游消息api
++ [IM SDK] 增加聊天室禁言、解除禁言、获取禁言列表、加入黑名单、移除黑名单、获取黑明单列表等api
++ [IM SDK] 增加聊天室、群组一键禁言、白名单等api
++ [IM SDK] 增加发送自定义消息
++ [IM SDK] 增加群组回执
++ [音视频 SDK] 兼容 v3.1.1 IM SDK
++ [音视频 SDK] 增加关闭摄像头的回调事件
++ [音视频 SDK] 修复不能销毁会议
+
+demo从 IM SDK 2.0 升级 3.0涉及改动：
+1、去掉 setPrensense 方法
+2、查询群组更换api为 getGroup
+3、Jid 与2.0不同，变为对象，需要自己拼成字符串
+4、listgroupmemeber、getGroupInfo 返回 res.data 不是res.data.data
+5、leaveGroupBySelf退出群、删除好友api变化
+6、addGroupMembers邀请入群变为inviteToGroup
+7、注册utils.registerUser变为conn.registerUser
+8、xmppURL以及小程序后台socket域名变为wss://im-api-wechat.easemob.com/websocket
+
+
+
+
