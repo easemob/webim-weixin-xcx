@@ -244,6 +244,29 @@ App({
 						duration: 1000
 					});
 					break;
+				case 'invite':
+					let info = message.from + '邀请你加入群组'
+					wx.showModal({
+					  title: '提示',
+					  content: info,
+					  success (res) {
+					    if (res.confirm) {
+					      console.log('用户点击确定')
+					      WebIM.conn.agreeInviteIntoGroup({
+					      	invitee: WebIM.conn.context.userId,
+							groupId: message.gid,
+							success: () => {console.log('加入成功')}
+					      })
+					    } else if (res.cancel) {
+					      console.log('用户点击取消')
+					      WebIM.conn.rejectInviteIntoGroup({
+					      	invitee: WebIM.conn.context.userId,
+							groupId: message.gid
+					      })
+					    }
+					  }
+					})
+					break;
 				// 好友列表
 				// case "subscribed":
 				// 	let newFriendList = [];
