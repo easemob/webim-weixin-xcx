@@ -1,39 +1,39 @@
 <template name="toast">
-	<view class='toast_content_box'>
-		<view class="toast_content" wx:if="{{ isHidefil }}">
-			<view class="toast_content_border"></view>
-			<view class="toast_content_icon">
+	<cover-view class='toast_content_box'>
+		<cover-view class="toast_content" wx:if="{{ isHidefil }}">
+			<cover-view class="toast_content_border"></cover-view>
+			<cover-view class="toast_content_icon">
 				<image class="toast_icon_img" src="../../images/filled@2x.png"/>
-			</view>
-			<view class="toast_content_text">
+			</cover-view>
+			<cover-view class="toast_content_text">
 				{{content}}
-			</view>
-		</view>
+			</cover-view>
+		</cover-view>
 
-		<view class='toast_content_box'>
-			<view class="toast_content" wx:if="{{ isHidescss }}">
-				<view class="toast_content_border toast_success"></view>
-				<view class="toast_content_icon">
+		<cover-view class='toast_content_box'>
+			<cover-view class="toast_content" wx:if="{{ isHidescss }}">
+				<cover-view class="toast_content_border toast_success"></cover-view>
+				<cover-view class="toast_content_icon">
 					<image class="toast_icon_img" src="../../images/success@2x.png"/>
-				</view>
-				<view class="toast_content_text">
+				</cover-view>
+				<cover-view class="toast_content_text">
 					{{content}}
-				</view>
-			</view>
-		</view>
-	</view>
+				</cover-view>
+			</cover-view>
+		</cover-view>
+	</cover-view>
 </template>
 
 <!-- <template name="toast_success">
-	<view class='toast_content_box'>
-		<view class="toast_content" wx:if="{{ isHide }}">
-			<view class="toast_content_border"></view>
-			<view class="toast_content_icon">
+	<cover-view class='toast_content_box'>
+		<cover-view class="toast_content" wx:if="{{ isHide }}">
+			<cover-view class="toast_content_border"></cover-view>
+			<cover-view class="toast_content_icon">
 				<image class="toast_icon_img" src="../../images/success@2x.png"/>
-			</view>
-			<view class="toast_content_text">
+			</cover-view>
+			<cover-view class="toast_content_text">
 				{{content}}
-			</view>
-		</view>
-	</view>
+			</cover-view>
+		</cover-view>
+	</cover-view>
 </template> -->
