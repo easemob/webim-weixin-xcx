@@ -74,6 +74,16 @@ demo从 IM SDK 2.0 升级 3.0涉及改动：
 7、注册utils.registerUser变为conn.registerUser
 8、xmppURL以及小程序后台socket域名变为wss://im-api-wechat.easemob.com/websocket
 
+## v3.1.2 @ 2020-05-14
+### Feature
++ [IM SDK] 增加上传修改群/聊天室公告、获取群/聊天室公告、上传/下载/删除群/聊天室文件、获取群/聊天室文件列表, 增加上传修改群/聊天室公告、获取群/聊天室公告、上传/下载/删除群/聊天室文件、获取群/聊天室文件列表
++ [IM SDK] 修改重连间隔
++ [IM SDK] 去掉对上传文件大小的限制, 由服务端来限制
++ [IM SDK] 修复拉历史消息bug
++ [IM SDK] 修复自定义消息没有time
++ [demo] 增加接受群组邀请功能，可以接收移动端的加群邀请
++ [demo] 同意好友申请后还会反向订阅
++ [demo] 用cover-view代替view 解决有时input内的文字会在toast之上
 
 
 
