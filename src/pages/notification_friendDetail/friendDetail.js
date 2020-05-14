@@ -79,11 +79,11 @@ Page({
 			to: event.currentTarget.dataset.from,
 			message: "[resp:true]",
 		});
-		// 需要反向添加对方好友（无回调）
-		WebIM.conn.subscribe({
-			to: event.currentTarget.dataset.from,
-			message: "[resp:true]",
-		});
+		// 需要反向添加对方好友（无回调） 这是2.0sdk的逻辑，3.0不需要了
+		// WebIM.conn.subscribe({
+		// 	to: event.currentTarget.dataset.from,
+		// 	message: "[resp:true]",
+		// });
 
 		this.data.friendList.forEach((item) => {
 			if (item.from == event.currentTarget.dataset.from) {
