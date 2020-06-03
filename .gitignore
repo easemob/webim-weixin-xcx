@@ -5,6 +5,6 @@ node_modules/
 build/
 .cache/
 emedia_for_wx/
-src/sdk/sdk/*
+src/sdk/*
 src/miniprogram_npm/*
 

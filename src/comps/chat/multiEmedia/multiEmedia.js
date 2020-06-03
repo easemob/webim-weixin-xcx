@@ -73,16 +73,33 @@ Component({
 			}else{
 				this.createConf()
 			}
+			wx.emedia.mgr.onMediaChanaged = function(e){
+				console.log('onMediaChanaged', e)
+			}
+			wx.emedia.mgr.onConferenceExit = function(e){
+				console.log('onConferenceExit', e)
+			}
 			wx.emedia.mgr.onMemberExited = function(reason){
-
+				console.log('onMemberExited', reason)
 			};
  
 			wx.emedia.mgr.onStreamControl = function(mem){
-				console.log('mem', mem)
+				console.log('onStreamControl', mem)
 			}
 
 			wx.emedia.mgr.onStreamControl.onSoundChanage = function(a, b, c, d){
 				console.log('onSoundChanage')
+			}
+
+			wx.emedia.mgr.onReconnect = function (res, ent){
+				// 发生断网重连，相当于重新加入会议
+
+				// 清空live-player 否则在原来的后面追加，导致原来的黑屏显示
+				
+				subUrls = []
+				me.setData({
+					subUrls: [],
+				})
 			}
 
 			wx.emedia.mgr.onMemberJoined = function(mem){
@@ -330,10 +347,10 @@ Component({
 			this.triggerEvent('inviteMember')
 		},
 		statechange(e){
-			console.log('live-pusher code:', e.detail)
+			console.log('>>>>>>>>>live-pusher code:', e.detail)
 		},
 		netstatusChange(e){
-			console.log('net status:', e.detail)
+			console.log('>>>>>>>>>>net status:', e.detail)
 		}
 	},
 
