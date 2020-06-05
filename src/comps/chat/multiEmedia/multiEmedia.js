@@ -97,10 +97,25 @@ Component({
 				// 发生断网重连，相当于重新加入会议
 
 				// 清空live-player 否则在原来的后面追加，导致原来的黑屏显示
-				
 				subUrls = []
+
+				// 重新加入恢复到初始状态，防止和控制按钮状态不符
 				me.setData({
 					subUrls: [],
+					showInvite: true,
+			  		devicePosition: "front",
+			  		muted: false,
+			  		playVideoMuted: false,
+
+			  		devicePositionIcon: 'switchCamera_white',
+			  		devicePositionColor: '#fff',
+			  		micphoneIcon: 'micphone_white',
+			  		micphoneColor: '#fff',
+			  		videoIcon: 'video_white',
+					videoColor: '#fff',
+					beauty: 0,
+					beautyColor: '#fff',
+					enableCamera: true
 				})
 			}
 
