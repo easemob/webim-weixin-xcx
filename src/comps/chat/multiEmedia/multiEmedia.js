@@ -6,7 +6,9 @@ Component({
 	},
 	lifetimes: {
 	    attached: function() {
-			wx.setKeepScreenOn(true)
+			wx.setKeepScreenOn({
+			  keepScreenOn: true
+			})
 			this.setData({
 				myName: wx.WebIM.conn.context.userId
 			})

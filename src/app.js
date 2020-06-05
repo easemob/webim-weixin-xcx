@@ -58,6 +58,22 @@ function calcUnReadSpot(message){
 	disp.fire("em.xmpp.unreadspot", message);
 }
 
+function saveGroups(){
+	var me = this;
+	return WebIM.conn.getGroup({
+		limit: 50,
+		success: function(res){
+			wx.setStorage({
+				key: "listGroup",
+				data: res.data
+			});
+		},
+		error: function(err){
+			console.log(err)
+		}
+	});
+}
+
 App({
 	ToastPannel,
 	globalData: {
@@ -238,7 +254,15 @@ App({
 					// 	duration: 1000
 					// });
 					break;
+				case "direct_joined":
+					saveGroups();
+					wx.showToast({
+						title: "已进群",
+						duration: 1000
+					});
+					break;
 				case "memberJoinPublicGroupSuccess":
+					saveGroups();
 					wx.showToast({
 						title: "已进群",
 						duration: 1000
@@ -255,7 +279,10 @@ App({
 					      WebIM.conn.agreeInviteIntoGroup({
 					      	invitee: WebIM.conn.context.userId,
 							groupId: message.gid,
-							success: () => {console.log('加入成功')}
+							success: () => {
+								saveGroups();
+								console.log('加入成功')
+							}
 					      })
 					    } else if (res.cancel) {
 					      console.log('用户点击取消')
