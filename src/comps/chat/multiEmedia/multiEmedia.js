@@ -100,6 +100,8 @@ Component({
 				subUrls = []
 
 				// 重新加入恢复到初始状态，防止和控制按钮状态不符
+
+				// 重连后摄像头方向不会改变
 				me.setData({
 					subUrls: [],
 					showInvite: true,
@@ -107,8 +109,7 @@ Component({
 			  		muted: false,
 			  		playVideoMuted: false,
 
-			  		devicePositionIcon: 'switchCamera_white',
-			  		devicePositionColor: '#fff',
+			  		
 			  		micphoneIcon: 'micphone_white',
 			  		micphoneColor: '#fff',
 			  		videoIcon: 'video_white',
