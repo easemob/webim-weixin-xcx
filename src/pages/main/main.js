@@ -64,6 +64,13 @@ Page({
 				me.getRoster();
 			}
 		});
+		// 监听被解除好友
+		disp.on("em.xmpp.unsubscribed", function(){
+			var pageStack = getCurrentPages();
+			if(pageStack[pageStack.length - 1].route === me.route){
+				me.getRoster();
+			}
+		});
 		
 		this.setData({
 			myName: option.myName
