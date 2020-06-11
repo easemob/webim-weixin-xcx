@@ -74,7 +74,9 @@ let config = {
 	/*
 	 * Set to auto sign-in
 	 */
-	isAutoLogin: true
+	isAutoLogin: true,
+
+	heartBeatWait: 30000
 };
 
 export default config;

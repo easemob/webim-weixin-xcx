@@ -221,6 +221,7 @@ App({
 				//console.log("onPresence", message);
 				switch(message.type){
 				case "unsubscribe":
+					console.log('unsubscribe')
 					// pages[0].moveFriend(message);
 					break;
 				// 好友邀请列表
@@ -253,6 +254,7 @@ App({
 					// 	title: "已拒绝",
 					// 	duration: 1000
 					// });
+					disp.fire("em.xmpp.unsubscribed");
 					break;
 				case "direct_joined":
 					saveGroups();
