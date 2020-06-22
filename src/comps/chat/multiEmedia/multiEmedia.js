@@ -366,6 +366,11 @@ Component({
 		},
 		statechange(e){
 			console.log('>>>>>>>>>live-pusher code:', e.detail)
+			if (e.detail.code === 5001) {
+				// 部分安卓手机在接电话时会停止推拉流报错，状态码5001，此时退出会议。 https://developers.weixin.qq.com/community/develop/doc/0006ac6d7a4968fa675a49fef53c00
+				this.hangup()
+				console.error('由于有电话接入，已退出会议')
+			}
 		},
 		netstatusChange(e){
 			console.log('>>>>>>>>>>net status:', e.detail)
