@@ -112,11 +112,11 @@ Component({
 				confrId: data.detail.confrId
 			})
 			getApp().globalData.confrId = data.detail.confrId
-   			this.sendInviteMsg(this.data.confrMember, data.detail.confrId)
+   			this.sendInviteMsg(this.data.confrMember, data.detail.confrId, data)
 		},
 
-		sendInviteMsg(members, confrId){
-			console.log("&c members","background: green")
+		sendInviteMsg(members, confrId, data){
+			console.log("%c members","background: green")
 			console.log(members)
 			members&&members.forEach((value) => {
 				let id = WebIM.conn.getUniqueId();
@@ -133,7 +133,8 @@ Component({
 							inviter: wx.WebIM.conn.context.userId,
 							group_id: this.data.username.groupId
 						}),
-						password: '',
+						roomName: data&&data.detail.roomName || '',
+						password: data&&data.detail.password || '',
 						conferenceId: confrId
 					},
 					success(id, serverMsgId){
@@ -163,7 +164,8 @@ Component({
 				emediaAction: {
 					action: 'join',
 					confrId: confrId,
-					password: password
+					password: password,
+					roomName: data.detail.roomName || ''
 				},
 				showEmediaInvite: false,
 				showmultiEmedia: true,

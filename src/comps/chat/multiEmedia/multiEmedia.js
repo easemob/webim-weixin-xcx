@@ -71,9 +71,23 @@ Component({
 			this.LivePusherContext = wx.createLivePusherContext()
 			
 			if(this.data.action&&this.data.action.action == 'join'){
-				this.joinConf(this.data.action)
+				// 音视频sdk提供两种创建、加入会议的api 使用任意一种都可以：（1） 一种是通过会议id ticket 或者 会议id 密码加入会议 如使用下面 joinConf
+				// （2）另一种是通过房间名 密码加入 如使用下面joinRoom
+
+				//this.joinConf(this.data.action) // （1）
+				//this.joinRoom(this.data.action) // （2）
+				if (this.data.action.roomName) {
+					console.log('使用joinroom')
+					this.joinRoom(this.data.action)
+				}else{
+					console.log('使用joinConf')
+					this.joinConf(this.data.action)
+				}
 			}else{
-				this.createConf()
+				// 创建会议同样是两种api （1）一种是使用createConf 单纯创建一个会议，需要再申请ticket 或者用密码加入会议 如使用下面的createConf
+				// （2）也可以使用joinRoom，通过房间名、密码创建房间并直接加入 不需再进行加入会议的操作
+				this.joinRoom() // （1）
+				//this.createConf() // （2）
 			}
 			wx.emedia.mgr.onMediaChanaged = function(e){
 				console.log('onMediaChanaged', e)
@@ -247,8 +261,36 @@ Component({
 	},
 
 	methods: {
-		createConf(){
+		joinRoom(data){
+			let params = {
+				roomName: 'test',
+				password: '',
+				role: 7,
+				config: {}
+			}
+			if (data) {
+				params.roomName = data.roomName
+				params.password = data.password
+			}
+			let me = this;
+			wx.emedia.mgr.joinRoom(params).then((res) => {
+				console.log('res', res)
+				let confrId = res.confrId
+				console.log('confrId', confrId)
+				me.setData({
+					confrId: confrId
+				})
+				me.triggerEvent('createConfrSuccess', {confrId: confrId, groupId: me.data.username.groupId, roomName: params.roomName, password: params.password})
+			})
 
+			let rtcId = wx.emedia.util.getRtcId()
+			wx.emedia.mgr.pubStream(rtcId).then(function(res){
+				me.setData({
+					pubUrl: res.data.rtmp
+				})
+			})
+		},
+		createConf(){
 			console.log('>>> createConf');
 			
 			var me = this
@@ -277,6 +319,7 @@ Component({
 
 		joinConf(data){
 			console.log('加入会议 ————-------————')
+			console.log(data)
 			let me = this
 			wx.emedia.mgr.getConferenceTkt(data.confrId, data.password).then(function(res){
 				console.log('申请reqTkt成功', res.data)
