@@ -65,4 +65,10 @@
 	border: 3rpx solid #0873DE;
 	box-sizing: border-box;
 }
+.config{
+	padding-left: 32rpx;
+}
+.config_swich{
+	transform: scale(0.7);
+}
 

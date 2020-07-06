@@ -9,7 +9,9 @@ Page({
 		name: "",
 		psd: "",
 		grant_type: "password",
-		rtcUrl: ''
+		rtcUrl: '',
+		show_config: false, //默认不显示配置按钮
+		isSandBox: false //默认线上环境
 	},
 
 	statechange(e) {
@@ -28,6 +30,16 @@ Page({
 		disp.on("em.xmpp.error.passwordErr", function(){
 			me.toastFilled('用户名或密码错误');
 		});
+
+		wx.getStorage({
+			key: 'isSandBox',
+			success (res) {
+			    console.log(res.data)
+			    me.setData({
+			    	isSandBox: !!res.data
+			    })
+			}
+		})
 	},
 
 	bindUsername: function(e){
@@ -77,6 +89,14 @@ Page({
 			data: __test_account__ || this.data.name.toLowerCase()
 		});
 
+		// 此处为测试用来切换沙箱环境，请忽略
+		if(this.data.isSandBox){
+			WebIM.config.apiURL = "https://a1-hsb.easemob.com"
+			WebIM.conn.apiUrl = "https://a1-hsb.easemob.com"
+			WebIM.conn.url = 'wss://im-api-new-hsb.easemob.com/websocket'
+			wx.emedia.mgr.setHost("https://a1-hsb.easemob.com")
+		}
+
 		getApp().conn.open({
 			apiUrl: WebIM.config.apiURL,
 			user: __test_account__ || this.data.name.toLowerCase(),
@@ -84,6 +104,25 @@ Page({
 			grant_type: this.data.grant_type,
 			appKey: WebIM.config.appkey
 		});
+	},
+
+	longpress: function(){
+		console.log('长按')
+		this.setData({
+			show_config: !this.data.show_config
+		})
+	},
+
+	changeConfig: function(){
+		this.setData({
+			isSandBox: !this.data.isSandBox
+		}, ()=>{
+			wx.setStorage({
+				key: "isSandBox",
+				data: this.data.isSandBox
+			});
+		})
+		
 	}
 
 });

@@ -7,7 +7,15 @@
 				binderror="error" 
 			/> -->
 	<view class="login_title">
-		<text>登录</text>
+		<text bindlongpress="longpress">登录</text>
+	</view>
+
+	<!-- 测试用 请忽略 -->
+	<view class="config" wx:if="{{ show_config }}">
+		<view>
+			<text>使用沙箱环境</text>
+			<switch class="config_swich" checked="{{isSandBox? true: false}}" color="#0873DE" bindchange="changeConfig"/>
+		</view>
 	</view>
 
 	<view class="login_user {{nameFocus}}">
