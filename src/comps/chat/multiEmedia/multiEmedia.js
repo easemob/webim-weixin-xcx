@@ -12,6 +12,8 @@ Component({
 			this.setData({
 				myName: wx.WebIM.conn.context.userId
 			})
+
+			this.getTimer()
 			var me = this
 			let subUrls = []
 			let obj = {};
@@ -257,7 +259,8 @@ Component({
 		beautyColor: '#fff',
 		myName: '',
 		confrId: '',
-		enableCamera: true
+		enableCamera: true,
+		time: ''
 	},
 
 	methods: {
@@ -403,6 +406,7 @@ Component({
 			console.log('挂断', this.data.confrId)
 			wx.emedia.mgr.exitConference(this.data.confrId)
 			this.triggerEvent('hangup')
+			this.stopTimer()
 		},
 		inviteMember(){
 			this.triggerEvent('inviteMember')
@@ -417,6 +421,32 @@ Component({
 		},
 		netstatusChange(e){
 			console.log('>>>>>>>>>>net status:', e.detail)
+		},
+
+		getTimer(){
+			let count = 0;
+			let time = '00:00:00'
+			this.timer = setInterval(() => {
+                count++;
+                let s = showNum(count % 60);
+                let m = showNum(parseInt((count / 60)) % 60)
+                let h = showNum(parseInt(count / 60 / 60))
+                time = `${h}:${m}:${s}`
+                this.setData({
+                	time
+                })
+            }, 1000)
+
+            function showNum(num) {
+                if (num < 10) {
+                    return '0' + num
+                }
+                return num
+            }
+
+		},
+		stopTimer(){
+			clearInterval(this.timer)
 		}
 	},
 

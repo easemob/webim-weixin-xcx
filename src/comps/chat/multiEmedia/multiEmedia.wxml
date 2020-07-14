@@ -5,8 +5,9 @@
 		scroll-y = "true"
 	>
 		<view class="infoConnecting">
-			多人会议 {{wx.WebIM.conn.context.userId}}
+			多人会议 {{myName}} {{time}}
 		</view>
+
 		<live-pusher 
 			url="{{pubUrl}}" 
 			mode="RTC" 
