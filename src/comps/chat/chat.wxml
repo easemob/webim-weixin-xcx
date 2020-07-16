@@ -28,11 +28,6 @@
 		bind:makeAudioCall="onMakeAudioCall"
 		style="display: {{inputbarVisible}}"
 	></chat-inputbar>
-
-	<!-- <chat-emedia 
-		bind:createConfrSuccess="onCreateConfrSuccess"
-		username="{{ username }}"
-		wx:if="{{showEmedia}}"/> -->
 		
 	<chat-multiEmedia 
 		style="display: {{multiEmediaVisible}}"
