@@ -68,7 +68,7 @@
 			<view class="controlItem" bindtap="toggleBeauty" style="color: {{beautyColor}}">
 				<image
 					class="icon-record"
-					src='../../../images/beauty@2x.png' style="width:16px; height: 24px"/>
+					src='../../../images/{{beautyIcon}}.png' style="width:16px; height: 24px"/>
 				美颜</view>
 			<view class="controlItem" bindtap="inviteMember">
 				<image

@@ -129,6 +129,7 @@ Component({
 			  		micphoneIcon: 'micphone_white',
 			  		micphoneColor: '#fff',
 			  		videoIcon: 'video_white',
+			  		beautyIcon: 'beauty',
 					videoColor: '#fff',
 					beauty: 0,
 					beautyColor: '#fff',
@@ -252,6 +253,7 @@ Component({
   		devicePositionIcon: 'switchCamera_white',
   		devicePositionColor: '#fff',
   		micphoneIcon: 'micphone_white',
+  		beautyIcon: 'beauty',
   		micphoneColor: '#fff',
   		videoIcon: 'video_white',
 		videoColor: '#fff',
@@ -398,7 +400,8 @@ Component({
 		toggleBeauty(){
 			this.setData({
 				beauty: this.data.beauty == 0 ? 9 : 0,
-				beautyColor: this.data.beautyColor == '#fff'? '#aaa': '#fff'
+				beautyColor: this.data.beautyColor == '#fff'? '#aaa': '#fff',
+				beautyIcon: this.data.beautyIcon == 'beauty' ? 'beauty_gray': 'beauty'
 			})
 		},
 
