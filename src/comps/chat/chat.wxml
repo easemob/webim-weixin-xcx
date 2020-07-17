@@ -32,6 +32,7 @@
 	<chat-multiEmedia 
 		style="display: {{multiEmediaVisible}}"
 		username="{{ username }}" 
+		groupId="{{groupId}}"
 		action="{{emediaAction}}"
 		bind:inviteMember="onInviteMember"
 		bind:createConfrSuccess="onCreateConfrSuccess"

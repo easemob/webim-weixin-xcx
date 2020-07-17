@@ -5,7 +5,7 @@
 		scroll-y = "true"
 	>
 		<view class="infoConnecting">
-			多人会议 {{myName}} {{time}}
+			多人会议 {{groupId}} {{time}}
 		</view>
 
 		<live-pusher 

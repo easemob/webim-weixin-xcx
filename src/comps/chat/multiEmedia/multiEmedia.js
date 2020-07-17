@@ -2,7 +2,8 @@ const WebIM = wx.WebIM
 Component({
 	properties: {//接收父组件传过来的值
 	    username: null,//定义接收参数变量及允许传入参数类型
-		action: null
+		action: null,
+		groupId: null
 	},
 	lifetimes: {
 	    attached: function() {
@@ -223,7 +224,7 @@ Component({
 						// 		console.log('关闭成功')
 						// 	},
 						// 	complete: function(){
-						// 		console.log('关闭成功22')
+						// 		console.log('关闭成功')
 						// 	}
 						// })
 					}

@@ -27,7 +27,8 @@ Component({
 		emediaAction: null,
 		multiEmediaVisible: 'block',
 		inputbarVisible: 'block',
-		confrId: ''
+		confrId: '',
+		groupId: ''
 	},
 	methods: {
 		toggleRecordModal(){
@@ -170,9 +171,10 @@ Component({
 				showEmediaInvite: false,
 				showmultiEmedia: true,
 				inputbarVisible: 'none',
-				username: {
-					groupId: msg_extension.group_id
-				}
+				groupId: msg_extension.group_id
+				// username: {
+				// 	groupId: msg_extension.group_id
+				// }
 			})
 		},
 		onHangup(){
