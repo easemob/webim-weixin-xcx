@@ -218,7 +218,7 @@ App({
 				//console.log('已读', message)
 			},
 			onPresence(message){
-				//console.log("onPresence", message);
+				console.log("onPresence", message);
 				switch(message.type){
 				case "unsubscribe":
 					console.log('unsubscribe')
@@ -250,10 +250,14 @@ App({
 					disp.fire("em.xmpp.subscribed");
 					break;
 				case "unsubscribed":
-					// wx.showToast({
-					// 	title: "已拒绝",
-					// 	duration: 1000
-					// });
+					// 延时1.5秒， 防止刚登录时和登录的toast重合
+					setTimeout(() => {
+						wx.showToast({
+							title: message.from + "已拒绝",
+							duration: 2000
+						});
+					}, 1500)
+					
 					disp.fire("em.xmpp.unsubscribed");
 					break;
 				case "direct_joined":
