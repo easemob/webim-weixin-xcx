@@ -76,16 +76,17 @@ Component({
 
 		renderMsg(renderableMsg, type, curChatMsg, sessionKey, isnew){
 			let me = this
-			if (curChatMsg.length > 1) {
-				this.data.chatMsg.map(function(elem, index) {
-					curChatMsg.map(function(item, i) {
-						if(elem.mid == item.mid){
-							//me.data.chatMsg.splice(index, 1)
-							curChatMsg.splice(i, 1)
-						}
-					})
-				})
-			}
+			// 手动去重 这操作没必要
+			// if (curChatMsg.length > 1) {
+			// 	this.data.chatMsg.map(function(elem, index) {
+			// 		curChatMsg.map(function(item, i) {
+			// 			if(elem.mid == item.mid){
+			// 				//me.data.chatMsg.splice(index, 1)
+			// 				curChatMsg.splice(i, 1)
+			// 			}
+			// 		})
+			// 	})
+			// }
 			
 
 			var historyChatMsgs = wx.getStorageSync("rendered_" + sessionKey) || [];
@@ -131,7 +132,6 @@ Component({
 			wx.setStorageSync(sessionKey, chatMsg);
 			Index = historyChatMsgs.slice(-10).length;
 
-			console.log('111111111', this.data.chatMsg)
 			wx.pageScrollTo({
 				scrollTop: 5000,
 				duration: 300,
@@ -140,6 +140,8 @@ Component({
 			if (isFail) {
 				this.renderFail(sessionKey)
 			}
+
+			console.log('渲染消息', Date.now())
 		},
 		renderFail(sessionKey){
 			let me = this
