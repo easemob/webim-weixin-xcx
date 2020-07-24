@@ -116,9 +116,15 @@ Page({
 					title: "添加成功",
 					duration: 2000,
 					success: function(res){
-						setTimeout(() => wx.navigateTo({
-							url: "../groups/groups?myName=" + me.data.owner
-						}), 2000);
+						setTimeout(() => {
+							wx.navigateBack({
+							  delta: 1
+							})
+						}, 1500)
+						
+						// setTimeout(() => wx.navigateTo({
+						// 	url: "../groups/groups?myName=" + me.data.owner
+						// }), 2000);
 					},
 				});
 			},
