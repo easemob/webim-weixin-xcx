@@ -1,7 +1,7 @@
 // import Strophe from "../sdk/libs/strophe";
 //import xmldom from "../sdk/libs/xmldom/dom-parser";
 // import websdk from "../sdk/src/wxEntry";
-import websdk from "../sdk/wxsdk3.2.0";
+import websdk from "../sdk/wxsdk3.2.1";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
