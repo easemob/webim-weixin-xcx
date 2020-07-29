@@ -13,12 +13,12 @@ let location = {
 
 let config = {
 	/*
-	 * XMPP server
+	 * socket server
 	 */
-	// xmppURL: "wss://im-api.easemob.com/ws/", //小程序2.0sdk线上环境
-	// xmppURL: "wss://im-api-hsb.easemob.com/ws/", //小程序2.0sdk沙箱环境
-	// xmppURL: 'wss://im-api-new-hsb.easemob.com/websocket', //小程序沙箱环境
-	xmppURL: 'wss://im-api-wechat.easemob.com/websocket', //小程序线上环境
+	// socketServer: "wss://im-api.easemob.com/ws/", //小程序2.0sdk线上环境
+	// socketServer: "wss://im-api-hsb.easemob.com/ws/", //小程序2.0sdk沙箱环境
+	// socketServer: 'wss://im-api-new-hsb.easemob.com/websocket', //小程序沙箱环境
+	socketServer: 'wss://im-api-wechat.easemob.com/websocket', //小程序线上环境
 	/*
 	 * Backend REST API URL
 	 */
