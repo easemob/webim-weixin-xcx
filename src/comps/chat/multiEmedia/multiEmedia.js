@@ -270,12 +270,16 @@ Component({
 		joinRoom(data){
 			let id = WebIM.conn.getUniqueId();
 			let roomName = 'wxConfr' + id //随机的房间名，防止和别人的房间名冲突
-
+			let rec = wx.getStorageSync("rec") || false;
+			let recMerge = wx.getStorageSync("recMerge") || false;
 			let params = {
 				roomName,
 				password: '',
 				role: 7,
-				config: {}
+				config: {
+					rec,
+					recMerge
+				}
 			}
 			if (data) {
 				params.roomName = data.roomName
