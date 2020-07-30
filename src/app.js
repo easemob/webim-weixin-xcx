@@ -253,7 +253,7 @@ App({
 					// 延时1.5秒， 防止刚登录时和登录的toast重合
 					setTimeout(() => {
 						wx.showToast({
-							title: message.from + "已拒绝",
+							title: message.from + "已退订",
 							duration: 2000
 						});
 					}, 1500)
