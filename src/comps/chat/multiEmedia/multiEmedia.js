@@ -268,8 +268,11 @@ Component({
 
 	methods: {
 		joinRoom(data){
+			let id = WebIM.conn.getUniqueId();
+			let roomName = 'wxConfr' + id //随机的房间名，防止和别人的房间名冲突
+
 			let params = {
-				roomName: 'test',
+				roomName,
 				password: '',
 				role: 7,
 				config: {}
@@ -282,7 +285,6 @@ Component({
 			wx.emedia.mgr.joinRoom(params).then((res) => {
 				console.log('res', res)
 				let confrId = res.confrId
-				console.log('confrId', confrId)
 				me.setData({
 					confrId: confrId
 				})

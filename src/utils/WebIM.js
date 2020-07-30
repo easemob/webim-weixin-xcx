@@ -220,7 +220,7 @@ WebIM.conn = new WebIM.connection({
 	appKey: WebIM.config.appkey,
 	isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
 	https: typeof WebIM.config.https === "boolean" ? WebIM.config.https : location.protocol === "https:",
-	url: WebIM.config.xmppURL,
+	url: WebIM.config.socketServer,
 	apiUrl: WebIM.config.apiURL,
 	isAutoLogin: false,
 	heartBeatWait: 30000, //WebIM.config.heartBeatWait,
