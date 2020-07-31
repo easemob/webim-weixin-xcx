@@ -60,6 +60,10 @@ Page({
 		});
 
 		this.getRoster();
+
+		if (wx.canIUse('hideHomeButton')) {
+			wx.hideHomeButton()
+		}
 	},
 
 	listGroups(){

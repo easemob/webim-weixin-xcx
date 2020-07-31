@@ -33,6 +33,10 @@ Page({
 
 		wx.setStorageSync("friendNotiData", getApp().globalData.saveFriendList)
 		wx.setStorageSync("groupNotiData", getApp().globalData.saveGroupInvitedList)
+
+		if (wx.canIUse('hideHomeButton')) {
+			wx.hideHomeButton()
+		}
 	},
 
 	onShow(){

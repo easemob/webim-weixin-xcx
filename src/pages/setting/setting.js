@@ -36,6 +36,10 @@ Page({
 				unReadTotalNotNum: getApp().globalData.saveFriendList.length + getApp().globalData.saveGroupInvitedList.length
 			});
 		});
+
+		if (wx.canIUse('hideHomeButton')) {
+			wx.hideHomeButton()
+		}
 	},
 
 	onShow(){

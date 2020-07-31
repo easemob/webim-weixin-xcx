@@ -75,6 +75,10 @@ Page({
 		this.setData({
 			myName: option.myName
 		});
+
+		if (wx.canIUse('hideHomeButton')) {
+			wx.hideHomeButton()
+		}
 	},
 
 	onShow(){

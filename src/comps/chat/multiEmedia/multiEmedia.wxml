@@ -11,7 +11,7 @@
 		<live-pusher 
 			url="{{pubUrl}}" 
 			mode="RTC" 
-			aspect="9:16"
+			aspect="3:4"
 			enable-mic="{{true}}"
 			beauty="{{beauty}}"
 			whiteness="{{beauty}}"
