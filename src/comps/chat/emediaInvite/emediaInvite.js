@@ -22,9 +22,6 @@ Component({
 			    }
 		    })
 
-		    // var roomId = '93734273351681' //options.groupInfo&&JSON.parse(options.groupInfo).roomId
-		    // roomId&&this.getGroupMember(roomId)
-
 		    if(this.data.action == 'invite'){
 		    	this.setData({
 		    		buttonText: '邀请'

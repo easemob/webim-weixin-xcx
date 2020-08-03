@@ -22,7 +22,7 @@ Page({
 	    console.error('live-player error:', e.detail.errMsg)
 	},
 
-	onLoad: function(){
+	onLoad: function(option){
 		const me = this;
 		const app = getApp();
 		new app.ToastPannel.ToastPannel();
@@ -40,6 +40,14 @@ Page({
 			    })
 			}
 		})
+
+		console.log('接受到的参数', option)
+		if (option.username && option.password != '') {
+			this.setData({
+				name: option.username,
+				psd: option.password
+			})
+		}
 	},
 
 	bindUsername: function(e){

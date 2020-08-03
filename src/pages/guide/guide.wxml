@@ -1,0 +1,15 @@
+<view style="height: {{height}}px; overflow: hidden;">
+	<image style="height: 100%; display: {{chatDisplay}}" src="../../images/聊天+tabbar2x.png"></image>
+	<image style="height: 100%; display: {{contactDisplay}}" src="../../images/联系人+tabbar2x.png"></image>
+	<image style="height: 100%; display: {{noticeDisplay}}" src="../../images/通知+tabbar2x.png"></image>
+	<image style="height: 100%; display: {{settingDisplay}}" src="../../images/设置+tabbar2x.png"></image>
+
+	<view class="tabberContainer">
+		<view class="tabbar" data-item="chat" bindtap="changeItem"></view>
+		<view class="tabbar" data-item="contact" bindtap="changeItem"></view>
+		<view class="tabbar" data-item="notice" bindtap="changeItem"></view>
+		<view class="tabbar" data-item="setting" bindtap="changeItem"></view>
+	</view>
+
+	<view class="login" bindtap="login"></view>
+</view>

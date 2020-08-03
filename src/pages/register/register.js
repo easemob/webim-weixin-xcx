@@ -68,6 +68,9 @@ Page({
 						key: "myUsername",
 						data: that.data.username
 					});
+					wx.redirectTo({
+						url: "../login/login?username="+that.data.username+"&password="+that.data.password
+					});
 				},
 				error: function(res){
 					console.log('注册失败', res)	
