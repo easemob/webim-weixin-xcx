@@ -132,7 +132,7 @@ Component({
 			  		videoIcon: 'video_white',
 			  		beautyIcon: 'beauty',
 					videoColor: '#fff',
-					beauty: 0,
+					beauty: 9,
 					beautyColor: '#fff',
 					enableCamera: true
 				})
@@ -258,7 +258,7 @@ Component({
   		micphoneColor: '#fff',
   		videoIcon: 'video_white',
 		videoColor: '#fff',
-		beauty: 0,
+		beauty: 9,
 		beautyColor: '#fff',
 		myName: '',
 		confrId: '',

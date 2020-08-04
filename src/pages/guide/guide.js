@@ -13,8 +13,8 @@ Page({
 		const me = this
 		wx.getSystemInfo({
 		    success: function (res) {
-		        console.log('height=' + res.windowHeight);
-		        console.log('width=' + res.windowWidth);
+		        // console.log('height=' + res.windowHeight);
+		        // console.log('width=' + res.windowWidth);
 		        // 计算主体部分高度,单位为px
 		        me.setData({
 		          height: res.windowHeight

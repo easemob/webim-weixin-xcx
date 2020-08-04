@@ -41,7 +41,6 @@ Page({
 			}
 		})
 
-		console.log('接受到的参数', option)
 		if (option.username && option.password != '') {
 			this.setData({
 				name: option.username,

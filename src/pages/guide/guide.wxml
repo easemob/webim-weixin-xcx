@@ -1,8 +1,8 @@
 <view style="height: {{height}}px; overflow: hidden;">
-	<image style="height: 100%; display: {{chatDisplay}}" src="../../images/聊天+tabbar2x.png"></image>
-	<image style="height: 100%; display: {{contactDisplay}}" src="../../images/联系人+tabbar2x.png"></image>
-	<image style="height: 100%; display: {{noticeDisplay}}" src="../../images/通知+tabbar2x.png"></image>
-	<image style="height: 100%; display: {{settingDisplay}}" src="../../images/设置+tabbar2x.png"></image>
+	<image style="height: 100%; display: {{chatDisplay}}" src="../../images/chat_tabbar2x.png"></image>
+	<image style="height: 100%; display: {{contactDisplay}}" src="../../images/contact_tabbar2x.png"></image>
+	<image style="height: 100%; display: {{noticeDisplay}}" src="../../images/notice_tabbar2x.png"></image>
+	<image style="height: 100%; display: {{settingDisplay}}" src="../../images/setting_tabbar2x.png"></image>
 
 	<view class="tabberContainer">
 		<view class="tabbar" data-item="chat" bindtap="changeItem"></view>
