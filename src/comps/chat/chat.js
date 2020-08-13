@@ -89,13 +89,19 @@ Component({
 			})
 		},
 
-		onInviteMember(){
+		onInviteMember(e){
+			let username = this.data.username;
+			if(!this.data.username.groupId){
+				username.groupId = e.detail
+			}
+			
 			this.setData({
 				action: 'invite',
 				showEmediaInvite: true,
 				inputbarVisible: 'none',
 				//showmultiEmedia: false
-				multiEmediaVisible: 'none'
+				multiEmediaVisible: 'none',
+				username
 			})
 		},
 

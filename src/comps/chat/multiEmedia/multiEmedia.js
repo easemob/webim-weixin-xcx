@@ -419,7 +419,7 @@ Component({
 			this.stopTimer()
 		},
 		inviteMember(){
-			this.triggerEvent('inviteMember')
+			this.triggerEvent('inviteMember', this.data.groupId)
 		},
 		statechange(e){
 			console.log('>>>>>>>>>live-pusher code:', e.detail)
