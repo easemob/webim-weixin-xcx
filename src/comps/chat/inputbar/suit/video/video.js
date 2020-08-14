@@ -35,8 +35,9 @@ Component({
 				success(res){
 					var tempFilePaths = res.tempFilePath;
 					var str = WebIM.config.appkey.split("#");
+					var domain = wx.WebIM.conn.apiUrl + '/'
 					wx.uploadFile({
-						url: "https://a1.easemob.com/" + str[0] + "/" + str[1] + "/chatfiles",
+						url: domain + str[0] + "/" + str[1] + "/chatfiles",
 						filePath: tempFilePaths,
 						name: "file",
 						header: {

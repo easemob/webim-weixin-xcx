@@ -66,9 +66,10 @@ Component({
 					var height = res.height;
 					var index = res.path.lastIndexOf(".");
 					var filetype = (~index && res.path.slice(index + 1)) || "";
+					var domain = wx.WebIM.conn.apiUrl + '/'
 					if(filetype.toLowerCase() in allowType){
 						wx.uploadFile({
-							url: "https://a1.easemob.com/" + str[0] + "/" + str[1] + "/chatfiles",
+							url: domain + str[0] + "/" + str[1] + "/chatfiles",
 							filePath: tempFilePaths[0],
 							name: "file",
 							header: {
