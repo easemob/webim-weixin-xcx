@@ -1,5 +1,8 @@
 # 版本更新说明:
-
+## v3.2.2 @ 2020-8-25
+[IM SDK] 创建群组增加是否同意参数参数
+[IM SDK] 修复头条小程序消息延迟
+[IM SDK] onError回调增加 error message
 
 ## v3.1.6 @ 2020-07-03
 [音视频 SDK] 增加joinRoom api
