@@ -36,8 +36,11 @@ function onMessageError(err){
 
 function getCurrentRoute(){
 	let pages = getCurrentPages();
-	let currentPage = pages[pages.length - 1];
-	return currentPage.route;
+	if (pages.length > 0) {
+		let currentPage = pages[pages.length - 1];
+		return currentPage.route;
+	}
+	return '/'
 }
 
 function calcUnReadSpot(message){
@@ -501,10 +504,19 @@ App({
 			},
 		});
 		this.checkIsIPhoneX();
+		
 	},
-	// onShow(){
-	// 	WebIM.conn.reconnect();
-	// },
+	onShow(){
+		// 从搜索页面进的时候退出后再回来会回到首页，此时并没有调用退出，导致登录不上
+		// 判断当前是登录状态直接跳转到chat页面
+		let currentPage = getCurrentRoute()
+		if (WebIM.conn.isOpened() && currentPage === '/') {
+			let myName = wx.getStorageSync("myUsername");
+			wx.redirectTo({
+				url: "../chat/chat?myName=" + myName
+			});
+		}
+	},
 
 	// onHide(){
 
