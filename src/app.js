@@ -509,8 +509,7 @@ App({
 	onShow(){
 		// 从搜索页面进的时候退出后再回来会回到首页，此时并没有调用退出，导致登录不上
 		// 判断当前是登录状态直接跳转到chat页面
-		let currentPage = getCurrentRoute()
-		if (WebIM.conn.isOpened() && currentPage === '/') {
+		if (WebIM.conn.isOpened()) {
 			let myName = wx.getStorageSync("myUsername");
 			wx.redirectTo({
 				url: "../chat/chat?myName=" + myName
