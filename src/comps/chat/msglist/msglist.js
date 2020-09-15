@@ -138,7 +138,7 @@ Component({
 			})
 			this.triggerEvent('render')
 			if (isFail) {
-				this.renderFail(sessionKey)
+				//this.renderFail(sessionKey)
 			}
 
 			console.log('渲染消息', Date.now())
@@ -221,27 +221,30 @@ Component({
 			
 		// })
 
-		disp.on('em.xmpp.error.sendMsgErr', function(err) {
-			curMsgMid = err.data.mid
+		disp.on('em.xmpp.error.sendMsgErr', function(errMsgs) {
+			// curMsgMid = err.data.mid
 			isFail = true
-			return
-			console.log('发送失败了')
+			// return
 			let msgList = me.data.chatMsg
 			msgList.map((item) =>{
-				if (item.mid.substring(item.mid.length - 10) == curMsgMid.substring(curMsgMid.length - 10)) {
-					item.msg.data[0].isFail = true
-					item.isFail = true
+				for( let item2 in errMsgs){
+					if (item.mid.substring(item.mid.length - 10) == item2.substring(item2.length - 10)) {
+						item.msg.data[0].isFail = true
+						item.isFail = true
 
-					me.setData({
-						chatMsg: msgList
-					})
+						me.setData({
+							chatMsg: msgList
+						})
+					}
+				
 				}
 			})
-			if (me.curChatMsg[0].mid == curMsgMid) {
-				me.curChatMsg[0].msg.data[0].isShow = false;
-				me.curChatMsg[0].isShow = false
-			}
+			// if (me.curChatMsg[0].mid == curMsgMid) {
+				// me.curChatMsg[0].msg.data[0].isShow = false;
+				// me.curChatMsg[0].isShow = false
+			// }
 			wx.setStorageSync("rendered_" + sessionKey, msgList);
+			// disp.fire('em.megList.refresh')
 		});
 
 		msgStorage.on("newChatMsg", function(renderableMsg, type, curChatMsg, sesskey){

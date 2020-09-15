@@ -20,7 +20,8 @@ module.exports = function(sendableMsg, type, myName){
 		time: time,
 		mid: sendableMsg.type + sendableMsg.id,
 		chatType: sendableMsg.body.chatType,
-		ext: sendableMsg.body.ext
+		ext: sendableMsg.body.ext,
+		isFail: false
 	};
 	if(type == msgType.IMAGE){
 		renderableMsg.msg.size = {
