@@ -453,21 +453,25 @@ App({
 
 			// 各种异常
 			onError(error){
-				console.log(error)
+				console.log('error', error)
+				
+				if (error.type == 40) { //send msg fail
+					disp.fire("em.xmpp.error.sendMsgErr", error.failMsgs);
+				}
+
 				// 16: server-side close the websocket connection
 				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED && !logout){
-					if(WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax){
-						return;
+					if(WebIM.conn.autoReconnectNumTotal >= WebIM.conn.autoReconnectNumMax){
+						wx.showToast({
+							title: "server-side close the websocket connection",
+							duration: 1000
+						});
+						wx.redirectTo({
+							url: "../login/login"
+						});
+						logout = true
 					}
-					wx.showToast({
-						title: "server-side close the websocket connection",
-						duration: 1000
-					});
-					wx.redirectTo({
-						url: "../login/login"
-					});
-					logout = true
-					return;
+					return
 				}
 				// 8: offline by multi login
 				if(error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_ERROR){
@@ -492,7 +496,10 @@ App({
 					wx.hideLoading()
 					disp.fire("em.xmpp.error.tokenErr");
 				}
-				if (error.type == 'socket_error') {///sendMsgError
+				if (error.type == 16) {///sendMsgError
+					// https://developers.weixin.qq.com/community/develop/doc/00084a400202787b54f8c9e6357800
+					// 因为上面的原因 这里不要一直提示了
+					return 
 					console.log('socket_errorsocket_error', error)
 					wx.showToast({
 						title: "网络已断开",
@@ -509,7 +516,10 @@ App({
 	onShow(){
 		// 从搜索页面进的时候退出后再回来会回到首页，此时并没有调用退出，导致登录不上
 		// 判断当前是登录状态直接跳转到chat页面
-		if (WebIM.conn.isOpened()) {
+		const pages = getCurrentPages();
+		const currentPage = pages[pages.length - 1];
+		// 选择图片或者拍照也会触发onShow，所以忽略聊天页面
+		if (WebIM.conn.isOpened() && currentPage.route != "pages/chatroom/chatroom" && currentPage.route != "pages/groupChatRoom/groupChatRoom") {
 			let myName = wx.getStorageSync("myUsername");
 			wx.redirectTo({
 				url: "../chat/chat?myName=" + myName
