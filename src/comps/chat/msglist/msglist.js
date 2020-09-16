@@ -24,7 +24,6 @@ Component({
 	},
 	methods: {
 		clickMsg(data){
-			console.log(1, data)
 			if(data.currentTarget.dataset.msg.ext&&data.currentTarget.dataset.msg.ext.msg_extension){
 				this.triggerEvent("clickMsg", data.currentTarget.dataset.msg.ext)
 			}
@@ -140,8 +139,6 @@ Component({
 			if (isFail) {
 				//this.renderFail(sessionKey)
 			}
-
-			console.log('渲染消息', Date.now())
 		},
 		renderFail(sessionKey){
 			let me = this
@@ -197,12 +194,9 @@ Component({
 		wx.setStorageSync(sessionKey, null);
 		// disp.on("em.chat.sendSuccess", function(mid){
 		// 	curMsgMid = mid
-		// 	console.log('发送过去了', mid)
 		// 	let msgList = me.data.chatMsg
 		// 	msgList.map((item) =>{
 		// 		if (item.mid.substring(item.mid.length - 10) == mid.substring(mid.length - 10)) {
-
-		// 			console.log(111111, item)
 
 		// 			item.msg.data[0].isSuc = true
 		// 			item.isSuc = true
