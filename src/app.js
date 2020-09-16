@@ -454,7 +454,7 @@ App({
 			// 各种异常
 			onError(error){
 				console.log('error', error)
-				
+
 				if (error.type == 40) { //send msg fail
 					disp.fire("em.xmpp.error.sendMsgErr", error.failMsgs);
 				}
@@ -466,6 +466,7 @@ App({
 							title: "server-side close the websocket connection",
 							duration: 1000
 						});
+						WebIM.conn.close();
 						wx.redirectTo({
 							url: "../login/login"
 						});
