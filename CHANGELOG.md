@@ -1,4 +1,17 @@
 # 版本更新说明:
+## ## v3.3.0 @ 2020-9-16
+[IM SDK] 增加支持 promise
+[IM SDK] 增加 onContactInvited、onContactDeleted、onContactAdded、onContactRefuse、onContactAgreed 好友相关的回调
+[IM SDK] 增加 addContact、deleteContact、acceptInvitation、declineInvitation 代替原subscribe、removeRoster、subscribed、unsubscribed 好友操作 API
+[IM SDK] 增加状态码 40，在 onError 中 type 为 40 会回调出因为socket断开导致发送失败的消息
+[IM SDK] 修改默认的resource，以便区分web端和小程序端的用户
+[IM SDK] 修改 getChatRooms 获取聊天室 API，去掉 apiUrl 参数
+[IM SDK] 修改 构造 cmd 消息 API, 去掉 msg 参数
+[IM SDK] 优化构造消API，使用 chatType 来区分消息类型（单聊/群聊/聊天室）
+[IM SDK] 修复发送位置消息成功后并不执行 success 回调
+[IM SDK] 增加容错处理
+[demo] 修复小程序断网时发送单聊消息，未有发送成功和发送失败的区分。
+
 ## v3.2.2 @ 2020-8-25
 [IM SDK] 创建群组增加是否同意参数参数
 [IM SDK] 修复头条小程序消息延迟
