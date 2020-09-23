@@ -29,16 +29,18 @@ Page({
 		disp.on("em.xmpp.invite.deleteGroup", function(){
 			me.listGroups();
 			me.getRoster();
+			me.getChatList()
 			me.setData({
-				arr: me.getChatList(),
+				// arr: me.getChatList(),
 				messageNum: getApp().globalData.saveFriendList.length
 			});
 		});
 
 		//监听未读消息数
 		disp.on("em.xmpp.unreadspot", function(message){
+			me.getChatList()
 			me.setData({
-				arr: me.getChatList(),
+				// arr: me.getChatList(),
 				unReadSpotNum: getApp().globalData.unReadMessageNum > 99 ? '99+' : getApp().globalData.unReadMessageNum,
 			});
 		});
@@ -114,73 +116,167 @@ Page({
 		};
 		WebIM.conn.getRoster(rosters);
 	},
-
+	// 包含陌生人版本
 	getChatList(){
-		var array = [];
-		var member = wx.getStorageSync("member");
 		var myName = wx.getStorageSync("myUsername");
-		var listGroups = wx.getStorageSync('listGroup')|| [];
-		for(let i = 0; i < member.length; i++){
-			let newChatMsgs = wx.getStorageSync(member[i].name + myName) || [];
-			let historyChatMsgs = wx.getStorageSync("rendered_" + member[i].name + myName) || [];
-			let curChatMsgs = historyChatMsgs.concat(newChatMsgs);
+		var array = [];
+		const me = this
+		wx.getStorageInfo({
+			success: function(res){
+				let storageKeys = res.keys
+				let newChatMsgKeys = [];
+				let historyChatMsgKeys = [];
+				storageKeys.forEach((item) => {
+					if (item.indexOf(myName) > -1 && item.indexOf('rendered_') == -1) {
+						newChatMsgKeys.push(item)
+					}else if(item.indexOf(myName) > -1 && item.indexOf('rendered_') > -1){
+						historyChatMsgKeys.push(item)
+					}
+				})
 
-			if(curChatMsgs.length){
-				let lastChatMsg = curChatMsgs[curChatMsgs.length - 1];
-				lastChatMsg.unReadCount = newChatMsgs.length;
-				if(lastChatMsg.unReadCount > 99) {
-					lastChatMsg.unReadCount = "99+";
-				}
-				let dateArr = lastChatMsg.time.split(' ')[0].split('-')
-				let timeArr = lastChatMsg.time.split(' ')[1].split(':')
-				let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
-				lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
-				lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
-				array.push(lastChatMsg);
+				cul.call(me, newChatMsgKeys, historyChatMsgKeys)
 			}
-		}
-		for(let i = 0; i < listGroups.length; i++){
-			let newChatMsgs = wx.getStorageSync(listGroups[i].groupid + myName) || [];
-			let historyChatMsgs = wx.getStorageSync("rendered_" + listGroups[i].groupid + myName) || [];
-			let curChatMsgs = historyChatMsgs.concat(newChatMsgs);
-			if(curChatMsgs.length){
-				let lastChatMsg = curChatMsgs[curChatMsgs.length - 1];
-				lastChatMsg.unReadCount = newChatMsgs.length;
-				if(lastChatMsg.unReadCount > 99) {
-					lastChatMsg.unReadCount = "99+";
-				}
-				let dateArr = lastChatMsg.time.split(' ')[0].split('-')
-				let timeArr = lastChatMsg.time.split(' ')[1].split(':')
-				let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
-				lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
-				lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
-				lastChatMsg.groupName = listGroups[i].groupname
-				array.push(lastChatMsg);
-			}
-		}
-		//	测试列表
-
-		// for (let i = 0; i < 12; i++) {
-		// 	let newSESSION = {
-		// 		info: {from: "zdtest", to: "zdtest2"},
-		// 		mid: "txtWEBIM_427ab8b10c",
-		// 		msg: {type: "txt", data: [{data: "丢晚高峰阿精高峰阿精神焕高峰阿精神焕高峰阿精神焕神焕发丢完", type: "txt"}]},
-		// 		style: "self",
-		// 		time: "2019-2-18 16:59:25",
-		// 		username: "zdtest" + i,
-		// 		yourname: "zdtest"
-		// 	}
-		// 	let dateArr = newSESSION.time.split(' ')[0].split('-')
-		// 	let timeArr = newSESSION.time.split(' ')[1].split(':')
-		// 	newSESSION.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
-		// 	array.push(newSESSION)
-		// }
-		
-		array.sort((a, b) => {
-			return b.dateTimeNum - a.dateTimeNum
 		})
-		return array;
+
+		function cul(newChatMsgKeys, historyChatMsgKeys){
+			let array = []
+			let lastChatMsg;
+			for(let i = 0; i < historyChatMsgKeys.length; i++){
+				let index = newChatMsgKeys.indexOf(historyChatMsgKeys[i].slice(9))
+				if ( index > -1 ) {
+					let newChatMsgs = wx.getStorageSync(newChatMsgKeys[index]) || [];
+					if(newChatMsgs.length){
+						lastChatMsg = newChatMsgs[newChatMsgs.length - 1];
+						lastChatMsg.unReadCount = newChatMsgs.length;
+						if(lastChatMsg.unReadCount > 99) {
+							lastChatMsg.unReadCount = "99+";
+						}
+						let dateArr = lastChatMsg.time.split(' ')[0].split('-')
+						let timeArr = lastChatMsg.time.split(' ')[1].split(':')
+						let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
+						lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+						lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+						newChatMsgKeys.splice(index, 1)
+					}else{
+						let historyChatMsgs = wx.getStorageSync(historyChatMsgKeys[i]);
+						if (historyChatMsgs.length) {
+							lastChatMsg = historyChatMsgs[historyChatMsgs.length - 1];
+							let dateArr = lastChatMsg.time.split(' ')[0].split('-')
+							let timeArr = lastChatMsg.time.split(' ')[1].split(':')
+							let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
+							lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+							lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+						}
+					}
+				}else{
+					let historyChatMsgs = wx.getStorageSync(historyChatMsgKeys[i]);
+					if (historyChatMsgs.length) {
+						lastChatMsg = historyChatMsgs[historyChatMsgs.length - 1];
+						let dateArr = lastChatMsg.time.split(' ')[0].split('-')
+						let timeArr = lastChatMsg.time.split(' ')[1].split(':')
+						let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
+						lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+						lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+					}
+					
+				}
+				lastChatMsg && array.push(lastChatMsg)
+			}
+
+			for(let i = 0; i < newChatMsgKeys.length; i++){
+				let newChatMsgs = wx.getStorageSync(newChatMsgKeys[i]) || [];
+				if(newChatMsgs.length){
+					lastChatMsg = newChatMsgs[newChatMsgs.length - 1];
+					lastChatMsg.unReadCount = newChatMsgs.length;
+					if(lastChatMsg.unReadCount > 99) {
+						lastChatMsg.unReadCount = "99+";
+					}
+					let dateArr = lastChatMsg.time.split(' ')[0].split('-')
+					let timeArr = lastChatMsg.time.split(' ')[1].split(':')
+					let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
+					lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+					lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+					array.push(lastChatMsg)
+				}
+			}
+
+			array.sort((a, b) => {
+				return b.dateTimeNum - a.dateTimeNum
+			})
+			this.setData({
+				arr: array
+			})
+		}
 	},
+	// 	不包含陌生人版本
+	// getChatList(){
+	// 	var array = [];
+	// 	var member = wx.getStorageSync("member");
+	// 	var myName = wx.getStorageSync("myUsername");
+	// 	var listGroups = wx.getStorageSync('listGroup')|| [];
+	// 	for(let i = 0; i < member.length; i++){
+	// 		let newChatMsgs = wx.getStorageSync(member[i].name + myName) || [];
+	// 		let historyChatMsgs = wx.getStorageSync("rendered_" + member[i].name + myName) || [];
+	// 		let curChatMsgs = historyChatMsgs.concat(newChatMsgs);
+
+	// 		if(curChatMsgs.length){
+	// 			console.log('newChatMsgs', newChatMsgs)
+	// 			console.log('historyChatMsgs', historyChatMsgs)
+	// 			let lastChatMsg = curChatMsgs[curChatMsgs.length - 1];
+	// 			lastChatMsg.unReadCount = newChatMsgs.length;
+	// 			if(lastChatMsg.unReadCount > 99) {
+	// 				lastChatMsg.unReadCount = "99+";
+	// 			}
+	// 			let dateArr = lastChatMsg.time.split(' ')[0].split('-')
+	// 			let timeArr = lastChatMsg.time.split(' ')[1].split(':')
+	// 			let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
+	// 			lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+	// 			lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+	// 			array.push(lastChatMsg);
+	// 		}
+	// 	}
+	// 	for(let i = 0; i < listGroups.length; i++){
+	// 		let newChatMsgs = wx.getStorageSync(listGroups[i].groupid + myName) || [];
+	// 		let historyChatMsgs = wx.getStorageSync("rendered_" + listGroups[i].groupid + myName) || [];
+	// 		let curChatMsgs = historyChatMsgs.concat(newChatMsgs);
+	// 		if(curChatMsgs.length){
+	// 			let lastChatMsg = curChatMsgs[curChatMsgs.length - 1];
+	// 			lastChatMsg.unReadCount = newChatMsgs.length;
+	// 			if(lastChatMsg.unReadCount > 99) {
+	// 				lastChatMsg.unReadCount = "99+";
+	// 			}
+	// 			let dateArr = lastChatMsg.time.split(' ')[0].split('-')
+	// 			let timeArr = lastChatMsg.time.split(' ')[1].split(':')
+	// 			let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
+	// 			lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+	// 			lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+	// 			lastChatMsg.groupName = listGroups[i].groupname
+	// 			array.push(lastChatMsg);
+	// 		}
+	// 	}
+	// 	//	测试列表
+
+	// 	// for (let i = 0; i < 12; i++) {
+	// 	// 	let newSESSION = {
+	// 	// 		info: {from: "zdtest", to: "zdtest2"},
+	// 	// 		mid: "txtWEBIM_427ab8b10c",
+	// 	// 		msg: {type: "txt", data: [{data: "丢晚高峰阿精高峰阿精神焕高峰阿精神焕高峰阿精神焕神焕发丢完", type: "txt"}]},
+	// 	// 		style: "self",
+	// 	// 		time: "2019-2-18 16:59:25",
+	// 	// 		username: "zdtest" + i,
+	// 	// 		yourname: "zdtest"
+	// 	// 	}
+	// 	// 	let dateArr = newSESSION.time.split(' ')[0].split('-')
+	// 	// 	let timeArr = newSESSION.time.split(' ')[1].split(':')
+	// 	// 	newSESSION.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+	// 	// 	array.push(newSESSION)
+	// 	// }
+		
+	// 	array.sort((a, b) => {
+	// 		return b.dateTimeNum - a.dateTimeNum
+	// 	})
+	// 	return array;
+	// },
 
 	onShow: function(){
 		this.setData({

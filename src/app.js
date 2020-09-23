@@ -43,22 +43,47 @@ function getCurrentRoute(){
 	return '/'
 }
 
+// 不包含陌生人版本
+// function calcUnReadSpot(message){
+// 	let myName = wx.getStorageSync("myUsername");
+// 	let members = wx.getStorageSync("member") || []; //好友
+// 	var listGroups = wx.getStorageSync('listGroup')|| []; //群组
+// 	let allMembers = members.concat(listGroups)
+// 	let count = allMembers.reduce(function(result, curMember, idx){
+// 		let chatMsgs;
+// 		if (curMember.groupid) {
+// 			chatMsgs = wx.getStorageSync(curMember.groupid + myName.toLowerCase()) || [];
+// 		}else{
+// 			chatMsgs = wx.getStorageSync(curMember.name.toLowerCase() + myName.toLowerCase()) || [];
+// 		}
+// 		return result + chatMsgs.length;
+// 	}, 0);
+// 	getApp().globalData.unReadMessageNum = count;
+// 	disp.fire("em.xmpp.unreadspot", message);
+// }
+// 包含陌生人版本
 function calcUnReadSpot(message){
 	let myName = wx.getStorageSync("myUsername");
-	let members = wx.getStorageSync("member") || []; //好友
-	var listGroups = wx.getStorageSync('listGroup')|| []; //群组
-	let allMembers = members.concat(listGroups)
-	let count = allMembers.reduce(function(result, curMember, idx){
-		let chatMsgs;
-		if (curMember.groupid) {
-			chatMsgs = wx.getStorageSync(curMember.groupid + myName.toLowerCase()) || [];
-		}else{
-			chatMsgs = wx.getStorageSync(curMember.name.toLowerCase() + myName.toLowerCase()) || [];
+	wx.getStorageInfo({
+		success: function(res){
+			let storageKeys = res.keys
+			let newChatMsgKeys = [];
+			let historyChatMsgKeys = [];
+			storageKeys.forEach((item) => {
+				if (item.indexOf(myName) > -1 && item.indexOf('rendered_') == -1) {
+					newChatMsgKeys.push(item)
+				}
+			})
+			let count = newChatMsgKeys.reduce(function(result, curMember, idx){
+				let chatMsgs;
+				chatMsgs = wx.getStorageSync(curMember) || [];
+				return result + chatMsgs.length;
+			}, 0)
+
+			getApp().globalData.unReadMessageNum = count;
+			disp.fire("em.xmpp.unreadspot", message);
 		}
-		return result + chatMsgs.length;
-	}, 0);
-	getApp().globalData.unReadMessageNum = count;
-	disp.fire("em.xmpp.unreadspot", message);
+	})
 }
 
 function saveGroups(){
