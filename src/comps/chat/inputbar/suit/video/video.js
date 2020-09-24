@@ -30,7 +30,7 @@ Component({
 			var token = WebIM.conn.context.accessToken
 			wx.chooseVideo({
 				sourceType: ["album", "camera"],
-				maxDuration: 60,
+				maxDuration: 30,
 				camera: "back",
 				success(res){
 					var tempFilePaths = res.tempFilePath;

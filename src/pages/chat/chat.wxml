@@ -45,6 +45,7 @@
 						<text class="list_word" wx:if="{{ item.msg.data[0].data }}">{{item.msg.data[0].data}}</text>
 						<text class="list_word" wx:if="{{ item.msg.type == 'img' }}">[图片]</text>
 						<text class="list_word" wx:if="{{ item.msg.type == 'audio' }}">[语音]</text>
+						<text class="list_word" wx:if="{{ item.msg.type == 'video' }}">[视频]</text>
 					</view>
 				</view>
 				<view class="list_right">

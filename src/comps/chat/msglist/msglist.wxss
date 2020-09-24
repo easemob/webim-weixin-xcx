@@ -107,7 +107,9 @@
 	font-size: 32rpx;
 	margin: 0;
 }
-
+.msg .msg-video {
+	width: 300rpx;
+}
 /*.msg:before {
 	content: " ";
 	position: absolute;
