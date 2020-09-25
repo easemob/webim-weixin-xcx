@@ -54,6 +54,7 @@ Page({
 		});
 
 		disp.on("em.xmpp.contacts.remove", function(){
+			me.getChatList()
 			me.getRoster();
 			// me.setData({
 			// 	arr: me.getChatList(),
@@ -126,8 +127,9 @@ Page({
 				let storageKeys = res.keys
 				let newChatMsgKeys = [];
 				let historyChatMsgKeys = [];
+				let len = myName.length
 				storageKeys.forEach((item) => {
-					if (item.indexOf(myName) > -1 && item.indexOf('rendered_') == -1) {
+					if (item.slice(-len) == myName && item.indexOf('rendered_') == -1) {
 						newChatMsgKeys.push(item)
 					}else if(item.indexOf(myName) > -1 && item.indexOf('rendered_') > -1){
 						historyChatMsgKeys.push(item)
@@ -141,6 +143,7 @@ Page({
 		function cul(newChatMsgKeys, historyChatMsgKeys){
 			let array = []
 			let lastChatMsg;
+			console.log('getChatList', historyChatMsgKeys, newChatMsgKeys)
 			for(let i = 0; i < historyChatMsgKeys.length; i++){
 				let index = newChatMsgKeys.indexOf(historyChatMsgKeys[i].slice(9))
 				if ( index > -1 ) {
@@ -180,7 +183,7 @@ Page({
 					}
 					
 				}
-				lastChatMsg && array.push(lastChatMsg)
+				lastChatMsg && lastChatMsg.username != myName && array.push(lastChatMsg)
 			}
 
 			for(let i = 0; i < newChatMsgKeys.length; i++){
@@ -196,7 +199,7 @@ Page({
 					let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
 					lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
 					lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
-					array.push(lastChatMsg)
+					lastChatMsg.username != myName && array.push(lastChatMsg)
 				}
 			}
 
@@ -279,8 +282,9 @@ Page({
 	// },
 
 	onShow: function(){
+		this.getChatList()
 		this.setData({
-			arr: this.getChatList(),
+			//arr: this.getChatList(),
 			unReadSpotNum: getApp().globalData.unReadMessageNum > 99 ? '99+' : getApp().globalData.unReadMessageNum,
 			messageNum: getApp().globalData.saveFriendList.length,
 			unReadNoticeNum: getApp().globalData.saveGroupInvitedList.length,
@@ -317,10 +321,11 @@ Page({
 	},
 
 	cancel: function(){
+		this.getChatList()
 		this.setData({
 			search_btn: true,
 			search_chats: false,
-			arr: this.getChatList(),
+			//arr: this.getChatList(),
 			unReadSpotNum: getApp().globalData.unReadMessageNum > 99 ? '99+' : getApp().globalData.unReadMessageNum,
 			gotop: false
 		});
@@ -411,6 +416,7 @@ Page({
 	del_chat: function(event){
 		let detail = event.currentTarget.dataset.item;
 		let nameList;
+		let me = this;
 		if (detail.chatType == 'groupchat' || detail.chatType == 'chatRoom') {
 			nameList = {
 				your: detail.info.to
@@ -434,6 +440,7 @@ Page({
 					if(currentPage[0]){
 						currentPage[0].onShow();
 					}
+					me.getChatList()
 					disp.fire("em.chat.session.remove");
 				}
 			},
