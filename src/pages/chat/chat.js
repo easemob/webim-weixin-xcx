@@ -143,7 +143,6 @@ Page({
 		function cul(newChatMsgKeys, historyChatMsgKeys){
 			let array = []
 			let lastChatMsg;
-			console.log('getChatList', historyChatMsgKeys, newChatMsgKeys)
 			for(let i = 0; i < historyChatMsgKeys.length; i++){
 				let index = newChatMsgKeys.indexOf(historyChatMsgKeys[i].slice(9))
 				if ( index > -1 ) {
@@ -309,16 +308,54 @@ Page({
 
 	onSearch: function(val){
 		let searchValue = val.detail.value
-		let chartList = this.getChatList();
+		var myName = wx.getStorageSync("myUsername");
+		const me = this
 		let serchList = [];
-		chartList.forEach((item, index)=>{
-			if(String(item.username).indexOf(searchValue) != -1){
-				serchList.push(item)
+		let arr = []
+		wx.getStorageInfo({
+			success: function(res){
+				let storageKeys = res.keys
+				let chatKeys = []
+				let len = myName.length
+				storageKeys.forEach((item) => {
+					if (item.slice(-len) == myName) {
+						chatKeys.push(item)
+					}
+				})
+				chatKeys.forEach((item, index)=>{
+					if(item.indexOf(searchValue) != -1){
+						serchList.push(item)
+					}
+				})
+				let lastChatMsg = ''
+				serchList.forEach((item, index) => {
+					let chatMsgs = wx.getStorageSync(item) || [];
+					if(chatMsgs.length){
+						lastChatMsg = chatMsgs[chatMsgs.length - 1];
+						
+						let dateArr = lastChatMsg.time.split(' ')[0].split('-')
+						let timeArr = lastChatMsg.time.split(' ')[1].split(':')
+						let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
+						lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
+						lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+						arr.push(lastChatMsg)
+					}
+				})
+				me.setData({arr})
 			}
 		})
-		this.setData({
-			arr: serchList,
-		})
+
+		// let searchValue = val.detail.value
+		// let chartList = this.getChatList();
+		// let serchList = [];
+		// chartList.forEach((item, index)=>{
+		// 	if(String(item.username).indexOf(searchValue) != -1){
+		// 		serchList.push(item)
+		// 	}
+		// })
+		// this.setData({
+		// 	arr: serchList,
+		// })
 	},
 
 	cancel: function(){
