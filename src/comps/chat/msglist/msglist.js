@@ -159,6 +159,10 @@ Component({
 			}
 			wx.setStorageSync("rendered_" + sessionKey, msgList);
 			isFail = false
+		},
+
+		onFullscreenchange(e){
+			disp.fire('em.message.fullscreenchange', e.detail)
 		}
 	},
 

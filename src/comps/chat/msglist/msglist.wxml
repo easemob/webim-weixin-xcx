@@ -17,7 +17,7 @@
 		data-url="{{ item.msg.data }}" />
 </template>
 <template name="video">
-	<video class="msg-video" src="{{ item.msg.data }}" controls autoplay />
+	<video class="msg-video" bindfullscreenchange="onFullscreenchange" src="{{ item.msg.data }}" controls autoplay />
 </template>
 <template name="audio">
 	<audio src="{{ item.msg.url }}" controls autoplay />

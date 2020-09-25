@@ -1,6 +1,7 @@
 let msgStorage = require("msgstorage");
 let msgType = require("msgtype");
 let WebIM = require("../../utils/WebIM")["default"];
+let disp = require("../../utils/broadcast");
 Component({
 	properties: {
 		username: {
@@ -41,6 +42,9 @@ Component({
 		},
 
 		shortScroll(){
+			// this.setData({
+			// 	height: 50%
+			// })
 			this.data.__comps__.msglist.shortScroll();
 		},
 
@@ -209,6 +213,18 @@ Component({
 		this.data.__comps__.inputbar = this.selectComponent("#chat-inputbar");
 		this.data.__comps__.msglist = this.selectComponent("#chat-msglist");
 		this.data.__comps__.audio = this.selectComponent("#chat-suit-audio");
+
+		disp.on('em.message.fullscreenchange', (detail) => {
+			if (detail.fullscreen) {
+				this.setData({
+					inputbarVisible: 'none'
+				})
+			}else{
+				this.setData({
+					inputbarVisible: 'block'
+				})
+			}
+		})
 	},
 	moved(){},
 	detached(){
