@@ -4,7 +4,8 @@
 		"chat-suit-emoji": "suit/emoji/emoji",
 		"chat-suit-image": "suit/image/image",
 		"chat-suit-location": "suit/location/location",
+		"chat-suit-video": "suit/video/video",
 		"chat-suit-main": "suit/main/main",
-		"chat-suit-video": "suit/video/video"
+		"chat-suit-ptopcall": "suit/ptopcall/ptopcall"
 	}
 }

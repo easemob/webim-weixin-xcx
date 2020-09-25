@@ -1,5 +1,5 @@
 var WebIM = require("../../utils/WebIM")["default"];
-
+let disp = require("../../utils/broadcast");
 Page({
 	data: {
 		roomId: "",			// 群id
@@ -13,10 +13,20 @@ Page({
 	},
 
 	onLoad: function(options){
+		let me = this;
 		this.setData({
 			roomId: JSON.parse(options.groupInfo).roomId,
 			groupName: JSON.parse(options.groupInfo).groupName,
 			currentName: JSON.parse(options.groupInfo).myName
+		});
+
+		disp.on("em.xmpp.group.leaveGroup", function(){
+			var pageStack = getCurrentPages();
+			// 判断是否当前路由是本页
+			if(pageStack[pageStack.length - 1].route === me.route){
+				me.getGroupMember();
+				this.getGroupInfo();
+			}
 		});
 		// console.log(this.data.roomId, this.data.groupName, this.data.currentName);
 		// 获取群成员
@@ -35,9 +45,9 @@ Page({
 			pageSize: pageSize,
 			groupId: this.data.roomId,
 			success: function(resp){
-				if(resp && resp.data && resp.data.data){
+				if(resp && resp.data){
 					me.setData({
-						groupMember: resp.data.data
+						groupMember: resp.data
 					});
 				}
 				// console.log(me.data.groupMember);
@@ -55,13 +65,13 @@ Page({
 		var options = {
 			groupId: this.data.roomId,
 			success: function(resp){
-				if(resp && resp.data && resp.data.data){
+				if(resp && resp.data){
 					me.setData({
-						curOwner: resp.data.data[0].owner,
-						groupDec: resp.data.data[0].description
+						curOwner: resp.data[0].owner,
+						groupDec: resp.data[0].description
 					});
 
-					if(me.data.currentName == resp.data.data[0].owner){
+					if(me.data.currentName == resp.data[0].owner){
 						me.setData({
 							isOwner: true
 						});
@@ -87,8 +97,8 @@ Page({
 	addGroupMembers: function(){
 		var me = this;
 		var option = {
-			list: this.data.addFriendName,
-			roomId: this.data.roomId,
+			users: this.data.addFriendName,
+			groupId: this.data.roomId,
 			success: function(){
 				if(me.isExistGroup(me.data.addFriendName, me.data.groupMember)){
 					wx.showToast({
@@ -111,7 +121,7 @@ Page({
 				});
 			}
 		};
-		WebIM.conn.addGroupMembers(option);
+		WebIM.conn.inviteToGroup(option);
 	},
 
 	isExistGroup:function(name, list){
@@ -125,9 +135,9 @@ Page({
 
 	leaveGroup: function(){
 		var me = this;
-		WebIM.conn.leaveGroupBySelf({
-			to: this.data.currentName,
-			roomId: this.data.roomId,
+		WebIM.conn.quitGroup({
+			//to: this.data.currentName,
+			groupId: this.data.roomId,
 			success: function(){
 				wx.showToast({
 					title: "已退",
@@ -139,6 +149,7 @@ Page({
 						}), 2000);
 					},
 				});
+				disp.fire("em.xmpp.invite.deleteGroup");//退群
 			},
 			error: function(err){
 				wx.showToast({

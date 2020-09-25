@@ -1,15 +1,15 @@
-<view class="audio-player">
+<view class="audio-player" bind:tap="audioPlay" style="opacity: {{opcity}}">
+	<text class="time">语音消息 {{ time }}</text>
 	<view
 		class="controls play-btn"
-		wx:if="{{ curStatus == playStatus.PAUSE || curStatus == playStatus.STOP }}"
+	
 		bind:tap="audioPlay">
-		<image src="../../../../../images/audioPlay.png"></image>
+		<image src="{{style == 'self'? '../../../../../images/voicemsgmy.png' : '../../../../../images/voicemsg.png'}}"></image>
 	</view>
-	<view
+	<!-- <view
 		class="controls pause-btn"
 		wx:if="{{ curStatus == playStatus.PLAYING }}"
 		bind:tap="audioPause">
-		<image src="../../../../../images/audioPause.png"></image>
-	</view>
-	<text class="time">{{ time }}</text>
+		<image bind:tap="audioPause" src="../../../../../images/audioPause.png"></image>
+	</view> -->
 </view>

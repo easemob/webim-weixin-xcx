@@ -1,6 +1,6 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
 let msgType = require("../../../msgtype");
-
+let disp = require("../../../../../utils/broadcast");
 Component({
 	properties: {
 		username: {
@@ -16,6 +16,7 @@ Component({
 		inputMessage: "",		// render input 的值
 		userMessage: "",		// input 的实时值
 	},
+
 	methods: {
 		focus(){
 			this.triggerEvent("inputFocused", null, { bubbles: true });
@@ -64,6 +65,12 @@ Component({
 		},
 
 		sendMessage(){
+			let me = this;
+
+			String.prototype.trim=function()
+			{
+			     return this.replace(/(^\s*)|(\s*$)/g, '');
+			}
 			if(!this.data.userMessage.trim()){
 				return;
 			}
@@ -76,12 +83,17 @@ Component({
 				roomType: false,
 				chatType: this.data.chatType,
 				success(id, serverMsgId){
-
+					//console.log('成功了')
+					disp.fire('em.chat.sendSuccess', id, me.data.userMessage);
+				},
+				fail(id, serverMsgId){
+					console.log('失败了')
 				}
 			});
 			if(this.data.chatType == msgType.chatType.CHAT_ROOM){
 				msg.setGroup("groupchat");
 			}
+			console.log('发送消息', msg)
 			WebIM.conn.send(msg.body);
 			this.triggerEvent(
 				"newTextMsg",

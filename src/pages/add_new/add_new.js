@@ -1,34 +1,60 @@
-var WebIM = require("../../utils/WebIM")["default"];
+let WebIM = require("../../utils/WebIM")["default"];
 
 Page({
 	data: {
-		friend_name: ""
+		friend_name: "",
+		search_btn: true,
+		search_chats: false
 	},
 
-	bindFriendName: function(e){
+	onLoad: function(){
+		let app = getApp();
+		new app.ToastPannel.ToastPannel();
+	},
+
+	openSearch: function(){
 		this.setData({
-			friend_name: e.detail.value
+			search_btn: false,
+			search_chats: true,
 		});
 	},
 
-	onShow: function(){
-		// console.log(getCurrentPages())
+	onInput: function(e){
+		let inputValue = e.detail.value
+		if (inputValue) {
+			this.setData({
+				show_clear: true,
+				friend_name: inputValue,
+				isdisable: false
+			})
+		} else {
+			this.setData({
+				show_clear: false
+			})
+		}
 	},
 
-	sendMsg: function(){
-		wx.showToast({
-			title: "消息发送成功！",
-			duration: 1500
+	clearInput: function(){
+		this.setData({
+			input_code: '',
+			show_clear: false
+		})
+	},
+
+	cancel: function(){
+		this.setData({
+			search_btn: true,
+			search_chats: false,
+			show_clear: false
 		});
 	},
 
 	add_friend: function(){
 		let me = this;
-		if(me.data.friend_name == ""){
-			wx.showToast({
-				title: "好友添加失败！",
-				duration: 1500
-			});
+		let myName = wx.getStorageSync("myUsername");
+		console.log(me.data.friend_name)
+		if(me.data.friend_name == "" || me.data.friend_name.toLowerCase() == myName.toLowerCase()){
+			me.toastFilled('添加失败')
 			return;
 		}
 		WebIM.conn.subscribe({
@@ -38,6 +64,7 @@ Page({
 		// 判断当前是否存在该好友
 		let rosters = {
 			success: function(roster){
+				console.log('success')
 				var member = [];
 				for(let i = 0; i < roster.length; i++){
 					if(roster[i].subscription == "both"){
@@ -45,22 +72,18 @@ Page({
 					}
 				}
 				if(me.isExistFriend(me.data.friend_name, member)){
-					wx.showToast({
-						title: "已经是你的好友",
-						duration: 1500
-					});
+					me.toastFilled('已经是你的好友')
 				}
 				else{
-					wx.showToast({
-						title: "消息发送成功！",
-						duration: 1500
-					});
+					me.toastSuccess('已经发出好友申请')
 				}
+				me.setData({isdisable: true})
 				// console.log(member)
 			}
 		};
 		WebIM.conn.getRoster(rosters);
 	},
+
 	isExistFriend: function(name, list){
 		for(let index = 0; index < list.length; index++){
 			if(name == list[index].name){

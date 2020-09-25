@@ -1,0 +1,29 @@
+
+.swipedelete-wrapper {
+  transition: all .4s ease;
+  position: relative;
+}
+.swipedelete-btn {
+/*  position:absolute;
+  top:0;
+  right:-180rpx;
+  text-align:center;
+  background: #f00;
+  color:#fff;
+  width:160rpx;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;*/
+  position:absolute;
+	right: -160rpx; 
+	top:0;
+	background-color:#D0021B;
+	width:160rpx;
+	height:100%;
+	text-align:center;
+	color: #fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}

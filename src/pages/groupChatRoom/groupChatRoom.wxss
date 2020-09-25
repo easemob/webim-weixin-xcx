@@ -1,1 +1,3 @@
-/* pages/groupChatRoom/groupChatRoom.wxss */
+page{
+	background-color: #FAFAFA;
+}

@@ -4,7 +4,7 @@
 // 主要是同步跨 ctx 的操作，保证只有一个 ctx 播放
 let allCtx = {};
 let inUseCtx = null;
-
+let allComm = {}
 function proxier(ctx){
 	let __play__ = ctx.play;
 	let __pause__ = ctx.pause;
@@ -35,5 +35,16 @@ module.exports = {
 			proxier(returnCtx);
 		}
 		return returnCtx;
+	},
+	getAllCtx(){
+		wx.setStorageSync("allCtx", JSON.stringify(Object.keys(allCtx)));
+		return allCtx
+	},
+	getCommponet(mid,comm){
+		let curComm = allComm[mid]
+		if (!curComm) {
+			allComm[mid] = comm
+		}
+		return allComm
 	}
 };

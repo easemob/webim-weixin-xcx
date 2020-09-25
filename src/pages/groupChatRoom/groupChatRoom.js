@@ -1,3 +1,4 @@
+let disp = require("../../utils/broadcast");
 Page({
 	data: {
 		username: {
@@ -13,4 +14,16 @@ Page({
 			title: username.your
 		});
 	},
+
+	onUnload(){
+		disp.fire("em.chatroom.leave");
+	},
+
+	onPullDownRefresh: function () {
+	  	wx.showNavigationBarLoading();
+	    this.selectComponent('#groupchat').getMore()
+	    // 停止下拉动作
+	    wx.hideNavigationBarLoading();
+	    wx.stopPullDownRefresh();
+  	},
 });

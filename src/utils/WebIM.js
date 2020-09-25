@@ -1,7 +1,8 @@
-import Strophe from "../sdk/libs/strophe";
-import xmldom from "../sdk/libs/xmldom/dom-parser";
-import websdk from "../sdk/connection";
-import config from "WebIMConfig";
+// import Strophe from "../sdk/libs/strophe";
+//import xmldom from "../sdk/libs/xmldom/dom-parser";
+// import websdk from "../sdk2/src/wxEntry";
+import websdk from "../sdk/wxsdk3.3.0";
+import config from "./WebIMConfig";
 
 console.group = console.group || {};
 console.groupEnd = console.groupEnd || {};
@@ -9,33 +10,41 @@ console.groupEnd = console.groupEnd || {};
 var window = {};
 let WebIM = window.WebIM = websdk;
 window.WebIM.config = config;
-var DOMParser = window.DOMParser = xmldom.DOMParser;
-let document = window.document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", "text/xml");
+//var DOMParser = window.DOMParser = xmldom.DOMParser;
+//let document = window.document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", "text/xml");
 
-if(WebIM.config.isDebug){
+WebIM.isDebug = function(option){
+	if (option) {
+		WebIM.config.isDebug = option.isDebug
+		openDebug(WebIM.config.isDebug)
+	} 
 
-	function ts(){
-		var d = new Date();
-		var Hours = d.getHours(); // 获取当前小时数(0-23)
-		var Minutes = d.getMinutes(); // 获取当前分钟数(0-59)
-		var Seconds = d.getSeconds(); // 获取当前秒数(0-59)
-		return (Hours < 10 ? "0" + Hours : Hours) + ":" + (Minutes < 10 ? "0" + Minutes : Minutes) + ":" + (Seconds < 10 ? "0" + Seconds : Seconds) + " ";
+	function openDebug(value){
+		function ts(){
+			var d = new Date();
+			var Hours = d.getHours(); // 获取当前小时数(0-23)
+			var Minutes = d.getMinutes(); // 获取当前分钟数(0-59)
+			var Seconds = d.getSeconds(); // 获取当前秒数(0-59)
+			return (Hours < 10 ? "0" + Hours : Hours) + ":" + (Minutes < 10 ? "0" + Minutes : Minutes) + ":" + (Seconds < 10 ? "0" + Seconds : Seconds) + " ";
+		}
+
+
+		// if (value) {
+		// 	Strophe.Strophe.Connection.prototype.rawOutput = function(data){
+		// 		try{
+		// 			console.group("%csend # " + ts(), "color: blue; font-size: large");
+		// 			console.log("%c" + data, "color: blue");
+		// 			console.groupEnd();
+		// 		}
+		// 		catch(e){
+		// 			console.log(e);
+		// 		}
+		// 	};
+		// }else{
+		// 	Strophe.Strophe.Connection.prototype.rawOutput = function(){};
+		// }
+		
 	}
-
-	Strophe.Strophe.log = function(level, msg){
-		// console.log(ts(), level, msg);
-	};
-
-	Strophe.Strophe.Connection.prototype.rawOutput = function(data){
-		try{
-			console.group("%csend # " + ts(), "color: blue; font-size: large");
-			console.log("%c" + data, "color: blue");
-			console.groupEnd();
-		}
-		catch(e){
-			console.log(e);
-		}
-	};
 }
 
 /**
@@ -96,9 +105,7 @@ WebIM.parseEmoji = function(msg){
 			objList.push(obj);
 		}
 	}
-	console.log(objList);
 	return objList;
-
 };
 
 WebIM.time = function(){
@@ -210,16 +217,17 @@ WebIM.EmojiObj = {
 // wx.connectSocket({url: WebIM.config.xmppURL, method: "GET"})
 
 WebIM.conn = new WebIM.connection({
+	appKey: WebIM.config.appkey,
 	isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
 	https: typeof WebIM.config.https === "boolean" ? WebIM.config.https : location.protocol === "https:",
-	url: WebIM.config.xmppURL,
+	url: WebIM.config.socketServer,
 	apiUrl: WebIM.config.apiURL,
 	isAutoLogin: false,
-	heartBeatWait: WebIM.config.heartBeatWait,
+	heartBeatWait: 30000, //WebIM.config.heartBeatWait,
 	autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
-	autoReconnectInterval: WebIM.config.autoReconnectInterval
+	autoReconnectInterval: WebIM.config.autoReconnectInterval,
+	isDebug: WebIM.config.isDebug
 });
-
 
 // async response
 // WebIM.conn.listen({

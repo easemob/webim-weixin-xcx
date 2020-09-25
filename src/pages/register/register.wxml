@@ -1,18 +1,19 @@
+<import src="../../comps/toast/toast.wxml"/>
 <view class="register">
-	<view class="register_img">
-		<image src="../../images/logo.png"></image>
+	<view class="register_title">
+		<text>注册</text>
 	</view>
-	<view class="register_user">
-		<input type="text" placeholder="Easemob ID" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername"/>
+	<view class="register_user {{nameFocus}}">
+		<input type="text" placeholder="用户ID（字母或数字)" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername" bindfocus="onFocusName" bindblur="onBlurName"/>
 	</view>
-	<view class="register_pwd">
-		<input type="text" password placeholder="Password" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword"/>
+	<view class="register_pwd {{psdFocus}}">
+		<input type="text" password placeholder="用户密码" hover-class="input-hover" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword" bindfocus="onFocusPsd" bindblur="onBlurPsd"/>
 	</view>
-	<view class="register_text">
-		<view>
-			<text>已有账号?</text>
-			<navigator url="../login/login" open-type="redirect" hover-class="navigator-hover">登 录</navigator>
-		</view>
+	<view class="register_btn">
+		<button hover-class="btn_hover" bindtap="register">注册</button>
 	</view>
-	<button  class="register_btn" hover-class="btn_hover" bindtap="register">注 册</button>
+	<view class="register_back">
+		<navigator url="../login/login" open-type="redirect" hover-class="navigator-hover">返回登录</navigator>
+	</view>
+	<template is="toast" data="{{ ..._toast_ }}"></template>
 </view>

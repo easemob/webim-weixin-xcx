@@ -1,0 +1,50 @@
+<view class="wraper">
+	<!-- <web-view src="http://whiteboards.easemob.com/"/> -->
+	<scroll-view
+		style="height:860rpx"
+		scroll-y = "true"
+	>
+		<view class="infoConnecting">
+			推流地址
+		</view>
+		<view>
+			<input value="{{url}}" class="urlInput" type="text" placeholder="推流地址" bindinput="bindUsername"/>
+		</view>
+		<live-pusher 
+			url="{{pubUrl}}" 
+			mode="RTC" 
+			aspect="9:16"
+			max-bitrate="{{300}}"
+			enable-camera="{{enableCamera}}"
+			muted="{{muted}}"
+			background-mute="{{true}}"
+			orientation="vertical"
+		>
+		</live-pusher>
+
+	</scroll-view>
+
+
+	<view class="controlContent">
+		<view class="emediaContrContent">
+
+			<view class="controlItem" bindtap="toggleMuted" style="color: {{micphoneColor}}">
+				<image
+					class="icon-record"
+					src='../../images/{{micphoneIcon}}@2x.png' style="width:22px; height: 24px"/>
+				麦克风</view>
+			<view class="controlItem" bindtap="togglePlay" style="color: {{videoColor}}">
+				<image
+					class="icon-record"
+					src='../../images/{{videoIcon}}@2x.png' style="width:22px; height: 24px"/>
+				视频</view>
+
+		</view>
+
+		<view class="hangup">
+			<button type="primary" bindtap="start">开始</button>
+			<button type="warn" bindtap="stop">结束</button>
+		</view>
+	</view>
+
+</view>

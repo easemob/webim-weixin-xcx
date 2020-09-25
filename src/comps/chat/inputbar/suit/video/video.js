@@ -27,29 +27,32 @@ Component({
 		// 未启用
 		sendVideo(){
 			var me = this;
+			var token = WebIM.conn.context.accessToken
 			wx.chooseVideo({
 				sourceType: ["album", "camera"],
-				maxDuration: 60,
+				maxDuration: 30,
 				camera: "back",
 				success(res){
 					var tempFilePaths = res.tempFilePath;
 					var str = WebIM.config.appkey.split("#");
+					var domain = wx.WebIM.conn.apiUrl + '/'
 					wx.uploadFile({
-						url: "https://a1.easemob.com/" + str[0] + "/" + str[1] + "/chatfiles",
+						url: domain + str[0] + "/" + str[1] + "/chatfiles",
 						filePath: tempFilePaths,
 						name: "file",
 						header: {
-							"Content-Type": "multipart/form-data"
+							"Content-Type": "multipart/form-data",
+							Authorization: "Bearer " + token
 						},
 						success(res){
 							var data = res.data;
 							var dataObj = JSON.parse(data);
 							var id = WebIM.conn.getUniqueId();		// 生成本地消息id
-							var msg = new WebIM.message("img", id);
+							var msg = new WebIM.message("video", id);
 							msg.set({
 								apiUrl: WebIM.config.apiURL,
 								body: {
-									type: "img",
+									type: "video",
 									url: dataObj.uri + "/" + dataObj.entities[0].uuid,
 									filetype: "mp4",
 									filename: tempFilePaths

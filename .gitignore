@@ -1,4 +1,9 @@
 .idea/*
 .DS_Store
-.gitignore.swp
-/node_modules
+.swp
+node_modules/
+build/
+.cache/
+emedia_for_wx/
+src/miniprogram_npm/*
+

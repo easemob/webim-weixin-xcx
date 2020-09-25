@@ -19,30 +19,42 @@ Page({
 				me.listGroups();
 			}
 		});
+
+		disp.on("em.xmpp.invite.deleteGroup", function(){
+			var pageStack = getCurrentPages();
+			// 判断是否当前路由是本页
+			if(pageStack[pageStack.length - 1].route === me.route){
+				me.listGroups();
+			}
+		});
+		
 		this.setData({
 			myName: option.myName
 		});
 	},
 
 	onShow: function(){
+		console.log(111)
 		this.listGroups();
 	},
 
 	// 列出所有群组 (调用 listRooms 函数获取当前登录用户加入的群组列表)
 	listGroups(){
 		var me = this;
-		WebIM.conn.listRooms({
-			success: function(rooms){
+		wx.WebIM.conn.getGroup({
+			limit: 50,
+			success: function(res){
 				me.setData({
-					groupList: rooms
+					groupList: res.data
 				});
 				// 好像也没有别的官方通道共享数据啊
-				getApp().globalData.groupList = rooms || [];
+				getApp().globalData.groupList = res.data || [];
 			},
 			error: function(){
 
 			}
 		});
+		console.log(this.data.groupList)
 	},
 
 	openSearch: function(){

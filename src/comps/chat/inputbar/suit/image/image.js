@@ -1,6 +1,6 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
 let msgType = require("../../../msgtype");
-
+let disp = require("../../../../../utils/broadcast");
 Component({
 	properties: {
 		username: {
@@ -51,6 +51,7 @@ Component({
 		upLoadImage(res){
 			var me = this;
 			var tempFilePaths = res.tempFilePaths;
+			var token = WebIM.conn.context.accessToken
 			wx.getImageInfo({
 				src: res.tempFilePaths[0],
 				success(res){
@@ -65,15 +66,27 @@ Component({
 					var height = res.height;
 					var index = res.path.lastIndexOf(".");
 					var filetype = (~index && res.path.slice(index + 1)) || "";
+					var domain = wx.WebIM.conn.apiUrl + '/'
 					if(filetype.toLowerCase() in allowType){
 						wx.uploadFile({
-							url: "https://a1.easemob.com/" + str[0] + "/" + str[1] + "/chatfiles",
+							url: domain + str[0] + "/" + str[1] + "/chatfiles",
 							filePath: tempFilePaths[0],
 							name: "file",
 							header: {
-								"Content-Type": "multipart/form-data"
+								"Content-Type": "multipart/form-data",
+								Authorization: "Bearer " + token
 							},
 							success(res){
+								if(res.statusCode === 400){
+									// 图片上传阿里云检验不合法
+									var errData = JSON.parse(res.data);
+									if (errData.error === 'content improper') {
+										wx.showToast({
+											title: '图片不合法'
+										});
+										return false
+									}
+								}
 								var data = res.data;
 								var dataObj = JSON.parse(data);
 								var id = WebIM.conn.getUniqueId();		// 生成本地消息 id
@@ -95,6 +108,9 @@ Component({
 									to: me.getSendToParam(),
 									roomType: false,
 									chatType: me.data.chatType,
+									success: function (argument) {
+										disp.fire('em.chat.sendSuccess', id);
+									}
 								});
 								if(me.data.chatType == msgType.chatType.CHAT_ROOM){
 									msg.setGroup("groupchat");

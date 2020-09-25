@@ -1,7 +1,7 @@
 {
-	"navigationBarBackgroundColor":"rgb(250,251,252)",
-	"navigationBarTextStyle":"black",
+	"backgroundTextStyle": "dark",
 	"navigationBarTitleText":"chatting",
+	"enablePullDownRefresh": true,
 	"usingComponents": {
 		"chat": "../../comps/chat/chat"
 	}

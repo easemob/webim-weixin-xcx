@@ -13,9 +13,9 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 				id: receiveMsg.id,
 				from: receiveMsg.from,
 				to: receiveMsg.to,
-				type: type,
+				type: receiveMsg.type,
 				ext: receiveMsg.ext,
-				chatType: receiveMsg.chatType,
+				chatType: receiveMsg.type,
 				toJid: "",
 				body: {
 					type: type,
@@ -38,9 +38,9 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 				id: receiveMsg.id,
 				from: receiveMsg.from,
 				to: receiveMsg.to,
-				type: type,
+				type: receiveMsg.type,
 				ext: receiveMsg.ext,
-				chatType: receiveMsg.chatType,
+				chatType: receiveMsg.type,
 				toJid: "",
 				body: {
 					type: type,
@@ -50,23 +50,75 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 			value: receiveMsg.data
 		};
 	}
-	else if(type == msgType.AUDIO){
+	else if (type == msgType.FILE) {
 		sendableMsg = {
 			id: receiveMsg.id,
 			type: type,
 			body: {
 				id: receiveMsg.id,
+				length: receiveMsg.file_length,
 				from: receiveMsg.from,
 				to: receiveMsg.to,
-				type: type,
+				type: receiveMsg.type,
 				ext: receiveMsg.ext,
-				chatType: receiveMsg.chatType,
+				chatType: receiveMsg.type,
+				toJid: "",
+				body: {
+					type: type,
+					url: receiveMsg.url,
+					filename: receiveMsg.filename,
+					msg: "当前不支持此格式消息展示",
+				},
+			},
+			value: receiveMsg.data
+		};
+	}
+	else if(type == msgType.AUDIO){
+		sendableMsg = {
+			id: receiveMsg.id,
+			type: type,
+			accessToken: receiveMsg.token || receiveMsg.accessToken,
+			body: {
+				id: receiveMsg.id,
+				length: receiveMsg.length,
+				from: receiveMsg.from,
+				to: receiveMsg.to,
+				type: receiveMsg.type,
+				ext: receiveMsg.ext,
+				chatType: type,
 				toJid: "",
 				body: {
 					type: type,
 					url: receiveMsg.url,
 					filename: receiveMsg.filename,
 					filetype: receiveMsg.filetype,
+					from: receiveMsg.from,
+					to: receiveMsg.to
+				},
+			},
+		};
+	}
+	else if(type == msgType.VIDEO){
+		sendableMsg = {
+			id: receiveMsg.id,
+			type: type,
+			accessToken: receiveMsg.token || receiveMsg.accessToken,
+			body: {
+				id: receiveMsg.id,
+				length: receiveMsg.length,
+				from: receiveMsg.from,
+				to: receiveMsg.to,
+				type: receiveMsg.type,
+				ext: receiveMsg.ext,
+				chatType: type,
+				toJid: "",
+				body: {
+					type: type,
+					url: receiveMsg.url,
+					filename: receiveMsg.filename,
+					filetype: receiveMsg.filetype,
+					from: receiveMsg.from,
+					to: receiveMsg.to
 				},
 			},
 		};
@@ -77,6 +129,7 @@ msgStorage.saveReceiveMsg = function(receiveMsg, type){
 	this.saveMsg(sendableMsg, type, receiveMsg);
 };
 msgStorage.saveMsg = function(sendableMsg, type, receiveMsg){
+	//console.log('sendableMsgsendableMsg', sendableMsg)
 	let me = this;
 	let myName = wx.getStorageSync("myUsername");
 	let sessionKey;
@@ -92,38 +145,49 @@ msgStorage.saveMsg = function(sendableMsg, type, receiveMsg){
 	}
 	let curChatMsg = wx.getStorageSync(sessionKey) || [];
 	let renderableMsg = msgPackager(sendableMsg, type, myName);
+	if(type == msgType.AUDIO) {
+		renderableMsg.msg.length = sendableMsg.body.length;
+		renderableMsg.msg.token = sendableMsg.accessToken;
+	}
 	curChatMsg.push(renderableMsg);
+	//console.log('renderableMsgrenderableMsg', renderableMsg)
 	if(type == msgType.AUDIO){
-		// 如果是音频则请求服务器转码
-		wx.downloadFile({
-			url: sendableMsg.body.body.url,
-			header: {
-				"X-Requested-With": "XMLHttpRequest",
-				Accept: "audio/mp3",
-				Authorization: "Bearer " + sendableMsg.accessToken
-			},
-			success(res){
-				// wx.playVoice({
-				// 	filePath: res.tempFilePath
-				// });
-				renderableMsg.msg.url = res.tempFilePath;
-				save();
-			},
-			fail(e){
-				console.log("downloadFile failed", e);
-			}
-		});
+		renderableMsg.msg.token = sendableMsg.accessToken;
+		//如果是音频则请求服务器转码
+		// wx.downloadFile({
+		// 	url: sendableMsg.body.body.url,
+		// 	header: {
+		// 		"X-Requested-With": "XMLHttpRequest",
+		// 		Accept: "audio/mp3",
+		// 		Authorization: "Bearer " + sendableMsg.accessToken
+		// 	},
+		// 	success(res){
+		// 		// wx.playVoice({
+		// 		// 	filePath: res.tempFilePath
+		// 		// });
+		// 		renderableMsg.msg.url = res.tempFilePath;
+				
+		// 		save();
+		// 	},
+		// 	fail(e){
+		// 		console.log("downloadFile failed", e);
+		// 	}
+		// });
 	}
-	else{
-		save();
-	}
+	// else{
+	// 	save();
+	// }
+
+	save();
 	function save(){
 		wx.setStorage({
 			key: sessionKey,
 			data: curChatMsg,
 			success(){
-				disp.fire('em.chat.audio.fileLoaded');
-				me.fire("newChatMsg", renderableMsg, type, curChatMsg);
+				if (type == msgType.AUDIO || type == msgType.VIDEO) {
+					disp.fire('em.chat.audio.fileLoaded');
+				}
+				me.fire("newChatMsg", renderableMsg, type, curChatMsg, sessionKey);
 			}
 		});
 	}

@@ -1,34 +1,9 @@
-<view class="search" wx:if="{{ search_btn }}">
-	<view bindtap="openSearch" bindtap="add_new">
-		<!-- <icon type="search" size="13"></icon> -->
-		<text>添加好友</text>
-	</view>
-	<!-- <image src="../../images/add.png" bindtap="add_new"></image> -->
+<view class="main_title {{gotop? 'main_title_hide':'main_title_show'}}">
+	<text>联系人</text>
 </view>
-<view class="search_input" wx:if="{{ search_friend }}">
-	<view>
-		<icon type="search" size="13"></icon>
-		<input placeholder="搜索" placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" auto-focus></input>
-	</view>
-	<text bindtap="cancel">取消</text>
-</view>
-<view class="body">
-	<view class="contain">
-		<view class="chat" bindtap="into_inform">
-			<image src="../../images/chat.png"></image>
-			<text>申请与通知</text>
-			<text wx:if="{{ messageNum > 0 }}" class="em-msgNum">{{ messageNum }}</text>
-		</view>
-		<view class="chat_groups" bindtap="into_groups">
-			<image src="../../images/chat-list.png"></image>
-			<text>群组</text>
-		</view>
-		<!-- <view class="chat_lists">
-			<image src="../../images/cell_groups.png"></image>
-			<text>聊天室列表</text>
-		</view> -->
-	</view>
-	<view wx:for="{{ member }}" class="numbers" wx:key="word">
+
+<view class="main_body">
+	<!-- <view wx:for="{{ member }}" class="numbers" wx:key="word">
 		<view class="nbr_header">{{ item.word }}</view>
 		<view class="info" bindtap="into_info">
 			<image src="../../images/number.png"  data-username="{{ item.name }}"></image>
@@ -39,19 +14,117 @@
 		<view class="delete" bindtap="delete_friend" data-username="{{ item.name }}">
 			<image src="../../images/delete.png"  data-username="{{ item.name }}"></image>
 		</view>
-	</view>
-</view>
-<view class="mask" bindtap="close_mask" wx:if="{{show_mask}}"></view>
+	</view> -->
+<view>
+	<!-- 左侧列表内容部分 -->
+	<scroll-view
+	class="content {{gotop? (isIPX? 'goTopX': 'goTop'): 'goback'}}"  
+	enable-back-to-top scroll-into-view="{{toView}}" 
+	scroll-y="true" scroll-with-animation="true" 
+	bindscroll="onPageScroll" 
+	style="padding-bottom: {{isIPX?'270rpx':'226rpx'}}"> 
+		<!-- search -->
+		<view class="search" wx:if="{{ search_btn }}">
+			<view bindtap="openSearch">
+				<icon type="search" size="13"></icon>
+				<text>搜索</text>
+			</view>
+		</view>
+		<view class="search_input" wx:if="{{ search_friend }}">
+			<view>
+				<icon type="search" size="13"></icon>
+				<input placeholder="搜索" 
+					placeholder-style="color:#CFCFCF;line-height:20px;font-size:12px;" 
+					auto-focus
+					confirm-type="search"
+					type='text'
+					bindconfirm="onSearch"
+					bindinput="onInput"
+					value="{{input_code}}"
+					></input>
+					<icon type="clear" size="13" catchtap='clearInput' wx:if="{{ show_clear }}"></icon>
+			</view>
+			<text bindtap="cancel">取消</text>
+		</view>
+		<!-- other item -->
+		<view class="contain">
+			<view class="otherItem" bindtap="add_new">
+				<image src="../../images/invite_theme@2x.png"  data-username="name"></image>
+				<text>添加好友</text>
+				<!-- <image class='line' src="../../images/line.png"></image> -->
+				<!-- 0.5px border -->
+			</view>
+		<!-- 	<view class="chat" bindtap="into_inform">
+				<image src="../../images/chat.png"></image>
+				<text>申请与通知</text>
+				<text  class="em-msgNum">3</text>
+				<text wx:if="{{ messageNum > 0 }}" class="em-msgNum">{{ messageNum }}</text>
+			</view> -->
+			<view class="otherItem" bindtap="into_groups">
+				<image src="../../images/group@2x.png"></image>
+				<text>群组</text>
+			</view>
+			<!-- <view class="chat_lists">
+				<image src="../../images/cell_groups.png"></image>
+				<text>聊天室列表</text>
+			</view> -->
+		</view>
 
-<view class="chatRoom_tab">
-	<view class="contacts">
-		<image src="../../images/contactsActive.png"></image>
-	</view>
-	<view class="chats" bindtap="tab_chat">
-		<view wx:if="{{ unReadSpot }}" class="em-unread-spot"></view>
-		<image src="../../images/chats.png"></image>
-	</view>
-	<view class="settings" bindtap="tab_setting">
-		<image src="../../images/settings.png"></image>
+	    <view wx:for="{{listMain}}" wx:for-item="group" wx:key="{{group.id}}"  id="{{ 'inToView'+group.id}}" data-id='{{group.id}}'> 
+	      <view class="address_top" >{{group.region}}</view> 
+	        <view wx:for="{{group.brands}}" wx:for-item="item" wx:key="{{item.brandId}}" data-username="{{ item.name }}" catchtap="delete_friend"> 
+				<swipe-delete >
+					<view class="tap_mask" catchtap="into_room" data-username="{{ item.name }}">
+			          	<view class="address_bottom" data-username="{{ item.name }}" catchtap="into_room">
+							<image src="../../images/theme@2x.png" catchtap="into_room" data-username="{{ item.name }}"></image>
+				          	<text catchtap="into_room" data-username="{{ item.name }}">{{item.name}}</text>
+			      		</view>
+		      		</view>
+	      		</swipe-delete>
+	        </view> 
+	    </view> 
+	  </scroll-view> 
+	  <!-- 顶部固定分类 -->
+	  <view class="list-fixed {{fixedTitle=='' ? 'hide':''}} {{gotop? 'fixedTitleTop': ''}}" wx:if="{{showFixedTitile}}" style="transform:translate3d(0,{{fixedTop}}px,0);">
+		    <view class="fixed-title">
+		    	{{fixedTitle}}
+		    </view>
+	  </view>
+	  <!-- 右侧字母导航 -->
+	  <view class="orientation_region"> 
+	   <!--  <view class="orientation">#</view> --> 
+	     	 <block wx:for="{{listMain}}"  wx:key="{{item.id}}"> 
+		        <view class="orientation_city {{isActive==item.id ? 'active':'' }}" bindtap="scrollToViewFn" data-id="{{item.id}}" >{{item.region}}
+		        </view> 
+	    	</block> 
+	  </view>  
 	</view>
 </view>
+
+<!-- <view class="mask" bindtap="close_mask" wx:if="{{show_mask}}"></view> -->
+
+<view class="{{isIPX?'chatRoom_tab_X':'chatRoom_tab'}}">
+	<view class="tableBar" bindtap="tab_chat">
+		<view wx:if="{{ unReadSpotNum > 0 || unReadSpotNum == '99+'}}" class="em-unread-spot {{unReadSpotNum == '99+'?'em-unread-spot-litleFont':''}}">{{ unReadSpotNum }}</view>
+		<image class="{{unReadSpotNum > 0 || unReadSpotNum == '99+'? 'haveSpot': ''}}" src="../../images/session@2x.png"></image>
+		<text>聊天</text>
+	</view>
+
+	<view class="tableBar">
+		<image src="../../images/comtactshighlight@2x.png"></image>
+		<text class="activeText">联系人</text>
+	</view>
+
+	<view class="tableBar" bindtap="tab_notification">
+		<view wx:if="{{ unReadTotalNotNum > 0 }}" class="em-unread-spot">{{ unReadTotalNotNum }}</view>
+		<image class="{{unReadTotalNotNum > 0 ? 'haveSpot': ''}}"  src="../../images/notice.png"></image>
+		<text>通知</text>
+	</view>
+	
+	<view class="tableBar" bindtap="tab_setting">
+		<image src="../../images/setting@2x.png"></image>
+		<text>设置</text>
+	</view>
+</view>
+<import src="../../comps/toast/toast.wxml"/>
+<template is="toast" data="{{ ..._toast_ }}"></template>

@@ -1,0 +1,87 @@
+<view class="wraper">
+	
+	<scroll-view
+		style="height:860rpx"
+		scroll-y = "true"
+	>
+		<view class="infoConnecting">
+			多人会议 {{groupId}} {{time}}
+		</view>
+
+		<live-pusher 
+			url="{{pubUrl}}" 
+			mode="RTC" 
+			aspect="3:4"
+			enable-mic="{{true}}"
+			beauty="{{beauty}}"
+			whiteness="{{beauty}}"
+			max-bitrate="{{300}}"
+			enable-camera="{{enableCamera}}"
+			device-position="{{devicePosition}}"
+			muted="{{muted}}"
+			background-mute="{{true}}"
+			orientation="vertical"
+			bindstatechange="statechange"
+			bindnetstatus="netstatusChange"
+		>
+			<view class="userName">{{myName}}</view>
+		</live-pusher>
+
+
+		<view  
+			style="display:inline"
+			wx:if="{{subUrls.length > 0}}"
+			wx:for="{{subUrls}}">
+
+			<live-player 
+				id="{{item.streamId}}"
+				src="{{item.subUrl}}" 
+				mode="RTC" 
+				object-fit="contain"
+				autoplay 
+			>
+				<view class="userName">{{item.memName}}</view>
+			</live-player>
+
+		</view>
+	</scroll-view>
+
+
+	<view class="controlContent">
+		<view class="emediaContrContent">
+			<view class="controlItem" bindtap="toggleCamera" style="color: {{devicePositionColor}}">
+				<image
+					class="icon-record"
+					src='../../../images/{{devicePositionIcon}}@2x.png' style="width:22px; height: 24px"/>
+				切换摄像头
+			</view>
+			<view class="controlItem" bindtap="toggleMuted" style="color: {{micphoneColor}}">
+				<image
+					class="icon-record"
+					src='../../../images/{{micphoneIcon}}@2x.png' style="width:22px; height: 24px"/>
+				麦克风</view>
+			<view class="controlItem" bindtap="togglePlay" style="color: {{videoColor}}">
+				<image
+					class="icon-record"
+					src='../../../images/{{videoIcon}}@2x.png' style="width:22px; height: 24px"/>
+				视频</view>
+			<view class="controlItem" bindtap="toggleBeauty" style="color: {{beautyColor}}">
+				<image
+					class="icon-record"
+					src='../../../images/{{beautyIcon}}.png' style="width:16px; height: 24px"/>
+				美颜</view>
+			<view class="controlItem" bindtap="inviteMember">
+				<image
+					class="icon-record"
+					src='../../../images/invite_white@2x.png' style="width:22px; height: 24px"/>
+				邀请</view>
+		</view>
+
+		<view class="hangup" bindtap="hangup">
+			<image
+				class="icon-record"
+				src='../../../images/hangup@2x.png'/>
+		</view>
+	</view>
+
+</view>

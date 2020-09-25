@@ -1,0 +1,57 @@
+<view class="setting_title">
+	<text>设置</text>
+</view>
+
+<view class="setting_head">
+	<view class="head_pic">
+		<image src="../../images/theme@2x.png"></image>
+		<view>
+			<text class="setting_username">{{ yourname }}</text>
+			<text class="setting_username2">username</text>
+		</view>
+	</view>
+</view>
+
+<view class="setting_list">
+	<view class="setting_listContent" bindtap="goGeneralSetting">
+		<text>通用设置</text>
+		<image class="list_right" src="../../images/next.png"></image>
+	</view>
+</view>
+
+<view class="setting_list">
+	<view class="setting_listContent" bindtap="goEmediaSetting">
+		<text>实时音视频</text>
+		<image class="list_right" src="../../images/next.png"></image>
+	</view>
+</view>
+
+<view class="setting_list">
+	<view class="setting_listContent" bindtap="logout">
+		<text class="setting_redtext">退出登录</text>
+	</view>
+</view>
+
+<view class="{{isIPX?'chatRoom_tab_X':'chatRoom_tab'}}">
+	<view class="tableBar" bindtap="tab_chat">
+		<view wx:if="{{ unReadSpotNum > 0 || unReadSpotNum == '99+'}}" class="em-unread-spot {{unReadSpotNum == '99+'?'em-unread-spot-litleFont':''}}">{{ unReadSpotNum }}</view>
+		<image class="{{unReadSpotNum > 0 || unReadSpotNum == '99+'? 'haveSpot': ''}}" src="../../images/session@2x.png"></image>
+		<text>聊天</text>
+	</view>
+
+	<view class="tableBar" bindtap="tab_contact">
+		<image src="../../images/comtacts@2x.png"></image>
+		<text>联系人</text>
+	</view>
+
+	<view class="tableBar" bindtap="tab_notification">
+		<view wx:if="{{ unReadTotalNotNum > 0 }}" class="em-unread-spot">{{ unReadTotalNotNum }}</view>
+		<image class="{{unReadTotalNotNum > 0 ? 'haveSpot': ''}}" src="../../images/notice.png"></image>
+		<text>通知</text>
+	</view>
+	
+	<view class="tableBar">
+		<image src="../../images/settinghighlight@2x.png"></image>
+		<text class="activeText">设置</text>
+	</view>
+</view>
