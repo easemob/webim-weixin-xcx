@@ -131,7 +131,7 @@ Page({
 				storageKeys.forEach((item) => {
 					if (item.slice(-len) == myName && item.indexOf('rendered_') == -1) {
 						newChatMsgKeys.push(item)
-					}else if(item.indexOf(myName) > -1 && item.indexOf('rendered_') > -1){
+					}else if(item.slice(-len) == myName && item.indexOf('rendered_') > -1){
 						historyChatMsgKeys.push(item)
 					}
 				})
@@ -148,6 +148,7 @@ Page({
 				let index = newChatMsgKeys.indexOf(historyChatMsgKeys[i].slice(9))
 				if ( index > -1 ) {
 					let newChatMsgs = wx.getStorageSync(newChatMsgKeys[index]) || [];
+					if (newChatMsgKeys.includes()) {}
 					if(newChatMsgs.length){
 						lastChatMsg = newChatMsgs[newChatMsgs.length - 1];
 						lastChatMsg.unReadCount = newChatMsgs.length;
