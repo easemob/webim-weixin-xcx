@@ -73,11 +73,22 @@ Page({
 					});
 				},
 				error: function(res){
-					console.log('注册失败', res)	
+					console.log('注册失败', res)
 					if (res.statusCode == '400' && res.data.error == 'illegal_argument') {
+						if (res.data.error_description === 'USERNAME_TOO_LONG') {
+                            return that.toastFilled('用户名超过64个字节！')
+                        }
 						return that.toastFilled('用户名非法!')
-					}
-					that.toastFilled('用户名已被占用!')
+					}else if (res.data.error === 'duplicate_unique_property_exists') {
+                        return that.toastFilled('用户名已被占用!')
+                    }else if (res.data.error === 'unauthorized') {
+                        return that.toastFilled('注册失败，无权限！')
+                    } else if (res.data.error === 'resource_limited') {
+                        return that.toastFilled('您的App用户注册数量已达上限,请升级至企业版！')
+                    }else{
+                    	return that.toastFilled('注册失败')
+                    }
+					
 				}
 			};
 			WebIM.conn.registerUser(options);
