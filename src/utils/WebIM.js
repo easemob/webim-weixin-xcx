@@ -1,7 +1,7 @@
 // import Strophe from "../sdk/libs/strophe";
 //import xmldom from "../sdk/libs/xmldom/dom-parser";
 // import websdk from "../sdk2/src/wxEntry";
-import websdk from "../sdk/wxsdk3.3.0";
+import websdk from "../sdk/wxsdk3.3.2";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
@@ -226,7 +226,8 @@ WebIM.conn = new WebIM.connection({
 	heartBeatWait: 30000, //WebIM.config.heartBeatWait,
 	autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
 	autoReconnectInterval: WebIM.config.autoReconnectInterval,
-	isDebug: WebIM.config.isDebug
+	isDebug: WebIM.config.isDebug,
+	deviceId: WebIM.config.deviceId
 });
 
 // async response
