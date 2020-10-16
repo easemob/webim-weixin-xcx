@@ -12,10 +12,11 @@ Page({
 		messageNum: 0,
 		unReadTotalNotNum: 0,
 		arr: [],
-		show_clear: false
+		show_clear: false,
+		groupName: {}
 	},
 
-	onLoad(){
+	onLoad(options){
 		let me = this;
 		//监听加好友申请
 		disp.on("em.xmpp.subscribe", function(){
@@ -74,6 +75,15 @@ Page({
 		return WebIM.conn.getGroup({
 			limit: 50,
 			success: function(res){
+				let groupName = {}
+				let listGroup = res.data || []
+				listGroup.forEach((item) => {
+					groupName[item.groupid] = item.groupname
+				})
+
+				me.setData({
+					groupName
+				})
 				wx.setStorage({
 					key: "listGroup",
 					data: res.data
@@ -183,6 +193,9 @@ Page({
 					}
 					
 				}
+				if (lastChatMsg.chatType == 'groupchat' || lastChatMsg.chatType == 'chatRoom') {
+					lastChatMsg.groupName = me.data.groupName[lastChatMsg.username]
+				}
 				lastChatMsg && lastChatMsg.username != myName && array.push(lastChatMsg)
 			}
 
@@ -199,6 +212,9 @@ Page({
 					let month = dateArr[2] < 10 ? '0' + dateArr[2] : dateArr[2]
 					lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
 					lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
+					if (lastChatMsg.chatType == 'groupchat' || lastChatMsg.chatType == 'chatRoom') {
+						lastChatMsg.groupName = me.data.groupName[lastChatMsg.username]
+					}
 					lastChatMsg.username != myName && array.push(lastChatMsg)
 				}
 			}
@@ -473,8 +489,8 @@ Page({
 			confirmText: "删除",
 			success: function(res){
 				if(res.confirm){
-					wx.setStorageSync(nameList.your + myName, "");
-					wx.setStorageSync("rendered_" + nameList.your + myName, "");
+					wx.removeStorageSync(nameList.your + myName);
+					wx.removeStorageSync("rendered_" + nameList.your + myName);
 					if(currentPage[0]){
 						currentPage[0].onShow();
 					}
