@@ -194,7 +194,7 @@ Page({
 					
 				}
 				if (lastChatMsg.chatType == 'groupchat' || lastChatMsg.chatType == 'chatRoom') {
-					lastChatMsg.groupName = me.data.groupName[lastChatMsg.username]
+					lastChatMsg.groupName = me.data.groupName[lastChatMsg.info.to]
 				}
 				lastChatMsg && lastChatMsg.username != myName && array.push(lastChatMsg)
 			}
@@ -213,7 +213,7 @@ Page({
 					lastChatMsg.dateTimeNum = `${dateArr[1]}${month}${timeArr[0]}${timeArr[1]}${timeArr[2]}`
 					lastChatMsg.time = `${dateArr[1]}月${dateArr[2]}日 ${timeArr[0]}时${timeArr[1]}分`
 					if (lastChatMsg.chatType == 'groupchat' || lastChatMsg.chatType == 'chatRoom') {
-						lastChatMsg.groupName = me.data.groupName[lastChatMsg.username]
+						lastChatMsg.groupName = me.data.groupName[lastChatMsg.info.to]
 					}
 					lastChatMsg.username != myName && array.push(lastChatMsg)
 				}
