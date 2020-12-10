@@ -6,13 +6,21 @@ function Dispatcher(){
 	dispCbs.push({});
 }
 Dispatcher.prototype = {
-	on(type, cb){
-		let cbtypes = dispCbs[dispIns.indexOf(this)];
-		let cbs = cbtypes[type] = (cbtypes[type] || []);
-		if(!~cbs.indexOf(cb)){
-			cbs.push(cb);
-		}
-	},
+	on(type, cb) {
+	    let cbtypes = dispCbs[dispIns.indexOf(this)];
+	    let cbs = cbtypes[type] = cbtypes[type] || [];
+	    if (!~cbs.indexOf(cb)) {
+			let includ = false
+			if(cb.name){
+				cbs.forEach(item => {
+					if(item.name == cb.name){
+						includ = true
+					}
+				})
+			}
+	      !includ && cbs.push(cb);
+	    }
+  	},
 	off(type, cb){
 		let cbtypes = dispCbs[dispIns.indexOf(this)];
 		let cbs = cbtypes[type] = (cbtypes[type] || []);

@@ -245,7 +245,7 @@ Component({
 			// disp.fire('em.megList.refresh')
 		});
 
-		msgStorage.on("newChatMsg", function(renderableMsg, type, curChatMsg, sesskey){
+		msgStorage.on("newChatMsg", function dispMsg(renderableMsg, type, curChatMsg, sesskey){
 			me.curChatMsg = curChatMsg;
 			if(!me.__visibility__) return;
 			// 判断是否属于当前会话
