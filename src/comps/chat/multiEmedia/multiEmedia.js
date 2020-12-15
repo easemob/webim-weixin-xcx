@@ -263,7 +263,8 @@ Component({
 		myName: '',
 		confrId: '',
 		enableCamera: true,
-		time: ''
+		time: '',
+		clickPeding: false
 	},
 
 	methods: {
@@ -346,11 +347,19 @@ Component({
 				me.triggerEvent('createConfrSuccess', {confrId: tktObj.confrId, groupId: me.data.username.groupId})
 			})
 		},
+
+		clickPending(){
+			this.data.clickPeding = true
+			setTimeout(() => {
+				this.data.clickPeding = false;
+			}, 1000)
+		},
 		
 		togglePlay(){
 			let me = this
 			console.log("%c togglePlay", "color:green")
-
+			if (this.data.clickPeding) {return};
+			this.clickPending()
 			// this.LivePusherContext.stop()
 			this.setData({
 				enableCamera: !me.data.enableCamera,
@@ -365,6 +374,8 @@ Component({
 		toggleCamera(){
 			console.log("%c toggleCamera", "color:green")
 			let me = this
+			if (this.data.clickPeding) {return};
+			this.clickPending()
 			// me.LivePusherContext.stop()
 			me.LivePusherContext.switchCamera({
 				success: function(){
@@ -390,6 +401,8 @@ Component({
 
 		toggleMuted(){
 			console.log("%c toggleMuted", "color:green")
+			if (this.data.clickPeding) {return};
+			this.clickPending()
 			this.setData({
 				muted: !this.data.muted,
 				micphoneIcon: this.data.micphoneIcon == 'micphone_white'? 'micphone_gray': 'micphone_white',
@@ -405,6 +418,8 @@ Component({
 		// },
 
 		toggleBeauty(){
+			if (this.data.clickPeding) {return};
+			this.clickPending()
 			this.setData({
 				beauty: this.data.beauty == 0 ? 9 : 0,
 				beautyColor: this.data.beautyColor == '#fff'? '#aaa': '#fff',
