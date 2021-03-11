@@ -151,7 +151,7 @@ msgStorage.saveMsg = function(sendableMsg, type, receiveMsg){
 	}
 	curChatMsg.push(renderableMsg);
 	//console.log('renderableMsgrenderableMsg', renderableMsg)
-	if(type == msgType.AUDIO){
+	if(type == msgType.VIDEO){
 		renderableMsg.msg.token = sendableMsg.accessToken;
 		//如果是音频则请求服务器转码
 		// wx.downloadFile({

@@ -3,7 +3,7 @@
 	<chat-suit-main id="chat-suit-main" username="{{ username }}" chatType="{{ chatType }}" bind:inputFocused="cancelEmoji"></chat-suit-main>
 	<chat-suit-image id="chat-suit-image" username="{{ username }}" chatType="{{ chatType }}"></chat-suit-image>
 	<!-- <chat-suit-location id="chat-suit-location" username="{{ username }}"></chat-suit-location> -->
-	<chat-suit-video id="chat-suit-video" username="{{ username }}"></chat-suit-video>
+	<chat-suit-video id="chat-suit-video" username="{{ username }}" chatType="{{ chatType }}"></chat-suit-video>
 	<chat-suit-ptopcall 
 		id="chat-suit-ptopcall" 
 		chatType="{{ chatType }}"
