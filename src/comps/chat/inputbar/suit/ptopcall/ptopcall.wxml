@@ -1,7 +1,8 @@
 <view>
 	<view wx:if="{{ visible }}" class="wraper">
 		<view>
-			<button type="default" bindtap="callVideo">会议模式</button>
+			<button type="default" bindtap="callVideo">视频</button>
+			<button type="default" wx:if="{{ callType == 'contact' }}" bindtap="callAudio">语音</button>
 			<button
 				type="default"
 				size="{{defaultSize}}"
@@ -14,3 +15,4 @@
 		</view>
 	</view>
 </view>
+

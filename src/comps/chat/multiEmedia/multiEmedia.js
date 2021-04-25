@@ -1,4 +1,5 @@
 const WebIM = wx.WebIM
+const emediaState = require('./emediaState')
 Component({
 	properties: {//接收父组件传过来的值
 	    username: null,//定义接收参数变量及允许传入参数类型
@@ -7,112 +8,34 @@ Component({
 	},
 	lifetimes: {
 	    attached: function() {
+	    	const me = this
+	    	const myUserId = wx.WebIM.conn.context.userId
 			wx.setKeepScreenOn({
-			  keepScreenOn: true
+			  	keepScreenOn: true
 			})
 			this.setData({
-				myName: wx.WebIM.conn.context.userId
+				myName: myUserId
 			})
-
 			this.getTimer()
-			var me = this
+			
 			let subUrls = []
-			let obj = {};
-			// var service = this.service = new wx.emedia.XService({
-			//     listeners: {
-			//         onMeExit: function (reason, failed) {
-			//             //console.info("onMeExit", this);
-			//             reason = (reason || 0);
-			//             switch (reason){
-			//                 case 0:
-			//                     reason = "正常挂断";
-			//                     break;
-			//                 case 1:
-			//                     reason = "没响应";
-			//                     break;
-			//                 case 2:
-			//                     reason = "服务器拒绝";
-			//                     break;
-			//                 case 3:
-			//                     reason = "对方忙";
-			//                     break;
-			//                 case 4:
-			//                     reason = "失败,可能是网络或服务器拒绝";
-			//                     if(failed === -9527){
-			//                         reason = "失败,网络原因";
-			//                     }
-			//                     if(failed === -500){
-			//                         reason = "Ticket失效";
-			//                     }
-			//                     if(failed === -502){
-			//                         reason = "Ticket过期";
-			//                     }
-			//                     if(failed === -504){
-			//                         reason = "链接已失效";
-			//                     }
-			//                     if(failed === -508){
-			//                         reason = "会议无效";
-			//                     }
-			//                     if(failed === -510){
-			//                         reason = "服务端限制";
-			//                     }
-			//                     break;
-			//                 case 5:
-			//                     reason = "不支持";
-			//                     break;
-			//                 case 10:
-			//                     reason = "其他设备登录";
-			//                     break;
-			//                 case 11:
-			//                     reason = "会议关闭";
-			//                     break;
-			//             }
-			//         },
-			//     }
-			// });
 
 			this.LivePusherContext = wx.createLivePusherContext()
 			
-			if(this.data.action&&this.data.action.action == 'join'){
-				// 音视频sdk提供两种创建、加入会议的api 使用任意一种都可以：（1） 一种是通过会议id ticket 或者 会议id 密码加入会议 如使用下面 joinConf
-				// （2）另一种是通过房间名 密码加入 如使用下面joinRoom
+			this.initClient()
+			console.log('会议信息', emediaState)
+			this.getToken(myUserId, emediaState.confr.channel)
 
-				//this.joinConf(this.data.action) // （1）
-				//this.joinRoom(this.data.action) // （2）
-				if (this.data.action.roomName) {
-					console.log('使用joinroom')
-					this.joinRoom(this.data.action)
-				}else{
-					console.log('使用joinConf')
-					this.joinConf(this.data.action)
-				}
-			}else{
-				// 创建会议同样是两种api （1）一种是使用createConf 单纯创建一个会议，需要再申请ticket 或者用密码加入会议 如使用下面的createConf
-				// （2）也可以使用joinRoom，通过房间名、密码创建房间并直接加入 不需再进行加入会议的操作
-				this.joinRoom() // （1）
-				//this.createConf() // （2）
-			}
-			wx.emedia.mgr.onMediaChanaged = function(e){
-				console.log('onMediaChanaged', e)
-			}
-			wx.emedia.mgr.onConferenceExit = function(e){
-				console.log('onConferenceExit', e)
-			}
-			wx.emedia.mgr.onMemberExited = function(reason){
-				console.log('onMemberExited', reason)
-			};
- 
-			wx.emedia.mgr.onStreamControl = function(mem){
-				console.log('onStreamControl', mem)
-			}
 
-			wx.emedia.mgr.onStreamControl.onSoundChanage = function(a, b, c, d){
-				console.log('onSoundChanage')
-			}
+			// if(this.data.action&&this.data.action.action == 'join'){
+			// 	this.getToken(myUserId, emediaState.confr.channel)
+			// }else{
+			// 	// const channelName = Math.uuid(8)
+			// 	this.getToken(myUserId, channelName)
+			// }
 
 			wx.emedia.mgr.onReconnect = function (res, ent){
 				// 发生断网重连，相当于重新加入会议
-
 				// 清空live-player 否则在原来的后面追加，导致原来的黑屏显示
 				subUrls = []
 
@@ -125,7 +48,6 @@ Component({
 			  		devicePosition: "front",
 			  		muted: false,
 			  		playVideoMuted: false,
-
 			  		
 			  		micphoneIcon: 'micphone_white',
 			  		micphoneColor: '#fff',
@@ -138,106 +60,104 @@ Component({
 				})
 			}
 
-			wx.emedia.mgr.onMemberJoined = function(mem){
-				console.log("++++++++++ member", mem)
-				var jid = wx.WebIM.conn.context.jid
-				let identityName = jid.appKey + '_' + jid.name+ '@' + jid.domain
-				// let identityName = wx.WebIM.conn.context.jid.split("/")[0]
-				// 如果是自己进入会议了，开始发布流
-				if(mem.name == identityName){
-					let rtcId = wx.emedia.util.getRtcId()
-					wx.emedia.mgr.pubStream(rtcId).then(function(res){
-						me.setData({
-							pubUrl: res.data.rtmp
-						})
-					})
+			// wx.emedia.mgr.onMemberJoined = function(mem){
+			// 	console.log("++++++++++ member", mem)
+			// 	var jid = wx.WebIM.conn.context.jid
+			// 	let identityName = jid.appKey + '_' + jid.name+ '@' + jid.domain
+			// 	// let identityName = wx.WebIM.conn.context.jid.split("/")[0]
+			// 	// 如果是自己进入会议了，开始发布流
+			// 	if(mem.name == identityName){
+			// 		let rtcId = wx.emedia.util.getRtcId()
+			// 		// wx.emedia.mgr.pubStream(rtcId).then(function(res){
+			// 		// 	me.setData({
+			// 		// 		pubUrl: res.data.rtmp
+			// 		// 	})
+			// 		// })
 
-					var enableCamera = me.data.enableCamera;
-				    console.warn("begin enable camera", me.data.enableCamera);
+			// 		var enableCamera = me.data.enableCamera;
+			// 	    console.warn("begin enable camera", me.data.enableCamera);
 
-				    //默认enableCamera为false  关闭摄像头时声音不会有延迟，否则有延迟
-				    //所以最好别用autopush
-					me.setData({
-						enableCamera: false,
-						pubUrl: me.data.url + 'record_type=audio' || 'https://domain/push_stream',
-					}, () => {
-						// var enableCameraDefault = true
-				        //if(!enableCameraDefault){ //治疗不推流的毛病
-				        	// console.log('关闭摄像头推流')
-				        	setTimeout(() => {
-						    	me.LivePusherContext.start({
-						    		success: function () {
-						        		// console.log('关闭摄像头推流', enableCamera)
-						        		enableCamera && me.setData({enableCamera: enableCamera})
-						        	}
-						    	})
-						    }, 1500)
-				        // }else{
-				        // 	me.LivePusherContext.start({
-					       //  	success: function () {
-					       //  		console.log('开始推流了', enableCamera)
-					       //    		enableCamera && me.setData({enableCamera: enableCamera})
-					       //  	}
-					       //  })
-				        // }
-				    })
-				}
-			}
-			wx.emedia.mgr.onStreamAdded = function(stream){
-				console.log('%c onAddStream', 'color: green', stream)
-				let streamId = stream.id
-				// setTimeout(() => {
-					if(subUrls.length > 8){
-						return
-					}
-					wx.emedia.mgr.subStream(streamId).then(function(data){
-						console.log('%c 订阅流成功', 'color:green', data)
-						// let playContext = wx.createLivePlayerContext(streamId, me)
-						let subUrl = {
-							streamId: streamId,
-							subUrl: data.data.rtmp,
-							memName: stream.memName.split("_")[1].split("@")[0],
-							// playContext: playContext
-						}
-						subUrls.push(subUrl)
-						console.log('%c subUrls 11 ....', "background:yellow")
-						console.log(subUrls)
+			// 	    //默认enableCamera为false  关闭摄像头时声音不会有延迟，否则有延迟
+			// 	    //所以最好别用autopush
+			// 		me.setData({
+			// 			enableCamera: false,
+			// 			//pubUrl: me.data.url + 'record_type=audio' || 'https://domain/push_stream',
+			// 		}, () => {
+			// 			// var enableCameraDefault = true
+			// 	        //if(!enableCameraDefault){ //治疗不推流的毛病
+			// 	        	// console.log('关闭摄像头推流')
+			// 	        	setTimeout(() => {
+			// 			    	me.LivePusherContext.start({
+			// 			    		success: function () {
+			// 			        		// console.log('关闭摄像头推流', enableCamera)
+			// 			        		enableCamera && me.setData({enableCamera: enableCamera})
+			// 			        	}
+			// 			    	})
+			// 			    }, 1500)
+			// 	        // }else{
+			// 	        // 	me.LivePusherContext.start({
+			// 		       //  	success: function () {
+			// 		       //  		console.log('开始推流了', enableCamera)
+			// 		       //    		enableCamera && me.setData({enableCamera: enableCamera})
+			// 		       //  	}
+			// 		       //  })
+			// 	        // }
+			// 	    })
+			// 	}
+			// }
+			// wx.emedia.mgr.onStreamAdded = function(stream){
+			// 	console.log('%c onAddStream', 'color: green', stream)
+			// 	let streamId = stream.id
+			// 	// setTimeout(() => {
+			// 		if(subUrls.length > 8){
+			// 			return
+			// 		}
+			// 		wx.emedia.mgr.subStream(streamId).then(function(data){
+			// 			console.log('%c 订阅流成功', 'color:green', data)
+			// 			// let playContext = wx.createLivePlayerContext(streamId, me)
+			// 			let subUrl = {
+			// 				streamId: streamId,
+			// 				subUrl: data.data.rtmp,
+			// 				memName: stream.memName.split("_")[1].split("@")[0],
+			// 				// playContext: playContext
+			// 			}
+			// 			subUrls.push(subUrl)
+			// 			console.log('%c subUrls 11 ....', "background:yellow")
+			// 			console.log(subUrls)
 	
-						me.setData({
-							subUrls: subUrls,
-							showInvite: false
-						})
-					})
-				// }, 2000)
+			// 			me.setData({
+			// 				subUrls: subUrls,
+			// 				showInvite: false
+			// 			})
+			// 		})
+			// 	// }, 2000)
 
-			}
-			wx.emedia.mgr.onStreamRemoved = function(stream){
-				console.log('%c onRemoveStream', 'color: red', stream)
-				subUrls = subUrls.filter((item) => {
-					if(item.streamId != stream.id){
-						return item
-					}else{
-						console.log('%c ------', 'backgroukd:yellow')
-						console.log(item)
-						// item.playContext.stop({
-						// 	success: function(){
-						// 		console.log('关闭成功')
-						// 	},
-						// 	complete: function(){
-						// 		console.log('关闭成功')
-						// 	}
-						// })
-					}
-				})
-				obj[stream.id] = false
-				me.setData({
-					subUrls: subUrls,
-				})
-				console.log('subUrls', subUrls)
-			},
-			wx.emedia.mgr.onConfrAttrsUpdated = function(e){
-				console.log('onConfrAttrsUpdated: ', e)
-			}
+			// }
+			// wx.emedia.mgr.onStreamRemoved = function(stream){
+			// 	console.log('%c onRemoveStream', 'color: red', stream)
+			// 	subUrls = subUrls.filter((item) => {
+			// 		if(item.streamId != stream.id){
+			// 			return item
+			// 		}else{
+			// 			console.log('%c ------', 'backgroukd:yellow')
+			// 			console.log(item)
+			// 			// item.playContext.stop({
+			// 			// 	success: function(){
+			// 			// 		console.log('关闭成功')
+			// 			// 	},
+			// 			// 	complete: function(){
+			// 			// 		console.log('关闭成功')
+			// 			// 	}
+			// 			// })
+			// 		}
+			// 	})
+			// 	obj[stream.id] = false
+			// 	me.setData({
+			// 		subUrls: subUrls,
+			// 	})
+			// 	console.log('subUrls', subUrls)
+			// }
+
 	    },
 	    detached: function() {
 			wx.emedia.mgr.exitConference(this.data.confrId)
@@ -268,6 +188,118 @@ Component({
 	},
 
 	methods: {
+		initClient(){
+			// ------------------- agora------------
+			let me = this;
+			let client = this.client = new wx.AgoraMiniappSDK.Client();
+			client.setRole('broadcaster')
+			const appId = "15cb0d28b87b425ea613fc46f7c9f974";
+			client.init(appId, () => {
+			  	console.log(`client init success`);
+			}, e => {
+			  	console.log(`client init failed: ${e} ${e.code} ${e.reason}`);
+			  	reject(e)
+			});
+
+			// --------------- subscribed ------------
+			client.on("stream-added", e => {
+				console.log('stream-added ------- ', e)
+				client.subscribe(e.uid, 
+					(url) => {
+						let memName = ''
+						if (me.uid2userids[e.uid]) {
+							memName = me.uid2userids[e.uid]
+							setSubUser(url, memName)
+						}else{
+							me.getConfDetail(wx.WebIM.conn.context.userId, emediaState.confr.channel, (res) => {
+								memName = res[e.uid]
+								setSubUser(url, memName)
+							})
+						}
+					}, 
+					(err) => {console.log('error', err)}
+				)
+
+				function setSubUser(url, memName){
+					console.log('subscribe', url)
+					let subUrls = me.data.subUrls
+					subUrls.push({subUrl: url, memName: memName})
+					me.setData({
+						subUrls: subUrls,
+						showInvite: false
+					})
+				}
+			});
+
+			client.on("stream-removed", (user) => {
+	        	console.log('-- 对方已离开 ---', user)
+	            let subUrls = me.data.subUrls.filter((item) => {
+	            	if (item.memName != me.uid2userids[user.uid]) {
+	            		return item
+	            	}
+	            });
+				me.setData({
+					subUrls: subUrls
+				})
+	        })
+		},
+		getToken(userId, channelName){
+			let me = this
+			wx.request({
+				url: `https://a1-hsb.easemob.com/token/rtcToken?userAccount=${userId}&channelName=${channelName}&appkey=${encodeURIComponent('easemob-demo#easeim')}`,//仅为示例，并非真实的接口地址
+				header: {
+				    'Authorization': 'Bearer ' + wx.WebIM.conn.context.accessToken
+				},
+				success (res) {
+				    console.log('请求token成功', res)
+				    let {accessToken, agoraUserId} = res.data
+				    me.joinChannel(accessToken, channelName, agoraUserId)
+				},
+				fail(res){
+				  	console.log('请求token失败', res)
+				}
+			})
+		},
+		getConfDetail(userId, channelName, callback){
+			let me = this
+			wx.request({
+				url: `https://a1-hsb.easemob.com/channel/mapper?userAccount=${userId}&channelName=${channelName}&appkey=${encodeURIComponent('easemob-demo#easeim')}`,//仅为示例，并非真实的接口地址
+				header: {
+				    'Authorization': 'Bearer ' + wx.WebIM.conn.context.accessToken
+				},
+				success (res) {
+				    // let result = res.data.result
+				    me.uid2userids = res.data.result
+				    callback&&callback(res.data.result)
+				},
+				fail(res){
+				}
+			})
+		},
+		joinChannel(token, channel, uid){
+			console.log('token ----', token, channel, uid)
+			this.client.join(token, channel, uid, (res) => {
+			  	console.log(`client join channel success`, res);
+			  	this.publish()
+			  	this.getConfDetail(wx.WebIM.conn.context.userId, channel)
+			}, e => {
+			  	console.log('join fail', e)
+			});
+		},
+		publish(){
+			this.client.publish(url => {
+			  	console.log(`client publish success`, url);
+			  	this.setData({
+					pubUrl: url
+				})
+				setTimeout(() => {
+					this.LivePusherContext.start()
+				}, 1000)
+			}, e => {
+			  	console.log(`client publish failed: ${e.code} ${e.reason}`);
+			});
+		},
+
 		joinRoom(data){
 			let id = WebIM.conn.getUniqueId();
 			let roomName = 'wxConfr' + id //随机的房间名，防止和别人的房间名冲突
@@ -297,15 +329,9 @@ Component({
 			})
 
 			let rtcId = wx.emedia.util.getRtcId()
-			wx.emedia.mgr.pubStream(rtcId).then(function(res){
-				me.setData({
-					pubUrl: res.data.rtmp
-				})
-			})
 		},
 		createConf(){
 			console.log('>>> createConf');
-			
 			var me = this
 			let rec = wx.getStorageSync("rec") || false;
 			let recMerge = wx.getStorageSync("recMerge") || false;
@@ -332,20 +358,6 @@ Component({
 
 		joinConf(data){
 			console.log('加入会议 ————-------————')
-			console.log(data)
-			let me = this
-			wx.emedia.mgr.getConferenceTkt(data.confrId, data.password).then(function(res){
-				console.log('申请reqTkt成功', res.data)
-				let ticket = res.data.ticket || ''
-				let tktObj = JSON.parse(ticket)
-				wx.emedia.mgr.joinConferenceWithTicket(data.confrId, ticket).then(function(res){
-					console.log('加入会议成功', res)
-				})
-				me.setData({
-					confrId: tktObj.confrId
-				})
-				me.triggerEvent('createConfrSuccess', {confrId: tktObj.confrId, groupId: me.data.username.groupId})
-			})
 		},
 
 		clickPending(){
@@ -388,15 +400,6 @@ Component({
 					})
 				}
 			})
-
-			// 	测试更新会议属性
-			// wx.emedia.mgr.setConferenceAttrs({
-			// 	key: 'zdtest',
-			// 	val: 'change_status',
-			// 	success: function(){console.log('改变状态成功')},
-			// 	error: function(){console.log('改变状态失败')},
-			// 	confrId: this.data.confrId
-			// })
 		},
 
 		toggleMuted(){
@@ -409,13 +412,6 @@ Component({
 				micphoneColor: this.data.micphoneColor == '#fff'? '#aaa': '#fff'
 			})
 		},
-
-		// toggleVoice(){
-		// 	console.log("%c toggleVoice", "color:green")
-		// 	this.setData({
-		// 		playVideoMuted: !this.data.playVideoMuted
-		// 	})
-		// },
 
 		toggleBeauty(){
 			if (this.data.clickPeding) {return};
@@ -432,6 +428,8 @@ Component({
 			wx.emedia.mgr.exitConference(this.data.confrId)
 			this.triggerEvent('hangup')
 			this.stopTimer()
+			emediaState.hangup()
+			this.client.leave();
 		},
 		inviteMember(){
 			this.triggerEvent('inviteMember', this.data.groupId)

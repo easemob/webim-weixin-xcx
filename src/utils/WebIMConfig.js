@@ -29,7 +29,7 @@ let config = {
 	/*
 	 * Application AppKey
 	 */
-	appkey: "easemob-demo#chatdemoui",
+	appkey: "easemob-demo#easeim",
 	/*
 	 * Whether to use HTTPS      '1177161227178308#xcx'
 	 * @parameter {Boolean} true or false
@@ -77,6 +77,7 @@ let config = {
 	isAutoLogin: true,
 
 	heartBeatWait: 30000
+
 };
 
 export default config;

@@ -39,6 +39,16 @@
 		bind:hangup="onHangup"
 		wx:if="{{showmultiEmedia}}"/>
 
+	<chat-singleEmedia 
+		username="{{ username }}" 
+		friendId="{{groupId}}"
+		action="{{emediaAction}}"
+		type="{{singleEmediaType}}"
+		bind:inviteMember="onInviteMember"
+		bind:createConfrSuccess="onCreateConfrSuccess"
+		bind:hangup="onHangup"
+		wx:if="{{showSingleEmedia}}"/>
+
 	<chat-emediaInvite 
 		username="{{ username }}" 
 		action="{{action}}"

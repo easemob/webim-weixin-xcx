@@ -37,12 +37,12 @@ Component({
 			);
 		},
 
-		onMakeVideoCall(){
-	  		this.triggerEvent('makeVideoCall', 'single')
+		onMakeVideoCall(evt){
+	  		this.triggerEvent('makeVideoCall', evt.detail)
 	  	},
 
-	  	onMakeAudioCall(){
-	  		this.triggerEvent('makeAudioCall', 'single')
+	  	onMakeAudioCall(evt){
+	  		this.triggerEvent('makeAudioCall', evt.detail)
 		},
 
 		sendVideo(){
@@ -75,7 +75,13 @@ Component({
 
 		callVideo(){
 			console.log('this.data.__comps__.ptopcall', this.data.__comps__.ptopcall)
-			this.data.__comps__.ptopcall.show()
+
+			console.log('username', this.data.username)
+			if (this.data.username.groupId) {
+				this.data.__comps__.ptopcall.show('group')
+			}else{
+				this.data.__comps__.ptopcall.show('contact')
+			}
 		}
 	},
 

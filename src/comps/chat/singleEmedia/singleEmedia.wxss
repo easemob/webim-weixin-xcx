@@ -1,0 +1,100 @@
+.invite, .video-content{
+	width: 100%;
+	height: 100%;
+	background: blue;
+	position: fixed;
+	top: 0;
+	z-index: 9;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	overflow-y: hidden; 
+}
+
+
+.video-content{
+	width: 100%;
+	height: 100%;
+	background: green;
+}
+
+.video-content live-pusher{
+	width: 100%;
+    height: 100%;
+    position: absolute;
+    margin: 0;
+}
+
+.video-content live-player{
+	position: relative;
+    left: 50%;
+    margin: 0;
+}
+
+/*控制部分*/
+.controlContent {
+	display: flex;
+	flex-direction: column;
+	height: 340rpx;
+	width: 100%;
+	align-items: center;
+	padding-top: 20rpx;
+	z-index: 9;
+}
+
+.emediaContrContent {
+	display: flex;
+	width: 100%;
+}
+.controlItem {
+	flex: 1;
+	height: 100rpx;
+	text-align: center;
+	color: #fff;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	font-size: 12px;
+}
+.icon-record {
+	width: 100rpx;
+	height: 100rpx;
+}
+.hangup {
+	width: 100rpx;
+	height: 100rpx;
+	border-radius: 50rpx;
+	background: red;
+	margin-top: 20rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.time{
+	color: #fff;
+}
+.audio{
+	width: 100%;
+	height: 100%;
+	background: #a5a5b1;
+	position: fixed;
+	top: 0;
+	z-index: 99;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	overflow-y: hidden; 
+}
+.audio .text{
+	color: #fff;
+	text-align: center;
+	margin-top: 60rpx;
+}
+.audio_control{
+	display: flex;
+    width: 100%;
+    flex-direction: column;
+    -webkit-box-reflect: right;
+    align-items: center;
+    padding-bottom: 40rpx;
+}

@@ -1,7 +1,6 @@
 .wraper{
 	position: fixed;
 	bottom: 0;
-	height: 200rpx;
 	width: 100%;
 	z-index: 9;
 	background: rgba(0,0,0,.1);
@@ -10,7 +9,6 @@
   background-color: blue;
 }
 .button-cancel {
-	position: absolute;
 	width: 100%;
 	bottom: 0;
 }

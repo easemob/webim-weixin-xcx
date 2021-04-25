@@ -8,11 +8,20 @@ let disp = require("utils/broadcast");
 let logout = false;
 
 //emedia_for_miniProgram-test是沙箱环境测试版，线上环境请用emedia_for_miniProgram这个文件
-const emedia = wx.emedia = require("./emedia/emedia_for_miniProgram") 
+const emedia = wx.emedia = require("./emedia/webrtc/src/entry")
+// const emedia = wx.emedia = require("./emedia/emedia_for_miniProgram") 
 
+const AgoraMiniappSDK = require('./emedia/Agora_SDK_for_Wechat');
+// const AgoraMiniappSDK = require('./emedia/Agora');
+wx.AgoraMiniappSDK = AgoraMiniappSDK
 console.log('emedia', emedia)
 console.log('WebIM', WebIM)
+console.log('wx.AgoraMiniappSDK', wx.AgoraMiniappSDK)
 
+let emediaState = require('comps/chat/multiEmedia/emediaState')
+
+
+emedia.config({useUniappPlugin: false})
 function ack(receiveMsg){
 	// 处理未读消息回执
 	var bodyId = receiveMsg.id;         // 需要发送已读回执的消息id
@@ -109,7 +118,8 @@ App({
 		userInfo: null,
 		saveFriendList: [],
 		saveGroupInvitedList: [],
-		isIPX: false //是否为iphone X
+		isIPX: false, //是否为iphone X
+		channel: ''
 	},
 
 	conn: {
@@ -168,6 +178,11 @@ App({
 		disp.on('em.chat.audio.fileLoaded', function(){
 			calcUnReadSpot()
 		});
+
+		// 音视频邀请
+		disp.on('emedia.confirmRing', function(){
+			
+		});
 		
 		// 
 		WebIM.conn.listen({
@@ -218,11 +233,11 @@ App({
 				});
 			},
 			onClosed(){
-				// wx.showToast({
-				// 	title: "网络已断开",
-				// 	icon: 'none',
-				// 	duration: 2000
-				// });
+				wx.showToast({
+					title: "网络已断开",
+					icon: 'none',
+					duration: 2000
+				});
 				wx.redirectTo({
 						url: "../login/login"
 					});
@@ -406,6 +421,8 @@ App({
 			onCmdMessage(message){
 				console.log("onCmdMessage", message);
 				if(message){
+					emediaState.onMessage(message)
+
 					if(onMessageError(message)){
 						msgStorage.saveReceiveMsg(message, msgType.CMD);
 					}
@@ -429,7 +446,9 @@ App({
 					}
 					calcUnReadSpot(message);
 					ack(message);
-
+					if (message.ext.action == "invite") {
+						emediaState.onMessage(message)
+					}
 					if(message.ext.msg_extension){
 						let msgExtension = JSON.parse(message.ext.msg_extension)
 						let conferenceId = message.ext.conferenceId

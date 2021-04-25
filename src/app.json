@@ -1,7 +1,8 @@
 {
   "pages": [
-    "pages/guide/guide",
     "pages/login/login",
+    "pages/guide/guide",
+    
     "pages/notification_groupDetail/groupDetail",
     "pages/notification_friendDetail/friendDetail",
     "pages/login_token/login_token",

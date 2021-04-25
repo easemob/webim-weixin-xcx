@@ -29,7 +29,7 @@
 		<view class="send_image" bind:tap="sendImage">
 			<image src="../../../images/pic.png" style="height:22px; width: 22px"/>
 		</view>
-		<view class="v-record" bind:tap="callVideo" wx:if="{{username.groupId}}">
+		<view class="v-record" bind:tap="callVideo">
 			<image src="../../../images/call2x.png" style="height:24px; width: 15px"/>
 		</view>
 	</view>

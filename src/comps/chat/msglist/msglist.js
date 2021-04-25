@@ -24,8 +24,8 @@ Component({
 	},
 	methods: {
 		clickMsg(data){
-			if(data.currentTarget.dataset.msg.ext&&data.currentTarget.dataset.msg.ext.msg_extension){
-				this.triggerEvent("clickMsg", data.currentTarget.dataset.msg.ext)
+			if(data.currentTarget.dataset.msg.ext&&data.currentTarget.dataset.msg.ext.action){
+				this.triggerEvent("clickMsg", data.currentTarget.dataset.msg)
 			}
 		},
 		normalScroll(){
@@ -177,6 +177,7 @@ Component({
 	moved(){},
 	detached(){
 		this.__visibility__ = false;
+		msgStorage.off("newChatMsg", this.dispMsg)
 	},
 	ready(event){
 		let me = this;

@@ -5,10 +5,12 @@ Component({
   	},
 	data: {
 		visible: false,
+		callType: null
 	},
 	methods: {
-		show(){
+		show(calltype){
 			this.setData({
+				callType: calltype,
 				visible: true
 			})
 		},
@@ -19,12 +21,12 @@ Component({
 		},
 
 		callAudio(){
-			this.triggerEvent('makeAudioCall', 'single')
+			this.triggerEvent('makeAudioCall', this.data.callType)
 			this.cancel()
 		},
 
 		callVideo(){
-			this.triggerEvent('makeVideoCall', 'single')
+			this.triggerEvent('makeVideoCall', this.data.callType)
 			this.cancel()
 		}
 	}

@@ -97,15 +97,15 @@ Page({
 		});
 
 		// 此处为测试用来切换沙箱环境，请忽略
-		if(this.data.isSandBox){
-			WebIM.config.apiURL = "https://a1-hsb.easemob.com"
-			WebIM.conn.apiUrl = "https://a1-hsb.easemob.com"
-			WebIM.conn.url = 'wss://im-api-new-hsb.easemob.com/websocket'
-			wx.emedia.mgr.setHost("https://a1-hsb.easemob.com")
-		}
+		// if(this.data.isSandBox){
+		// 	WebIM.config.apiURL = "https://a1-hsb.easemob.com"
+		// 	WebIM.conn.apiUrl = "https://a1-hsb.easemob.com"
+		// 	WebIM.conn.url = 'wss://im-api-new-hsb.easemob.com/websocket'
+		// 	wx.emedia.mgr.setHost("https://a1-hsb.easemob.com")
+		// }
 
 		getApp().conn.open({
-			apiUrl: WebIM.config.apiURL,
+			// apiUrl: WebIM.config.apiURL,
 			user: __test_account__ || this.data.name.toLowerCase(),
 			pwd: __test_psword__ || this.data.psd,
 			grant_type: this.data.grant_type,

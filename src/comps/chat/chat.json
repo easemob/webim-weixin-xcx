@@ -5,6 +5,7 @@
 		"chat-inputbar": "inputbar/inputbar",
 		"chat-suit-audio": "inputbar/suit/audio/audio",
 		"chat-multiEmedia": "multiEmedia/multiEmedia",
+		"chat-singleEmedia": "singleEmedia/singleEmedia",
 		"chat-emediaInvite": "emediaInvite/emediaInvite"
 	}
 }

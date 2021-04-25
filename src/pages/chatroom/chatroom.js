@@ -11,6 +11,7 @@ Page({
 	onLoad(options){
 		let me = this
 		let username = options && JSON.parse(options.username) || {};
+		console.log('username *****',username)
 		this.setData({ username: username });
 		wx.setNavigationBarTitle({
 			title: username.your
@@ -22,6 +23,15 @@ Page({
 				me.onLoad()
 			}
 		})
+		if (username.action == 'join') {
+			console.log('username', username)
+			this.selectComponent('#chat').joinConf(username.data)
+		}
+		disp.on('emedia.confirmRing', function(event) {
+			console.log('event', event)
+			me.selectComponent('#chat').joinConf()
+		});
+		
 	},
 
 	onUnload(){

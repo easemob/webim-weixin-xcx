@@ -1,4 +1,5 @@
 var WebIM = wx.WebIM;
+var emediaState = require('../multiEmedia/emediaState')
 Component({
 	properties: {//接收父组件传过来的值
 	    username: null,
@@ -28,10 +29,15 @@ Component({
 		    	})
 		    }
 
-		    var roomId = this.data.username&&this.data.username.groupId
+		    var roomId 
+		    if (this.data.username&&this.data.username.groupId) {
+		    	roomId = this.data.username.groupId
+		    }else{
+		    	roomId = emediaState.confr.gid
+		    }
+		     
 		    roomId&&this.getGroupMember(roomId)
-
-		},
+		}
 	},
 	data: {
 		search_btn: true,
@@ -43,7 +49,7 @@ Component({
 		renderList: [],
 		buttonText: '发起会议',
 		second_height: 450,
-		show_clear: false,
+		show_clear: false
 	},
 
 	methods: {
@@ -100,7 +106,6 @@ Component({
 
 		},
 
-
 		checkboxChange: function (e) {
 	    	console.log('checkbox发生change事件，携带value值为：', e)
 	    	if(this.data.checkedValue.indexOf(e.detail.value) == -1 && e.detail.value[0]){
@@ -131,8 +136,6 @@ Component({
 			});
 			//this.getBrands(this.data.member)
 		},
-
-		
 
 		onInput(e){
 

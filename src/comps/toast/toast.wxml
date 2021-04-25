@@ -21,6 +21,15 @@
 				</view>
 			</view>
 		</view>
+
+		<view class="alert_content" wx:if="{{ isHideAlert }}">
+			<view class="alert_text">{{content}}</view>
+			<view class="alert_btn_container">
+				<button class="alert_btn agree" bindtap="handleAgree">同意</button>
+				<button class="alert_btn refuse" bindtap="handleRefuse">拒绝</button>
+			</view>
+		</view>
+
 	</view>
 </template>
 

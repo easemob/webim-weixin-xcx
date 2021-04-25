@@ -2,6 +2,7 @@ let msgStorage = require("msgstorage");
 let msgType = require("msgtype");
 let WebIM = require("../../utils/WebIM")["default"];
 let disp = require("../../utils/broadcast");
+let emediaState = require("./multiEmedia/emediaState");
 Component({
 	properties: {
 		username: {
@@ -23,13 +24,15 @@ Component({
 		subUrl: '',
 		showEmedia: false,
 		showmultiEmedia: false,
+		showSingleEmedia: false,
 		showEmediaInvite: false,
 		action: null,
 		emediaAction: null,
 		multiEmediaVisible: 'block',
 		inputbarVisible: 'block',
 		confrId: '',
-		groupId: ''
+		groupId: '',
+		singleEmediaType: 1,
 	},
 	methods: {
 		toggleRecordModal(){
@@ -57,17 +60,90 @@ Component({
 			this.selectComponent('#chat-msglist').getHistoryMsg()
 		},
 
-		onMakeVideoCall(){
-			this.setData({
-				showEmediaInvite: true,
-				inputbarVisible: 'none',
-				action: 'create'
-				//showEmedia: true
-			})
+		callVideo(callType, type){
+	        if (emediaState.callStatus > 0) {
+	            console.log('正在通话中')
+	        }
+	        const value = '邀请您进行视频通话'
+	        const callId = wx.WebIM.conn.getUniqueId().toString();
+	        const channelName = Math.uuid(8)
+	        let username = this.data.username.your;
+
+	        if (callType === 'contact') {
+	            this.sendInviteMsg([username], channelName, callId, type)
+	            emediaState.setConf({
+	            	channel: channelName,
+			    	token: '',
+			    	type: type,
+			    	callId: callId,
+			    	callerDevId: wx.WebIM.conn.context.jid.clientResource,
+			    	calleeDevId: null,
+			    	confrName: '',
+			    	callerIMName: this.data.username.myName,
+			    	calleeIMName: username
+	            })
+	        }else if (selectTab === 'group'){
+	            this.props.showInviteModal()
+	            this.props.setGid(selectItem)
+	            // this.props.updateConfrInfo(selectItem, false, false)
+	        }
+
+	        const inviteStatus = 1
+	        emediaState.callStatus = inviteStatus
+
+	        // rtc.timer = setTimeout(() => {
+	        //     if (selectTab === 'contact') {
+	        //         this.props.cancelCall(username)
+	        //         this.props.hangup()
+	        //     }else{
+	        //         // 多人不做超时
+	        //     }
+	        // }, 30000)
+	    },
+	    // 点击发起视频的回调
+		onMakeVideoCall(evt){
+			console.log('evt --- ', evt)
+			if (evt.detail == "group") {
+				this.setData({
+					showEmediaInvite: true,
+					inputbarVisible: 'none',
+					action: 'create'
+					//showEmedia: true
+				})
+			}else{
+				this.callVideo('contact', 1)
+				this.setData({
+					showSingleEmedia: true,
+					inputbarVisible: 'none'
+				})
+			}
 		},
 
+		// 群组发起视频邀请的回调
 		onStartConfr(data){
 			console.log('发起邀请的回调', data.detail)
+			const channel = Math.uuid(8)
+			let callId = WebIM.conn.getUniqueId().toString();
+			let username = this.data.username.your;
+			getApp().globalData.channel = channel
+			
+			emediaState.setConf('callId', callId)
+			// if(data.detail.action == 'invite'){
+			this.sendInviteMsg(data.detail.confrMember, channel, callId, 2)
+			// }
+
+			emediaState.setConf({
+            	channel: channel,
+		    	token: '',
+		    	type: 2,
+		    	callId: callId,
+		    	callerDevId: wx.WebIM.conn.context.jid.clientResource,
+		    	calleeDevId: null,
+		    	confrName: '',
+		    	callerIMName: wx.WebIM.conn.context.userId,
+		    	calleeIMName: username
+            })
+
 			this.setData({
 				showEmediaInvite: false,
 				showmultiEmedia: true,
@@ -78,8 +154,30 @@ Component({
 					action: 'create'
 				}
 			})
-			if(data.detail.action == 'invite'){
-				this.sendInviteMsg(data.detail.confrMember, getApp().globalData.confrId)
+		},
+
+		joinConf(data){
+			console.log('data ---', data)
+			console.log('emediaState', emediaState)
+			if(emediaState.confr.type == 1 || emediaState.confr.type == 0){
+				this.setData({
+					showSingleEmedia: true,
+					inputbarVisible: 'none',
+					emediaAction:{
+						action: 'join'
+					}
+				})
+			}else {
+				this.setData({
+					showEmediaInvite: false,
+					showmultiEmedia: true,
+					multiEmediaVisible: 'block',
+					inputbarVisible: 'none',
+					confrMember: 'confrMember',
+					emediaAction:{
+						action: 'join'
+					}
+				})
 			}
 		},
 
@@ -110,10 +208,14 @@ Component({
 		},
 
 		onMakeAudioCall(){
+			this.callVideo('contact', 0)
 			this.setData({
-				showEmediaInvite: true,
-				showmultiEmedia: false,
-				inputbarVisible: 'none'
+				showSingleEmedia: true,
+				inputbarVisible: 'none',
+				singleEmediaType: 0,
+				emediaAction:{
+					action: 'create'
+				}
 			})
 		},
 
@@ -122,35 +224,35 @@ Component({
 			this.setData({
 				confrId: data.detail.confrId
 			})
+			const channel = Math.uuid(8)
+			getApp().globalData.channel = channel
 			getApp().globalData.confrId = data.detail.confrId
-   			this.sendInviteMsg(this.data.confrMember, data.detail.confrId, data)
+			debugger
+   			this.sendInviteMsg(this.data.confrMember, channel, data)
 		},
 
-		sendInviteMsg(members, confrId, data){
+		sendInviteMsg(members, channel, callId, type){
 			console.log("%c members","background: green")
 			console.log(members)
 			members&&members.forEach((value) => {
-				let id = WebIM.conn.getUniqueId();
-				let msg = new WebIM.message('txt', id);
-
+				let id = wx.WebIM.conn.getUniqueId();
+				let msg = new wx.WebIM.message('txt', id);
 				msg.set({
 					msg: wx.WebIM.conn.context.userId + ' invite you to video call',
 					from: wx.WebIM.conn.context.userId,
 					to: value,
-					roomType: false,
-					chatType: 'chat',
+					chatType: 'singleChat',
 					ext: {
-						msg_extension: JSON.stringify({
-							inviter: wx.WebIM.conn.context.userId,
-							group_id: this.data.username.groupId
-						}),
-						roomName: data&&data.detail.roomName || '',
-						password: data&&data.detail.password || '',
-						conferenceId: confrId
+						action: 'invite',
+	                    channelName: channel,
+	                    type: type, //0为1v1音频，1为1v1视频，2为多人通话
+	                    callerDevId: wx.WebIM.conn.context.jid.clientResource, // 主叫方设备Id
+	                    callId: callId, // 随机uuid，每次呼叫都不同，代表一次呼叫
+	                    ts: Date.now(),
+	                    msgType: 'rtcCallWithAgora'
 					},
 					success(id, serverMsgId){
 						console.log('发送邀请消息成功 to: '+value)
-						//disp.fire('em.chat.sendSuccess', id, me.data.userMessage);
 					},
 					fail(id, serverMsgId){
 						console.log('发送邀请消息失败了')
@@ -160,37 +262,50 @@ Component({
 				// 	msg.setGroup("groupchat");
 				// }
 				console.log('发送邀请')
-				WebIM.conn.send(msg.body);
-
+				wx.WebIM.conn.send(msg.body);
 			})
 		},
 
 		onClickInviteMsg(data){
 			console.log('收到邀请消息')
 			console.log(data)
-			let confrId = data.detail.conferenceId
-			let msg_extension = typeof(data.detail.msg_extension) == 'string'?JSON.parse(data.detail.msg_extension):data.detail.msg_extension
-			let password = data.detail.password || ''
+			emediaState.answerCall('accept',{
+				currentCallId: data.detail.ext.callId,
+				callerDevId: data.detail.ext.callerDevId,
+				to: data.detail.info.from 
+			})
+			// let confrId = data.detail.conferenceId
+			// let msg_extension = typeof(data.detail.msg_extension) == 'string'?JSON.parse(data.detail.msg_extension):data.detail.msg_extension
+			// let password = data.detail.password || ''
+			// this.setData({
+			// 	emediaAction: {
+			// 		action: 'join',
+			// 		confrId: confrId,
+			// 		password: password,
+			// 		roomName: data.detail.roomName || ''
+			// 	},
+			// 	showEmediaInvite: false,
+			// 	showmultiEmedia: true,
+			// 	inputbarVisible: 'none',
+			// 	groupId: msg_extension.group_id
+			// 	// username: {
+			// 	// 	groupId: msg_extension.group_id
+			// 	// }
+			// })
+
 			this.setData({
+				showmultiEmedia: true,
 				emediaAction: {
 					action: 'join',
-					confrId: confrId,
-					password: password,
-					roomName: data.detail.roomName || ''
-				},
-				showEmediaInvite: false,
-				showmultiEmedia: true,
-				inputbarVisible: 'none',
-				groupId: msg_extension.group_id
-				// username: {
-				// 	groupId: msg_extension.group_id
-				// }
+					...data.detail.ext
+				}
 			})
 		},
 		onHangup(){
 			this.setData({
 				showEmediaInvite: false,
 				showmultiEmedia: false,
+				showSingleEmedia: false,
 				inputbarVisible: 'block'
 			})
 			getApp().globalData.confrId = ''
@@ -229,5 +344,4 @@ Component({
 	moved(){},
 	detached(){
 	},
-
 });

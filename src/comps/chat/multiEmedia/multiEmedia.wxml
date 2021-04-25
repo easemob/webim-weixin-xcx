@@ -9,7 +9,7 @@
 		</view>
 
 		<live-pusher 
-			url="{{pubUrl}}" 
+			url="{{pubUrl}}"
 			mode="RTC" 
 			aspect="3:4"
 			enable-mic="{{true}}"
@@ -23,10 +23,10 @@
 			orientation="vertical"
 			bindstatechange="statechange"
 			bindnetstatus="netstatusChange"
+			object-fit="fillCrop"
 		>
 			<view class="userName">{{myName}}</view>
 		</live-pusher>
-
 
 		<view  
 			style="display:inline"
