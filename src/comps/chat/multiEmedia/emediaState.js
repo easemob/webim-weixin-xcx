@@ -99,6 +99,10 @@ let emediaState = {
                     }
                     if (!msgInfo.status && emediaState.callStatus < CALLSTATUS.receivedConfirmRing) {
                         console.warn('邀请已失效')
+                        wx.showToast({
+							title: "邀请已失效",
+							duration: 1000
+						});
                         emediaState.callStatus = CALLSTATUS.idle
                         emediaState.hangup()
                         return
@@ -114,6 +118,10 @@ let emediaState = {
 					  content: '邀请你加入视频会议',
 					  success (res) {
 					  	if (res.confirm) {
+					  		console.log('emediaState ---', emediaState)
+					  		if (emediaState.callStatus == 0) {
+					  			return
+					  		}
 					  		me.answerCall.call(me,'accept', msgInfo)
 						    let pages = getCurrentPages();
 	  						let curPage = pages[pages.length - 1];
@@ -162,12 +170,21 @@ let emediaState = {
                     if (msgInfo.result !== 'accept') {
                         if (msgInfo.result === 'busy') {
                             console.error('对方正忙')
+                            wx.showToast({
+								title: "对方正忙",
+								duration: 1000
+							});
                         }else if(msgInfo.result === 'refuse'){
                             console.error('对方已拒绝')
+                            wx.showToast({
+								title: "对方已拒绝",
+								duration: 1000
+							});
                         }
                         
                         if (emediaState.confr.type !== 2) { // 单人情况挂断，多人不挂断
                         	emediaState.hangup()
+                        	disp.fire('hangup')
                         	emediaState.callStatus = CALLSTATUS.idle
                         }
                     }
@@ -178,12 +195,19 @@ let emediaState = {
                         if (msg.to == wx.WebIM.conn.context.jid.name) {
                         	emediaState.hangup()
                         	emediaState.callStatus = CALLSTATUS.idle
+                        	// disp.fire('hangup')
+                        	wx.showToast({
+								title: "已在其他设备处理",
+								duration: 2000
+							});
                             return console.error('已在其他设备处理')
                         }
                     }
                     else if (msg.ext.result != 'accept' && emediaState.callStatus != 7) {
                         // 不在通话中收到 busy refuse时挂断
                         emediaState.hangup()
+                        disp.fire('hangup')
+
                         emediaState.callStatus = CALLSTATUS.idle
                         return
                     }
@@ -197,6 +221,7 @@ let emediaState = {
                     }
                     if (msg.from == emediaState.confr.callerIMName) {
                         emediaState.hangup()
+                        disp.fire('hangup')
                         emediaState.callStatus = CALLSTATUS.idle
                     }
                     break;
@@ -235,6 +260,7 @@ let emediaState = {
 		wx.WebIM.rtc.timer = setTimeout(() => {
 			console.log('定时器到期')
 			emediaState.hangup()
+			disp.fire('hangup')
 			emediaState.callStatus = CALLSTATUS.idle
 		}, 30000)
 		console.log('设置定时器')
@@ -416,7 +442,6 @@ let emediaState = {
 	},
 
 	updateConfr: function(msg){
-		console.log('更新吗 ---', msg)
 		let confrInfo = msg.ext || {}
 		let groupId
 		let confr = {

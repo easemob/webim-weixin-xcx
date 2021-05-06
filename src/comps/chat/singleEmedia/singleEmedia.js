@@ -1,4 +1,5 @@
 var emediaState = require('../multiEmedia/emediaState')
+let disp = require("../../../utils/broadcast");
 Component({
 	properties: {//接收父组件传过来的值
 	    username: null,//定义接收参数变量及允许传入参数类型
@@ -20,6 +21,8 @@ Component({
 			}
 			this.getToken(myUserId, emediaState.confr.channel)
 			this.getTimer()
+
+			disp.on('hangup', this.hangup.bind(this))
 		}
 	},
 
@@ -46,7 +49,7 @@ Component({
 	methods: {
 		initConfr(userId){
 			let me = this
-			let client = this.client = new wx.AgoraMiniappSDK.Client();
+			let client = this.client = wx.WebIM.client = new wx.AgoraMiniappSDK.Client();
 			client.setRole('broadcaster')
 			const appId = "15cb0d28b87b425ea613fc46f7c9f974";
 
@@ -79,7 +82,7 @@ Component({
 		getToken(userId, channelName){
 			let me = this
 			wx.request({
-				url: `https://a1-hsb.easemob.com/token/rtcToken?userAccount=${userId}&channelName=${channelName}&appkey=${encodeURIComponent('easemob-demo#easeim')}`,//仅为示例，并非真实的接口地址
+				url: `https://a1.easemob.com/token/rtcToken/v1?userAccount=${userId}&channelName=${channelName}&appkey=${encodeURIComponent('easemob-demo#easeim')}`,//仅为示例，并非真实的接口地址
 				header: {
 				    'Authorization': 'Bearer ' + wx.WebIM.conn.context.accessToken
 				},
@@ -95,6 +98,7 @@ Component({
 		},
 
 		joinChannel(token, channel, uid){
+			if (!token || !channel || !uid) { return }
 			console.log('token ----', token, channel, uid)
 			this.client.join(token, channel, uid, (res) => {
 			  	console.log(`client join channel success`, res);
@@ -172,7 +176,7 @@ Component({
 		},
 
 		hangup(){
-			console.log('挂断', this.data.confrId)
+			console.log('挂断')
 			this.triggerEvent('hangup')
 			this.stopTimer()
 			emediaState.hangup()
