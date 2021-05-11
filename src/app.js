@@ -1,5 +1,4 @@
 
-// require("sdk/libs/strophe");
 let WebIM = wx.WebIM = require("utils/WebIM")["default"];
 let msgStorage = require("comps/chat/msgstorage");
 let msgType = require("comps/chat/msgtype");
@@ -7,21 +6,14 @@ let ToastPannel = require("./comps/toast/toast");
 let disp = require("utils/broadcast");
 let logout = false;
 
-//emedia_for_miniProgram-test是沙箱环境测试版，线上环境请用emedia_for_miniProgram这个文件
-const emedia = wx.emedia = require("./emedia/webrtc/src/entry")
-// const emedia = wx.emedia = require("./emedia/emedia_for_miniProgram") 
-
 const AgoraMiniappSDK = require('./emedia/Agora_SDK_for_Wechat');
 // const AgoraMiniappSDK = require('./emedia/Agora');
 wx.AgoraMiniappSDK = AgoraMiniappSDK
-console.log('emedia', emedia)
 console.log('WebIM', WebIM)
 console.log('wx.AgoraMiniappSDK', wx.AgoraMiniappSDK)
 
 let emediaState = require('comps/chat/multiEmedia/emediaState')
 
-
-emedia.config({useUniappPlugin: false})
 function ack(receiveMsg){
 	// 处理未读消息回执
 	var bodyId = receiveMsg.id;         // 需要发送已读回执的消息id
@@ -195,30 +187,6 @@ App({
 
 				let identityToken = WebIM.conn.context.accessToken
 				let identityName = WebIM.conn.context.jid
-
-				// service.setup({"tktId":"13H9ZH0001TE29IFLK000C7TK2","url":"wss://172.17.2.55/confr/multipeople?CONFRID=13H9ZH0001TE29IFLK000C1M3&forward=127.0.0.1&port=9092","confrId":"13H9ZH0001TE29IFLK000C1M3","password":"","type":"communication_mix","memName":"easemob-demo#chatdemoui_zdtest@easemob.com","hmac":"SSZpG1K0U6cuIl8TWWV06yXgBaQ=","timestamp":1575962109914,"rights":15}
-				// )
-				// service.join()
-				//"{"tktId":"13H851UX8XTE10GSUIQ00C1TK2","url":"wss://rtc-turn4-hsb.easemob.com/ws?CONFRID=13H851UX8XTE10GSUIQ00C1&forward=10.29.117.29&port=9092","confrId":"13H851UX8XTE10GSUIQ00C1","password":"","type":"communication_mix","memName":"easemob-demo#chatdemoui_zdtest@easemob.com","hmac":"Ak0tITkTxIp+RFlDC/B3LKm2iMw=","timestamp":1575873756927,"rights":7}"
-				// emedia.mgr.createConfr({
-				// 	identityName: 'easemob-demo#chatdemoui_zdtest4@easemob.com',
-				//  	identityToken: identityToken,//'YWMtLFeEbBpOEeqD-sMgAnWU5U1-S6DcShHjkNXh_7qs2vUy04pwHuER6YGUI5WOSRNCAwMAAAFu6V9A4ABPGgDCHHYPZf0jtQbrjH97smaj5nqfv0jQI3WQ2Idfa30bqg',
-				//  	confrType: 11,
-				// 	password: '',
-				// 	success: function(data){
-				// 		var ticket = JSON.parse(data.ticket)
-				// 		//ticket.url = ticket.url//.replace('localhost', '172.17.2.55')
-				// 		var ssss = service.setup(ticket)
-				// 		console.log('ssss', ssss)
-				// 		service.join()
-
-				// 		wx.emedia.onAddStream=function(data){
-				// 			console.log('onAddStream', data)
-				// 			getApp().globalData.subUrl = data.rtmp
-				// 		}
-				// 	}
-				// })
-
 			},
 			onReconnect(){
 				wx.showToast({
