@@ -51,7 +51,7 @@ Component({
 			let me = this
 			let client = this.client = wx.WebIM.client = new wx.AgoraMiniappSDK.Client();
 			client.setRole('broadcaster')
-			const appId = "15cb0d28b87b425ea613fc46f7c9f974";
+			const appId = wx.WebIM.config.AgoraAppId;
 
 			client.init(appId, () => {
 			  	console.log(`client init success`);

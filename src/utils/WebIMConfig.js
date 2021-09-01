@@ -76,7 +76,12 @@ let config = {
 	 */
 	isAutoLogin: true,
 
-	heartBeatWait: 30000
+	heartBeatWait: 30000,
+
+	/*
+	* 需要替换成自己的声网 appId，此 appId 有限量，仅供参考使用，同时获取声网 token 的接口仅能供此 appId 使用，换成自己的 appId 后需要自己去实现 app server 获取声网token。
+	*/
+	AgoraAppId:'15cb0d28b87b425ea613fc46f7c9f974' 
 
 };
 

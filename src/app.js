@@ -6,7 +6,7 @@ let ToastPannel = require("./comps/toast/toast");
 let disp = require("utils/broadcast");
 let logout = false;
 
-const AgoraMiniappSDK = require('./emedia/Agora_SDK_for_Wechat');
+const AgoraMiniappSDK = require('./emedia/Agora_Miniapp_SDK_for_WeChat');
 // const AgoraMiniappSDK = require('./emedia/Agora');
 wx.AgoraMiniappSDK = AgoraMiniappSDK
 console.log('WebIM', WebIM)
