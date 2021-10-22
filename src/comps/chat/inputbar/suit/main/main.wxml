@@ -1,4 +1,5 @@
 <!-- <chat-suit-emoji id="chat-suit-emoji" bind:newEmojiStr="emojiAction"></chat-suit-emoji> -->
+<import src="../../../toast/toast.wxml"/>
 <form class="text-input">
 	<!-- <view class="f-row"> -->
 		<input
