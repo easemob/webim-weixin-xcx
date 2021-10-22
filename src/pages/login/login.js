@@ -30,6 +30,9 @@ Page({
 		disp.on("em.xmpp.error.passwordErr", function(){
 			me.toastFilled('用户名或密码错误');
 		});
+		disp.on("em.xmpp.error.activatedErr", function(){
+			me.toastFilled('用户被封禁');
+		});
 
 		wx.getStorage({
 			key: 'isSandBox',

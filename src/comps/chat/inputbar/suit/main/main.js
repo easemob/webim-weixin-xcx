@@ -1,6 +1,7 @@
 let WebIM = require("../../../../../utils/WebIM")["default"];
 let msgType = require("../../../msgtype");
 let disp = require("../../../../../utils/broadcast");
+
 Component({
 	properties: {
 		username: {
@@ -83,29 +84,41 @@ Component({
 				roomType: false,
 				chatType: this.data.chatType,
 				success(id, serverMsgId){
-					//console.log('成功了')
+					console.log('成功了')
 					disp.fire('em.chat.sendSuccess', id, me.data.userMessage);
+					me.triggerEvent(
+						"newTextMsg",
+						{
+							msg: msg,
+							type: msgType.TEXT,
+						},
+						{
+							bubbles: true,
+							composed: true
+						}
+					);
 				},
 				fail(id, serverMsgId){
 					console.log('失败了')
+					console.log('id',id)
+					console.log('serverMsgId',serverMsgId)
 				}
 			});
 			if(this.data.chatType == msgType.chatType.CHAT_ROOM){
 				msg.setGroup("groupchat");
 			}
-			console.log('发送消息', msg)
-			WebIM.conn.send(msg.body);
-			this.triggerEvent(
-				"newTextMsg",
-				{
-					msg: msg,
-					type: msgType.TEXT,
-				},
-				{
-					bubbles: true,
-					composed: true
+			WebIM.conn.send(msg.body).catch(err => {
+				console.log('err', err)
+				if(err.type === 507){
+					wx.showToast({
+					  title: '你已经被禁言',
+					  icon: 'error',
+					  duration: 2000
+					})
+
 				}
-			);
+			})
+			
 			//
 			this.setData({
 				userMessage: "",

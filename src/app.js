@@ -316,6 +316,7 @@ App({
 							success: () => {
 								saveGroups();
 								console.log('加入成功')
+								disp.fire("em.xmpp.group.joingroup");
 							}
 					      })
 					    } else if (res.cancel) {
@@ -512,11 +513,20 @@ App({
 				if(error.type ==  WebIM.statusCode.WEBIM_CONNCTION_OPEN_ERROR){
 					wx.hideLoading()
 					disp.fire("em.xmpp.error.passwordErr");
-					// wx.showModal({
-					// 	title: "用户名或密码错误",
-					// 	confirmText: "OK",
-					// 	showCancel: false
-					// });
+					let data = error.data.data
+		            // data && message.error(data)
+		            if (data) {
+		                if (data.error_description == "user not found") {
+		                    // ("用户名不存在！")
+		                    disp.fire("em.xmpp.error.passwordErr");
+		                } else if (data.error_description == "invalid password") {
+		                    // ('密码无效！')
+		                    disp.fire("em.xmpp.error.passwordErr");
+		                } else if (data.error_description == "user not activated") {
+		                    // ("用户已被封禁！")
+		                    disp.fire("em.xmpp.error.activatedErr");
+		                }
+		            }
 				}
 				if (error.type == WebIM.statusCode.WEBIM_CONNCTION_AUTH_ERROR) {
 					wx.hideLoading()
@@ -551,6 +561,8 @@ App({
 				url: "../chat/chat?myName=" + myName
 			});
 		}
+
+		wx.hideHomeButton()
 	},
 
 	// onHide(){
