@@ -1,7 +1,7 @@
 // import Strophe from "../sdk/libs/strophe";
 //import xmldom from "../sdk/libs/xmldom/dom-parser";
 // import websdk from "../sdk2/src/wxEntry";
-import websdk from "../sdk/Easemob-chat-miniProgram-3.6.3";
+import websdk from "../sdk/Easemob-chat-4.0.1";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
@@ -219,7 +219,7 @@ WebIM.EmojiObj = {
 WebIM.conn = new WebIM.connection({
 	appKey: WebIM.config.appkey,
 	isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
-	https: typeof WebIM.config.https === "boolean" ? WebIM.config.https : location.protocol === "https:",
+	https: true, //typeof WebIM.config.https === "boolean" ? WebIM.config.https : location.protocol === "https:",
 	url: WebIM.config.socketServer,
 	apiUrl: WebIM.config.apiURL,
 	isAutoLogin: false,
@@ -227,7 +227,8 @@ WebIM.conn = new WebIM.connection({
 	autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
 	autoReconnectInterval: WebIM.config.autoReconnectInterval,
 	isDebug: WebIM.config.isDebug,
-	deviceId: WebIM.config.deviceId
+	deviceId: WebIM.config.deviceId,
+	isHttpDNS:false
 });
 
 // async response
