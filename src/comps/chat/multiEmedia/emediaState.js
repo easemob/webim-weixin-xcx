@@ -428,7 +428,7 @@ let emediaState = {
 
 	hangup: () => {
         emediaState.callStatus = CALLSTATUS.idle
-
+        emediaState.cancelCall()
 		// dispatch(Creators.setCallDuration('00:00'))
 		// dispatch(Creators.setMinisize(false))
 		// dispatch(Creators.resetAll())
