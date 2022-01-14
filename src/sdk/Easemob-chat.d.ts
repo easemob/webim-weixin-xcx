@@ -90,6 +90,9 @@ export declare namespace EasemobChat {
         autoReconnectNumMax?: number;
     }
 
+    interface RegisterUserResult extends AsyncResult {
+        entities: BaseUserInfo[]
+    }
 
     // chat room api result start
     interface ChatRoomBaseInfo {
@@ -570,8 +573,25 @@ export declare namespace EasemobChat {
         /** The number of unread messages. */
         unread_num: number
     }
+
+    interface DeleteSessionResult {
+        /** The result of request. */
+        /** 请求结果。 */
+        result: "ok";
+    }
     // The contact api result end.
 
+    interface LoginResult {
+        /** The connection token. */
+        /** 连接 token。 */
+        accessToken: string,
+        /** Expiration timestamp. */
+        /** 过期时间戳。 */
+        expireTimestamp?: number,
+        /** Valid duration of token. */
+        /** token 有效时长。 */
+        duration?: number
+    }
 
     enum Code {
         REQUEST_SUCCESS = 0,
@@ -724,7 +744,7 @@ export declare namespace EasemobChat {
         /**
          * @deprecated 4.0.1
          */
-        onOpened?: () => any;
+        onOpened?: () => void;
         /**
          * @deprecated 4.0.1
          */
@@ -766,20 +786,20 @@ export declare namespace EasemobChat {
         registerUser(this: Connection, params: {
             username: string,
             password: string,
-            nickname: string,
-            success?: (res: any) => any,
-            error?: (err: ErrorEvent) => any,
+            nickname?: string,
+            success?: (res: any) => void,
+            error?: (err: ErrorEvent) => void,
             apiUrl?: string,
-        }): void;
+        }): Promise<RegisterUserResult>;
 
         open(parameters: {
             user: string,
-            pwd: string,
+            pwd?: string,
             accessToken?: string,
             agoraToken?: string,
-            success?: (res: any) => any,
-            error?: (res: any) => any
-        }): void;
+            success?: (res: any) => void,
+            error?: (res: any) => void
+        }): Promise<LoginResult>;
         isOpened(): boolean;
         close(): void;
         getChatToken(agoraToken: string): Promise<any>;
@@ -829,8 +849,8 @@ export declare namespace EasemobChat {
         destroyChatRoom(this: Connection, params: {
             chatRoomId: string,
             token: string,
-            success?: (res: AsyncResult<CreateDeleteChatRoomResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CreateDeleteChatRoomResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CreateDeleteChatRoomResult>>;
 
         /**
@@ -842,8 +862,8 @@ export declare namespace EasemobChat {
          */
         getChatRoomDetails(this: Connection, params: {
             chatRoomId: string,
-            success?: (res: AsyncResult<GetChatRoomDetailsResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GetChatRoomDetailsResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GetChatRoomDetailsResult>>;
 
         /**
@@ -858,16 +878,16 @@ export declare namespace EasemobChat {
             chatRoomName: string,
             description: string,
             maxusers: number,
-            success?: (res: AsyncResult<ModifyChatRoomResult>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<ModifyChatRoomResult>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<ModifyChatRoomResult>>;
 
         /**@deprecated*/
         removeSingleChatRoomMember(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -881,16 +901,16 @@ export declare namespace EasemobChat {
         removeChatRoomMember(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**@deprecated*/
         removeMultiChatRoomMember(this: Connection, params: {
             chatRoomId: string,
             users: string[],
-            success?: (res: AsyncResult<CommonRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<CommonRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<CommonRequestResult[]>>;
 
         /**
@@ -904,8 +924,8 @@ export declare namespace EasemobChat {
         removeChatRoomMembers(this: Connection, params: {
             chatRoomId: string,
             users: string[],
-            success?: (res: AsyncResult<CommonRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<CommonRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<CommonRequestResult[]>>;
 
         /**
@@ -918,8 +938,8 @@ export declare namespace EasemobChat {
         addUsersToChatRoom(this: Connection, params: {
             chatRoomId: string,
             users: string[],
-            success?: (res: AsyncResult<AddUsersToChatRoomResult>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<AddUsersToChatRoomResult>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<AddUsersToChatRoomResult>>;
 
         /**
@@ -932,8 +952,8 @@ export declare namespace EasemobChat {
         joinChatRoom(this: Connection, params: {
             roomId: string,
             message?: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -945,8 +965,8 @@ export declare namespace EasemobChat {
          */
         quitChatRoom(this: Connection, params: {
             roomId: string,
-            success?: (res: AsyncResult<{ result: boolean }>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<{ result: boolean }>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<{ result: boolean }>>;
 
         /** @deprecated */
@@ -954,8 +974,8 @@ export declare namespace EasemobChat {
             pageNum: number,
             pageSize: number,
             chatRoomId: string,
-            success?: (res: AsyncResult<{ member: string }[]>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<{ member: string }[]>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<{ member: string }[]>>;
 
         /**
@@ -970,8 +990,8 @@ export declare namespace EasemobChat {
             pageNum: number,
             pageSize: number,
             chatRoomId: string,
-            success?: (res: AsyncResult<{ member: string }[]>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<{ member: string }[]>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<{ member: string }[]>>;
 
         /**
@@ -983,8 +1003,8 @@ export declare namespace EasemobChat {
          */
         getChatRoomAdmin(this: Connection, params: {
             chatRoomId: string,
-            success?: (res: AsyncResult<GetChatRoomAdminResult>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<GetChatRoomAdminResult>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<GetChatRoomAdminResult>>;
 
         /**
@@ -997,8 +1017,8 @@ export declare namespace EasemobChat {
         setChatRoomAdmin(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<SetChatRoomAdminResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<SetChatRoomAdminResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<SetChatRoomAdminResult>>;
 
         /**
@@ -1011,8 +1031,8 @@ export declare namespace EasemobChat {
         removeChatRoomAdmin(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<RemoveChatRoomAdminResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<RemoveChatRoomAdminResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<RemoveChatRoomAdminResult>>;
 
         /**
@@ -1027,16 +1047,16 @@ export declare namespace EasemobChat {
             username: string,
             muteDuration: number,
             chatRoomId: string,
-            success?: (res: AsyncResult<MuteChatRoomMemberResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<MuteChatRoomMemberResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<MuteChatRoomMemberResult>>;
 
         /** @deprecated */
         removeMuteChatRoomMember(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<UnmuteChatRoomMemberResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UnmuteChatRoomMemberResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UnmuteChatRoomMemberResult[]>>;
 
         /**
@@ -1050,15 +1070,15 @@ export declare namespace EasemobChat {
         unmuteChatRoomMember(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<UnmuteChatRoomMemberResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UnmuteChatRoomMemberResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UnmuteChatRoomMemberResult[]>>;
 
         /** @deprecated */
         getChatRoomMuted(this: Connection, params: {
             chatRoomId: string,
-            success?: (res: AsyncResult<GetChatRoomMuteListResult[]>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<GetChatRoomMuteListResult[]>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<GetChatRoomMuteListResult[]>>;
 
         /**
@@ -1072,16 +1092,16 @@ export declare namespace EasemobChat {
          */
         getChatRoomMuteList(this: Connection, params: {
             chatRoomId: string,
-            success?: (res: AsyncResult<GetChatRoomMuteListResult[]>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<GetChatRoomMuteListResult[]>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<GetChatRoomMuteListResult[]>>;
 
         /** @deprecated */
         chatRoomBlockSingle(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -1095,16 +1115,16 @@ export declare namespace EasemobChat {
         blockChatRoomMember(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /** @deprecated */
         chatRoomBlockMulti(this: Connection, params: {
             chatRoomId: string,
             usernames: string[],
-            success?: (res: AsyncResult<CommonRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult[]>>;
 
         /**
@@ -1119,16 +1139,16 @@ export declare namespace EasemobChat {
         blockChatRoomMembers(this: Connection, params: {
             chatRoomId: string,
             usernames: string[],
-            success?: (res: AsyncResult<CommonRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult[]>>;
 
         /** @deprecated */
         removeChatRoomBlockSingle(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -1142,16 +1162,16 @@ export declare namespace EasemobChat {
         unblockChatRoomMember(this: Connection, params: {
             chatRoomId: string,
             username: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any,
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void,
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /** @deprecated */
         removeChatRoomBlockMulti(this: Connection, params: {
             chatRoomId: string,
             usernames: string[],
-            success?: (res: AsyncResult<CommonRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult[]>>;
 
         /**
@@ -1166,15 +1186,15 @@ export declare namespace EasemobChat {
         unblockChatRoomMembers(this: Connection, params: {
             chatRoomId: string,
             usernames: string[],
-            success?: (res: AsyncResult<CommonRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult[]>>;
 
         /** @deprecated */
         getChatRoomBlacklistNew(this: Connection, params: {
             chatRoomId: string,
-            success?: (res: AsyncResult<UserId[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UserId[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /**
@@ -1187,8 +1207,8 @@ export declare namespace EasemobChat {
          */
         getChatRoomBlacklist(this: Connection, params: {
             chatRoomId: string,
-            success?: (res: AsyncResult<UserId[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UserId[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /**
@@ -1200,8 +1220,8 @@ export declare namespace EasemobChat {
          */
         disableSendChatRoomMsg(this: Connection, params: {
             chatRoomId: string,
-            success?: (res: AsyncResult<WhetherAbleSendChatRoomMsgResult>) => any,
-            error?: (errror: ErrorEvent) => any
+            success?: (res: AsyncResult<WhetherAbleSendChatRoomMsgResult>) => void,
+            error?: (errror: ErrorEvent) => void
         }): Promise<AsyncResult<WhetherAbleSendChatRoomMsgResult>>;
 
         /**
@@ -1213,8 +1233,8 @@ export declare namespace EasemobChat {
          */
         enableSendChatRoomMsg(this: Connection, params: {
             chatRoomId: string,
-            success?: (res: AsyncResult<WhetherAbleSendChatRoomMsgResult>) => any,
-            error?: (errror: ErrorEvent) => any
+            success?: (res: AsyncResult<WhetherAbleSendChatRoomMsgResult>) => void,
+            error?: (errror: ErrorEvent) => void
         }): Promise<AsyncResult<WhetherAbleSendChatRoomMsgResult>>;
 
         /**
@@ -1227,16 +1247,16 @@ export declare namespace EasemobChat {
         addUsersToChatRoomWhitelist(this: Connection, params: {
             chatRoomId: string,
             users: string[],
-            success?: (res: AsyncResult<CommonRequestResult | CommonRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult | CommonRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult | CommonRequestResult[]>>;
 
         /** @deprecated */
         rmUsersFromChatRoomWhitelist(this: Connection, params: {
             chatRoomId: string,
             userName: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -1250,8 +1270,8 @@ export declare namespace EasemobChat {
         removeChatRoomWhitelistMember(this: Connection, params: {
             chatRoomId: string,
             userName: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -1263,8 +1283,8 @@ export declare namespace EasemobChat {
          */
         getChatRoomWhitelist(this: Connection, params: {
             chatRoomId: string,
-            success: (res: AsyncResult<UserId[]>) => any,
-            error: (error: ErrorEvent) => any
+            success: (res: AsyncResult<UserId[]>) => void,
+            error: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /**
@@ -1277,8 +1297,8 @@ export declare namespace EasemobChat {
         isChatRoomWhiteUser(this: Connection, params: {
             chatRoomId: string,
             userName: string,
-            success?: (res: AsyncResult<IsChatRoomWhiteUserResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<IsChatRoomWhiteUserResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<IsChatRoomWhiteUserResult>>;
 
         /**
@@ -1290,8 +1310,8 @@ export declare namespace EasemobChat {
          */
         fetchChatRoomAnnouncement(this: Connection, params: {
             roomId: string,
-            success?: (res: AsyncResult<FetchChatRoomAnnouncementResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<FetchChatRoomAnnouncementResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<FetchChatRoomAnnouncementResult>>;
 
         /**
@@ -1304,8 +1324,8 @@ export declare namespace EasemobChat {
         updateChatRoomAnnouncement(this: Connection, params: {
             roomId: string,
             announcement: string,
-            success: (res: AsyncResult<UpdateChatRoomAnnouncementResult>) => any,
-            error: (error: ErrorEvent) => any
+            success: (res: AsyncResult<UpdateChatRoomAnnouncementResult>) => void,
+            error: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UpdateChatRoomAnnouncementResult>>;
 
         /**
@@ -1318,11 +1338,11 @@ export declare namespace EasemobChat {
          */
         uploadChatRoomSharedFile(this: Connection, params: {
             roomId: string,
-            file: Object,
-            onFileUploadProgress?: (data: any) => any,
-            onFileUploadComplete?: (data: any) => any,
-            onFileUploadError?: (data: any) => any,
-            onFileUploadCanceled?: (data: any) => any,
+            file: object,
+            onFileUploadProgress?: (data: any) => void,
+            onFileUploadComplete?: (data: any) => void,
+            onFileUploadError?: (data: any) => void,
+            onFileUploadCanceled?: (data: any) => void,
         }): void;
 
         /**
@@ -1335,8 +1355,8 @@ export declare namespace EasemobChat {
         deleteChatRoomSharedFile(this: Connection, params: {
             roomId: string,
             fileId: string,
-            success?: (res: AsyncResult<DeleteChatRoomSharedFileResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<DeleteChatRoomSharedFileResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<DeleteChatRoomSharedFileResult>>;
 
         /**
@@ -1348,8 +1368,8 @@ export declare namespace EasemobChat {
          */
         fetchChatRoomSharedFileList(this: Connection, params: {
             roomId: string,
-            success?: (res: AsyncResult<FetchChatRoomSharedFileListResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<FetchChatRoomSharedFileListResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<FetchChatRoomSharedFileListResult[]>>;
 
 
@@ -1365,8 +1385,8 @@ export declare namespace EasemobChat {
                 allowinvites: boolean,
                 inviteNeedConfirm: boolean
             },
-            success?: (res: AsyncResult<CreateGroupResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CreateGroupResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CreateGroupResult>>;
 
         /**
@@ -1397,15 +1417,15 @@ export declare namespace EasemobChat {
                 allowinvites: boolean,
                 inviteNeedConfirm: boolean
             },
-            success?: (res: AsyncResult<CreateGroupResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CreateGroupResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CreateGroupResult>>;
 
         /**  @deprecated */
         blockGroup(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<BlockGroupResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<BlockGroupResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<BlockGroupResult>>;
 
         /**
@@ -1417,8 +1437,8 @@ export declare namespace EasemobChat {
          */
         blockGroupMessages(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<BlockGroupResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<BlockGroupResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<BlockGroupResult>>;
 
         /**
@@ -1432,8 +1452,8 @@ export declare namespace EasemobChat {
         listGroups(this: Connection, params: {
             limit: number,
             cursor?: string,
-            success?: (res: AsyncResult<BaseGroupInfo[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<BaseGroupInfo[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<BaseGroupInfo[]>>;
 
         /**
@@ -1445,16 +1465,16 @@ export declare namespace EasemobChat {
          * @since 1.4.11
          */
         getGroup(this: Connection, params?: {
-            success?: (res: AsyncResult<BaseGroupInfo[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<BaseGroupInfo[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<BaseGroupInfo[]>>;
 
         /**  @deprecated */
         changeOwner(this: Connection, params: {
             groupId: string,
             newOwner: UserId,
-            success?: (res: AsyncResult<ChangeGroupOwnerResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<ChangeGroupOwnerResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<ChangeGroupOwnerResult>>;
 
         /**
@@ -1468,8 +1488,8 @@ export declare namespace EasemobChat {
         changeGroupOwner(this: Connection, params: {
             groupId: string,
             newOwner: UserId,
-            success?: (res: AsyncResult<ChangeGroupOwnerResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<ChangeGroupOwnerResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<ChangeGroupOwnerResult>>;
 
         /**
@@ -1481,8 +1501,8 @@ export declare namespace EasemobChat {
          */
         getGroupInfo(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<GroupDetailInfo[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupDetailInfo[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupDetailInfo[]>>;
 
         /**
@@ -1496,8 +1516,8 @@ export declare namespace EasemobChat {
             groupId: string,
             groupName: string,
             description: string
-            success?: (res: AsyncResult<ModifyGroupResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<ModifyGroupResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<ModifyGroupResult>>;
 
         /**  @deprecated */
@@ -1505,8 +1525,8 @@ export declare namespace EasemobChat {
             groupId: string,
             pageNum: number,
             pageSize: number,
-            success?: (res: AsyncResult<GroupMember[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupMember[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupMember[]>>;
 
         /**
@@ -1521,8 +1541,8 @@ export declare namespace EasemobChat {
             groupId: string,
             pageNum: number,
             pageSize: number,
-            success?: (res: AsyncResult<GroupMember[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupMember[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupMember[]>>;
 
         /**
@@ -1534,16 +1554,16 @@ export declare namespace EasemobChat {
          */
         getGroupAdmin(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<UserId[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UserId[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /**  @deprecated */
         setAdmin(this: Connection, params: {
             groupId: string,
             username: UserId,
-            success?: (res: AsyncResult<SetGroupAdminResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<SetGroupAdminResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<SetGroupAdminResult>>;
 
         /**
@@ -1557,8 +1577,8 @@ export declare namespace EasemobChat {
         setGroupAdmin(this: Connection, params: {
             groupId: string,
             username: UserId,
-            success?: (res: AsyncResult<SetGroupAdminResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<SetGroupAdminResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<SetGroupAdminResult>>;
 
         /**
@@ -1571,15 +1591,15 @@ export declare namespace EasemobChat {
         removeAdmin(this: Connection, params: {
             groupId: string,
             username: string,
-            success?: (res: AsyncResult<RemoveGroupAdminResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<RemoveGroupAdminResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<RemoveGroupAdminResult>>;
 
         /**  @deprecated */
         dissolveGroup(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<DestroyGroupResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<DestroyGroupResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<DestroyGroupResult>>;
 
         /**
@@ -1592,8 +1612,8 @@ export declare namespace EasemobChat {
          */
         destroyGroup(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<DestroyGroupResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<DestroyGroupResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<DestroyGroupResult>>;
 
         /**
@@ -1605,16 +1625,16 @@ export declare namespace EasemobChat {
          */
         quitGroup(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<{ result: true }>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<{ result: true }>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<{ result: true }>>;
 
         /**  @deprecated */
         inviteToGroup(this: Connection, params: {
             groupId: string,
             users: UserId[],
-            success?: (res: AsyncResult<InviteUsersToGroupResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<InviteUsersToGroupResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<InviteUsersToGroupResult[]>>;
 
         /**
@@ -1628,8 +1648,8 @@ export declare namespace EasemobChat {
         inviteUsersToGroup(this: Connection, params: {
             groupId: string,
             users: UserId[],
-            success?: (res: AsyncResult<InviteUsersToGroupResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<InviteUsersToGroupResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<InviteUsersToGroupResult[]>>;
 
         /**
@@ -1643,16 +1663,16 @@ export declare namespace EasemobChat {
         joinGroup(this: Connection, params: {
             groupId: string,
             message: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**  @deprecated */
         agreeJoinGroup(this: Connection, params: {
             applicant: UserId,
             groupId: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -1666,8 +1686,8 @@ export declare namespace EasemobChat {
         acceptGroupJoinRequest(this: Connection, params: {
             applicant: UserId,
             groupId: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**  @deprecated */
@@ -1675,8 +1695,8 @@ export declare namespace EasemobChat {
             applicant: UserId,
             groupId: string,
             reason: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -1691,16 +1711,16 @@ export declare namespace EasemobChat {
             applicant: UserId,
             groupId: string,
             reason: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**  @deprecated */
         agreeInviteIntoGroup(this: Connection, params: {
             invitee: UserId,
             groupId: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**
@@ -1714,16 +1734,16 @@ export declare namespace EasemobChat {
         acceptGroupInvite(this: Connection, params: {
             invitee: UserId,
             groupId: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<CommonRequestResult>>;
 
         /**  @deprecated */
         rejectInviteIntoGroup(this: Connection, params: {
             invitee: UserId,
             groupId: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<any>;
 
         /**
@@ -1737,16 +1757,16 @@ export declare namespace EasemobChat {
         rejectGroupInvite(this: Connection, params: {
             invitee: UserId,
             groupId: string,
-            success?: (res: AsyncResult<CommonRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<CommonRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<any>;
 
         /**  @deprecated */
         removeSingleGroupMember(this: Connection, params: {
             groupId: string,
             username: UserId,
-            success?: (res: AsyncResult<RemoveGroupMemberResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<RemoveGroupMemberResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<RemoveGroupMemberResult>>;
 
         /**
@@ -1760,16 +1780,16 @@ export declare namespace EasemobChat {
         removeGroupMember(this: Connection, params: {
             groupId: string,
             username: UserId,
-            success?: (res: AsyncResult<RemoveGroupMemberResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<RemoveGroupMemberResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<RemoveGroupMemberResult>>;
 
         /**  @deprecated */
         removeMultiGroupMember(this: Connection, params: {
             groupId: string,
             users: UserId[],
-            success?: (res: AsyncResult<RemoveGroupMemberResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<RemoveGroupMemberResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<RemoveGroupMemberResult[]>>;
 
         /**
@@ -1783,8 +1803,8 @@ export declare namespace EasemobChat {
         removeGroupMembers(this: Connection, params: {
             groupId: string,
             users: UserId[],
-            success?: (res: AsyncResult<RemoveGroupMemberResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<RemoveGroupMemberResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<RemoveGroupMemberResult[]>>;
 
         /**  @deprecated */
@@ -1792,8 +1812,8 @@ export declare namespace EasemobChat {
             username: UserId,
             muteDuration: number,
             groupId: string,
-            success?: (res: AsyncResult<MuteGroupMemberResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<MuteGroupMemberResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<MuteGroupMemberResult[]>>;
 
         /**
@@ -1808,16 +1828,16 @@ export declare namespace EasemobChat {
             username: UserId,
             muteDuration: number,
             groupId: string,
-            success?: (res: AsyncResult<MuteGroupMemberResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<MuteGroupMemberResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<MuteGroupMemberResult[]>>;
 
         /**  @deprecated */
         removeMute(this: Connection, params: {
             groupId: string,
             username: UserId,
-            success?: (res: AsyncResult<UnmuteGroupMemberResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UnmuteGroupMemberResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UnmuteGroupMemberResult[]>>
 
         /**
@@ -1831,15 +1851,15 @@ export declare namespace EasemobChat {
         unmuteGroupMember(this: Connection, params: {
             groupId: string,
             username: UserId,
-            success?: (res: AsyncResult<UnmuteGroupMemberResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UnmuteGroupMemberResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UnmuteGroupMemberResult[]>>
 
         /**  @deprecated */
         getMuted(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<GetGroupMuteListResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GetGroupMuteListResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GetGroupMuteListResult[]>>;
 
         /**
@@ -1852,16 +1872,16 @@ export declare namespace EasemobChat {
          */
         getGroupMuteList(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<GetGroupMuteListResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GetGroupMuteListResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GetGroupMuteListResult[]>>;
 
         /**  @deprecated */
         groupBlockSingle(this: Connection, params: {
             groupId: string,
             username: UserId,
-            success?: (res: AsyncResult<GroupRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult>>;
 
         /**
@@ -1875,16 +1895,16 @@ export declare namespace EasemobChat {
         blockGroupMember(this: Connection, params: {
             groupId: string,
             username: UserId,
-            success?: (res: AsyncResult<GroupRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult>>;
 
         /**  @deprecated */
         groupBlockMulti(this: Connection, params: {
             groupId: string,
             usernames: UserId[],
-            success?: (res: AsyncResult<GroupRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult[]>>;
 
         /**
@@ -1898,16 +1918,16 @@ export declare namespace EasemobChat {
         blockGroupMembers(this: Connection, params: {
             groupId: string,
             usernames: UserId[],
-            success?: (res: AsyncResult<GroupRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult[]>>;
 
         /**  @deprecated */
         removeGroupBlockSingle(this: Connection, params: {
             groupId: string,
             username: string,
-            success?: (res: AsyncResult<GroupRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult>>;
 
         /**
@@ -1921,16 +1941,16 @@ export declare namespace EasemobChat {
         unblockGroupMember(this: Connection, params: {
             groupId: string,
             username: string,
-            success?: (res: AsyncResult<GroupRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult>>;
 
         /**  @deprecated */
         removeGroupBlockMulti(this: Connection, params: {
             groupId: string,
             usernames: UserId[],
-            success?: (res: AsyncResult<GroupRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult[]>>;
 
         /**
@@ -1944,15 +1964,15 @@ export declare namespace EasemobChat {
         unblockGroupMembers(this: Connection, params: {
             groupId: string,
             usernames: UserId[],
-            success?: (res: AsyncResult<GroupRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult[]>>;
 
         /**  @deprecated */
         getGroupBlacklistNew(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<UserId[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UserId[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /**
@@ -1965,8 +1985,8 @@ export declare namespace EasemobChat {
          */
         getGroupBlacklist(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<UserId[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UserId[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /**
@@ -1978,8 +1998,8 @@ export declare namespace EasemobChat {
          */
         disableSendGroupMsg(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<{ mute: true }>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<{ mute: true }>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<{ mute: true }>>;
 
         /**
@@ -1991,8 +2011,8 @@ export declare namespace EasemobChat {
          */
         enableSendGroupMsg(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<{ mute: false }>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<{ mute: false }>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<{ mute: false }>>;
 
         /**
@@ -2005,16 +2025,16 @@ export declare namespace EasemobChat {
         addUsersToGroupWhitelist(this: Connection, params: {
             groupId: string,
             users: UserId[],
-            success?: (res: AsyncResult<GroupRequestResult[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult[]>>;
 
         /**  @deprecated */
         rmUsersFromGroupWhitelist(this: Connection, params: {
             groupId: string,
             userName: UserId,
-            success?: (res: AsyncResult<GroupRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult>>;
 
         /**
@@ -2029,8 +2049,8 @@ export declare namespace EasemobChat {
         removeGroupWhitelistMember(this: Connection, params: {
             groupId: string,
             userName: UserId,
-            success?: (res: AsyncResult<GroupRequestResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GroupRequestResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GroupRequestResult>>;
 
         /**
@@ -2042,16 +2062,16 @@ export declare namespace EasemobChat {
          */
         getGroupWhitelist(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<UserId[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UserId[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /**  @deprecated */
         isGroupWhiteUser(this: Connection, params: {
             groupId: string,
             userName: UserId,
-            success?: (res: AsyncResult<IsInGroupWhiteListResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<IsInGroupWhiteListResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<IsInGroupWhiteListResult>>;
 
         /**
@@ -2065,8 +2085,8 @@ export declare namespace EasemobChat {
         isInGroupWhiteList(this: Connection, params: {
             groupId: string,
             userName: UserId,
-            success?: (res: AsyncResult<IsInGroupWhiteListResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<IsInGroupWhiteListResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<IsInGroupWhiteListResult>>;
 
         /**
@@ -2079,8 +2099,8 @@ export declare namespace EasemobChat {
         getGroupMsgReadUser(this: Connection, params: {
             groupId: string,
             msgId: string,
-            success?: (res: AsyncResult<GetGroupMsgReadUserResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<GetGroupMsgReadUserResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<GetGroupMsgReadUserResult>>;
 
         /**
@@ -2092,8 +2112,8 @@ export declare namespace EasemobChat {
          */
         fetchGroupAnnouncement(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<{ announcement: string }>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<{ announcement: string }>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<{ announcement: string }>>;
 
         /**
@@ -2106,8 +2126,8 @@ export declare namespace EasemobChat {
         updateGroupAnnouncement(this: Connection, params: {
             groupId: string,
             announcement: string,
-            success?: (res: AsyncResult<UpdateGroupAnnouncementResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UpdateGroupAnnouncementResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UpdateGroupAnnouncementResult>>;
 
         /**
@@ -2119,11 +2139,11 @@ export declare namespace EasemobChat {
          */
         uploadGroupSharedFile(this: Connection, params: {
             groupId: string,
-            file: Object,
-            onFileUploadProgress?: (data: ProgressEvent) => any,
-            onFileUploadComplete?: (data: any) => any,
-            onFileUploadError?: (data: any) => any,
-            onFileUploadCanceled?: (data: any) => any,
+            file: object,
+            onFileUploadProgress?: (data: ProgressEvent) => void,
+            onFileUploadComplete?: (data: any) => void,
+            onFileUploadError?: (data: any) => void,
+            onFileUploadCanceled?: (data: any) => void,
         }): void;
 
         /**
@@ -2136,8 +2156,8 @@ export declare namespace EasemobChat {
         deleteGroupSharedFile(this: Connection, params: {
             groupId: string,
             fileId: string,
-            success?: (res: AsyncResult<DeleteGroupSharedFileResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<DeleteGroupSharedFileResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<DeleteGroupSharedFileResult>>;
 
         /**
@@ -2149,8 +2169,8 @@ export declare namespace EasemobChat {
          */
         fetchGroupSharedFileList(this: Connection, params: {
             groupId: string,
-            success?: (res: AsyncResult<FetchGroupSharedFileListResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<FetchGroupSharedFileListResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<FetchGroupSharedFileListResult>>;
 
         // Contact API
@@ -2162,14 +2182,14 @@ export declare namespace EasemobChat {
          * ```
          */
         getBlacklist(this: Connection, params?: {
-            success?: (res: AsyncResult<UserId[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UserId[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /** @deprecated */
         getRoster(this: Connection, params?: {
-            success?: (res: RosterData[]) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: RosterData[]) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /**
@@ -2181,8 +2201,8 @@ export declare namespace EasemobChat {
          * @since v4.0.1
          */
         getContacts(this: Connection, params?: {
-            success?: (res: RosterData[]) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: RosterData[]) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UserId[]>>;
 
         /** @deprecated */
@@ -2190,8 +2210,8 @@ export declare namespace EasemobChat {
             deviceId: string,
             deviceToken: string,
             notifierName: string
-            success?: (res: AsyncResult<UploadTokenResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UploadTokenResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UploadTokenResult>>;
 
         /**
@@ -2206,8 +2226,8 @@ export declare namespace EasemobChat {
             deviceId: string,
             deviceToken: string,
             notifierName: string
-            success?: (res: AsyncResult<UploadTokenResult>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<UploadTokenResult>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<UploadTokenResult>>;
 
         /**
@@ -2218,9 +2238,25 @@ export declare namespace EasemobChat {
          * ```
          */
         getSessionList(this: Connection, params?: {
-            success?: (res: AsyncResult<SessionInfo[]>) => any,
-            error?: (error: ErrorEvent) => any
+            success?: (res: AsyncResult<SessionInfo[]>) => void,
+            error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<SessionInfo[]>>;
+
+        /**
+         * Delete the session.
+         * 
+         * ```typescript
+         * connection.deleteSession()
+         * ```
+         */
+        deleteSession(this: Connection, params: {
+            channel: string;
+            chatType: "singleChat" | "groupChat";
+            deleteRoam: boolean;
+            success?: (res: AsyncResult<DeleteSessionResult>) => void;
+            error?: (error: ErrorEvent) => void;
+        }
+        ): Promise<AsyncResult<DeleteSessionResult>>
 
         /**
          * Updates own information.
@@ -2265,8 +2301,8 @@ export declare namespace EasemobChat {
             start?: number | null,
             count?: number,
             isGroup?: boolean,
-            success?: (res: MessageBody[]) => any,
-            fail?: (error: ErrorEvent) => any
+            success?: (res: MessageBody[]) => void,
+            fail?: (error: ErrorEvent) => void
         }): Promise<MessageBody[]>;
 
         /**
@@ -2369,8 +2405,8 @@ export declare namespace EasemobChat {
             to: UserId,
             type?: 'chat' | 'groupchat' | 'chatroom' // v3.0
             chatType?: 'singleChat' | 'groupChat' | 'chatRoom', // v4.0
-            success?: (res: number) => any,
-            fail?: (error: ErrorEvent) => any,
+            success?: (res: number) => void,
+            fail?: (error: ErrorEvent) => void,
         }): Promise<SendMsgResult>;
 
         // listen @since 3.0
@@ -2442,7 +2478,7 @@ export declare namespace EasemobChat {
      * @deprecated v4.0.1
      */
     interface ListenParameters {
-        onOpened?: () => any;
+        onOpened?: () => void;
         onPresence?: (msg: PresenceMsg) => void;
         onTextMessage?: (msg: TextMsgBody) => void;
         onPictureMessage?: (msg: ImgMsgBody) => void;
@@ -2516,12 +2552,9 @@ export declare namespace EasemobChat {
         useCookiePersist: boolean;
         storageLogLevelKey: string;
         levels: typeof Levels;
-        // logMethods: string[];
-        // methodFactory: any;
         logs: string[];
         config: Config;
         logBytes: number;
-        // [key: string]: any;
         constructor(name: string, defaultLevel: Level, factory?: any);
         setConfig(cofig: Config): void;
         /**
@@ -2549,16 +2582,6 @@ export declare namespace EasemobChat {
          * down load logs
          */
         download(): void;
-        // _bindMethod(obj: any, methodName: string, useCache: boolean): any;
-        // getTime(): string;
-        // _cacheLog(...rest: any[]): void;
-        // _cacheLogCall(log: any): void;
-        // _getPersistedLevel(): any;
-        // _persistLevel(levelNum: number): void;
-        // replaceLoggingMethods(level: LevelNum, loggerName: string): void;
-        // defaultMethodFactory(methodName: string, level: LevelNum, loggerName: string): any;
-        // realMethod(methodName: string): any;
-        // enableLoggingWhenConsoleArrives(methodName: string, level: LevelNum, loggerName: string): () => void;
     }
 
 
@@ -2568,7 +2591,12 @@ export declare namespace EasemobChat {
     type MessageType = 'read' | 'delivery' | 'channel' | 'txt' | 'cmd' | 'custom' | 'loc' | 'img' | 'audio' | 'file' | 'video';
 
     type ChatType = 'singleChat' | 'groupChat' | 'chatRoom';
-
+    interface FileObj {
+        url: string,
+        filename: string,
+        filetype: string,
+        data: File
+    }
     interface PresenceMsg {
         type: OnPresenceMsgType,
         to: string,
@@ -2792,6 +2820,7 @@ export declare namespace EasemobChat {
         chatType: ChatType,
         to: string,
         addr: string,
+        buildingName: string,
         lat: number,
         lng: number,
         from?: string
@@ -2807,6 +2836,7 @@ export declare namespace EasemobChat {
         type: 'loc',
         to: string,
         addr: string,
+        buildingName: string,
         lat: number,
         lng: number,
         from?: string
@@ -2823,6 +2853,7 @@ export declare namespace EasemobChat {
         chatType: ChatType,
         to: string,
         addr: string,
+        buildingName: string,
         lat: number,
         lng: number,
         from?: string
@@ -2835,7 +2866,7 @@ export declare namespace EasemobChat {
     }
     interface FileMsgSetParameters {
         chatType: ChatType,
-        file: any,
+        file: FileObj,
         filename: string,
         fileInputId?: string,
         to: string,
@@ -2872,8 +2903,8 @@ export declare namespace EasemobChat {
     interface CreateFileMsgParameters {
         type: 'file',
         chatType: ChatType,
-        file: any,
-        filename: string,
+        file: FileObj,
+        filename?: string,
         fileInputId?: string,
         to: string,
         from?: string
@@ -2897,7 +2928,7 @@ export declare namespace EasemobChat {
     interface ImgMsgSetParameters {
         chatType: ChatType,
         to: string,
-        file: File,
+        file?: FileObj,
         width?: number,
         height?: number,
         fileInputId?: string,
@@ -2933,7 +2964,7 @@ export declare namespace EasemobChat {
     interface CreateImgMsgParameters {
         type: 'img',
         chatType: ChatType,
-        file: File
+        file?: FileObj
         url?: string,
         width?: number,
         height?: number,
@@ -2958,7 +2989,7 @@ export declare namespace EasemobChat {
     }
     interface AudioMsgSetParameters {
         chatType: ChatType,
-        file: object,
+        file: FileObj,
         filename: string,
         length: number,
         file_length: number,
@@ -2996,7 +3027,7 @@ export declare namespace EasemobChat {
     interface CreateAudioMsgParameters {
         type: 'audio',
         chatType: ChatType,
-        file: object,
+        file: FileObj,
         filename: string,
         length: number,
         file_length: number,
@@ -3024,7 +3055,7 @@ export declare namespace EasemobChat {
     }
     interface VideoMsgSetParameters {
         chatType: ChatType,
-        file: object,
+        file: FileObj,
         filename: string,
         length: number,
         file_length: number,
@@ -3032,13 +3063,13 @@ export declare namespace EasemobChat {
         to: string,
         from?: string
         roomType?: boolean,
-        success?: (data: SendMsgResult) => any,
-        fail?: () => any,
+        success?: (data: SendMsgResult) => void,
+        fail?: () => void,
         ext?: { [key: string]: any },
         apiUrl?: string,
-        onFileUploadError?: (err: any) => any,
-        onFileUploadComplete?: (data: any) => any,
-        onFileUploadProgress?: (data: ProgressEvent) => any,
+        onFileUploadError?: (err: any) => void,
+        onFileUploadComplete?: (data: any) => void,
+        onFileUploadProgress?: (data: ProgressEvent) => void,
         body?: {
             url: string,
             type: string,
@@ -3061,7 +3092,7 @@ export declare namespace EasemobChat {
     interface CreateVideoMsgParameters {
         type: 'video'
         chatType: ChatType,
-        file: object,
+        file: FileObj,
         filename: string,
         length: number,
         file_length: number,
@@ -3070,9 +3101,9 @@ export declare namespace EasemobChat {
         from?: string
         ext?: { [key: string]: any },
         apiUrl?: string,
-        onFileUploadError?: (err: any) => any,
-        onFileUploadComplete?: (data: any) => any,
-        onFileUploadProgress?: (data: ProgressEvent) => any,
+        onFileUploadError?: (err: any) => void,
+        onFileUploadComplete?: (data: any) => void,
+        onFileUploadProgress?: (data: ProgressEvent) => void,
         body?: {
             url: string,
             type: string,
@@ -3136,14 +3167,15 @@ export declare namespace EasemobChat {
         headers?: KVString;
         responseType?: "arraybuffer" | "blob" | "document" | "json" | "text";
         mimeType?: string;
-        success?: (res: any) => any;
-        error?: (res: any) => any;
+        success?: (res: any) => void;
+        error?: (res: any) => void;
     }
 
     enum PLATFORM {
         WEB = "web",
         WX = "wx",
         ZFB = "zfb",
+        DD = "dd",
         TT = "tt",
         BAIDU = "baidu",
         QUICK_APP = "quick_app",
@@ -3160,10 +3192,10 @@ export declare namespace EasemobChat {
         data: File | null;
     }
     interface UploadFile {
-        onFileUploadProgress?: (msg: any) => any;
-        onFileUploadComplete?: (msg: any) => any;
-        onFileUploadError?: (msg: any) => any;
-        onFileUploadCanceled?: (msg: any) => any;
+        onFileUploadProgress?: (msg: any) => void;
+        onFileUploadComplete?: (msg: any) => void;
+        onFileUploadError?: (msg: any) => void;
+        onFileUploadCanceled?: (msg: any) => void;
         accessToken: string;
         appKey: string;
         apiUrl?: string;
@@ -3171,8 +3203,8 @@ export declare namespace EasemobChat {
         file: object;
     }
     interface DownloadParams {
-        onFileDownloadComplete: (data: any) => any;
-        onFileDownloadError: (error: any) => any;
+        onFileDownloadComplete: (data: any) => void;
+        onFileDownloadError: (error: any) => void;
         id: string;
         secret: string;
         [key: string]: any;
@@ -3182,10 +3214,10 @@ export declare namespace EasemobChat {
         ajax: (options: AjaxOptions) => Promise<any>;
         getFileUrl: (fileInputId: string | HTMLInputElement) => Uri;
         uploadFile: (options: UploadFile) => void;
-        listenNetwork: (online: () => any, offline: () => any) => void;
+        listenNetwork: (online: () => void, offline: () => void) => void;
         getEnvInfo: () => EnvInfo;
         wxRequest: (options: AjaxOptions) => Promise<any>;
         parseDownloadResponse: (res: any) => string;
-        download: (params: DownloadParams) => any;
+        download: (params: DownloadParams) => void;
     }
 }

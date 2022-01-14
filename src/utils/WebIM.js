@@ -1,7 +1,7 @@
 // import Strophe from "../sdk/libs/strophe";
 //import xmldom from "../sdk/libs/xmldom/dom-parser";
 // import websdk from "../sdk2/src/wxEntry";
-import websdk from "../sdk/Easemob-chat-4.0.1";
+import websdk from "../sdk/Easemob-chat-4.0.2";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
