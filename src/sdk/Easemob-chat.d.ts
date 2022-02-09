@@ -2169,9 +2169,26 @@ export declare namespace EasemobChat {
          */
         fetchGroupSharedFileList(this: Connection, params: {
             groupId: string,
+            pageNum?: number,
+            pageSize?: number,
             success?: (res: AsyncResult<FetchGroupSharedFileListResult>) => void,
             error?: (error: ErrorEvent) => void
         }): Promise<AsyncResult<FetchGroupSharedFileListResult>>;
+
+        /**
+         * Down load group file.
+         * 
+         * ```typescript
+         * connection.downloadGroupSharedFile({groupId: 'groupId', fileId: 'fileId', onFileDownloadComplete: (data)=>{console.log(data)}})
+         * ```
+         */
+        downloadGroupSharedFile(this: Connection, params: {
+            groupId: string,
+            fileId: string,
+            secret?: string,
+            onFileDownloadComplete?: (data: Blob) => void,
+            onFileDownloadError?: (err: ErrorEvent) => void
+        }): void
 
         // Contact API
         /**
@@ -2301,6 +2318,7 @@ export declare namespace EasemobChat {
             start?: number | null,
             count?: number,
             isGroup?: boolean,
+            format?: boolean,
             success?: (res: MessageBody[]) => void,
             fail?: (error: ErrorEvent) => void
         }): Promise<MessageBody[]>;
@@ -2614,14 +2632,16 @@ export declare namespace EasemobChat {
     interface ReadMsgSetParameters {
         id: string,
         to: string,
-        from?: string
+        from?: string,
+        chatType: 'singleChat' | 'groupChat',
     }
     interface ReadMsgBody extends ReadMsgSetParameters {
         type: 'read';
         ackId?: string;
         mid?: string,
-        groupReadCount?: number;
+        groupReadCount?: { [key: string]: number };
         ackContent?: string;
+        chatType: 'singleChat' | 'groupChat',
     }
     interface ReadParameters {
         type: 'read',
@@ -2632,7 +2652,9 @@ export declare namespace EasemobChat {
         to: string,
         from?: string,
         type: 'read';
-        id: string;
+        id: string,
+        ackContent?: string,
+        chatType: 'singleChat' | 'groupChat',
     }
 
     interface DeliveryParameters {
@@ -2724,6 +2746,7 @@ export declare namespace EasemobChat {
         msg: string,
         from?: string
         ext?: { [key: string]: any },
+        msgConfig?: { allowGroupAck: boolean }
     }
 
     interface CmdParameters {
@@ -2765,6 +2788,7 @@ export declare namespace EasemobChat {
         from?: string
         roomType?: boolean,
         ext?: { [key: string]: any },
+        msgConfig?: { allowGroupAck: boolean }
     }
 
 
@@ -2810,6 +2834,7 @@ export declare namespace EasemobChat {
         customExts: { [key: string]: any }
         from?: string
         ext?: { [key: string]: any },
+        msgConfig?: { allowGroupAck: boolean }
     }
 
     interface LocationParameters {
@@ -2845,7 +2870,8 @@ export declare namespace EasemobChat {
         success?: (data: SendMsgResult) => void,
         fail?: () => void,
         ext?: { [key: string]: any },
-        time: number
+        time: number,
+        msgConfig?: { allowGroupAck: boolean }
     }
 
     interface CreateLocationMsgParameters {
@@ -2858,6 +2884,7 @@ export declare namespace EasemobChat {
         lng: number,
         from?: string
         ext?: { [key: string]: any },
+        msgConfig?: { allowGroupAck: boolean }
     }
 
     interface FileParameters {
@@ -2917,7 +2944,8 @@ export declare namespace EasemobChat {
             url: string,
             type: string,
             filename: string
-        }
+        },
+        msgConfig?: { allowGroupAck: boolean }
     }
 
     interface ImgParameters {
@@ -2980,7 +3008,8 @@ export declare namespace EasemobChat {
             url: string,
             type: string,
             filename: string
-        }
+        },
+        msgConfig?: { allowGroupAck: boolean }
     }
 
     interface AudioParameters {
@@ -3029,8 +3058,8 @@ export declare namespace EasemobChat {
         chatType: ChatType,
         file: FileObj,
         filename: string,
-        length: number,
-        file_length: number,
+        length?: number,
+        file_length?: number,
         fileInputId?: string,
         to: string,
         from?: string
@@ -3046,7 +3075,8 @@ export declare namespace EasemobChat {
             url: string,
             type: string,
             filename: string
-        }
+        },
+        msgConfig?: { allowGroupAck: boolean }
     }
 
     interface VideoParameters {
@@ -3094,8 +3124,8 @@ export declare namespace EasemobChat {
         chatType: ChatType,
         file: FileObj,
         filename: string,
-        length: number,
-        file_length: number,
+        length?: number,
+        file_length?: number,
         fileInputId?: string,
         to: string,
         from?: string
@@ -3108,7 +3138,8 @@ export declare namespace EasemobChat {
             url: string,
             type: string,
             filename: string
-        }
+        },
+        msgConfig?: { allowGroupAck: boolean }
     }
 
     interface ReceivedMsgBody {

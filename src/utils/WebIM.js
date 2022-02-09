@@ -1,7 +1,7 @@
 // import Strophe from "../sdk/libs/strophe";
 //import xmldom from "../sdk/libs/xmldom/dom-parser";
 // import websdk from "../sdk2/src/wxEntry";
-import websdk from "../sdk/Easemob-chat-4.0.2";
+import websdk from "../sdk/Easemob-chat-4.0.3";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
@@ -227,8 +227,7 @@ WebIM.conn = new WebIM.connection({
 	autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
 	autoReconnectInterval: WebIM.config.autoReconnectInterval,
 	isDebug: WebIM.config.isDebug,
-	deviceId: WebIM.config.deviceId,
-	isHttpDNS:false
+	deviceId: WebIM.config.deviceId
 });
 
 // async response

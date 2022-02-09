@@ -62,7 +62,7 @@ let config = {
 	 * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
 	 * won't auto connect if autoReconnectNumMax=0.
 	 */
-	autoReconnectNumMax: 15,
+	autoReconnectNumMax: 5,
 	/**
 	 * the interval secons between each atuo reconnectting.
 	 * works only if autoReconnectMaxNum >= 2.
