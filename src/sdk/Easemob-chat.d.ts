@@ -114,6 +114,19 @@ export declare namespace EasemobChat {
 		owner?: string;
 	}
 
+	type multiDeviceEventType =
+		| 'chatThreadCreate'
+		| 'chatThreadDestroy'
+		| 'chatThreadJoin'
+		| 'chatThreadLeave'
+		| 'chatThreadNameUpdate';
+	interface ThreadMultiDeviceInfo {
+		operation: multiDeviceEventType;
+		chatThreadId?: string;
+		chatThreadName?: string;
+		parentId?: string;
+	}
+
 	/**
 	 * The connection module is the module where the SDK creates long link, And all about links, friends, groups, and chat apis are  all in this module
 	 *
@@ -815,39 +828,225 @@ export declare namespace EasemobChat {
 		| SilentModeDuration
 		| SilentModeInterval;
 
+	interface ChatThread {
+		/** The Message ID for creating thread. */
+		messageId: string;
+		/** Generally refers to the group ID. */
+		parentId: string;
+		/** The chatThread name. */
+		chatThreadName: SVGStringList;
+	}
+	interface ChatThreadOverview {
+		/** The thread ID. */
+		id: string;
+		/** Generally refers to the group ID. */
+		parentId: string; //parent
+		/** The thread name. */
+		name: string;
+		/** Overview of the latest news. */
+		lastMessage: LastMessage;
+		/** The thread create timestamp. */
+		createTimestamp: number;
+		/** The timestamp to update the thread overview. */
+		updateTimestamp: number;
+		/** The thread message count. */
+		messageCount: number;
+	}
+	interface LastMessage {
+		/** The message id. */
+		id: string;
+		/** The sender id. */
+		from: string;
+		/** The receiver id. */
+		to: string;
+		/** The time stamp. */
+		timestamp: number;
+		/** The message content. */
+		payload: any;
+	}
+	type Operation = 'create' | 'update' | 'delete' | 'update_msg';
+	interface ThreadNotifyServerMsg {
+		/** The event type. */
+		operation: Operation;
+		/** The message ID for creating thread. */
+		msg_parent_id?: string;
+		/** The thread ID. */
+		id: string;
+		/** The group ID of the thread. */
+		muc_parent_id: string;
+		/** The Thread Name. */
+		name: string;
+		/** The action occurrence time. */
+		timestamp: number;
+		/** The operator. */
+		from?: string;
+		/** The last message of Thread. */
+		last_message?: LastMessage;
+		/** The Thread message count. */
+		message_count?: number;
+	}
+	interface CreateChatThreadResult {
+		/** The Thread ID. */
+		chatThreadId: string;
+	}
+	interface ChangeChatThreadName {
+		/** The thread name. */
+		name: string;
+	}
+
+	interface ChatThreadMembers {
+		/** The list of thread members. */
+		affiliations: string[];
+	}
+
+	type RemoveMemberResult = {
+		/** The operation results. */
+		result: boolean;
+		/** The ID of thread member. */
+		user: UserId;
+	};
+
+	interface ChatThreadDetail {
+		/** The thread ID. */
+		id: string;
+		/** The thread name. */
+		name: string;
+		/** The thread owner. */
+		owner: string;
+		/** The creation time of the thread. */
+		created: number;
+		/** The number of thread members. */
+		affiliationsCount?: number;
+		//** Generally refers to the group ID. */
+		parentId: string;
+		/** The parent message ID. */
+		messageId: string;
+	}
+	interface JoinChatThreadResult {
+		/** Operation results. */
+		status: 'ok';
+		/** The chatThread detail. */
+		detail: ChatThreadDetail;
+	}
+	interface ChatThreadLastMessage {
+		/** The chatThread ID. */
+		chatThreadId: string;
+		/** The last message. */
+		lastMessage: MessageBody;
+	}
+
+	type onChatThreadChangeType =
+		| 'create'
+		| 'update'
+		| 'destroy'
+		| 'userRemove';
+	interface ThreadChangeInfo {
+		/** The thread ID. */
+		id: string;
+		/** The thread name. */
+		name: string;
+		/** The operator. */
+		operator: string;
+		/** The type of operation. */
+		operation: onChatThreadChangeType;
+		/** Generally refers to the group ID. */
+		parentId: string;
+		/** The parent message ID. */
+		messageId?: string;
+		/** The thread message count. */
+		messageCount?: number;
+		/** Overview of the latest news. */
+		// eslint-disable-next-line @typescript-eslint/ban-types
+		lastMessage?: MessageBody | {};
+		/** The operated object. */
+		userName?: string;
+		/** Operation time. */
+		timestamp?: number;
+		/** The creation time. */
+		createTimestamp?: number;
+	}
+	interface HistoryMessages {
+		//** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is empty string, the data of the first page will be fetched.*/
+		cursor?: string;
+		/** The Historical messages. */
+		messages: MessageBody[];
+	}
+	interface conversationList {
+		/** The conversation ID. */
+		channel_id: string;
+		/** Overview of the latest news. */
+		lastMessage: LastMessage;
+		/** The number of unread messages. */
+		unread_num: number;
+	}
+
+	interface GetReactionDetailResult {
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
+		reaction: string;
+		/** Whether the current user added this reaction.
+		 * - `true`: Yes;
+		 * - `false`: No.
+		 */
+		isAddedBySelf: boolean;
+		/** The number of users that added this reaction. */
+		userCount: number;
+		/** The IDs of the users who added the reaction. */
+		userList: UserId[];
+		/** The cursor that specifies where to start to get data. If there is data on the next page, this method will return the cursor to indicate where to start to get data for the next query. If it is `null`, the data of the first page will be returned.*/
+		cursor: string;
+	}
+
+	interface ReactionListItem {
+		/** The reaction added to the message. It cannot exceed 128 characters. */
+		reaction: string;
+		/** Whether the current user added this reaction.
+		 * - `true`: Yes;
+		 * - `false`: No.
+		 */
+		isAddedBySelf: boolean;
+		/** The number of users that added this reaction. */
+		userCount: number;
+		/** The IDs of the users who added the reaction. */
+		userList: UserId[];
+	}
+
+	interface GetReactionListResult {
+		/** The ID of the message to which this reaction was added. */
+		msgId: string;
+		/** The reaction list of this message. */
+		reactionList: ReactionListItem[];
+	}
+
 	enum Code {
 		REQUEST_SUCCESS = 0,
 		REQUEST_TIMEOUT = -1,
 		REQUEST_UNKNOWN = -2,
 		REQUEST_PARAMETER_ERROR = -3,
+		REQUEST_ABORT = -4,
 		WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR = 0,
 		WEBIM_CONNCTION_OPEN_ERROR = 1,
 		WEBIM_CONNCTION_AUTH_ERROR = 2,
 		WEBIM_CONNCTION_OPEN_USERGRID_ERROR = 3,
-		WEBIM_CONNCTION_ATTACH_ERROR = 4, // unused
-		WEBIM_CONNCTION_ATTACH_USERGRID_ERROR = 5, // unused
-		WEBIM_CONNCTION_REOPEN_ERROR = 6, // unused
-		WEBIM_CONNCTION_SERVER_CLOSE_ERROR = 7, //7 = client-side network offline (netE= RR_INTERNET_DISCONNECTED) unused
-		WEBIM_CONNCTION_SERVER_ERROR = 8, //8 = offline by multi login  unused
+		WEBIM_CONNCTION_ATTACH_ERROR = 4,
+		WEBIM_CONNCTION_ATTACH_USERGRID_ERROR = 5,
+		WEBIM_CONNCTION_REOPEN_ERROR = 6,
+		WEBIM_CONNCTION_SERVER_CLOSE_ERROR = 7,
+		WEBIM_CONNCTION_SERVER_ERROR = 8,
 		WEBIM_CONNCTION_IQ_ERROR = 9,
-		WEBIM_CONNCTION_USER_REMOVED = 207,
-		WEBIM_CONNCTION_USER_LOGIN_ANOTHER_DEVICE = 206,
-		WEBIM_CONNCTION_USER_KICKED_BY_CHANGE_PASSWORD = 216,
-		WEBIM_CONNCTION_USER_KICKED_BY_OTHER_DEVICE = 217,
 		WEBIM_CONNCTION_PING_ERROR = 10,
 		WEBIM_CONNCTION_NOTIFYVERSION_ERROR = 11,
 		WEBIM_CONNCTION_GETROSTER_ERROR = 12,
 		WEBIM_CONNCTION_CROSSDOMAIN_ERROR = 13,
 		WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES = 14,
 		WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR = 15,
-		WEBIM_CONNCTION_DISCONNECTED = 16, //16 = server-side close the websocket connection
-		WEBIM_CONNCTION_AJAX_ERROR = 17, // ajax error
+		WEBIM_CONNCTION_DISCONNECTED = 16,
+		WEBIM_CONNCTION_AJAX_ERROR = 17,
 		WEBIM_CONNCTION_JOINROOM_ERROR = 18,
 		WEBIM_CONNCTION_GETROOM_ERROR = 19,
-		WEBIM_CONNCTION_GETROOMINFO_ERROR = 20, // unused
-		WEBIM_CONNCTION_GETROOMMEMBER_ERROR = 21, // unused
-		WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR = 22, // unused
-		WEBIM_CONNCTION_LOAD_CHATROOM_ERROR = 23, // 获取聊天室失败，拉取历史消息失败（后面去掉）
+		WEBIM_CONNCTION_GETROOMINFO_ERROR = 20,
+		WEBIM_CONNCTION_GETROOMMEMBER_ERROR = 21,
+		WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR = 22,
+		WEBIM_CONNCTION_LOAD_CHATROOM_ERROR = 23,
 		WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR = 24,
 		WEBIM_CONNCTION_JOINCHATROOM_ERROR = 25,
 		WEBIM_CONNCTION_QUITCHATROOM_ERROR = 26,
@@ -855,24 +1054,34 @@ export declare namespace EasemobChat {
 		WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR = 28,
 		WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR = 29,
 		WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR = 30,
-		WEBIM_CONNCTION_CALLBACK_INNER_ERROR = 31, //31 = 处理下行消息出错 try/catch抛出异常
-		WEBIM_CONNCTION_CLIENT_OFFLINE = 32, //32 = client offline
-		WEBIM_CONNCTION_CLIENT_LOGOUT = 33, //33 = client logout
-		WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR = 34, // 34 = Over amount of the tabs a user opened in the same browser
+		WEBIM_CONNCTION_CALLBACK_INNER_ERROR = 31,
+		WEBIM_CONNCTION_CLIENT_OFFLINE = 32,
+		WEBIM_CONNCTION_CLIENT_LOGOUT = 33,
+		WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR = 34,
 		WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP = 35,
 		WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP = 36,
 		WEBIM_CONNECTION_ACCEPT_JOIN_GROUP = 37,
 		WEBIM_CONNECTION_DECLINE_JOIN_GROUP = 38,
 		WEBIM_CONNECTION_CLOSED = 39,
 		WEBIM_CONNECTION_ERROR = 40,
+		MAX_LIMIT = 50,
+		MESSAGE_NOT_FOUND = 51,
+		NO_PERMISSION = 52,
+		OPERATION_UNSUPPORTED = 53,
 		WEBIM_UPLOADFILE_BROWSER_ERROR = 100,
 		WEBIM_UPLOADFILE_ERROR = 101,
 		WEBIM_UPLOADFILE_NO_LOGIN = 102,
 		WEBIM_UPLOADFILE_NO_FILE = 103,
-		WEBIM_DOWNLOADFILE_ERROR = 200, // unused
-		WEBIM_DOWNLOADFILE_NO_LOGIN = 201, // unused
-		WEBIM_DOWNLOADFILE_BROWSER_ERROR = 202, // unused
-		USER_NOT_FOUND = 204, // 用户不存在，如创建群拉人时不存在的用户报次错误
+		WEBIM_DOWNLOADFILE_ERROR = 200,
+		WEBIM_DOWNLOADFILE_NO_LOGIN = 201,
+		WEBIM_DOWNLOADFILE_BROWSER_ERROR = 202,
+		USER_NOT_FOUND = 204,
+		WEBIM_CONNCTION_USER_LOGIN_ANOTHER_DEVICE = 206,
+		WEBIM_CONNCTION_USER_REMOVED = 207,
+		WEBIM_CONNCTION_USER_KICKED_BY_CHANGE_PASSWORD = 216,
+		WEBIM_CONNCTION_USER_KICKED_BY_OTHER_DEVICE = 217,
+		USER_MUTED_BY_ADMIN = 219,
+		USER_NOT_FRIEND = 221,
 		WEBIM_MESSAGE_REC_TEXT = 300,
 		WEBIM_MESSAGE_REC_TEXT_ERROR = 301,
 		WEBIM_MESSAGE_REC_EMOTION = 302,
@@ -899,23 +1108,34 @@ export declare namespace EasemobChat {
 		STATUS_CLOSED = 405,
 		STATUS_ERROR = 406,
 		SERVER_BUSY = 500,
-		GROUP_NOT_EXIST = 605,
-		GROUP_NOT_JOINED = 602, // 禁言等操作的人员不在群组中
+		MESSAGE_INCLUDE_ILLEGAL_CONTENT = 501,
+		MESSAGE_EXTERNAL_LOGIC_BLOCKED = 502,
+		SERVER_UNKNOWN_ERROR = 503,
 		MESSAGE_RECALL_TIME_LIMIT = 504,
 		SERVICE_NOT_ENABLED = 505,
 		SERVICE_NOT_ALLOW_MESSAGING = 506,
-		SERVICE_NOT_ALLOW_MESSAGING_MUTE = 507, // @since 4.0  被禁言
-		SERVER_UNKNOWN_ERROR = 503, //未知异常
-		MESSAGE_INCLUDE_ILLEGAL_CONTENT = 501, //消息内容包含非法或敏感词
-		MESSAGE_EXTERNAL_LOGIC_BLOCKED = 502, // 消息被拦截
-		PERMISSION_DENIED = 603, //权限问题
-		WEBIM_LOAD_MSG_ERROR = 604, //消息发送失败下行
-		GROUP_ALREADY_JOINED = 601, //|已在该群组中|调用 加入群组的 API 时如果已经在该群组中则提示该错误|
-		// 700 参数校验
+		SERVICE_NOT_ALLOW_MESSAGING_MUTE = 507,
+		MESSAGE_MODERATION_BLOCKED = 508,
+		GROUP_NOT_EXIST = 605,
+		GROUP_NOT_JOINED = 602,
+		GROUP_MEMBERS_FULL = 606,
+		PERMISSION_DENIED = 603,
+		WEBIM_LOAD_MSG_ERROR = 604,
+		GROUP_ALREADY_JOINED = 601,
+		GROUP_MEMBERS_LIMIT = 607,
 		REST_PARAMS_STATUS = 700,
-		CHATROOM_MEMBERS_FULL = 704, // 聊天室人数达到上限
-		CHATROOM_NOT_EXIST = 705, // The chat room does not exist
+		CHATROOM_MEMBERS_FULL = 704,
+		CHATROOM_NOT_EXIST = 705,
 		SDK_RUNTIME_ERROR = 999,
+		PRESENCE_PARAM_EXCEED = 1100,
+		REACTION_ALREADY_ADDED = 1101,
+		REACTION_CREATING = 1102,
+		REACTION_OPERATION_IS_ILLEGAL = 1103,
+		TRANSLATION_NOT_VALID = 1200,
+		TRANSLATION_TEXT_TOO_LONG = 1201,
+		TRANSLATION_FAILED = 1204,
+		THREAD_NOT_EXIST = 1300,
+		THREAD_ALREADY_EXIST = 1301,
 	}
 
 	/**
@@ -2886,6 +3106,21 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<SessionInfo[]>>;
 
 		/**
+		 * Gets the conversation list and the latest message under the conversation.
+		 *
+		 * ```typescript
+		 * connection.getConversationList()
+		 * ```
+		 */
+		getConversationList(
+			this: Connection,
+			params?: {
+				success?: (res: AsyncResult<SessionInfo[]>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<conversationList[]>>;
+
+		/**
 		 * Delete the session.
 		 *
 		 * ```typescript
@@ -2962,6 +3197,40 @@ export declare namespace EasemobChat {
 				fail?: (error: ErrorEvent) => void;
 			}
 		): Promise<MessageBody[]>;
+
+		/**
+		 * Gets the message history.
+		 *
+		 * ```typescript
+		 * connection.getHistoryMessages({targetId:'user1',chatType:'groupChat', pageSize: 20})
+		 * ```
+		 */
+		getHistoryMessages(
+			this: Connection,
+			options: {
+				/** The user ID of the other party or the group ID. */
+				targetId: string;
+				/** The starting message ID for this query. The default value is -1, which means to start retrieving from the latest message. */
+				cursor?: number | string | null;
+				/** The number of messages to retrieve each time. The default value is 20,The maximum value is 50. */
+				pageSize?: number;
+				/** The chat type for SDK V4.0:
+				 * - `singleChat`: one-to-one chat;
+				 * - `groupchat`: group chat;
+				 * - `chatroom`: chat room.
+				 * - (Default)`singleChat`: No.
+				 */
+				chatType?: 'singleChat' | 'groupChat' | 'chatRoom';
+				/** Whether to select pull history messages in positive order(Pull message from the oldest to the latest).
+				 * - `up`: means searching from the newer messages to the older messages.
+				 * - `down`: means searching from the older messages to the newer messages.
+				 * - (Default)`up`.
+				 */
+				searchDirection?: string;
+				success?: (res: MessageBody[]) => void;
+				fail?: (error: ErrorEvent) => void;
+			}
+		): Promise<HistoryMessages>;
 
 		/**
 		 * Adds Contact.
@@ -3069,7 +3338,7 @@ export declare namespace EasemobChat {
 		 * Recall a message
 		 *
 		 * ```typescript
-		 * connection.recallMessage({mid: 'messageId', to: 'user1', type: 'singleChat'})
+		 * connection.recallMessage({mid: 'messageId', to: 'user1', type: 'singleChat', isChatThread: false})
 		 * ```
 		 */
 		recallMessage(
@@ -3079,6 +3348,7 @@ export declare namespace EasemobChat {
 				to: UserId;
 				type?: 'chat' | 'groupchat' | 'chatroom'; // v3.0
 				chatType?: 'singleChat' | 'groupChat' | 'chatRoom'; // v4.0
+				isChatThread?: boolean;
 				success?: (res: number) => void;
 				fail?: (error: ErrorEvent) => void;
 			}
@@ -3206,8 +3476,8 @@ export declare namespace EasemobChat {
 		reportMessage(
 			this: Connection,
 			params: {
-				reportType: string; // 举报类型。
-				reportReason: string; // 举报原因。
+				reportType: string;
+				reportReason: string;
 				messageId: string;
 			}
 		): Promise<void>;
@@ -3368,6 +3638,267 @@ export declare namespace EasemobChat {
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<TranslationLanguageType>>;
+
+		/**
+		 * Creates a chatThread.
+		 *
+		 * ```typescript
+		 * connection.createChatThread({parentId: 'parentId',name: 'threadName',messageId: 'messageId'})
+		 * ```
+		 */
+		createChatThread(
+			this: Connection,
+			params: {
+				/** Generally refers to the group ID. */
+				parentId: string;
+				/** The chatThread name. */
+				name: string;
+				/** The parent message ID. */
+				messageId: string;
+			}
+		): Promise<AsyncResult<CreateChatThreadResult>>;
+
+		/**
+		 * Joins the chatThread.
+		 *
+		 * ```typescript
+		 * connection.joinChatThread({chatThreadId: 'chatThreadId'})
+		 * ```
+		 */
+		joinChatThread(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+			}
+		): Promise<AsyncResult<JoinChatThreadResult>>;
+
+		/**
+		 * Leaves the chatThread.
+		 *
+		 * ```typescript
+		 * connection.leaveChatThread({chatThreadId: 'chatThreadId'})
+		 * ```
+		 */
+		leaveChatThread(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+			}
+		): Promise<void>;
+
+		/**
+		 * Adds a reaction to the message.
+		 *
+		 * ```typescript
+		 * connection.addReaction({messageId: 'messageId', action: 'action'})
+		 * ```
+		 */
+		addReaction(
+			this: Connection,
+			params: {
+				/** The message ID. */
+				messageId: string;
+				/** The reaction to be added to the message. The length is limited to 128 characters. */
+				reaction: string;
+			}
+		): Promise<void>;
+
+		/**
+		 * Deletes the chatThread,group leader and administrator have this permission.
+		 *
+		 * ```typescript
+		 * connection.destroyChatThread({chatThreadId: 'chatThreadId'})
+		 * ```
+		 */
+		destroyChatThread(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+			}
+		): Promise<void>;
+
+		/**
+		 * Removes a reaction from a message.
+		 *
+		 * ```typescript
+		 * connection.deleteReaction({reactionId: 'reactionId'})
+		 * ```
+		 */
+		deleteReaction(
+			this: Connection,
+			params: {
+				/** The message reaction to delete.  */
+				reaction: string;
+				/** The message ID. */
+				messageId: string;
+			}
+		): Promise<void>;
+
+		/**
+		 * Modifies the chatThread name.
+		 *
+		 * ```typescript
+		 * connection.changeChatThreadName({chatThreadId: 'chatThreadId',name: 'name'})
+		 * ```
+		 */
+		changeChatThreadName(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+				/** The chatThread name. */
+				name: string;
+			}
+		): Promise<AsyncResult<ChangeChatThreadName>>;
+
+		/**
+		 * Lists all members of the chatThread with pagination.
+		 *
+		 * ```typescript
+		 * connection.getChatThreadMembers({chatThreadId: 'chatThreadId',pageSize:20,cursor:'cursor'})
+		 * ```
+		 */
+		getChatThreadMembers(
+			this: Connection,
+			params: {
+				/** The Thread ID. */
+				chatThreadId: string;
+				/** The number of members per page. The default value is 20, and the maximum value is 50.*/
+				pageSize?: number;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is empty string, the data of the first page will be fetched.*/
+				cursor?: string;
+			}
+		): Promise<AsyncResult<ChatThreadMembers>>;
+
+		/**
+		 * Removes a member from the chatThread.
+		 *
+		 * ```typescript
+		 * connection.removeChatThreadMember({chatThreadId: 'chatThreadId',username:'username'})
+		 * ```
+		 */
+		removeChatThreadMember(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+				/** The member ID to remove. */
+				username: string;
+			}
+		): Promise<AsyncResult<RemoveMemberResult>>;
+
+		/**
+		 * Gets the list of joined chatThreads with pagination.When parentId is not null, get the list of chatThread under the specified group.
+		 *
+		 * ```typescript
+		 * connection.getJoinedChatThreads({parentId: 'parentId',cursor: 'cursor',pageSize: 50})
+		 * ```
+		 */
+		getJoinedChatThreads(
+			this: Connection,
+			params: {
+				/** Generally refers to the group ID. */
+				parentId?: string;
+				/** The number of thread per page. The default value is 20, and the maximum value is 50. */
+				pageSize?: number;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be fetched.*/
+				cursor?: string;
+			}
+		): Promise<AsyncResult<ChatThreadDetail[]>>;
+
+		/**
+		 * Gets the thread list of the specified group with pagination.
+		 * ```typescript
+		 * connection.getChatThreads({parentId: 'parentId, cursor:'cursor' ,pageSize: 50})
+		 * ```
+		 */
+		getChatThreads(
+			this: Connection,
+			params: {
+				/** Generally refers to the group ID. */
+				parentId: string;
+				/** The number of thread per page. The default value is 20, and the maximum value is 50. */
+				pageSize?: number;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is empty string, the data of the first page will be fetched.*/
+				cursor?: string;
+			}
+		): Promise<AsyncResult<ChatThreadDetail[]>>;
+
+		/**
+		 * Gets the latest message content of the chatThread in batch,with a maximum of 20 messages.
+		 *
+		 * ```typescript
+		 * connection.getChatThreadLastMessage({chatThreadIds: ['chatThreadId1','chatThreadId2']})
+		 * ```
+		 */
+		getChatThreadLastMessage(
+			this: Connection,
+			params: {
+				/** The array of chatThread IDs to query.*/
+				chatThreadIds: string[];
+			}
+		): Promise<AsyncResult<ChatThreadLastMessage>>;
+
+		/**
+		 * Gets detail of the chatThread.
+		 *
+		 * ```typescript
+		 * connection.getChatThreadDetail({chatThreadId: 'chatThreadId'})
+		 * ```
+		 */
+		getChatThreadDetail(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+			}
+		): Promise<AsyncResult<ChatThreadDetail>>;
+
+		/**
+		 *  Gets the reaction list for the message.
+		 *
+		 * ```typescript
+		 * connection.getReactionList({chatType: 'chatType', messageId: 'messageId'})
+		 * ```
+		 */
+		getReactionList(
+			this: Connection,
+			params: {
+				/** The conversation type:
+				 * - singleChat;
+				 * - groupChat;
+				 */
+				chatType: 'singleChat' | 'groupChat';
+				/** The message ID. */
+				messageId: string | Array<string>;
+				/** The group ID. */
+				groupId?: string;
+			}
+		): Promise<AsyncResult<GetReactionListResult[]>>;
+
+		/**
+		 * Gets the details of a reaction.
+		 *
+		 * ```typescript
+		 * getReactionDetail({messageId: 'messageId', reaction: 'reaction', cursor: '', pageSize: 20})
+		 * ```
+		 */
+		getReactionDetail(
+			this: Connection,
+			params: {
+				/** The message ID. */
+				messageId: string;
+				/** The reactions to retrieve. */
+				reaction: string;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be retrieved.*/
+				cursor?: string; // 默认为 null
+				/** The number of reactions per page. The default value is 20, and the maximum value is 100. */
+				pageSize?: number;
+			}
+		): Promise<AsyncResult<GetReactionDetailResult>>;
 	}
 
 	/**
@@ -3383,6 +3914,21 @@ export declare namespace EasemobChat {
 		| ReceivedMsgBody
 		| RecallMsgBody
 		| ChannelMsgBody;
+
+	interface ReactionMessage {
+		/** The message sender. */
+		from: string;
+		/** The message recipient. */
+		to: string;
+		/** The conversation type. */
+		chatType: 'singleChat' | 'groupChat';
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
+		reactions: Reaction[];
+		/** The ID of the message whose reaction updated. */
+		messageId: string;
+		/** The Unix timestamp for updating the reaction. */
+		ts: number;
+	}
 
 	type Event =
 		| 'onOpened'
@@ -3455,6 +4001,9 @@ export declare namespace EasemobChat {
 		onChatroomChange?: (msg: any) => void;
 		onContactChange?: (msg: any) => void;
 		onPresenceStatusChange?: (msg: PresenceType[]) => void;
+		onChatThreadChange?: (msg: ThreadChangeInfo) => void;
+		onMultiDeviceEvent?: (msg: ThreadMultiDeviceInfo) => void;
+		onReactionChange?: (msg: ReactionMessage) => void;
 	}
 
 	interface HandlerData {
@@ -3625,6 +4174,23 @@ export declare namespace EasemobChat {
 		filetype: string;
 		data: File;
 	}
+
+	interface Reaction {
+		/** The content of the reaction to be added to the message. The length is limited to 128 characters. */
+		reaction: string;
+		/** The reaction count. */
+		count: number;
+		/** The reaction update operation. Once the reaction is updated, the onReactionChange callback is triggered. */
+		op?: { operator: UserId; reactionType: 'create' | 'delete' }[];
+		/** The IDs of the users that added the reaction. */
+		userList: UserId[];
+		/** Whether the current user has added this reaction.
+		 * - `true`: Yes.
+		 * - `false`: No.
+		 */
+		isAddedBySelf?: boolean;
+	}
+
 	interface PresenceMsg {
 		type: OnPresenceMsgType;
 		to: string;
@@ -3652,6 +4218,7 @@ export declare namespace EasemobChat {
 		groupReadCount?: { [key: string]: number };
 		ackContent?: string;
 		chatType: 'singleChat' | 'groupChat';
+		isChatThread?: boolean;
 	}
 	interface ReadParameters {
 		type: 'read';
@@ -3665,6 +4232,7 @@ export declare namespace EasemobChat {
 		id: string;
 		ackContent?: string;
 		chatType: 'singleChat' | 'groupChat';
+		isChatThread?: boolean;
 	}
 
 	interface DeliveryParameters {
@@ -3683,6 +4251,7 @@ export declare namespace EasemobChat {
 		type: 'delivery';
 		to: string;
 		from?: string;
+		isChatThread?: boolean;
 	}
 
 	interface CreateDeliveryMsgParameters {
@@ -3690,6 +4259,7 @@ export declare namespace EasemobChat {
 		type: 'delivery';
 		to: string;
 		from?: string;
+		isChatThread?: boolean;
 	}
 
 	interface ChannelMsgSetParameters {
@@ -3703,6 +4273,7 @@ export declare namespace EasemobChat {
 		group?: string;
 		type: 'channel';
 		time: number;
+		isChatThread?: boolean;
 	}
 	interface ChannelParameters {
 		type: 'channel';
@@ -3714,6 +4285,7 @@ export declare namespace EasemobChat {
 		chatType: ChatType;
 		to: string;
 		from?: string;
+		isChatThread?: boolean;
 	}
 
 	interface TextParameters {
@@ -3746,6 +4318,8 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck?: boolean; languages?: string[] };
 		translations?: TranslationResult;
 		time: number;
+		isChatThread?: boolean;
+		reactions?: Reaction;
 	}
 
 	interface CreateTextMsgParameters {
@@ -3756,6 +4330,7 @@ export declare namespace EasemobChat {
 		from?: string;
 		ext?: { [key: string]: any };
 		msgConfig?: { allowGroupAck?: boolean; languages?: string[] };
+		isChatThread?: boolean;
 	}
 
 	interface CmdParameters {
@@ -3787,6 +4362,8 @@ export declare namespace EasemobChat {
 		ext?: { [key: string]: any };
 		msgConfig?: { [key: string]: any };
 		time: number;
+		isChatThread?: boolean;
+		reactions?: Reaction;
 	}
 
 	interface CreateCmdMsgParameters {
@@ -3798,6 +4375,7 @@ export declare namespace EasemobChat {
 		roomType?: boolean;
 		ext?: { [key: string]: any };
 		msgConfig?: { allowGroupAck: boolean };
+		isChatThread?: boolean;
 	}
 
 	interface CustomParameters {
@@ -3832,6 +4410,8 @@ export declare namespace EasemobChat {
 		ext?: { [key: string]: any };
 		msgConfig?: { [key: string]: any };
 		time: number;
+		isChatThread?: boolean;
+		reactions?: Reaction;
 	}
 
 	interface CreateCustomMsgParameters {
@@ -3843,6 +4423,7 @@ export declare namespace EasemobChat {
 		from?: string;
 		ext?: { [key: string]: any };
 		msgConfig?: { allowGroupAck: boolean };
+		isChatThread?: boolean;
 	}
 
 	interface LocationParameters {
@@ -3880,6 +4461,8 @@ export declare namespace EasemobChat {
 		ext?: { [key: string]: any };
 		time: number;
 		msgConfig?: { allowGroupAck: boolean };
+		isChatThread?: boolean;
+		reactions?: Reaction;
 	}
 
 	interface CreateLocationMsgParameters {
@@ -3893,6 +4476,7 @@ export declare namespace EasemobChat {
 		from?: string;
 		ext?: { [key: string]: any };
 		msgConfig?: { allowGroupAck: boolean };
+		isChatThread?: boolean;
 	}
 
 	interface FileParameters {
@@ -3933,6 +4517,7 @@ export declare namespace EasemobChat {
 		accessToken?: string;
 		msgConfig?: { allowGroupAck: boolean };
 		time: number;
+		reactions?: Reaction;
 	}
 
 	interface CreateFileMsgParameters {
@@ -3954,6 +4539,7 @@ export declare namespace EasemobChat {
 			filename: string;
 		};
 		msgConfig?: { allowGroupAck: boolean };
+		isChatThread?: boolean;
 	}
 
 	interface ImgParameters {
@@ -3995,6 +4581,8 @@ export declare namespace EasemobChat {
 		secret?: string;
 		thumb?: string;
 		thumb_secret?: string;
+		isChatThread?: boolean;
+		reactions?: Reaction;
 	}
 
 	interface CreateImgMsgParameters {
@@ -4018,6 +4606,7 @@ export declare namespace EasemobChat {
 			filename: string;
 		};
 		msgConfig?: { allowGroupAck: boolean };
+		isChatThread?: boolean;
 	}
 
 	interface AudioParameters {
@@ -4058,6 +4647,8 @@ export declare namespace EasemobChat {
 		group?: string;
 		msgConfig?: { [key: string]: any };
 		time: number;
+		isChatThread?: boolean;
+		reactions?: Reaction;
 	}
 
 	interface CreateAudioMsgParameters {
@@ -4084,6 +4675,7 @@ export declare namespace EasemobChat {
 			filename: string;
 		};
 		msgConfig?: { allowGroupAck: boolean };
+		isChatThread?: boolean;
 	}
 
 	interface VideoParameters {
@@ -4124,6 +4716,8 @@ export declare namespace EasemobChat {
 		msgConfig?: { [key: string]: any };
 		group?: string;
 		time: number;
+		isChatThread?: boolean;
+		reactions?: Reaction;
 	}
 
 	interface CreateVideoMsgParameters {
@@ -4147,6 +4741,7 @@ export declare namespace EasemobChat {
 			filename: string;
 		};
 		msgConfig?: { allowGroupAck: boolean };
+		isChatThread?: boolean;
 	}
 
 	interface ReceivedMsgBody {
