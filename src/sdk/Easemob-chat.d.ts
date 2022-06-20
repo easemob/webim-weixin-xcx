@@ -2149,7 +2149,7 @@ export declare namespace EasemobChat {
 		getGroupInfo(
 			this: Connection,
 			params: {
-				groupId: string;
+				groupId: string | string[];
 				success?: (res: AsyncResult<GroupDetailInfo[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
@@ -3930,6 +3930,24 @@ export declare namespace EasemobChat {
 		ts: number;
 	}
 
+	interface EventData {
+		/** The type of operation. */
+		/** 操作类型。 */
+		operation: string;
+		/** The ID of a group or chatroom. */
+		/** 群组或者聊天室 ID。 */
+		id: string;
+		/** Message sender. */
+		/** 消息发送者。 */
+		from: string;
+		/** Message receiver. */
+		/** 消息接收者。 */
+		to: string;
+		/** Additional data for the operation event. */
+		/** 操作事件的其他数据。 */
+		data?: any;
+	}
+
 	type Event =
 		| 'onOpened'
 		| 'onPresence'
@@ -3964,7 +3982,12 @@ export declare namespace EasemobChat {
 		| 'onGroupChange'
 		| 'onChatroomChange'
 		| 'onContactChange'
-		| 'onPresenceStatusChange';
+		| 'onPresenceStatusChange'
+		| 'onReactionChange'
+		| 'onChatThreadChange'
+		| 'onMultiDeviceEvent'
+		| 'onGroupEvent'
+		| 'onChatroomEvent';
 
 	interface EventHandlerType {
 		onOpened?: (msg: any) => void;
@@ -4004,6 +4027,8 @@ export declare namespace EasemobChat {
 		onChatThreadChange?: (msg: ThreadChangeInfo) => void;
 		onMultiDeviceEvent?: (msg: ThreadMultiDeviceInfo) => void;
 		onReactionChange?: (msg: ReactionMessage) => void;
+		onGroupEvent?: (eventData: EventData) => void;
+		onChatroomEvent?: (eventData: EventData) => void;
 	}
 
 	interface HandlerData {
