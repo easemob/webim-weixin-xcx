@@ -152,7 +152,6 @@ Page({
 		wx.getStorageInfo({
 			success: function(res){
 				let storageKeys = res.keys
-				console.log('res.keys +++ ', res.keys)
 				let newChatMsgKeys = [];
 				let historyChatMsgKeys = [];
 				let len = myName.length

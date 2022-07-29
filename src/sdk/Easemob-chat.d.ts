@@ -644,7 +644,6 @@ export declare namespace EasemobChat {
 
 	interface DeleteSessionResult {
 		/** The result of request. */
-		/** 请求结果。 */
 		result: 'ok';
 	}
 	// The contact api result end.
@@ -742,92 +741,6 @@ export declare namespace EasemobChat {
 		/** The expiration time of the presence subscription. */
 		expire: number;
 	}
-
-	interface SilentModeConversationType {
-		/** Silent mode type. */
-		type: string;
-		/** Silent mode duration, duration of Unix timestamp. */
-		ignoreDuration: number;
-		/** Silent mode interval. */
-		ignoreInterval: string;
-	}
-
-	interface ConversationSilentModeType {
-		/** User push map. */
-		user: {
-			[propname: UserId]: SilentModeConversationType;
-		};
-		/** Group push map. */
-		group: {
-			[propname: string]: SilentModeConversationType;
-		};
-	}
-
-	interface TranslationLanguageType {
-		/** Translation language. */
-		language: string;
-	}
-
-	enum SILENTMODETYPE {
-		/** All messsage. */
-		ALL = 'ALL',
-		/** @ messaage of myself. */
-		AT = 'AT',
-		/** None. */
-		NONE = 'NONE',
-	}
-
-	enum CONVERSATIONTYPE {
-		/** Single chat. */
-		SINGLECHAT = 'singleChat',
-		/** Group chat. */
-		GROUPCHAT = 'groupChat',
-		/** Chat room. */
-		CHATROOM = 'chatRoom',
-	}
-
-	type ConversationListType = {
-		/** Conversation id. */
-		id: string;
-		/** Conversation type. */
-		type: string;
-	};
-
-	interface SilentModeRemindType {
-		/** Silent mode type. */
-		paramType: 0;
-		/** Silent mode type. */
-		remindType: SILENTMODETYPE;
-	}
-
-	interface SilentModeDuration {
-		/** Silent mode type. */
-		paramType: 1;
-		/** Silent mode duration, duration of Unix timestamp. */
-		duration: number;
-	}
-
-	interface SilentModeInterval {
-		/** Silent mode type. */
-		paramType: 2;
-		/** Start time interval. */
-		startTime: Interval;
-		/** End time interval. */
-		endTime: Interval;
-	}
-
-	type Interval = {
-		/** Hours. */
-		hours: number;
-		/** Minutes. */
-		minutes: number;
-	};
-
-	type SilentModeParamType =
-		| SilentModeRemindType
-		| SilentModeDuration
-		| SilentModeInterval;
-
 	interface ChatThread {
 		/** The Message ID for creating thread. */
 		messageId: string;
@@ -979,6 +892,91 @@ export declare namespace EasemobChat {
 		/** The number of unread messages. */
 		unread_num: number;
 	}
+
+	interface SilentModeConversationType {
+		/** Silent mode type. */
+		type: string;
+		/** Silent mode duration, duration of Unix timestamp. */
+		ignoreDuration: number;
+		/** Silent mode interval. */
+		ignoreInterval: string;
+	}
+
+	interface ConversationSilentModeType {
+		/** User push map. */
+		user: {
+			[propname: UserId]: SilentModeConversationType;
+		};
+		/** Group push map. */
+		group: {
+			[propname: string]: SilentModeConversationType;
+		};
+	}
+
+	interface TranslationLanguageType {
+		/** Translation language. */
+		language: string;
+	}
+
+	enum SILENTMODETYPE {
+		/** All message. */
+		ALL = 'ALL',
+		/** @ message of myself. */
+		AT = 'AT',
+		/** None. */
+		NONE = 'NONE',
+	}
+
+	enum CONVERSATIONTYPE {
+		/** Single chat. */
+		SINGLECHAT = 'singleChat',
+		/** Group chat. */
+		GROUPCHAT = 'groupChat',
+		/** Chat room. */
+		CHATROOM = 'chatRoom',
+	}
+
+	type ConversationListType = {
+		/** Conversation id. */
+		id: string;
+		/** Conversation type. */
+		type: string;
+	};
+
+	interface SilentModeRemindType {
+		/** Silent mode type. */
+		paramType: 0;
+		/** Silent mode type. */
+		remindType: SILENTMODETYPE;
+	}
+
+	interface SilentModeDuration {
+		/** Silent mode type. */
+		paramType: 1;
+		/** Silent mode duration, duration of Unix timestamp. */
+		duration: number;
+	}
+
+	interface SilentModeInterval {
+		/** Silent mode type. */
+		paramType: 2;
+		/** Start time interval. */
+		startTime: Interval;
+		/** End time interval. */
+		endTime: Interval;
+	}
+
+	type Interval = {
+		/** Hours. */
+		hours: number;
+		/** Minutes. */
+		minutes: number;
+	};
+
+	type SilentModeParamType =
+		| SilentModeRemindType
+		| SilentModeDuration
+		| SilentModeInterval;
 
 	interface GetReactionDetailResult {
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
@@ -1362,7 +1360,6 @@ export declare namespace EasemobChat {
 		 * ```typescript
 		 * connection.removeChatRoomMember({chatRoomId: 'chatRoomId', username: 'username'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		removeChatRoomMember(
 			this: Connection,
@@ -1391,7 +1388,6 @@ export declare namespace EasemobChat {
 		 * ```typescript
 		 * connection.removeChatRoomMembers({chatRoomId: 'chatRoomId', users: ['user1', 'user2']})
 		 * ```
-		 * @since v4.0.1
 		 */
 		removeChatRoomMembers(
 			this: Connection,
@@ -1421,7 +1417,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<AddUsersToChatRoomResult>>;
 
 		/**
-		 * Joins the chat room. After joining successfully, others will receive type: 'memberjoinchatroomsuccess' in the onPresence callback.
+		 * Joins the chat room. After a user joins successfully, other members in the chat room will receive operation: 'memberPresence' in the onChatroomEvent callback.
 		 *
 		 * ```typescript
 		 * connection.joinChatRoom({roomId: 'roomId'})
@@ -1438,13 +1434,30 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Exits chat room. And others will receive type: 'leaveChatRoom' in the onPresence callback.
+		 * @deprecated Use {@link leaveChatRoom} instead.
+		 * Exits chat room. And others will receive "operation: 'memberAbsence'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.quitChatRoom({roomId: 'roomId'})
 		 * ```
 		 */
 		quitChatRoom(
+			this: Connection,
+			params: {
+				roomId: string;
+				success?: (res: AsyncResult<{ result: boolean }>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<{ result: boolean }>>;
+
+		/**
+		 * Exits chat room. And others will receive "operation: 'memberAbsence'" in the callback of onChatroomEvent.
+		 *
+		 * ```typescript
+		 * connection.leaveChatRoom({roomId: 'roomId'})
+		 * ```
+		 */
+		leaveChatRoom(
 			this: Connection,
 			params: {
 				roomId: string;
@@ -1466,12 +1479,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<{ member: string }[]>>;
 
 		/**
-		 * The list of all the chat room members (paginated).
+		 * Lists all chat room members with pagination.
 		 *
 		 * ```typescript
 		 * connection.listChatRoomMembers({pageNum: 1, pageSize: 20, chatRoomId: 'chatRoomId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		listChatRoomMembers(
 			this: Connection,
@@ -1485,7 +1497,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<{ member: string }[]>>;
 
 		/**
-		 * Gets all admins in the chat room.
+		 * Gets all admins of the chat room.
 		 *
 		 * ```typescript
 		 * connection.getChatRoomAdmin({chatRoomId: 'chatRoomId'})
@@ -1501,7 +1513,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GetChatRoomAdminResult>>;
 
 		/**
-		 * Sets up chat room admins. Only the chatroom owner can call this method. The members who are set as administrators will receive type: 'addadmin' in the onPresence callback.
+		 * Sets a user as chat room admin. Only the chat room owner can call this method. The members who are set as admins will receive "operation: 'setAdmin'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.setChatRoomAdmin({chatRoomId: 'chatRoomId', username: 'user1'})
@@ -1518,7 +1530,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<SetChatRoomAdminResult>>;
 
 		/**
-		 * Removes the chat room admins. Only the chatroom owner can call this method. The users whose administrator is removed will receive type: 'removeadmin' in the callback of onPresence.
+		 * Removes chat room admins. Only the chat room owner can call this method. The users whose admin privileges are removed will receive "operation: 'removeAdmin'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.removeChatRoomAdmin({chatRoomId: 'chatRoomId', username: 'user1'})
@@ -1535,12 +1547,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<RemoveChatRoomAdminResult>>;
 
 		/**
-		 * Mutes chat room member. Only the chatroom owner can call this method. The members who are muted and others will receive type: 'addmute' in the onPresence callback.
+		 *  Mutes chat room member. Only the chat room owner can call this method. The muted member and other members will receive "operation:'muteMember'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.muteChatRoomMember({username: 'user1', muteDuration: -1, chatRoomId: 'chatRoomId'})
 		 * ```
-		 * @since 1.4.11
 		 */
 		muteChatRoomMember(
 			this: Connection,
@@ -1567,12 +1578,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UnmuteChatRoomMemberResult[]>>;
 
 		/**
-		 * Unmutes the chat room member. Only the chatroom owner can call this method. The members who are muted and others will receive type: 'removeMute' in the onPresence callback.
+		 * Unmute the chat room member. Only the chatroom owner can call this method. The members who are muted and others will receive "operation: 'unmuteMember'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.unmuteChatRoomMember({chatRoomId: 'chatRoomId', username: 'user1'})
 		 * `
-		 * @since v4.0.1
 		 */
 		unmuteChatRoomMember(
 			this: Connection,
@@ -1599,15 +1609,32 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GetChatRoomMuteListResult[]>>;
 
 		/**
+		 * @deprecated
 		 * Gets all members who are muted in the chat room.
 		 *
 		 * ```typescript
 		 * connection.getChatRoomMuteList({chatRoomId: 'chatRoomId'})
 		 * ```
-		 *
-		 * @since v4.0.1
 		 */
 		getChatRoomMuteList(
+			this: Connection,
+			params: {
+				chatRoomId: string;
+				success?: (
+					res: AsyncResult<GetChatRoomMuteListResult[]>
+				) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<GetChatRoomMuteListResult[]>>;
+
+		/**
+		 * Gets all members who are muted in the chat room.
+		 *
+		 * ```typescript
+		 * connection.getChatRoomMutelist({chatRoomId: 'chatRoomId'})
+		 * ```
+		 */
+		getChatRoomMutelist(
 			this: Connection,
 			params: {
 				chatRoomId: string;
@@ -1630,12 +1657,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Adds a single user to the chat room blocklist. Only the chatroom owner or admin can call this method.
+		 * Adds a member to the chat room blocklist. Only the chat room owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.blockChatRoomMember({chatRoomId: 'chatRoomId', username: 'user1'})
 		 * ```
-		 *@since v4.0.1
 		 */
 		blockChatRoomMember(
 			this: Connection,
@@ -1659,13 +1685,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult[]>>;
 
 		/**
-		 * Adds users to the chat room blocklist. Only the chatroom owner or admin can call this method.
+		 * Adds members to the chat room blocklist. Only the chat room owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.blockChatRoomMembers({usernames: ['user1', 'user2'], chatRoomId: 'chatRoomId'})
 		 * ```
-		 *
-		 * @since v4.0.1
 		 */
 		blockChatRoomMembers(
 			this: Connection,
@@ -1694,7 +1718,6 @@ export declare namespace EasemobChat {
 		 * ```typescript
 		 * connection.unblockChatRoomMember({chatRoomId: 'chatRoomId', username: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		unblockChatRoomMember(
 			this: Connection,
@@ -1723,8 +1746,6 @@ export declare namespace EasemobChat {
 		 * ```typescript
 		 * connection.unblockChatRoomMembers({chatRoomId: 'chatRoomId', usernames: ['user1', 'user2']})
 		 * ```
-		 *
-		 * @since v4.0.1
 		 */
 		unblockChatRoomMembers(
 			this: Connection,
@@ -1752,7 +1773,6 @@ export declare namespace EasemobChat {
 		 * ```typescript
 		 * connection.getChatRoomBlacklist({chatRoomId: 'chatRoomId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		getChatRoomBlacklist(
 			this: Connection,
@@ -1782,7 +1802,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<WhetherAbleSendChatRoomMsgResult>>;
 
 		/**
-		 * Unmutes all the members in the chat room. Only the chatroom owner or admin can call this method.
+		 * Unmute all the members in the chat room. Only the chatroom owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.enableSendChatRoomMsg({chatRoomId: 'chatRoomId'})
@@ -1795,18 +1815,40 @@ export declare namespace EasemobChat {
 				success?: (
 					res: AsyncResult<WhetherAbleSendChatRoomMsgResult>
 				) => void;
-				error?: (errror: ErrorEvent) => void;
+				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<WhetherAbleSendChatRoomMsgResult>>;
 
 		/**
-		 * Adds members to the allowlist of the chat room. Users added to the allow list of the chat room will receive in onPresence callback type: 'addUserToChatRoomWhiteList'.
+		 * @deprecated Use {@link addUsersToChatRoomAllowlist} instead.
+		 * Adds members to the allowlist of the chat room. Users added to the allow list of the chat room will receive "operation: 'addUserToAllowlist'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.addUsersToGroupWhitelist({groupId: 'groupId'})
 		 * ```
 		 */
 		addUsersToChatRoomWhitelist(
+			this: Connection,
+			params: {
+				chatRoomId: string;
+				users: string[];
+				success?: (
+					res: AsyncResult<
+						CommonRequestResult | CommonRequestResult[]
+					>
+				) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<CommonRequestResult | CommonRequestResult[]>>;
+
+		/**`
+		 * Adds members to the allowlist of the chat room. Users added to the allow list of the chat room will receive "operation: 'addUserToAllowlist'" in the callback of onChatroomEvent.
+		 *
+		 * ```typescript
+		 * connection.addUsersToChatRoomAllowlist({groupId: 'groupId'})
+		 * ```
+		 */
+		addUsersToChatRoomAllowlist(
 			this: Connection,
 			params: {
 				chatRoomId: string;
@@ -1832,12 +1874,12 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Removes members from the allowlist in the chatroom. Only the chatroom owner or admin can call this method. The users who are removed will receive in onPresence callback type: 'rmUserFromChatRoomWhiteList'.
+		 * @deprecated Use {@link removeChatRoomAllowlistMember} instead.
+		 * Removes members from the allowlist in the chatroom. Only the chatroom owner or admin can call this method. The users who are removed will receive "operation:'removeAllowlistMember'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.removeChatRoomWhitelistMember({chatRoomId: 'chatRoomId', userName: 'user1'})
 		 * `
-		 * @since v4.0.1
 		 */
 		removeChatRoomWhitelistMember(
 			this: Connection,
@@ -1850,7 +1892,25 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Gets the allowlist of the chat room. Only the chatroom owner or admin can call this method.
+		 * Removes members from the allowlist in the chatroom. Only the chatroom owner or admin can call this method. The users who are removed will receive "operation:'removeAllowlistMember'" in the callback of onChatroomEvent.
+		 *
+		 * ```typescript
+		 * connection.removeChatRoomAllowlistMember({chatRoomId: 'chatRoomId', userName: 'user1'})
+		 * `
+		 */
+		removeChatRoomAllowlistMember(
+			this: Connection,
+			params: {
+				chatRoomId: string;
+				userName: string;
+				success?: (res: AsyncResult<CommonRequestResult>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<CommonRequestResult>>;
+
+		/**
+		 * @deprecated Use {@link getChatRoomAllowlist} instead.
+		 * Gets the allowlist of the chat room. Only the chat room owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.getChatRoomWhitelist({chatRoomId: 'chatRoomId'})
@@ -1866,13 +1926,47 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UserId[]>>;
 
 		/**
-		 * Queries whether chat room members are in the allowlist. Only the chatroom owner or admin can call this method. The chatroom members can query themselves.
+		 * Gets the allowlist of the chat room. Only the chat room owner or admin can call this method.
+		 *
+		 * ```typescript
+		 * connection.getChatRoomAllowlist({chatRoomId: 'chatRoomId'})
+		 * ```
+		 */
+		getChatRoomAllowlist(
+			this: Connection,
+			params: {
+				chatRoomId: string;
+				success: (res: AsyncResult<UserId[]>) => void;
+				error: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<UserId[]>>;
+
+		/**
+		 * @deprecated Use {@link isInChatRoomAllowlist} instead.
+		 * Checks whether chat room members are on the allowlist. Only the chat room owner or admin can call this method. The chat room members can check themselves.
 		 *
 		 * ```typescript
 		 * connection.isChatRoomWhiteUser({chatRoomId: 'chatRoomId', userName: 'user1'})
 		 * `
 		 */
 		isChatRoomWhiteUser(
+			this: Connection,
+			params: {
+				chatRoomId: string;
+				userName: string;
+				success?: (res: AsyncResult<IsChatRoomWhiteUserResult>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<IsChatRoomWhiteUserResult>>;
+
+		/**
+		 * Checks whether chat room members are on the allowlist. Only the chat room owner or admin can call this method. The chat room members can check themselves.
+		 *
+		 * ```typescript
+		 * connection.isInChatRoomAllowlist({chatRoomId: 'chatRoomId', userName: 'user1'})
+		 * `
+		 */
+		isInChatRoomAllowlist(
 			this: Connection,
 			params: {
 				chatRoomId: string;
@@ -1920,12 +2014,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UpdateChatRoomAnnouncementResult>>;
 
 		/**
-		 * Uploads shared files to the chat room.
+		 * Uploads a shared file to the chat room.
 		 *
 		 * ```typescript
 		 * connection.uploadChatRoomSharedFile({roomId: 'roomId', file: 'file object', onFileUploadProgress: onFileUploadProgress, onFileUploadComplete: onFileUploadComplete,onFileUploadError:onFileUploadError,onFileUploadCanceled:onFileUploadCanceled})
 		 * ```
-		 * @return Void
 		 */
 		uploadChatRoomSharedFile(
 			this: Connection,
@@ -1940,7 +2033,7 @@ export declare namespace EasemobChat {
 		): void;
 
 		/**
-		 * Deletes the chat room shared files.
+		 * Deletes a shared file of the chat room.
 		 *
 		 * ```typescript
 		 * connection.deleteChatRoomSharedFile({roomId: 'roomId', fileId: 'fileId'})
@@ -1959,6 +2052,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<DeleteChatRoomSharedFileResult>>;
 
 		/**
+		 * @deprecated Use {@link getChatRoomSharedFilelist}
 		 * Gets a list of shared files in the chat room.
 		 *
 		 * ```typescript
@@ -1966,6 +2060,24 @@ export declare namespace EasemobChat {
 		 * ```
 		 */
 		fetchChatRoomSharedFileList(
+			this: Connection,
+			params: {
+				roomId: string;
+				success?: (
+					res: AsyncResult<FetchChatRoomSharedFileListResult[]>
+				) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<FetchChatRoomSharedFileListResult[]>>;
+
+		/**
+		 * Gets a list of shared files in the chat room.
+		 *
+		 * ```typescript
+		 * connection.getChatRoomSharedFilelist({roomId: 'roomId'})
+		 * ```
+		 */
+		getChatRoomSharedFilelist(
 			this: Connection,
 			params: {
 				roomId: string;
@@ -2012,7 +2124,6 @@ export declare namespace EasemobChat {
             }
         })
         * ```
-        * @since v4.0.1
         */
 		createGroup(
 			this: Connection,
@@ -2043,11 +2154,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<BlockGroupResult>>;
 
 		/**
-		 * Block group messages， Only valid for mobile terminal
+		 * Blocks group messages. This method is only valid for mobile devices.
 		 * ```typescript
 		 * connection.blockGroupMessages({groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		blockGroupMessages(
 			this: Connection,
@@ -2059,14 +2169,31 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<BlockGroupResult>>;
 
 		/**
-		 * Gets public groups (paginated).
+		 * @deprecated Use {@link getPublicGroups} instead.
+		 * Gets public groups with pagination.
 		 *
 		 * ```typescript
 		 * connection.listGroups({limit: 20, cursor: null})
 		 * ```
-		 * @since 1.4.11
 		 */
 		listGroups(
+			this: Connection,
+			params: {
+				limit: number;
+				cursor?: string;
+				success?: (res: AsyncResult<BaseGroupInfo[]>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<BaseGroupInfo[]>>;
+
+		/**
+		 * Gets public groups with pagination.
+		 *
+		 * ```typescript
+		 * connection.getPublicGroups({limit: 20, cursor: null})
+		 * ```
+		 */
+		getPublicGroups(
 			this: Connection,
 			params: {
 				limit: number;
@@ -2082,7 +2209,6 @@ export declare namespace EasemobChat {
 		 * ```typescript
 		 * connection.getGroup()
 		 * ```
-		 * @since 1.4.11
 		 * @deprecated
 		 */
 		getGroup(
@@ -2105,6 +2231,8 @@ export declare namespace EasemobChat {
 			params: {
 				pageNum: number;
 				pageSize: number;
+				needAffiliations?: boolean;
+				needRole?: boolean;
 				success?: (res: AsyncResult<BaseGroupInfo[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
@@ -2122,12 +2250,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<ChangeGroupOwnerResult>>;
 
 		/**
-		 * Transfers group. Requires owner permission. Group members will receive type: 'changeowner' in the onpresence callback
+		 * Transfers a group. Only the group owner can call this method. Group members will receive "operation: 'changeOwner'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.changeGroupOwner({groupId: 'groupId', newOwner: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		changeGroupOwner(
 			this: Connection,
@@ -2140,11 +2267,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<ChangeGroupOwnerResult>>;
 
 		/**
-		 * Gets group details
+		 * Gets specifications of the group.
 		 * ```typescript
 		 * connection.getGroupInfo({groupId: groupId})
 		 * ```
-		 * @since 1.4.11
 		 */
 		getGroupInfo(
 			this: Connection,
@@ -2156,7 +2282,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupDetailInfo[]>>;
 
 		/**
-		 * Modifys group information, Administrator right is required.
+		 * Modifies group information. Only the group admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.modifyGroup({groupId: 'groupId', groupName: 'groupName', description:'description'})
@@ -2186,12 +2312,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupMember[]>>;
 
 		/**
-		 * Lists all members of the group (paginated).
+		 * Lists all members of the group with pagination.
 		 *
 		 * ```typescript
 		 * connection.listGroupMembers({pageNum: 1, pageSize: 20, groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		listGroupMembers(
 			this: Connection,
@@ -2205,11 +2330,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupMember[]>>;
 
 		/**
-		 * Gets all administrators in the group.
+		 * Gets all admins in the group.
 		 * ```typescript
 		 * connection.getGroupAdmin({groupId: 'groupId'})
 		 * ```
-		 * @since 1.4.11
 		 */
 		getGroupAdmin(
 			this: Connection,
@@ -2232,12 +2356,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<SetGroupAdminResult>>;
 
 		/**
-		 * Sets up group administrator, need group owner authority. Users who are set as administrators will receive type: 'addadmin' in the onPresence callback.
+		 * Sets a group admin. Only the group owner can call this method. The user set as an admin will receive "operation: 'setAdmin'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.setGroupAdmin({groupId: 'groupId', username: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		setGroupAdmin(
 			this: Connection,
@@ -2250,10 +2373,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<SetGroupAdminResult>>;
 
 		/**
-		 * Removes the group administrator, need the permission of the group master. The user whose administrator is canceled will receive type: 'removeadmin' in the callback of onPresence.
+		 * Removes a group admin. Only the group owner can call this method. The user whose admin permissions are revoked will receive "operation: 'removeAdmin'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
-		 * connection.removeAdmin({gorupId: 'gorupId', username: 'user1'})
+		 * connection.removeAdmin({groupId: 'groupId', username: 'user1'})
 		 * ```
 		 */
 		removeAdmin(
@@ -2277,12 +2400,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<DestroyGroupResult>>;
 
 		/**
-		 * Destroys a group, need the permission of the group owner. Group members will receive type: 'deletegroupchat' in the callback of onPrenscence.
+		 * Destroys a group. Only the group owner can call this method. Group members will receive "operation: 'destroy'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.destroyGroup({groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		destroyGroup(
 			this: Connection,
@@ -2294,7 +2416,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<DestroyGroupResult>>;
 
 		/**
-		 * Leaves the group, group members will receive type: 'leavegroup' in the callback of onPresence.
+		 * Leaves the group. Group members will receive "operation: 'memberAbsence'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.quitGroup({groupId: 'groupId'})
@@ -2323,12 +2445,13 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<InviteUsersToGroupResult[]>>;
 
 		/**
-		 * Invites users into group. The invited user will receive type: 'invite' in the callback of onPresence.
+		 * Invites users into a group.
+		 * Creates a group instance "inviteNeedConfirm:true", the invited users will receive "operation: 'inviteToJoin'" in the callback of onGroupEvent.
+		 * Creates a group instance "inviteNeedConfirm:false", the invited users will receive "operation: 'directJoined'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.inviteUsersToGroup({groupId: 'groupId', users: ['user1', 'user2']})
 		 * ```
-		 * @since v4.0.1
 		 */
 		inviteUsersToGroup(
 			this: Connection,
@@ -2343,12 +2466,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<InviteUsersToGroupResult[]>>;
 
 		/**
-		 * Applys to join the group. The group owner and administrator will receive type: 'joingroupnotifications' in the onPresence callback
+		 * Applies to join the group. The group owner and admin will receive "operation: 'requestToJoin'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.joinGroup({groupId: 'groupId', message: 'I want to join the group'})
 		 * ```
-		 * @since 1.4.11
 		 */
 		joinGroup(
 			this: Connection,
@@ -2372,12 +2494,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Allows user to join the group. Group owner or administrator permissions are required. Users who join the group will receive type: 'joinpublicgroupsuccess' in the callback of onPresence.
+		 * Accepts a group request. Only the group owner or admin can call this method. The user joining the group will receive "operation: 'acceptRequest'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.acceptGroupJoinRequest({applicant: 'user1', groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		acceptGroupJoinRequest(
 			this: Connection,
@@ -2402,12 +2523,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Refuses user to join the group. Group owner or administrator permissions are required.
+		 * Declines a group request. Only the group owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.rejectGroupJoinRequest({applicant: 'user1', groupId: 'groupId', reason: 'I do not like you'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		rejectGroupJoinRequest(
 			this: Connection,
@@ -2432,12 +2552,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Accepts the group invitation. If others invite you to join the group, you can call this API and agree. The inviter will receive type: 'invite_accept' in the callback of onPresence, After joining successfully, group members will receive type: 'memberjoinpublicgroupsuccess' in the callback of onPresence.
+		 * Accepts a group invitation. If a group member invites a user to join the group, the invitee can call this method to accept the invitation. The inviter will receive "operation: 'acceptInvite'" in the callback of onGroupEvent. The user who joins the group successfully will receive "operation: 'memberPresence'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.acceptGroupInvite({invitee: 'myUserId', groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		acceptGroupInvite(
 			this: Connection,
@@ -2461,12 +2580,11 @@ export declare namespace EasemobChat {
 		): Promise<any>;
 
 		/**
-		 * Rejects group invitation. Other user invite you to join the group, you can call this API to refuse.
+		 * Declines a group invitation. If a group member invites a user to join a group, the invitee can call this method to decline the invitation.
 		 *
 		 * ```typescript
 		 * connection.rejectGroupInvite({invitee: 'myUserId', groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		rejectGroupInvite(
 			this: Connection,
@@ -2490,12 +2608,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<RemoveGroupMemberResult>>;
 
 		/**
-		 * Removes a group member. Group owner or administrator permission is required. The removed user will receive type: 'removedfromgroup' in the callback of onPresence, and other group members will receive type: 'leavegroup' in the callback of onPresence.
+		 * Removes a member from the group. Only the group owner or admin can call this method. The removed member will receive "operation: 'removeMember' in the callback of onGroupEvent, and other group members will receive "operation: 'memberAbsence' in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.removeGroupMember({groupId: 'groupId', username: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		removeGroupMember(
 			this: Connection,
@@ -2519,12 +2636,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<RemoveGroupMemberResult[]>>;
 
 		/**
-		 * Removes group members. Group owner or administrator permission is required. The removed users will receive type: 'removedfromgroup' in the callback of onPresence, and other group members will receive type: 'leavegroup' in the callback of onPresence.
+		 * Removes members from the group. Only the group owner or admin can call this method. The removed members will receive "operation: 'removeMember'" in the callback of onGroupEvent, and other group members will receive "operation: 'memberAbsence' in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.removeGroupMembers({groupId: 'groupId', users: ['user1', 'user2']})
 		 * ```
-		 * @since v4.0.1
 		 */
 		removeGroupMembers(
 			this: Connection,
@@ -2549,12 +2665,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<MuteGroupMemberResult[]>>;
 
 		/**
-		 * Mutes a group member. Group owner or administrator permission is required. Forbidden user and other users will receive type: 'addmute' in the onPresence callback.
+		 * Mutes a group member. Only the group owner or admin can call this method. The muted member and other members will receive "operation:'muteMember'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.muteGroupMember({username: 'user1', muteDuration: -1, groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		muteGroupMember(
 			this: Connection,
@@ -2579,12 +2694,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UnmuteGroupMemberResult[]>>;
 
 		/**
-		 * Unmutes group member. Group owner or administrator permissions are required. Users who have been released and other users will receive type: 'removemute' in the callback of onPresence.
+		 * Unmute a group member. Only the group owner or admin can call this method. All members, including the muted, will receive "operation: 'unmuteMember'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.unmuteGroupMember({groupId: 'groupId', username: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		unmuteGroupMember(
 			this: Connection,
@@ -2607,12 +2721,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GetGroupMuteListResult[]>>;
 
 		/**
-		 * Gets the group mute list.
+		 * Gets the mute list of the group.
 		 *
 		 * ```typescript
 		 * connection.getGroupMuteList({groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		getGroupMuteList(
 			this: Connection,
@@ -2635,12 +2748,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupRequestResult>>;
 
 		/**
-		 * Adds a member to the group blacklist. Group owner or administrator permission is required, The user added to the blacklist will receive type: 'removedFromGroup' in the onPresence callback.
+		 * Adds a member to the group blocklist. Only the group owner or admin can call this method. The member added to the blocklist will receive "operation: 'removeMember'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.blockGroupMember({groupId: 'groupId', username: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		blockGroupMember(
 			this: Connection,
@@ -2664,12 +2776,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupRequestResult[]>>;
 
 		/**
-		 * Adds group members to the group blacklist. Administrator rights required，Users added to the blacklist will receive type: 'removedFromGroup' in the onPresence callback.
+		 * Adds members to the group blocklist in bulk. Only the group admin can call this method. Members added to the blocklist will receive "operation: 'removeMember'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.blockGroupMembers({usernames: ['user1', 'user2'], groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		blockGroupMembers(
 			this: Connection,
@@ -2693,12 +2804,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupRequestResult>>;
 
 		/**
-		 * Unblock a group member. Administrator rights required, Users who have been removed from the blacklist will receive type: 'allow' in the onPresence callback.
+		 * Removes a member from the group blocklist. Only the group admin can call this method. Members who have been removed from the blocklist will receive "operation: 'unblockMember'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.unblockGroupMember({groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		unblockGroupMember(
 			this: Connection,
@@ -2722,12 +2832,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupRequestResult[]>>;
 
 		/**
-		 * Unblock the group members. Group owner or administrator permissions are required, Users who have been removed from the blacklist will receive type: 'allow' in the onPresence callback.
+		 * Removes members from the group blocklist in bulk. Only the group owner or admin can call this method. Members who are removed from the blocklist will receive "operation: 'unblockMember'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.unblockGroupMembers({groupId: 'groupId', usernames: ['user1', 'user2']})
 		 * ```
-		 * @since v4.0.1
 		 */
 		unblockGroupMembers(
 			this: Connection,
@@ -2750,12 +2859,13 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UserId[]>>;
 
 		/**
-		 * Gets group blacklist.
+		 * Gets the group blocklist.
 		 *
 		 * ```typescript
 		 * connection.getGroupBlacklist({groupId: 'groupId'})
 		 * ```
-		 * @since v4.0.1
+		 * @hidden
+		 * @deprecated
 		 */
 		getGroupBlacklist(
 			this: Connection,
@@ -2767,7 +2877,23 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UserId[]>>;
 
 		/**
-		 * Mutes all members. All group members are prohibited from speaking. Operation permissions: group admin or above identity, Group members will receive type: 'muteGroup' in the onPresence callback.
+		 * Gets the group blocklist.
+		 *
+		 * ```typescript
+		 * connection.getGroupBlocklist({groupId: 'groupId'})
+		 * ```
+		 */
+		getGroupBlocklist(
+			this: Connection,
+			params: {
+				groupId: string;
+				success?: (res: AsyncResult<UserId[]>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<UserId[]>>;
+
+		/**
+		 * Mutes all members. Only the group admin or above can call this method. Group members will receive "operation: 'muteAllMembers'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 *  connection.disableSendGroupMsg({groupId: 'groupId'})
@@ -2783,7 +2909,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<{ mute: true }>>;
 
 		/**
-		 * Unmutes all members. Operation permissions: group admin or above identity, Group members will receive type: 'rmgroupmute' in the callback of onpresence.
+		 * Unmute all members. Only the group admin or above can call this method. Group members will receive "operation: 'unmuteAllMembers'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.enableSendGroupMsg({groupId: 'groupId'})
@@ -2799,13 +2925,32 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<{ mute: false }>>;
 
 		/**
-		 * Adds members to the group whitelist. Members of the white list can continue to speak after the group bans.  Operation authority: Group admin or above, Users added to the whitelist will receive type: 'addusertogroupwhitelist' in the callback of onPresence.
+		 * @hidden
+		 * @deprecated Use {@link addUsersToGroupAllowlist} instead.
+		 * Adds members to the group allowlist. Members on the allowlist can still post messages even if they are muted in the group. Only the group admin or above can call this method. Members added to the allowlist will receive "operation: 'addUserToAllowlist'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.addUsersToGroupWhitelist({groupId: 'groupId'})
 		 * ```
 		 */
 		addUsersToGroupWhitelist(
+			this: Connection,
+			params: {
+				groupId: string;
+				users: UserId[];
+				success?: (res: AsyncResult<GroupRequestResult[]>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<GroupRequestResult[]>>;
+
+		/**
+		 * Adds members to the group allowlist. Members on the allowlist can still post messages even if they are muted in the group. Only the group admin or above can call this method. Members added to the allowlist will receive "operation: 'addUserToAllowlist'" in the callback of onGroupEvent.
+		 *
+		 * ```typescript
+		 * connection.addUsersToGroupAllowlist({groupId: 'groupId'})
+		 * ```
+		 */
+		addUsersToGroupAllowlist(
 			this: Connection,
 			params: {
 				groupId: string;
@@ -2827,13 +2972,12 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupRequestResult>>;
 
 		/**
-		 * Remove the group whitelist member.  Operation permissions: group admin or above identity, The user whose whitelist is removed will receive type:'rmUserFromGroupWhiteList' in the onPresence callback.
+		 * @deprecated  Use {@link removeGroupAllowlistMember} instead.
+		 * Removes a member from the group allowlist. Only the group admin or above can call this method. The user that is removed from the group allowlist will receive "operation:'removeAllowlistMember'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
 		 * connection.removeGroupWhitelistMember({groupId: 'groupId', userName: 'user1'})
 		 * ```
-		 *
-		 * @since v4.0.1
 		 */
 		removeGroupWhitelistMember(
 			this: Connection,
@@ -2846,13 +2990,47 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GroupRequestResult>>;
 
 		/**
-		 * Gets group white list. Operation authority: admin or above.
+		 * Removes a member from the group allowlist. Only the group admin or above can call this method. The user that is removed from the group allowlist will receive "operation:'removeAllowlistMember'" in the callback of onGroupEvent.
+		 *
+		 * ```typescript
+		 * connection.removeGroupAllowlistMember({groupId: 'groupId', userName: 'user1'})
+		 * ```
+		 */
+		removeGroupAllowlistMember(
+			this: Connection,
+			params: {
+				groupId: string;
+				userName: UserId;
+				success?: (res: AsyncResult<GroupRequestResult>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<GroupRequestResult>>;
+
+		/**
+		 * @deprecated Use {@link getGroupAllowlist} instead.
+		 * Gets the group allowlist. Only the group admin or above can call this method.
 		 *
 		 * ```typescript
 		 * connection.getGroupWhitelist({groupId: 'groupId'})
 		 * ```
 		 */
 		getGroupWhitelist(
+			this: Connection,
+			params: {
+				groupId: string;
+				success?: (res: AsyncResult<UserId[]>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<UserId[]>>;
+
+		/**
+		 * Gets the group allowlist. Only the group admin or above can call this method.
+		 *
+		 * ```typescript
+		 * connection.getGroupAllowlist({groupId: 'groupId'})
+		 * ```
+		 */
+		getGroupAllowlist(
 			this: Connection,
 			params: {
 				groupId: string;
@@ -2873,12 +3051,12 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<IsInGroupWhiteListResult>>;
 
 		/**
-		 * Queries whether the group member is in white list. Operation permission: app admin can query all users; App users can query themselves.
+		 * @deprecated Use {@link isInGroupAllowlist} instead.
+		 * Checks whether the current member is on the allowlist. The app admin can check all users; app users can only check themselves.
 		 *
 		 * ```typescript
 		 * connection.isInGroupWhiteList({groupId: 'groupId', userName: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		isInGroupWhiteList(
 			this: Connection,
@@ -2891,7 +3069,24 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<IsInGroupWhiteListResult>>;
 
 		/**
-		 * Queries which users have read group message [Value-added function] needs to be opened separately.
+		 * Checks whether the current member is on the allowlist. The app admin can check all users; app users can only check themselves.
+		 *
+		 * ```typescript
+		 * connection.isInGroupAllowlist({groupId: 'groupId', userName: 'user1'})
+		 * ```
+		 */
+		isInGroupAllowlist(
+			this: Connection,
+			params: {
+				groupId: string;
+				userName: UserId;
+				success?: (res: AsyncResult<IsInGroupWhiteListResult>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<IsInGroupWhiteListResult>>;
+
+		/**
+		 * Checks which members have read group message. This is a [value-added function] and .
 		 *
 		 * ```typescript
 		 * connection.getGroupMsgReadUser({groupId: 'groupId', msgId: 'msgId'})
@@ -2908,7 +3103,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GetGroupMsgReadUserResult>>;
 
 		/**
-		 * Gets group announcement
+		 * Gets the group announcement.
 		 *
 		 * ```typescript
 		 * connection.fetchGroupAnnouncement({groupId: 'groupId'})
@@ -2924,7 +3119,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<{ announcement: string }>>;
 
 		/**
-		 * Updates group announcement.
+		 * Updates the group announcement.
 		 *
 		 * ```typescript
 		 * connection.updateGroupAnnouncement({groupId: 'groupId', announcement: 'hello'})
@@ -2943,7 +3138,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UpdateGroupAnnouncementResult>>;
 
 		/**
-		 * Uploads group shared file.
+		 * Uploads shared files to the group.
 		 *
 		 * ```typescript
 		 * connection.uploadGroupSharedFile({groupId: 'groupId', file: 'file object', onFileUploadProgress: onFileUploadProgress, onFileUploadComplete: onFileUploadComplete,onFileUploadError:onFileUploadError,onFileUploadCanceled:onFileUploadCanceled})
@@ -2962,7 +3157,7 @@ export declare namespace EasemobChat {
 		): void;
 
 		/**
-		 * Deletes group shared file
+		 * Deletes shared files of the group.
 		 *
 		 * ```typescript
 		 * connection.deleteGroupSharedFile({groupId: 'groupId', fileId: 'fileId'})
@@ -2981,13 +3176,34 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<DeleteGroupSharedFileResult>>;
 
 		/**
-		 * Gets a list of group shared files.
+		 *  @deprecated Use {@link getGroupSharedFilelist} instead.
+		 * Gets a list of shared files in the group.
 		 *
 		 * ```typescript
 		 * connection.fetchGroupSharedFileList({groupId: 'groupId'})
 		 * ```
 		 */
 		fetchGroupSharedFileList(
+			this: Connection,
+			params: {
+				groupId: string;
+				pageNum?: number;
+				pageSize?: number;
+				success?: (
+					res: AsyncResult<FetchGroupSharedFileListResult>
+				) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<FetchGroupSharedFileListResult>>;
+
+		/**
+		 * Gets a list of shared files in the group.
+		 *
+		 * ```typescript
+		 * connection.getGroupSharedFilelist({groupId: 'groupId'})
+		 * ```
+		 */
+		getGroupSharedFilelist(
 			this: Connection,
 			params: {
 				groupId: string;
@@ -3020,13 +3236,29 @@ export declare namespace EasemobChat {
 
 		// Contact API
 		/**
-		 * Gets friends blacklist.
+		 * @deprecated Use {@link getBlocklist} instead.
+		 * Gets the blocklist.
 		 *
 		 * ```typescript
 		 * connection.getBlacklist()
 		 * ```
 		 */
 		getBlacklist(
+			this: Connection,
+			params?: {
+				success?: (res: AsyncResult<UserId[]>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<UserId[]>>;
+
+		/**
+		 * Gets the blocklist.
+		 *
+		 * ```typescript
+		 * connection.getBlocklist()
+		 * ```
+		 */
+		getBlocklist(
 			this: Connection,
 			params?: {
 				success?: (res: AsyncResult<UserId[]>) => void;
@@ -3044,12 +3276,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UserId[]>>;
 
 		/**
-		 * Gets contacts.
+		 * Gets the contact list.
 		 *
 		 * ```typescript
 		 * connection.getContacts()
 		 * ```
-		 * @since v4.0.1
 		 */
 		getContacts(
 			this: Connection,
@@ -3072,12 +3303,11 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UploadTokenResult>>;
 
 		/**
-		 * If you use the SDK on a native client and integrate third-party push functionality, you can call this method to upload the Token to the server.
+		 * Uploads the token to the server. This method is used when the SDK is used on a native client on which a third-party push service is to be integrated.
 		 *
 		 * ```typescript
 		 * connection.uploadPushToken({deviceId: 'deviceId', deviceToken: 'deviceToken', notifierName: 'notifierName'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		uploadPushToken(
 			this: Connection,
@@ -3091,7 +3321,8 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UploadTokenResult>>;
 
 		/**
-		 * Gets the session list.
+		 * @deprecated Use {@link getConversationlist} instead.
+		 * Gets the conversation list.
 		 *
 		 * ```typescript
 		 * connection.getSessionList()
@@ -3103,7 +3334,11 @@ export declare namespace EasemobChat {
 				success?: (res: AsyncResult<SessionInfo[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
-		): Promise<AsyncResult<SessionInfo[]>>;
+		): Promise<
+			AsyncResult<{
+				channel_infos: SessionInfo[];
+			}>
+		>;
 
 		/**
 		 * Gets the conversation list and the latest message under the conversation.
@@ -3121,6 +3356,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<conversationList[]>>;
 
 		/**
+		 * @deprecated Use Use {@link deleteConversation} instead.
 		 * Delete the session.
 		 *
 		 * ```typescript
@@ -3139,6 +3375,25 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<DeleteSessionResult>>;
 
 		/**
+		 * Deletes the conversation.
+		 *
+		 * ```typescript
+		 * connection.deleteConversation()
+		 * ```
+		 */
+		deleteConversation(
+			this: Connection,
+			params: {
+				channel: string;
+				chatType: 'singleChat' | 'groupChat';
+				deleteRoam: boolean;
+				success?: (res: AsyncResult<DeleteSessionResult>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<DeleteSessionResult>>;
+
+		/**
+		 * @deprecated Use {@link updateUserInfo} instead.
 		 * Updates own information.
 		 *
 		 * ```typescript
@@ -3154,7 +3409,22 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UpdateOwnUserInfoParams>>;
 
 		/**
-		 * Queres user information.
+		 * Modifies the user's attributes.
+		 *
+		 * ```typescript
+		 * connection.updateOwnUserInfo({nickname: 'Tom', avatarurl: 'avatarurl', mail: 'abc@gmail,com', ext: JSON.stringify({hobby: 'football'})})
+		 *
+		 * connection.updateUserInfo('nickname', 'Tom')
+		 * ```
+		 */
+		updateUserInfo(
+			this: Connection,
+			params: UpdateOwnUserInfoParams | ConfigurableKey,
+			value?: any
+		): Promise<AsyncResult<UpdateOwnUserInfoParams>>;
+
+		/**
+		 * Queries the user attributes.
 		 *
 		 * ```typescript
 		 * connection.fetchUserInfoById('user1') | fetchUserInfoById(['user1', 'user2'])
@@ -3163,11 +3433,15 @@ export declare namespace EasemobChat {
 		fetchUserInfoById(
 			this: Connection,
 			userId: UserId | UserId[],
-			properties: ConfigurableKey[] | ConfigurableKey
-		): Promise<AsyncResult<UpdateOwnUserInfoParams>>;
+			properties?: ConfigurableKey[] | ConfigurableKey
+		): Promise<
+			AsyncResult<{
+				[key: string]: UpdateOwnUserInfoParams;
+			}>
+		>;
 
 		/**
-		 * When registering, you can set a nickname, which is used to display when pushing messages. You can call the following API to modify the nickname.
+		 * Changes the nickname shown when the message push notification is received. This nickname is specified during user registration and it's not the same as the nickname attribute of the user.
 		 *
 		 * ```typescript
 		 * connection.updateCurrentUserNick('Tom')
@@ -3179,6 +3453,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<BaseUserInfo[]>>;
 
 		/**
+		 * @deprecated Use {@link getHistoryMessages} instead.
 		 * Gets historical messages.
 		 *
 		 * ```typescript
@@ -3214,10 +3489,10 @@ export declare namespace EasemobChat {
 				cursor?: number | string | null;
 				/** The number of messages to retrieve each time. The default value is 20,The maximum value is 50. */
 				pageSize?: number;
-				/** The chat type for SDK V4.0:
+				/** The chat type:
 				 * - `singleChat`: one-to-one chat;
-				 * - `groupchat`: group chat;
-				 * - `chatroom`: chat room.
+				 * - `groupChat`: group chat;
+				 * - `chatRoom`: chat room.
 				 * - (Default)`singleChat`: No.
 				 */
 				chatType?: 'singleChat' | 'groupChat' | 'chatRoom';
@@ -3233,7 +3508,7 @@ export declare namespace EasemobChat {
 		): Promise<HistoryMessages>;
 
 		/**
-		 * Adds Contact.
+		 * Adds a friend.
 		 *
 		 * ```typescript
 		 * connection.addContact('user1', 'I am Bob')
@@ -3242,7 +3517,7 @@ export declare namespace EasemobChat {
 		addContact(this: Connection, to: string, message?: string): void;
 
 		/**
-		 * Deletes contact.
+		 * Deletes the contact.
 		 *
 		 * ```typescript
 		 * connection.deleteContact('user1')
@@ -3254,12 +3529,11 @@ export declare namespace EasemobChat {
 		acceptInvitation(this: Connection, to: string): void;
 
 		/**
-		 * Accepting contact request
+		 * Accepts a friend request.
 		 *
 		 * ```typescript
 		 * connection.acceptContactInvite('user1')
 		 * ```
-		 * @since v4.0.1
 		 */
 		acceptContactInvite(this: Connection, to: string): void;
 
@@ -3267,12 +3541,11 @@ export declare namespace EasemobChat {
 		declineInvitation(this: Connection, to: string): void;
 
 		/**
-		 * Declines contact invite.
+		 * Declines a friend request.
 		 *
 		 * ```typescript
 		 * connection.declineContactInvite('user1')
 		 * ```
-		 * @since v4.0.1
 		 */
 		declineContactInvite(this: Connection, to: string): void;
 
@@ -3285,14 +3558,28 @@ export declare namespace EasemobChat {
 		): void;
 
 		/**
+		 * @deprecated
 		 * Add contacts to your blacklist.
 		 *
 		 * ```typescript
 		 * connection.addUsersToBlacklist({name: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		addUsersToBlacklist(
+			this: Connection,
+			options: {
+				name: UserId | UserId[];
+			}
+		): void;
+
+		/**
+		 * Adds a contact to the blocklist.
+		 *
+		 * ```typescript
+		 * connection.addUsersToBlocklist({name: 'user1'})
+		 * ```
+		 */
+		addUsersToBlocklist(
 			this: Connection,
 			options: {
 				name: UserId | UserId[];
@@ -3308,14 +3595,28 @@ export declare namespace EasemobChat {
 		): void;
 
 		/**
+		 * @deprecated
 		 * Removes friends from your blacklist
 		 *
 		 * ```typescript
 		 * connection.removeUserFromBlackList({name: 'user1'})
 		 * ```
-		 * @since v4.0.1
 		 */
 		removeUserFromBlackList(
+			this: Connection,
+			options: {
+				name: UserId | UserId[];
+			}
+		): void;
+
+		/**
+		 * Removes contacts from the blocklist.
+		 *
+		 * ```typescript
+		 * connection.removeUserFromBlocklist({name: 'user1'})
+		 * ```
+		 */
+		removeUserFromBlocklist(
 			this: Connection,
 			options: {
 				name: UserId | UserId[];
@@ -3335,7 +3636,7 @@ export declare namespace EasemobChat {
 		removeRoster(this: Connection, options: { to: UserId }): void;
 
 		/**
-		 * Recall a message
+		 * Recalls a message.
 		 *
 		 * ```typescript
 		 * connection.recallMessage({mid: 'messageId', to: 'user1', type: 'singleChat', isChatThread: false})
@@ -3429,6 +3730,7 @@ export declare namespace EasemobChat {
 		}): Promise<AsyncResult<PublishPresenceResult>>;
 
 		/**
+		 * @deprecated Use {@link getSubscribedPresencelist} instead.
 		 * Uses pagination to get a list of users whose presence states you have subscribed to.
 		 *
 		 * ```typescript
@@ -3436,6 +3738,27 @@ export declare namespace EasemobChat {
 		 * ```
 		 */
 		getSubscribedPresenceList(
+			this: Connection,
+			params: {
+				/** The current page number, starting from 1. */
+				pageNum: number;
+				/** The number of subscribers per page. */
+				pageSize: number;
+				success?: (
+					res: AsyncResult<GetSubscribedPresenceListResult>
+				) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<GetSubscribedPresenceListResult>>;
+
+		/**
+		 * Uses pagination to get a list of users whose presence states you have subscribed to.
+		 *
+		 * ```typescript
+		 * connection.getSubscribedPresencelist({usernames: ['user1','user2']})
+		 * ```
+		 */
+		getSubscribedPresencelist(
 			this: Connection,
 			params: {
 				/** The current page number, starting from 1. */
@@ -3465,6 +3788,190 @@ export declare namespace EasemobChat {
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<SubscribePresenceResult>>;
+
+		/**
+		 * Creates a chatThread.
+		 *
+		 * ```typescript
+		 * connection.createChatThread({parentId: 'parentId',name: 'threadName',messageId: 'messageId'})
+		 * ```
+		 */
+		createChatThread(
+			this: Connection,
+			params: {
+				/** Generally refers to the group ID. */
+				parentId: string;
+				/** The chatThread name. */
+				name: string;
+				/** The parent message ID. */
+				messageId: string;
+			}
+		): Promise<AsyncResult<CreateChatThreadResult>>;
+
+		/**
+		 * Joins the chatThread.
+		 *
+		 * ```typescript
+		 * connection.joinChatThread({chatThreadId: 'chatThreadId'})
+		 * ```
+		 */
+		joinChatThread(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+			}
+		): Promise<AsyncResult<JoinChatThreadResult>>;
+
+		/**
+		 * Leaves the chatThread.
+		 *
+		 * ```typescript
+		 * connection.leaveChatThread({chatThreadId: 'chatThreadId'})
+		 * ```
+		 */
+		leaveChatThread(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+			}
+		): Promise<void>;
+
+		/**
+		 * Deletes the chatThread,group leader and administrator have this permission.
+		 *
+		 * ```typescript
+		 * connection.destroyChatThread({chatThreadId: 'chatThreadId'})
+		 * ```
+		 */
+		destroyChatThread(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+			}
+		): Promise<void>;
+
+		/**
+		 * Modifies the chatThread name.
+		 *
+		 * ```typescript
+		 * connection.changeChatThreadName({chatThreadId: 'chatThreadId',name: 'name'})
+		 * ```
+		 */
+		changeChatThreadName(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+				/** The chatThread name. */
+				name: string;
+			}
+		): Promise<AsyncResult<ChangeChatThreadName>>;
+
+		/**
+		 * Lists all members of the chatThread with pagination.
+		 *
+		 * ```typescript
+		 * connection.getChatThreadMembers({chatThreadId: 'chatThreadId',pageSize:20,cursor:'cursor'})
+		 * ```
+		 */
+		getChatThreadMembers(
+			this: Connection,
+			params: {
+				/** The Thread ID. */
+				chatThreadId: string;
+				/** The number of members per page. The default value is 20, and the maximum value is 50.*/
+				pageSize?: number;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is empty string, the data of the first page will be fetched.*/
+				cursor?: string;
+			}
+		): Promise<AsyncResult<ChatThreadMembers>>;
+
+		/**
+		 * Removes a member from the chatThread.
+		 *
+		 * ```typescript
+		 * connection.removeChatThreadMember({chatThreadId: 'chatThreadId',username:'username'})
+		 * ```
+		 */
+		removeChatThreadMember(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+				/** The member ID to remove. */
+				username: string;
+			}
+		): Promise<AsyncResult<RemoveMemberResult>>;
+
+		/**
+		 * Gets the list of joined chatThreads with pagination.When parentId is not null, get the list of chatThread under the specified group.
+		 *
+		 * ```typescript
+		 * connection.getJoinedChatThreads({parentId: 'parentId',cursor: 'cursor',pageSize: 50})
+		 * ```
+		 */
+		getJoinedChatThreads(
+			this: Connection,
+			params: {
+				/** Generally refers to the group ID. */
+				parentId?: string;
+				/** The number of thread per page. The default value is 20, and the maximum value is 50. */
+				pageSize?: number;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be fetched.*/
+				cursor?: string;
+			}
+		): Promise<AsyncResult<ChatThreadDetail[]>>;
+
+		/**
+		 * Gets the thread list of the specified group with pagination.
+		 * ```typescript
+		 * connection.getChatThreads({parentId: 'parentId, cursor:'cursor' ,pageSize: 50})
+		 * ```
+		 */
+		getChatThreads(
+			this: Connection,
+			params: {
+				/** Generally refers to the group ID. */
+				parentId: string;
+				/** The number of thread per page. The default value is 20, and the maximum value is 50. */
+				pageSize?: number;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is empty string, the data of the first page will be fetched.*/
+				cursor?: string;
+			}
+		): Promise<AsyncResult<ChatThreadDetail[]>>;
+
+		/**
+		 * Gets the latest message content of the chatThread in batch,with a maximum of 20 messages.
+		 *
+		 * ```typescript
+		 * connection.getChatThreadLastMessage({chatThreadIds: ['chatThreadId1','chatThreadId2']})
+		 * ```
+		 */
+		getChatThreadLastMessage(
+			this: Connection,
+			params: {
+				/** The array of chatThread IDs to query.*/
+				chatThreadIds: string[];
+			}
+		): Promise<AsyncResult<ChatThreadLastMessage>>;
+
+		/**
+		 * Gets detail of the chatThread.
+		 *
+		 * ```typescript
+		 * connection.getChatThreadDetail({chatThreadId: 'chatThreadId'})
+		 * ```
+		 */
+		getChatThreadDetail(
+			this: Connection,
+			params: {
+				/** The chatThread ID. */
+				chatThreadId: string;
+			}
+		): Promise<AsyncResult<ChatThreadDetail>>;
 
 		/**
 		 * Reports a message.
@@ -3640,55 +4147,6 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<TranslationLanguageType>>;
 
 		/**
-		 * Creates a chatThread.
-		 *
-		 * ```typescript
-		 * connection.createChatThread({parentId: 'parentId',name: 'threadName',messageId: 'messageId'})
-		 * ```
-		 */
-		createChatThread(
-			this: Connection,
-			params: {
-				/** Generally refers to the group ID. */
-				parentId: string;
-				/** The chatThread name. */
-				name: string;
-				/** The parent message ID. */
-				messageId: string;
-			}
-		): Promise<AsyncResult<CreateChatThreadResult>>;
-
-		/**
-		 * Joins the chatThread.
-		 *
-		 * ```typescript
-		 * connection.joinChatThread({chatThreadId: 'chatThreadId'})
-		 * ```
-		 */
-		joinChatThread(
-			this: Connection,
-			params: {
-				/** The chatThread ID. */
-				chatThreadId: string;
-			}
-		): Promise<AsyncResult<JoinChatThreadResult>>;
-
-		/**
-		 * Leaves the chatThread.
-		 *
-		 * ```typescript
-		 * connection.leaveChatThread({chatThreadId: 'chatThreadId'})
-		 * ```
-		 */
-		leaveChatThread(
-			this: Connection,
-			params: {
-				/** The chatThread ID. */
-				chatThreadId: string;
-			}
-		): Promise<void>;
-
-		/**
 		 * Adds a reaction to the message.
 		 *
 		 * ```typescript
@@ -3702,21 +4160,6 @@ export declare namespace EasemobChat {
 				messageId: string;
 				/** The reaction to be added to the message. The length is limited to 128 characters. */
 				reaction: string;
-			}
-		): Promise<void>;
-
-		/**
-		 * Deletes the chatThread,group leader and administrator have this permission.
-		 *
-		 * ```typescript
-		 * connection.destroyChatThread({chatThreadId: 'chatThreadId'})
-		 * ```
-		 */
-		destroyChatThread(
-			this: Connection,
-			params: {
-				/** The chatThread ID. */
-				chatThreadId: string;
 			}
 		): Promise<void>;
 
@@ -3738,133 +4181,36 @@ export declare namespace EasemobChat {
 		): Promise<void>;
 
 		/**
-		 * Modifies the chatThread name.
-		 *
-		 * ```typescript
-		 * connection.changeChatThreadName({chatThreadId: 'chatThreadId',name: 'name'})
-		 * ```
-		 */
-		changeChatThreadName(
-			this: Connection,
-			params: {
-				/** The chatThread ID. */
-				chatThreadId: string;
-				/** The chatThread name. */
-				name: string;
-			}
-		): Promise<AsyncResult<ChangeChatThreadName>>;
-
-		/**
-		 * Lists all members of the chatThread with pagination.
-		 *
-		 * ```typescript
-		 * connection.getChatThreadMembers({chatThreadId: 'chatThreadId',pageSize:20,cursor:'cursor'})
-		 * ```
-		 */
-		getChatThreadMembers(
-			this: Connection,
-			params: {
-				/** The Thread ID. */
-				chatThreadId: string;
-				/** The number of members per page. The default value is 20, and the maximum value is 50.*/
-				pageSize?: number;
-				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is empty string, the data of the first page will be fetched.*/
-				cursor?: string;
-			}
-		): Promise<AsyncResult<ChatThreadMembers>>;
-
-		/**
-		 * Removes a member from the chatThread.
-		 *
-		 * ```typescript
-		 * connection.removeChatThreadMember({chatThreadId: 'chatThreadId',username:'username'})
-		 * ```
-		 */
-		removeChatThreadMember(
-			this: Connection,
-			params: {
-				/** The chatThread ID. */
-				chatThreadId: string;
-				/** The member ID to remove. */
-				username: string;
-			}
-		): Promise<AsyncResult<RemoveMemberResult>>;
-
-		/**
-		 * Gets the list of joined chatThreads with pagination.When parentId is not null, get the list of chatThread under the specified group.
-		 *
-		 * ```typescript
-		 * connection.getJoinedChatThreads({parentId: 'parentId',cursor: 'cursor',pageSize: 50})
-		 * ```
-		 */
-		getJoinedChatThreads(
-			this: Connection,
-			params: {
-				/** Generally refers to the group ID. */
-				parentId?: string;
-				/** The number of thread per page. The default value is 20, and the maximum value is 50. */
-				pageSize?: number;
-				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be fetched.*/
-				cursor?: string;
-			}
-		): Promise<AsyncResult<ChatThreadDetail[]>>;
-
-		/**
-		 * Gets the thread list of the specified group with pagination.
-		 * ```typescript
-		 * connection.getChatThreads({parentId: 'parentId, cursor:'cursor' ,pageSize: 50})
-		 * ```
-		 */
-		getChatThreads(
-			this: Connection,
-			params: {
-				/** Generally refers to the group ID. */
-				parentId: string;
-				/** The number of thread per page. The default value is 20, and the maximum value is 50. */
-				pageSize?: number;
-				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is empty string, the data of the first page will be fetched.*/
-				cursor?: string;
-			}
-		): Promise<AsyncResult<ChatThreadDetail[]>>;
-
-		/**
-		 * Gets the latest message content of the chatThread in batch,with a maximum of 20 messages.
-		 *
-		 * ```typescript
-		 * connection.getChatThreadLastMessage({chatThreadIds: ['chatThreadId1','chatThreadId2']})
-		 * ```
-		 */
-		getChatThreadLastMessage(
-			this: Connection,
-			params: {
-				/** The array of chatThread IDs to query.*/
-				chatThreadIds: string[];
-			}
-		): Promise<AsyncResult<ChatThreadLastMessage>>;
-
-		/**
-		 * Gets detail of the chatThread.
-		 *
-		 * ```typescript
-		 * connection.getChatThreadDetail({chatThreadId: 'chatThreadId'})
-		 * ```
-		 */
-		getChatThreadDetail(
-			this: Connection,
-			params: {
-				/** The chatThread ID. */
-				chatThreadId: string;
-			}
-		): Promise<AsyncResult<ChatThreadDetail>>;
-
-		/**
-		 *  Gets the reaction list for the message.
+		 * @deprecated
+		 * Gets the reaction list for the message.
 		 *
 		 * ```typescript
 		 * connection.getReactionList({chatType: 'chatType', messageId: 'messageId'})
 		 * ```
 		 */
 		getReactionList(
+			this: Connection,
+			params: {
+				/** The conversation type:
+				 * - singleChat;
+				 * - groupChat;
+				 */
+				chatType: 'singleChat' | 'groupChat';
+				/** The message ID. */
+				messageId: string | Array<string>;
+				/** The group ID. */
+				groupId?: string;
+			}
+		): Promise<AsyncResult<GetReactionListResult[]>>;
+
+		/**
+		 * Gets the reaction list for the message.
+		 *
+		 * ```typescript
+		 * connection.getReactionlist({chatType: 'chatType', messageId: 'messageId'})
+		 * ```
+		 */
+		getReactionlist(
 			this: Connection,
 			params: {
 				/** The conversation type:
@@ -4056,7 +4402,7 @@ export declare namespace EasemobChat {
 
 	/**
 	 * @module listen
-	 * @deprecated v4.0.1
+	 * @deprecated
 	 */
 	interface ListenParameters {
 		onOpened?: () => void;

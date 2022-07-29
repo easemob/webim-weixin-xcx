@@ -278,8 +278,8 @@ Component({
 			wx.pageScrollTo({
 				scrollTop: 5000,
 				duration: 300,
-				success: function(){console.log('滚动成功')},
-				fail: function(){console.log('滚动失败')}
+				success: function(){},
+				fail: function(){}
 			})
 		}
   	},
