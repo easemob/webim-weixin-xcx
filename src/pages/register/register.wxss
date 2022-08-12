@@ -50,6 +50,15 @@
 	background-color: #0873DE;
 	font-size: 34rpx;
 }
+
+.register-image{
+	width: 120px;
+    height: 96rpx;
+    border: 1px solid #ddd;
+    margin: 0 64rpx 0 0;
+    margin-top: 32rpx;
+}
+
 .btn_hover {
 	background-color: #137DCD;
 }

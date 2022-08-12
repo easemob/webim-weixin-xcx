@@ -107,17 +107,40 @@ Page({
 		// 	wx.emedia.mgr.setHost("https://a1-hsb.easemob.com")
 		// }
 
-		getApp().conn.open({
-			// apiUrl: WebIM.config.apiURL,
-			user: __test_account__ || this.data.name.toLowerCase(),
-			pwd: __test_psword__ || this.data.psd,
-			grant_type: this.data.grant_type,
-			appKey: WebIM.config.appkey
-		});
+		const that = this;
+		wx.request({
+			url: 'https://a1.easemob.com/inside/app/user/login',
+			header: {
+			    'content-type': 'application/json'
+			},
+			method: 'POST',
+			data: {
+				userId: that.data.name,
+                userPassword: that.data.psd
+			},
+			success (res) {
+				if(res.statusCode == 200){
+					const {phoneNumber, token} = res.data
+					getApp().conn.open({
+						user: that.data.name,
+						accessToken: token,
+					});
+					getApp().globalData.phoneNumber = phoneNumber
+				}else if(res.statusCode == 400){
+					if(res.data.errorInfo){
+						that.toastFilled(res.data.errorInfo)
+					}
+				}else{
+					that.toastFilled('登录失败！')
+				}
+			},
+		  	fail(error){
+		  		that.toastFilled('登录失败！')
+		  	}
+		})
 	},
 
 	longpress: function(){
-		console.log('长按')
 		this.setData({
 			show_config: !this.data.show_config
 		})

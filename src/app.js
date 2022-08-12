@@ -111,7 +111,8 @@ App({
 		saveFriendList: [],
 		saveGroupInvitedList: [],
 		isIPX: false, //是否为iphone X
-		channel: ''
+		channel: '',
+		phoneNumer: ''
 	},
 
 	conn: {

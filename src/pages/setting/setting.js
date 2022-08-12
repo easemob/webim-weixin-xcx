@@ -6,7 +6,8 @@ Page({
 		messageNum: 0,
 		unReadSpotNum: 0,
 		unReadNoticeNum: 0,
-		unReadTotalNotNum: 0
+		unReadTotalNotNum: 0,
+		phoneNumer:''
 	},
 
 	onLoad: function(option){
@@ -40,6 +41,9 @@ Page({
 		if (wx.canIUse('hideHomeButton')) {
 			wx.hideHomeButton()
 		}
+		this.setData({
+			phoneNumber: getApp().globalData.phoneNumber
+		})
 	},
 
 	onShow(){

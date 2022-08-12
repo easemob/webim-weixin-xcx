@@ -33,6 +33,14 @@
 	margin-bottom: 590rpx;
 }
 
+.tips{
+	position: fixed;
+	top: 200px;
+	left: 40px;
+	right: 40px;
+	color: #bbb;
+}
+
 .message {
 	width: 92%;
 	height: auto;

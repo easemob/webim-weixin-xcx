@@ -7,7 +7,7 @@
 		<image src="../../images/theme@2x.png"></image>
 		<view>
 			<text class="setting_username">{{ yourname }}</text>
-			<text class="setting_username2">username</text>
+			<text class="setting_username2">{{phoneNumber}}</text>
 		</view>
 	</view>
 </view>

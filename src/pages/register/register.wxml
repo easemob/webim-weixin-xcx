@@ -3,12 +3,28 @@
 	<view class="register_title">
 		<text>注册</text>
 	</view>
-	<view class="register_user {{nameFocus}}">
-		<input type="text" placeholder="用户ID（字母或数字)" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername" bindfocus="onFocusName" bindblur="onBlurName"/>
+	<view class="register_user">
+		<input type="text" placeholder="用户ID（字母或数字)" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername"/>
 	</view>
-	<view class="register_pwd {{psdFocus}}">
-		<input type="text" password placeholder="用户密码" hover-class="input-hover" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword" bindfocus="onFocusPsd" bindblur="onBlurPsd"/>
+	<view class="register_pwd">
+		<input type="text" password placeholder="用户密码" hover-class="input-hover" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword" />
 	</view>
+	<view class="register_pwd">
+		<input type="text" placeholder="手机号" hover-class="input-hover" placeholder-style="color:rgb(173,185,193)" bindinput="bindPhone" />
+	</view>
+
+	<view class="register_pwd">
+		<input type="text" placeholder="图片验证码" hover-class="input-hover" placeholder-style="color:rgb(173,185,193)" bindinput="bindImageCode" />
+		<image class="register-image" src="{{imageUrl}}" bindtap="getImageCode"></image>
+	</view>
+
+	<view class="register_pwd">
+		<input type="text" placeholder="短信验证码" hover-class="input-hover" placeholder-style="color:rgb(173,185,193)" bindinput="bindSmsCode"/>
+		<button class="register-image" bindtap="getSmsCode">{{btnText}}</button>
+	</view>
+
+
+
 	<view class="register_btn">
 		<button hover-class="btn_hover" bindtap="register">注册</button>
 	</view>

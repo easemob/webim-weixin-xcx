@@ -33,6 +33,7 @@
 	bindscrolltoupper="refresh"
 	upper-threshold='-50'
 	scroll-into-view="{{ toView }}">
+	<view class="tips">本应用仅用于环信产品功能开发测试，请勿用于非法用途。任何涉及转账、汇款、裸聊、网恋、网购退款、投资理财等统统都是诈骗，请勿相信！</view>
 	<view class="message" wx:for="{{ chatMsg }}" wx:key="mid" id="{{ item.mid }}">
 		<!-- <view class="time">
 			<text class="time-text">{{ item.time }}</text>
