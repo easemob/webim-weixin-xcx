@@ -15,6 +15,12 @@
 .login_user, .login_pwd, .login_btn {
 	display: flex;
 }
+
+.divider {
+	font-size: 12px;
+	margin: 0 2px;
+}
+
 .login_user input, .login_pwd input {
 	height: 96rpx;
 	background-color: #ffffff;
