@@ -21,15 +21,28 @@ Component({
 		toView: "",
 		chatMsg: [],
 		__visibility__: false,
+		showMenu: false,
+    reportMsgId: null
 	},
 	methods: {
+		showMenu(e) {
+      let item = e.currentTarget.dataset.msg;
+      if (item.style !== "self") {
+        this.setData({
+          reportMsgId: item.id,
+          showMenu: true
+        });
+      }
+    },
+		hideMenu() {
+			this.setData({
+				showMenu: false
+			});
+		},
 		clickMsg(data){
 			if(data.currentTarget.dataset.msg.ext&&data.currentTarget.dataset.msg.ext.action){
 				this.triggerEvent("clickMsg", data.currentTarget.dataset.msg)
 			}
-		},
-		reportMsg(item){
-			console.log(item)
 		},
 		normalScroll(){
 			this.setData({

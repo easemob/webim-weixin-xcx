@@ -64,6 +64,20 @@
 	background-color: #dcdcdc;
 }
 
+.menuWrap {
+  position: fixed;
+  bottom: 0;
+	left: 0;
+  width: 100%;
+  background: #cccc;
+  z-index: 999;
+}
+
+.menu-item {
+ text-align: center;
+  width: 100%;
+}
+
 .user .user-text {
 	margin: auto 100rpx 8rpx;
 	font-size: 20rpx;
