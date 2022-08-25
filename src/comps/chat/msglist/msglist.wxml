@@ -44,7 +44,7 @@
 				<text class="user-text">{{ item.yourname + ' ' + item.time}}</text>
 			</view>
 			<image class="avatar" src="../../../images/theme@2x.png"/>
-			<view class="msg">
+			<view class="msg" data-id="{{item}}" bindtap="reportMsg">
 				<image
 				class="err {{(item.style == 'self' && item.isFail) ? 'show' : 'hide'}}"
 				src="../../../images/msgerr.png"/>
@@ -58,7 +58,7 @@
 					wx:if="{{ item.msg.type == 'audio' }}"
 					msg="{{ item }}"></audio-msg>
 				<view wx:elif="{{ item.msg.type == 'txt' || item.msg.type == 'emoji' }}" data-msg="{{item}}" bindtap="clickMsg">
-					<view class="template" wx:for="{{ item.msg.data }}" wx:key="item">
+					<view  class="template" wx:for="{{ item.msg.data }}" wx:key="item">
 						<template is="{{ item.type }}" data="{{ item }}"/>
 					</view>
 				</view>
