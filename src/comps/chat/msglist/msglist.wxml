@@ -44,7 +44,7 @@
 				<text class="user-text">{{ item.yourname + ' ' + item.time}}</text>
 			</view>
 			<image class="avatar" src="../../../images/theme@2x.png"/>
-			<view class="msg" data-id="{{item}}" bindtap="reportMsg">
+			<view class="msg" data-msg="{{item}}" bindtap="showMenu">
 				<image
 				class="err {{(item.style == 'self' && item.isFail) ? 'show' : 'hide'}}"
 				src="../../../images/msgerr.png"/>
@@ -64,6 +64,10 @@
 				</view>
 			</view>
 		</view>
+		<view class="menuWrap" wx:if="{{item.style !== 'self'&& showMenu}}">
+    <button class="menu-item" bindtap="toReportMessage">举报</button>
+    <button class="menu-item" bindtap="hideMenu">取消</button>
+  </view>
 	</view>
 </view>
 <view style="height: 1px;"></view>
