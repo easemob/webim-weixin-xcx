@@ -19,6 +19,7 @@ module.exports = function(sendableMsg, type, myName){
 		style: sendableMsg.body.from == myName ? "self" : "",
 		time: time,
 		mid: sendableMsg.type + sendableMsg.id,
+		id: sendableMsg.id,
 		chatType: sendableMsg.body.chatType,
 		ext: sendableMsg.body.ext,
 		isFail: false

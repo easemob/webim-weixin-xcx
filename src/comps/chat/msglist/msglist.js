@@ -28,6 +28,9 @@ Component({
 				this.triggerEvent("clickMsg", data.currentTarget.dataset.msg)
 			}
 		},
+		reportMsg(item){
+			console.log(item)
+		},
 		normalScroll(){
 			this.setData({
 				view: LIST_STATUS.NORMAL
@@ -57,10 +60,8 @@ Component({
 			let myUsername = wx.getStorageSync("myUsername");
 			let sessionKey = username.groupId ? username.groupId + myUsername : username.your + myUsername;
 			let historyChatMsgs = wx.getStorageSync("rendered_" + sessionKey) || [];
-
 			if (Index < historyChatMsgs.length) {
 				let timesMsgList = historyChatMsgs.slice(-Index-10, -Index)
-
 				this.setData({
 					chatMsg: timesMsgList.concat(me.data.chatMsg),
 					toView: timesMsgList[timesMsgList.length - 1].mid,
