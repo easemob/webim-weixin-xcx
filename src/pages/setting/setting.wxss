@@ -24,6 +24,17 @@ page {
 .head_pic view{
 	margin-left: 20rpx;
 }
+.feedback {
+	margin: 0;
+	padding: 0;
+	background: unset;
+	font-size: 32rpx;
+}
+
+button::after {
+	border: none;
+}
+
 .head_pic image {
 	width: 112rpx;
 	height: 112rpx;
