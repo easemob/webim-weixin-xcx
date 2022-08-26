@@ -44,7 +44,8 @@
 				<text class="user-text">{{ item.yourname + ' ' + item.time}}</text>
 			</view>
 			<image class="avatar" src="../../../images/theme@2x.png"/>
-			<view class="msg" data-msg="{{item}}" bindtap="showMenu">
+			<view class="msg">
+				<view data-msg="{{item}}" bindtap="showMenu">
 				<image
 				class="err {{(item.style == 'self' && item.isFail) ? 'show' : 'hide'}}"
 				src="../../../images/msgerr.png"/>
@@ -62,12 +63,17 @@
 						<template is="{{ item.type }}" data="{{ item }}"/>
 					</view>
 				</view>
+				</view>
+				<view class="rpt-wrap" wx:if="{{item.style !== 'self'&& reportMsgId===item.id && showMenu}}">
+					<button class="rpt-btn" bindtap="showRptType">举报</button>
+			</view>
 			</view>
 		</view>
-		<view class="menuWrap" wx:if="{{item.style !== 'self'&& showMenu}}">
-    <button class="menu-item" bindtap="toReportMessage">举报</button>
-    <button class="menu-item" bindtap="hideMenu">取消</button>
+		<view class="menu-wrap" wx:if="{{rptTypeVisible}}" >
+			<button  wx:for="{{ reportTypeList }}" class="menu-item" wx:key="key" data-type="{{item.value}}" bindtap="reportMsg">{{item.value}}</button>
+			<button class="menu-item" bindtap="hideRptType">取消</button>
   </view>
 	</view>
+	<template is="toast" data="{{ ..._toast_ }}"></template>
 </view>
 <view style="height: 1px;"></view>

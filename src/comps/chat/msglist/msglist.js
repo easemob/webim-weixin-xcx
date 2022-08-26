@@ -1,4 +1,5 @@
 let msgStorage = require("../msgstorage");
+let WebIM = require("../../../utils/WebIM")["default"];
 let disp = require("../../../utils/broadcast");
 let LIST_STATUS = {
 	SHORT: "scroll_view_change",
@@ -22,7 +23,38 @@ Component({
 		chatMsg: [],
 		__visibility__: false,
 		showMenu: false,
-    reportMsgId: null
+    reportMsgId: null,
+		rptTypeVisible: false,
+		reportTypeList: [
+			{
+				key: "1",
+				value: "涉政"
+			},
+			{
+				key: "2",
+				value: "涉黄"
+			},
+			{
+				key: "3",
+				value: "广告"
+			},
+			{
+				key: "4",
+				value: "辱骂"
+			},
+			{
+				key: "5",
+				value: "暴恐"
+			},
+			{
+				key: "6",
+				value: "违禁"
+			},
+			{
+				key: "7",
+				value: "其他"
+			}
+		]
 	},
 	methods: {
 		showMenu(e) {
@@ -30,10 +62,22 @@ Component({
       if (item.style !== "self") {
         this.setData({
           reportMsgId: item.id,
-          showMenu: true
+          showMenu: !this.data.showMenu,
         });
       }
     },
+	  showRptType(){
+			this.setData({
+				rptTypeVisible: true,
+				showMenu: false
+			})
+		},
+		hideRptType(){
+			this.setData({
+				rptTypeVisible: false,
+				showMenu: false
+			})
+		},
 		hideMenu() {
 			this.setData({
 				showMenu: false
@@ -50,6 +94,49 @@ Component({
 			});
 		},
 
+		
+		
+		reportMsg(e){
+			let self = this
+			this.setData({
+				rptTypeVisible: false
+			})
+			wx.showModal({
+				title:"消息举报",
+				placeholderText:'请填写举报原因',
+				editable: true,
+				success:(res)=>{
+					if (res.confirm) {
+							WebIM.conn
+							.reportMessage({
+								reportType: e.currentTarget.dataset.type, // 举报类型
+								reportReason: res.content, // 举报原因。
+								messageId: self.data.reportMsgId
+							})
+							.then(() => {
+								wx.showToast({
+									title: '举报成功',
+									icon: 'success',
+									duration: 2000
+								})
+								
+							})
+							.catch(() => {
+								wx.showToast({
+									title: '举报失败',
+									icon: 'error',
+									duration: 2000
+								})
+							});					
+					} else{
+						self.setData({
+							reportMsgId: null
+						})
+					}
+			
+				},
+			})
+		},
 		shortScroll(){
 			this.setData({
 				view: LIST_STATUS.SHORT
