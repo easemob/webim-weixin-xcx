@@ -64,7 +64,14 @@
 	background-color: #dcdcdc;
 }
 
-.menuWrap {
+.rpt-wrap{
+	position: absolute;
+  min-width: 105rpx;
+	bottom: 0;
+	right: -100rpx;
+}
+
+.menu-wrap {
   position: fixed;
   bottom: 0;
 	left: 0;
@@ -181,4 +188,7 @@
 }
 .show{
 	display: block;
+}
+.rpt-btn{
+	font-size: 20rpx;
 }
