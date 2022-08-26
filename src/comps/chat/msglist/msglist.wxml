@@ -45,7 +45,7 @@
 			</view>
 			<image class="avatar" src="../../../images/theme@2x.png"/>
 			<view class="msg">
-				<view data-msg="{{item}}" bindtap="showMenu">
+				<view class="msg-item" data-msg="{{item}}" bindtap="showMenu">
 				<image
 				class="err {{(item.style == 'self' && item.isFail) ? 'show' : 'hide'}}"
 				src="../../../images/msgerr.png"/>
@@ -69,11 +69,11 @@
 			</view>
 			</view>
 		</view>
-		<view class="menu-wrap" wx:if="{{rptTypeVisible}}" >
+	</view>
+	<view class="menu-wrap" wx:if="{{rptTypeVisible}}" >
 			<button  wx:for="{{ reportTypeList }}" class="menu-item" wx:key="key" data-type="{{item.value}}" bindtap="reportMsg">{{item.value}}</button>
 			<button class="menu-item" bindtap="hideRptType">取消</button>
   </view>
-	</view>
 	<template is="toast" data="{{ ..._toast_ }}"></template>
 </view>
 <view style="height: 1px;"></view>

@@ -115,6 +115,11 @@
 	margin-top: 24rpx;
 }
 
+.msg-item{
+	min-width: 100rpx;
+	min-height: 40rpx;
+}
+
 .msg .msg_poprightarrow {
 	position: absolute;
 	right: -10rpx;
