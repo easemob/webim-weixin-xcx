@@ -4,10 +4,10 @@
 	border-top: 1px solid #CFCFCF;
 	position: fixed;
 	bottom: 0;
-	right: 0;
+	right: 0; 
 	z-index: 1;
 	background-color: #FFFFFF;
-	transform: translateZ(1000px);
+	/* transform: translateZ(1000px); */
 }
 
 .other_func {

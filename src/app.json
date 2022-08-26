@@ -10,6 +10,7 @@
     "pages/chatroom/chatroom",
     "pages/index/index",
     "pages/register/register",
+    "pages/resetpassword/resetpassword",
     "pages/add_new/add_new",
     "pages/chat/chat",
     "pages/notification/notification",
