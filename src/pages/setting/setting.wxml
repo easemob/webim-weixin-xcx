@@ -27,6 +27,12 @@
 </view>
 
 <view class="setting_list">
+	<view class="setting_listContent">
+		<button class="feedback" open-type='feedback'>意见反馈</button>
+	</view>
+</view>
+
+<view class="setting_list">
 	<view class="setting_listContent" bindtap="logout">
 		<text class="setting_redtext">退出登录</text>
 	</view>
