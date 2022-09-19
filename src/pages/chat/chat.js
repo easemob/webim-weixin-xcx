@@ -142,7 +142,7 @@ Page({
 				console.log(err);
 			}
 		};
-		WebIM.conn.getRoster(rosters);
+		WebIM.conn.getContacts(rosters);
 	},
 	// 包含陌生人版本
 	getChatList(){
@@ -210,7 +210,7 @@ Page({
 					}
 					
 				}
-				if (lastChatMsg.chatType == 'groupchat' || lastChatMsg.chatType == 'chatRoom') {
+				if (lastChatMsg && (lastChatMsg.chatType == 'groupchat' || lastChatMsg.chatType == 'chatRoom')) {
 					lastChatMsg.groupName = me.data.groupName[lastChatMsg.info.to]
 				}
 				lastChatMsg && lastChatMsg.username != myName && array.push(lastChatMsg)

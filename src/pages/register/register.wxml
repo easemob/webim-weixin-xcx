@@ -15,7 +15,10 @@
 
 	<view class="register_pwd">
 		<input type="text" placeholder="图片验证码" hover-class="input-hover" placeholder-style="color:rgb(173,185,193)" bindinput="bindImageCode" />
-		<image class="register-image" src="{{imageUrl}}" bindtap="getImageCode"></image>
+		<view class="register-image" bindtap="getImageCode">
+			<image src="{{imageUrl}}" ></image>
+		</view>
+		
 	</view>
 
 	<view class="register_pwd">

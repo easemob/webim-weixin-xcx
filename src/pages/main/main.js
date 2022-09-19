@@ -122,7 +122,7 @@ Page({
 			}
 		};
 		// WebIM.conn.setPresence()
-		WebIM.conn.getRoster(rosters);
+		WebIM.conn.getContacts(rosters);
 
 	},
 
@@ -142,15 +142,10 @@ Page({
 			}
 		};
 		if(message.type == "unsubscribe" || message.type == "unsubscribed"){
-			WebIM.conn.removeRoster({
-				to: message.from,
-				success: function(){
-					WebIM.conn.unsubscribed({
-						to: message.from
-					});
-					WebIM.conn.getRoster(rosters);
-				}
-			});
+			WebIM.conn.deleteContact(message.from);
+			setTimeout(()=>{
+				WebIM.conn.getContacts(rosters);
+			},100)
 		}
 	},
 
@@ -160,20 +155,14 @@ Page({
 			content: message.from + "请求加为好友",
 			success: function(res){
 				if(res.confirm == true){
-					WebIM.conn.subscribed({
-						to: message.from,
-						message: "[resp:true]"
-					});
-					WebIM.conn.subscribe({
-						to: message.from,
-						message: "[resp:true]"
-					});
+					WebIM.conn.addContact(message.from, 'hi');
+					// WebIM.conn.subscribe({
+					// 	to: message.from,
+					// 	message: "[resp:true]"
+					// });
 				}
 				else{
-					WebIM.conn.unsubscribed({
-						to: message.from,
-						message: "rejectAddFriend"
-					});
+					WebIM.conn.deleteContact(message.from);
 				}
 			},
 			fail: function(err){
@@ -191,8 +180,7 @@ Page({
 			confirmText: "删除",
 			success(res){
 				if(res.confirm == true){
-					WebIM.conn.removeRoster({
-						to: delName,
+					WebIM.conn.deleteContact(delName,
 						// success: function(){
 						// 	WebIM.conn.unsubscribed({
 						// 		to: delName
@@ -210,7 +198,7 @@ Page({
 						// error: function(error){
 						// 	me.toastSuccess('删除失败');
 						// }
-					});
+					);
 					me.toastSuccess('删除成功');
 					// 删除好友后 同时清空会话
 					wx.setStorageSync(delName + myName, "");

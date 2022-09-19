@@ -57,9 +57,7 @@ Page({
 			me.toastFilled('添加失败')
 			return;
 		}
-		WebIM.conn.subscribe({
-			to: me.data.friend_name
-		});
+		WebIM.conn.addContact(me.data.friend_name);
 
 		// 判断当前是否存在该好友
 		let rosters = {
@@ -81,7 +79,7 @@ Page({
 				// console.log(member)
 			}
 		};
-		WebIM.conn.getRoster(rosters);
+		WebIM.conn.getContacts(rosters);
 	},
 
 	isExistFriend: function(name, list){

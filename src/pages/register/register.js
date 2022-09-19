@@ -68,6 +68,10 @@ Page({
 		    'content-type': 'application/json'
 		  },
 		  success (res) {
+		  	console.log('res---', res)
+		  	if(res.statusCode != 200){
+		  		return this.toastFilled('获取图片验证码失败，请重试！')
+		  	}
 		    const url = 'https://a1.easemob.com/inside/app/image/' + res.data.data.image_id
 		    self.setData({
 		    	imageUrl: url,
@@ -103,14 +107,17 @@ Page({
 			success (res) {
 				if(res.statusCode == 200){
 					self.toastSuccess('短信发送成功！')
+					self.countDown()
 				}else if(res.statusCode == 400){
 					if(res.data.errorInfo == 'phone number illegal'){
 						self.toastFilled('请输入正确的手机号！')
 					}else if(res.data.errorInfo == 'Please wait a moment while trying to send.'){
-						self.toastFilled('你的操作过于频繁，请守候再试！')
+						self.toastFilled('你的操作过于频繁，请稍后再试！')
 					}else if(res.data.errorInfo == 'Image verification code error.'){
 						self.toastFilled('图片验证码错误！')
 						self.getImageCode()
+					}else{
+						self.toastFilled(res.data.errorInfo)
 					}
 				}
 			},
@@ -118,8 +125,6 @@ Page({
 		  		self.toastFilled('短信发送失败！')
 		  	}
 		})
-
-		this.countDown()
 	},
 	register: function(){
 		const that = this;

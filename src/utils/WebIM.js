@@ -1,5 +1,5 @@
 
-import websdk from "../sdk/Easemob-chat-4.0.9";
+import websdk from "../sdk/Easemob-chat-4.1.0";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
@@ -212,7 +212,6 @@ WebIM.EmojiObj = {
 	}
 };
 
-// wx.connectSocket({url: WebIM.config.xmppURL, method: "GET"})
 
 WebIM.conn = new WebIM.connection({
 	appKey: WebIM.config.appkey,

@@ -47,15 +47,12 @@ Page({
 	agree(event){
 		var me = this;
 		// 同意（无回调）
-		WebIM.conn.subscribed({
-			to: event.currentTarget.dataset.from,
-			message: "[resp:true]",
-		});
+		WebIM.conn.acceptContactInvite(event.currentTarget.dataset.from);
 		// 需要反向添加对方好友（无回调）
-		WebIM.conn.subscribe({
-			to: event.currentTarget.dataset.from,
-			message: "[resp:true]",
-		});
+		// WebIM.conn.subscribe({
+		// 	to: event.currentTarget.dataset.from,
+		// 	message: "[resp:true]",
+		// });
 		// wx.showToast({
 		// 	title: "OK",
 		// 	duration: 1000
@@ -68,10 +65,7 @@ Page({
 	reject(event){
 		var me = this;
 		// 无回调
-		WebIM.conn.unsubscribed({
-			to: event.currentTarget.dataset.from,
-			message: "rejectAddFriend",
-		});
+		WebIM.conn.declineContactInvite(event.currentTarget.dataset.from);
 		wx.showToast({
 			title: "已拒绝",
 			duration: 1000

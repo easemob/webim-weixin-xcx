@@ -58,6 +58,10 @@
     margin: 0 64rpx 0 0;
     margin-top: 32rpx;
 }
+.register-image image{
+	width: 100%;
+    height: 100%;
+}
 
 .btn_hover {
 	background-color: #137DCD;
