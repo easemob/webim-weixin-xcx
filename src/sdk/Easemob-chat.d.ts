@@ -9,20 +9,30 @@ declare const easemobChat: EasemobChatStatic;
 export default easemobChat;
 export declare namespace EasemobChat {
 	interface AsyncResult<T = any> {
+		/** Status of the request. */
 		type: Code;
+		/** Data returned by successful request. */
 		data?: T;
+		/** Data returned by successful request. */
 		entities?: T;
+		/** The error message. */
 		message?: string;
 		[key: string]: any;
 	}
 
+	/** The user ID.  */
 	type UserId = string;
 
 	interface CommonRequestResult {
+		/** The result of request. */
 		result: boolean;
+		/** Action. */
 		action: string;
+		/** The reason of failure. */
 		reason?: string;
+		/** The user ID. */
 		user: string;
+		/** The group/chat room ID. */
 		id: string;
 	}
 
@@ -37,17 +47,11 @@ export declare namespace EasemobChat {
 		[key: string]: string;
 	}
 
+	/** @deprecated */
 	interface RosterData {
 		name: string;
 		subscription: 'both';
 		jid: Jid;
-	}
-
-	interface Host {
-		protocol: string;
-		domain: string;
-		ip: string;
-		port: string;
 	}
 
 	interface SendMsgResult {
@@ -102,6 +106,7 @@ export declare namespace EasemobChat {
 		| 'subscribed'
 		| 'onPresenceStatusChange';
 
+	/** @deprecated */
 	interface OnPresenceMsg {
 		type: OnPresenceMsgType;
 		to: string;
@@ -120,30 +125,39 @@ export declare namespace EasemobChat {
 		| 'chatThreadJoin'
 		| 'chatThreadLeave'
 		| 'chatThreadNameUpdate';
+
 	interface ThreadMultiDeviceInfo {
+		/** Event name of thread multi device event. */
 		operation: multiDeviceEventType;
+		/** The message thread ID. */
 		chatThreadId?: string;
+		/** The message thread name. */
 		chatThreadName?: string;
+		/** The group ID to which the message thread belongs.  */
 		parentId?: string;
 	}
 
-	/**
-	 * The connection module is the module where the SDK creates long link, And all about links, friends, groups, and chat apis are  all in this module
-	 *
-	 * @module connection
-	 */
-
 	interface ConnectionParameters {
+		/** The unique application key registered in console. */
 		appKey: string;
-		apiUrl?: string;
-		url?: string;
+		/** Whether to enable the delivery receipt function. - `true`: Enable; - (Default)`false`: Do not enable. */
 		delivery?: boolean;
-		isDebug?: boolean;
-		isHttpDNS?: boolean;
+		/** Heartbeat interval, in milliseconds. */
 		heartBeatWait?: number;
+		/** The unique ID of the login device is random by default and can be set by yourself. This parameter is required for multiple terminals and multiple devices. */
 		deviceId?: string;
+		/** Whether to use your own upload function, for example, when uploading images and files to your server. - `true`: Use your own upload function; - (Default)`false`: Do not use your own upload function. */
 		useOwnUploadFun?: boolean;
+		/** The maximum number of reconnection. */
 		autoReconnectNumMax?: number;
+		/** Whether DNS is enabled or not. It is enabled by default. The private cloud should be turned off */
+		isHttpDNS?: boolean;
+		/** The URL of the specified REST server. This command is used when DNS is not enabled. Usually this API is used for specific customers and need to contact account manager to get it. */
+		apiUrl?: string;
+		/** The URL of the specified message server. This command is used when DNS is not enabled. Usually this API is used for specific customers and need to contact account manager to get it. */
+		url?: string;
+		/** Whether to use HTTPS only. By default, the browser determines whether to use HTTPS only according to the domain name. */
+		https?: boolean;
 	}
 
 	interface RegisterUserResult extends AsyncResult {
@@ -668,7 +682,7 @@ export declare namespace EasemobChat {
 
 	interface TranslationResult {
 		/** Translation results. */
-		ranslations: {
+		translations: {
 			/** Translated text. */
 			text: string;
 			/** The target language of translation. */
@@ -905,7 +919,7 @@ export declare namespace EasemobChat {
 	interface ConversationSilentModeType {
 		/** User push map. */
 		user: {
-			[propname: UserId]: SilentModeConversationType;
+			[propname: string]: SilentModeConversationType;
 		};
 		/** Group push map. */
 		group: {
@@ -1015,147 +1029,178 @@ export declare namespace EasemobChat {
 		reactionList: ReactionListItem[];
 	}
 
+	/**
+	 * The error code defined by SDK.
+	 * @module Code
+	 */
 	enum Code {
+		/** No error. */
 		REQUEST_SUCCESS = 0,
+		/** The server response times out. */
 		REQUEST_TIMEOUT = -1,
+		/** A general error.  */
 		REQUEST_UNKNOWN = -2,
+		/** The parameter is invalid. */
 		REQUEST_PARAMETER_ERROR = -3,
-		REQUEST_ABORT = -4,
-		WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR = 0,
+		/** The request is canceled. */
+		REQUEST_ABORT = -4, // 取消请求
+		/** Login failed.  */
 		WEBIM_CONNCTION_OPEN_ERROR = 1,
+		/** The user authentication fails. The reasons are as follows. The SDK is not initiated. The user is not login. */
 		WEBIM_CONNCTION_AUTH_ERROR = 2,
-		WEBIM_CONNCTION_OPEN_USERGRID_ERROR = 3,
-		WEBIM_CONNCTION_ATTACH_ERROR = 4,
-		WEBIM_CONNCTION_ATTACH_USERGRID_ERROR = 5,
-		WEBIM_CONNCTION_REOPEN_ERROR = 6,
-		WEBIM_CONNCTION_SERVER_CLOSE_ERROR = 7,
-		WEBIM_CONNCTION_SERVER_ERROR = 8,
-		WEBIM_CONNCTION_IQ_ERROR = 9,
-		WEBIM_CONNCTION_PING_ERROR = 10,
-		WEBIM_CONNCTION_NOTIFYVERSION_ERROR = 11,
+
+		/** Fails to get the token. */
 		WEBIM_CONNCTION_GETROSTER_ERROR = 12,
-		WEBIM_CONNCTION_CROSSDOMAIN_ERROR = 13,
-		WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES = 14,
-		WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR = 15,
+		/** Websocket is disconnected */
 		WEBIM_CONNCTION_DISCONNECTED = 16,
+		/** A general error.  */
 		WEBIM_CONNCTION_AJAX_ERROR = 17,
-		WEBIM_CONNCTION_JOINROOM_ERROR = 18,
-		WEBIM_CONNCTION_GETROOM_ERROR = 19,
-		WEBIM_CONNCTION_GETROOMINFO_ERROR = 20,
-		WEBIM_CONNCTION_GETROOMMEMBER_ERROR = 21,
-		WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR = 22,
-		WEBIM_CONNCTION_LOAD_CHATROOM_ERROR = 23,
-		WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR = 24,
-		WEBIM_CONNCTION_JOINCHATROOM_ERROR = 25,
-		WEBIM_CONNCTION_QUITCHATROOM_ERROR = 26,
+		/** The App Key is invalid. */
 		WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR = 27,
+		/** The token is invalid. */
 		WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR = 28,
-		WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR = 29,
-		WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR = 30,
+		/** The callback inner error code while the message is successfully sent. */
 		WEBIM_CONNCTION_CALLBACK_INNER_ERROR = 31,
-		WEBIM_CONNCTION_CLIENT_OFFLINE = 32,
-		WEBIM_CONNCTION_CLIENT_LOGOUT = 33,
-		WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR = 34,
-		WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP = 35,
-		WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP = 36,
-		WEBIM_CONNECTION_ACCEPT_JOIN_GROUP = 37,
-		WEBIM_CONNECTION_DECLINE_JOIN_GROUP = 38,
+		/** The current user is offline. */
+		WEBIM_CONNCTION_CLIENT_OFFLINE = 32, //32 = client offline
+		/** The user is not logged in.*/
 		WEBIM_CONNECTION_CLOSED = 39,
+		/** The user authentication fails. */
 		WEBIM_CONNECTION_ERROR = 40,
+
+		/** The upper limit is reached. */
 		MAX_LIMIT = 50,
+		/** The message is not found. */
 		MESSAGE_NOT_FOUND = 51,
+		/** Unauthorized operation. */
 		NO_PERMISSION = 52,
+		/** Unsupported Operation. */
 		OPERATION_UNSUPPORTED = 53,
-		WEBIM_UPLOADFILE_BROWSER_ERROR = 100,
+		/** An operation that is not allowed. */
+		OPERATION_NOT_ALLOWED = 54,
+		/** The uploading of the file failed. */
 		WEBIM_UPLOADFILE_ERROR = 101,
+		/** The current user is not logged in when uploading the file. */
 		WEBIM_UPLOADFILE_NO_LOGIN = 102,
-		WEBIM_UPLOADFILE_NO_FILE = 103,
+		/** File-downloading failed. */
 		WEBIM_DOWNLOADFILE_ERROR = 200,
-		WEBIM_DOWNLOADFILE_NO_LOGIN = 201,
-		WEBIM_DOWNLOADFILE_BROWSER_ERROR = 202,
+		/** User does not found. */
 		USER_NOT_FOUND = 204,
+		/** The user is logged in on another device. */
 		WEBIM_CONNCTION_USER_LOGIN_ANOTHER_DEVICE = 206,
+		/** The user was removed. */
 		WEBIM_CONNCTION_USER_REMOVED = 207,
+		/** The password is renewed. */
 		WEBIM_CONNCTION_USER_KICKED_BY_CHANGE_PASSWORD = 216,
+		/** The user was kicked off from another device. */
 		WEBIM_CONNCTION_USER_KICKED_BY_OTHER_DEVICE = 217,
+		/** Global muted. */
 		USER_MUTED_BY_ADMIN = 219,
+		/**
+		 * The user is not on your contact list, and you cannot send messages to him or her.
+		 * Note: You can send messages to strangers by default. This error occurs only when you enable the function of allowing to send messages only to your contacts.
+		 */
 		USER_NOT_FRIEND = 221,
-		WEBIM_MESSAGE_REC_TEXT = 300,
-		WEBIM_MESSAGE_REC_TEXT_ERROR = 301,
-		WEBIM_MESSAGE_REC_EMOTION = 302,
-		WEBIM_MESSAGE_REC_PHOTO = 303,
-		WEBIM_MESSAGE_REC_AUDIO = 304,
-		WEBIM_MESSAGE_REC_AUDIO_FILE = 305,
-		WEBIM_MESSAGE_REC_VEDIO = 306,
-		WEBIM_MESSAGE_REC_VEDIO_FILE = 307,
-		WEBIM_MESSAGE_REC_FILE = 308,
-		WEBIM_MESSAGE_SED_TEXT = 309,
-		WEBIM_MESSAGE_SED_EMOTION = 310,
-		WEBIM_MESSAGE_SED_PHOTO = 311,
-		WEBIM_MESSAGE_SED_AUDIO = 312,
-		WEBIM_MESSAGE_SED_AUDIO_FILE = 313,
-		WEBIM_MESSAGE_SED_VEDIO = 314,
-		WEBIM_MESSAGE_SED_VEDIO_FILE = 315,
-		WEBIM_MESSAGE_SED_FILE = 316,
-		WEBIM_MESSAGE_SED_ERROR = 317,
-		STATUS_INIT = 400,
-		STATUS_DOLOGIN_USERGRID = 401,
-		STATUS_DOLOGIN_IM = 402,
-		STATUS_OPENED = 403,
-		STATUS_CLOSING = 404,
-		STATUS_CLOSED = 405,
-		STATUS_ERROR = 406,
+
+		/** The server is busy. */
 		SERVER_BUSY = 500,
+		/** The message content contains illegal or sensitive words. */
 		MESSAGE_INCLUDE_ILLEGAL_CONTENT = 501,
+		/** The message was blocked. */
 		MESSAGE_EXTERNAL_LOGIC_BLOCKED = 502,
+		/** Unknown error. */
 		SERVER_UNKNOWN_ERROR = 503,
+		/** The message recall has exceeded the time limit.*/
 		MESSAGE_RECALL_TIME_LIMIT = 504,
+		/** The service is not enabled. */
 		SERVICE_NOT_ENABLED = 505,
+		/** The message fails to be delivered because the user is not on the allow list.*/
 		SERVICE_NOT_ALLOW_MESSAGING = 506,
+		/** The current user is muted. */
 		SERVICE_NOT_ALLOW_MESSAGING_MUTE = 507,
+		/** The message is blocked by the Moderation service. */
 		MESSAGE_MODERATION_BLOCKED = 508,
+		/** Group chat ID current limiting. */
+		MESSAGE_CURRENT_LIMITING = 509,
+		/** The group is not found. */
 		GROUP_NOT_EXIST = 605,
+		/** The user being operated is not in the group. */
 		GROUP_NOT_JOINED = 602,
+		/** The number of members in the group reaches the limit. */
 		GROUP_MEMBERS_FULL = 606,
+		/** Permission denied. */
 		PERMISSION_DENIED = 603,
+		/** Internal error. */
 		WEBIM_LOAD_MSG_ERROR = 604,
+		/** The current user is already in the group. */
 		GROUP_ALREADY_JOINED = 601,
+		/** The maximum number of group members exceeds the limit during group creation. */
 		GROUP_MEMBERS_LIMIT = 607,
+		/** Group disabled */
+		GROUP_IS_DISABLED = 608,
+		/** Invalid token or App Key. */
 		REST_PARAMS_STATUS = 700,
+		/** The user being operated is not in the chatroom. */
+		CHATROOM_NOT_JOINED = 702,
+		/** The number of chatroom members reaches the limit.*/
 		CHATROOM_MEMBERS_FULL = 704,
+		/** The chatroom is not found. */
 		CHATROOM_NOT_EXIST = 705,
+		/** Websocket error. */
 		SDK_RUNTIME_ERROR = 999,
+		/** The parameter length exceeds the limit when posting custom presence status. */
 		PRESENCE_PARAM_EXCEED = 1100,
+		/** The Reaction already exists. */
 		REACTION_ALREADY_ADDED = 1101,
+		/** A Reaction is being created by multiple users at the same time. */
 		REACTION_CREATING = 1102,
+		/** The user does not have the permission for the Reaction operation. For example, the user who does not add the reaction attempts to delete it, or the user that is neither the sender nor recipient of the one-to-one message attempts to add the Reaction. */
 		REACTION_OPERATION_IS_ILLEGAL = 1103,
+		/** Invalid language code. */
 		TRANSLATION_NOT_VALID = 1200,
+		/** The translated text is too long. */
 		TRANSLATION_TEXT_TOO_LONG = 1201,
+		/** Failed to obtain the translation service. */
 		TRANSLATION_FAILED = 1204,
+		/** The chatThread is not found. */
 		THREAD_NOT_EXIST = 1300,
+		/** Chat thread already exists. */
 		THREAD_ALREADY_EXIST = 1301,
 	}
 
 	/**
-	 * @category Connection
+	 * The connection module is the module where the SDK creates long link, And all about links, friends, groups, and chat apis are all in this module
+	 *
+	 * @module connection
 	 */
 	class Connection {
+		/** @deprecated */
 		isDebug: boolean;
+		/** Whether to enable DNS to prevent DNS hijacking. - (Default)`true`: Enable; - `false`: Do not enable. */
 		isHttpDNS: boolean;
+		/** The heartbeat interval (in seconds). The default value is 30,000s. */
 		heartBeatWait: number;
+		/** The unique application key registered in console. */
 		appKey: string;
 		appName: string;
 		orgName: string;
 		token: string;
+		/** The maximum number of reconnection. */
 		autoReconnectNumMax: number;
-		autoReconnectNumTotal: number;
+		private autoReconnectNumTotal: number;
+		/** SDK version number. */
 		version: string;
+		/** The unique web device ID. By default, it is a random number. */
 		deviceId: string;
-		osType: number;
+		private osType: number;
+		/** Whether to use your own upload function, for example, when uploading images and files to your server. - `true`: Use your own upload function; - (Default)`false`: Do not use your own upload function. */
 		useOwnUploadFun: boolean;
+		/** The URL of the specified REST server. This command is used when DNS is not enabled. Usually this API is used for specific customers and need to contact account manager to get it. */
 		apiUrl: string;
+		/** The URL of the specified message server. This command is used when DNS is not enabled. Usually this API is used for specific customers and need to contact account manager to get it. */
 		url: string;
 		https: boolean;
+		/** The way to log in. */
 		grantType: 'password' | 'accessToken' | 'agoraToken' | '';
 		context: {
 			jid: {
@@ -1177,16 +1222,14 @@ export declare namespace EasemobChat {
 		_msgHash: {
 			[key: string]: any;
 		};
-		/**
-		 * @since 4.0.1
-		 */
+
 		eventHandler?: EventHandler;
 		/**
-		 * @deprecated 4.0.1
+		 * @deprecated
 		 */
 		onOpened?: () => void;
 		/**
-		 * @deprecated 4.0.1
+		 * @deprecated
 		 */
 		onPresence?: (msg: PresenceMsg) => void;
 		onTextMessage?: (msg: TextMsgBody) => void;
@@ -1201,19 +1244,11 @@ export declare namespace EasemobChat {
 		onDeliveredMessage?: (msg: DeliveryMsgBody) => void;
 		onReadMessage?: (msg: ReadMsgBody) => void;
 		onRecallMessage?: (msg: RecallMsgBody) => void;
-		onMutedMessage?: (msg: MuteMsgBody) => void;
 		onChannelMessage?: (msg: ChannelMsgBody) => void;
 		onError?: (error: ErrorEvent) => void;
 		onOffline?: () => void;
 		onOnline?: () => void;
-		onRoster?: (rosters: RosterData[]) => void;
 		onStatisticMessage?: (msg: any) => void;
-		onCreateGroup?: (data: any) => void;
-		onBlacklistUpdate?: (list: {
-			[key: string]: {
-				name: string;
-			};
-		}) => void;
 		onContactAgreed?: (msg: ContactMsgBody) => void;
 		onContactRefuse?: (msg: ContactMsgBody) => void;
 		onContactDeleted?: (msg: ContactMsgBody) => void;
@@ -1223,31 +1258,40 @@ export declare namespace EasemobChat {
 		// eslint-disable-next-line no-undef
 		[key: string]: any;
 		constructor(options: ConnectionParameters);
-
+		/** Registers a user. */
 		registerUser(
 			this: Connection,
 			params: {
+				/** The User ID. */
 				username: string;
+				/** The password. */
 				password: string;
+				/** The display nickname. It is the display name in the iOS or Android notification. */
 				nickname?: string;
 				success?: (res: any) => void;
 				error?: (err: ErrorEvent) => void;
 				apiUrl?: string;
 			}
 		): Promise<RegisterUserResult>;
-
+		/** Logs in. */
 		open(parameters: {
+			/** The User ID. */
 			user: string;
+			/** The password. */
 			pwd?: string;
+			/** Token required to connect to the message service. */
 			accessToken?: string;
+			/** The Agora token. */
 			agoraToken?: string;
 			success?: (res: any) => void;
 			error?: (res: any) => void;
 		}): Promise<LoginResult>;
+		/** Checks the connection status. - `true`: Connected; - (Default)`false`: Not connected.  */
 		isOpened(): boolean;
+		/** Closes the connection. */
 		close(): void;
-		getChatToken(agoraToken: string): Promise<any>;
-		reconnect(): void;
+		private getChatToken(agoraToken: string): Promise<any>;
+		private reconnect(): void;
 		/** send message */
 		send(params: MessageBody): Promise<SendMsgResult>;
 
@@ -1262,7 +1306,9 @@ export declare namespace EasemobChat {
 		getChatRooms(
 			this: Connection,
 			params: {
+				/** The page number, starting from 1. */
 				pagenum: number;
+				/** The number of records per page. The default value is 20. */
 				pagesize: number;
 				success?: (res: AsyncResult<GetChatRoomsResult>) => any;
 				error?: (error: ErrorEvent) => any;
@@ -1279,10 +1325,15 @@ export declare namespace EasemobChat {
 		createChatRoom(
 			this: Connection,
 			params: {
+				/** The chat room name. */
 				name: string;
+				/** The description of the chat room. */
 				description: string;
+				/** The maximum number of members in the chat room, including the chat room creator. The value is of integer type, 200 by default, and can not exceed 5,000. */
 				maxusers: number;
-				members: UserId[];
+				/** (Optional) The members in the chat room. An array of user IDs. If you set this parameter, ensure that the array contains at least one user. */
+				members?: UserId[];
+				/** The super admin token. */
 				token: string;
 				success?: (res: AsyncResult<CreateDeleteChatRoomResult>) => any;
 				error?: (error: ErrorEvent) => any;
@@ -1299,7 +1350,9 @@ export declare namespace EasemobChat {
 		destroyChatRoom(
 			this: Connection,
 			params: {
+				/** The chat room ID */
 				chatRoomId: string;
+				/** The super admin token. */
 				token: string;
 				success?: (
 					res: AsyncResult<CreateDeleteChatRoomResult>
@@ -1318,6 +1371,7 @@ export declare namespace EasemobChat {
 		getChatRoomDetails(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (res: AsyncResult<GetChatRoomDetailsResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1334,9 +1388,13 @@ export declare namespace EasemobChat {
 		modifyChatRoom(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The chat room name. */
 				chatRoomName: string;
+				/** The description of the chat room. */
 				description: string;
+				/** The maximum number of members in the chat room. */
 				maxusers: number;
 				success?: (res: AsyncResult<ModifyChatRoomResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1347,7 +1405,9 @@ export declare namespace EasemobChat {
 		removeSingleChatRoomMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member to be removed. */
 				username: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1364,7 +1424,9 @@ export declare namespace EasemobChat {
 		removeChatRoomMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member to be removed. */
 				username: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1375,7 +1437,9 @@ export declare namespace EasemobChat {
 		removeMultiChatRoomMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be removed. */
 				users: string[];
 				success?: (res: AsyncResult<CommonRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1392,7 +1456,9 @@ export declare namespace EasemobChat {
 		removeChatRoomMembers(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be removed. */
 				users: string[];
 				success?: (res: AsyncResult<CommonRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1409,7 +1475,9 @@ export declare namespace EasemobChat {
 		addUsersToChatRoom(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The users to be added. */
 				users: string[];
 				success?: (res: AsyncResult<AddUsersToChatRoomResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1426,7 +1494,9 @@ export declare namespace EasemobChat {
 		joinChatRoom(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
+				/** The reason for joining the chat room. It is optional. It is only used for groups. */
 				message?: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1444,6 +1514,7 @@ export declare namespace EasemobChat {
 		quitChatRoom(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
 				success?: (res: AsyncResult<{ result: boolean }>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1460,6 +1531,7 @@ export declare namespace EasemobChat {
 		leaveChatRoom(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
 				success?: (res: AsyncResult<{ result: boolean }>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1470,8 +1542,11 @@ export declare namespace EasemobChat {
 		listChatRoomMember(
 			this: Connection,
 			params: {
+				/** The page number, starting from 1. */
 				pageNum: number;
+				/** The number of members per page. The value cannot exceed 1,000. */
 				pageSize: number;
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (res: AsyncResult<{ member: string }[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1488,8 +1563,11 @@ export declare namespace EasemobChat {
 		listChatRoomMembers(
 			this: Connection,
 			params: {
+				/** The page number, starting from 1. */
 				pageNum: number;
+				/** The number of members per page. The value cannot exceed 1,000. */
 				pageSize: number;
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (res: AsyncResult<{ member: string }[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1506,6 +1584,7 @@ export declare namespace EasemobChat {
 		getChatRoomAdmin(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (res: AsyncResult<GetChatRoomAdminResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1522,7 +1601,9 @@ export declare namespace EasemobChat {
 		setChatRoomAdmin(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be set as admin. */
 				username: string;
 				success?: (res: AsyncResult<SetChatRoomAdminResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1539,7 +1620,9 @@ export declare namespace EasemobChat {
 		removeChatRoomAdmin(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The admins to be removed. */
 				username: string;
 				success?: (res: AsyncResult<RemoveChatRoomAdminResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1556,8 +1639,11 @@ export declare namespace EasemobChat {
 		muteChatRoomMember(
 			this: Connection,
 			params: {
+				/** The member to be muted in the chat room. */
 				username: string;
+				/** The mute duration in milliseconds. The value -1 indicates that the member is muted permanently. */
 				muteDuration: number;
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (res: AsyncResult<MuteChatRoomMemberResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1568,7 +1654,9 @@ export declare namespace EasemobChat {
 		removeMuteChatRoomMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member to be unmuted. */
 				username: string;
 				success?: (
 					res: AsyncResult<UnmuteChatRoomMemberResult[]>
@@ -1587,7 +1675,9 @@ export declare namespace EasemobChat {
 		unmuteChatRoomMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member to be unmuted. */
 				username: string;
 				success?: (
 					res: AsyncResult<UnmuteChatRoomMemberResult[]>
@@ -1600,6 +1690,7 @@ export declare namespace EasemobChat {
 		getChatRoomMuted(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (
 					res: AsyncResult<GetChatRoomMuteListResult[]>
@@ -1619,6 +1710,7 @@ export declare namespace EasemobChat {
 		getChatRoomMuteList(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (
 					res: AsyncResult<GetChatRoomMuteListResult[]>
@@ -1637,6 +1729,7 @@ export declare namespace EasemobChat {
 		getChatRoomMutelist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (
 					res: AsyncResult<GetChatRoomMuteListResult[]>
@@ -1649,7 +1742,9 @@ export declare namespace EasemobChat {
 		chatRoomBlockSingle(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member to be added to the blocklist. */
 				username: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1666,7 +1761,9 @@ export declare namespace EasemobChat {
 		blockChatRoomMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member to be added to the blocklist. */
 				username: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1677,7 +1774,9 @@ export declare namespace EasemobChat {
 		chatRoomBlockMulti(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be added to the blocklist. */
 				usernames: string[];
 				success?: (res: AsyncResult<CommonRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1694,7 +1793,9 @@ export declare namespace EasemobChat {
 		blockChatRoomMembers(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be added to the blocklist. */
 				usernames: string[];
 				success?: (res: AsyncResult<CommonRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1705,7 +1806,9 @@ export declare namespace EasemobChat {
 		removeChatRoomBlockSingle(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member to be removed from the blocklist. */
 				username: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1722,7 +1825,9 @@ export declare namespace EasemobChat {
 		unblockChatRoomMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member to be removed from the blocklist. */
 				username: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1733,7 +1838,9 @@ export declare namespace EasemobChat {
 		removeChatRoomBlockMulti(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The array of members to be removed from the blocklist. */
 				usernames: string[];
 				success?: (res: AsyncResult<CommonRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1750,7 +1857,9 @@ export declare namespace EasemobChat {
 		unblockChatRoomMembers(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The array of members to be removed from the blocklist. */
 				usernames: string[];
 				success?: (res: AsyncResult<CommonRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1761,6 +1870,7 @@ export declare namespace EasemobChat {
 		getChatRoomBlacklistNew(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (res: AsyncResult<UserId[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1777,6 +1887,7 @@ export declare namespace EasemobChat {
 		getChatRoomBlacklist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (res: AsyncResult<UserId[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1793,6 +1904,7 @@ export declare namespace EasemobChat {
 		disableSendChatRoomMsg(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (
 					res: AsyncResult<WhetherAbleSendChatRoomMsgResult>
@@ -1811,6 +1923,7 @@ export declare namespace EasemobChat {
 		enableSendChatRoomMsg(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success?: (
 					res: AsyncResult<WhetherAbleSendChatRoomMsgResult>
@@ -1830,7 +1943,9 @@ export declare namespace EasemobChat {
 		addUsersToChatRoomWhitelist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be added to the allowlist. */
 				users: string[];
 				success?: (
 					res: AsyncResult<
@@ -1851,7 +1966,9 @@ export declare namespace EasemobChat {
 		addUsersToChatRoomAllowlist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be added to the allowlist. */
 				users: string[];
 				success?: (
 					res: AsyncResult<
@@ -1866,7 +1983,9 @@ export declare namespace EasemobChat {
 		rmUsersFromChatRoomWhitelist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be removed from the allowlist. */
 				userName: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1884,7 +2003,9 @@ export declare namespace EasemobChat {
 		removeChatRoomWhitelistMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be removed from the allowlist. */
 				userName: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1901,7 +2022,9 @@ export declare namespace EasemobChat {
 		removeChatRoomAllowlistMember(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The members to be removed from the allowlist. */
 				userName: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1919,6 +2042,7 @@ export declare namespace EasemobChat {
 		getChatRoomWhitelist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success: (res: AsyncResult<UserId[]>) => void;
 				error: (error: ErrorEvent) => void;
@@ -1935,6 +2059,7 @@ export declare namespace EasemobChat {
 		getChatRoomAllowlist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
 				success: (res: AsyncResult<UserId[]>) => void;
 				error: (error: ErrorEvent) => void;
@@ -1952,7 +2077,9 @@ export declare namespace EasemobChat {
 		isChatRoomWhiteUser(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member ID. */
 				userName: string;
 				success?: (res: AsyncResult<IsChatRoomWhiteUserResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1969,7 +2096,9 @@ export declare namespace EasemobChat {
 		isInChatRoomAllowlist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				chatRoomId: string;
+				/** The member ID. */
 				userName: string;
 				success?: (res: AsyncResult<IsChatRoomWhiteUserResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1986,6 +2115,7 @@ export declare namespace EasemobChat {
 		fetchChatRoomAnnouncement(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
 				success?: (
 					res: AsyncResult<FetchChatRoomAnnouncementResult>
@@ -2004,7 +2134,9 @@ export declare namespace EasemobChat {
 		updateChatRoomAnnouncement(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
+				/** The announcement content. */
 				announcement: string;
 				success: (
 					res: AsyncResult<UpdateChatRoomAnnouncementResult>
@@ -2023,11 +2155,17 @@ export declare namespace EasemobChat {
 		uploadChatRoomSharedFile(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
+				/** The shared file object to upload. */
 				file: object;
+				/** The upload progress callback. */
 				onFileUploadProgress?: (data: any) => void;
+				/** The upload completion callback. */
 				onFileUploadComplete?: (data: any) => void;
+				/** The upload failure callback. */
 				onFileUploadError?: (data: any) => void;
+				/** The upload cancellation callback. */
 				onFileUploadCanceled?: (data: any) => void;
 			}
 		): void;
@@ -2042,7 +2180,9 @@ export declare namespace EasemobChat {
 		deleteChatRoomSharedFile(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
+				/** The shared file ID. */
 				fileId: string;
 				success?: (
 					res: AsyncResult<DeleteChatRoomSharedFileResult>
@@ -2062,6 +2202,7 @@ export declare namespace EasemobChat {
 		fetchChatRoomSharedFileList(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
 				success?: (
 					res: AsyncResult<FetchChatRoomSharedFileListResult[]>
@@ -2080,6 +2221,7 @@ export declare namespace EasemobChat {
 		getChatRoomSharedFilelist(
 			this: Connection,
 			params: {
+				/** The chat room ID. */
 				roomId: string;
 				success?: (
 					res: AsyncResult<FetchChatRoomSharedFileListResult[]>
@@ -2089,18 +2231,30 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<FetchChatRoomSharedFileListResult[]>>;
 
 		// Group API
-		/**  @deprecated */
+		/**  @deprecated User {@link createGroup instead.} */
 		createGroupNew(
 			this: Connection,
 			params: {
+				/** The group information. */
 				data: {
+					/** The group name. */
 					groupname: string;
+					/** The description of the group. */
 					desc: string;
+					/** The array of member IDs to add to the group. These users will be added directly into the group and receive "operation: 'directJoined'" in the callback of onGroupEvent. */
 					members: UserId[];
+					/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `listgroups`. */
 					public: boolean;
+					/** Whether a user requires the approval from the group admin to join the group. -`true`: Yes; -`false`: No.*/
 					approval: boolean;
+					/** Whether to allow group members to invite others to the group. `true`: Allow; `false`: Do not allow.*/
 					allowinvites: boolean;
+					/** Whether the invitee needs to accept the invitation before joining the group. 
+					- `true`: The invitee's consent is required. The default value is `true`.
+					- `false`: The invitee will be directly added to the group without confirmation.  
+					*/
 					inviteNeedConfirm: boolean;
+					/** The group max users. */
 					maxusers: number;
 				};
 				success?: (res: AsyncResult<CreateGroupResult>) => void;
@@ -2128,14 +2282,26 @@ export declare namespace EasemobChat {
 		createGroup(
 			this: Connection,
 			params: {
+				/** The group information. */
 				data: {
+					/** The group name. */
 					groupname: string;
+					/** The description of the group. */
 					desc: string;
+					/** The array of member IDs to add to the group. These users will be added directly into the group and receive "operation: 'directJoined'" in the callback of onGroupEvent. */
 					members: UserId[];
+					/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `listgroups`. */
 					public: boolean;
+					/** Whether a user requires the approval from the group admin to join the group. -`true`: Yes; -`false`: No.*/
 					approval: boolean;
+					/** Whether to allow group members to invite others to the group. `true`: Allow; `false`: Do not allow.*/
 					allowinvites: boolean;
+					/** Whether the invitee needs to accept the invitation before joining the group. 
+					- `true`: The invitee's consent is required. The default value is `true`.
+					- `false`: The invitee will be directly added to the group without confirmation.  
+					*/
 					inviteNeedConfirm: boolean;
+					/** The group max users. */
 					maxusers: number;
 				};
 				success?: (res: AsyncResult<CreateGroupResult>) => void;
@@ -2143,10 +2309,11 @@ export declare namespace EasemobChat {
 			}
 		): Promise<AsyncResult<CreateGroupResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated Use {@link blockGroupMessages instead.} */
 		blockGroup(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<BlockGroupResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2162,6 +2329,7 @@ export declare namespace EasemobChat {
 		blockGroupMessages(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<BlockGroupResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2179,7 +2347,9 @@ export declare namespace EasemobChat {
 		listGroups(
 			this: Connection,
 			params: {
+				/** The number of records per page. */
 				limit: number;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be fetched. */
 				cursor?: string;
 				success?: (res: AsyncResult<BaseGroupInfo[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2196,7 +2366,9 @@ export declare namespace EasemobChat {
 		getPublicGroups(
 			this: Connection,
 			params: {
+				/** The number of records per page. */
 				limit: number;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be fetched. */
 				cursor?: string;
 				success?: (res: AsyncResult<BaseGroupInfo[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2209,7 +2381,7 @@ export declare namespace EasemobChat {
 		 * ```typescript
 		 * connection.getGroup()
 		 * ```
-		 * @deprecated
+		 * @deprecated Use {@link getJoinedGroups instead.}
 		 */
 		getGroup(
 			this: Connection,
@@ -2229,9 +2401,13 @@ export declare namespace EasemobChat {
 		getJoinedGroups(
 			this: Connection,
 			params: {
+				/** The current page number. */
 				pageNum: number;
+				/** The number of group per page. */
 				pageSize: number;
+				/** Whether the number of group members is required. */
 				needAffiliations?: boolean;
+				/** Whether the role of the account in the group is required. */
 				needRole?: boolean;
 				success?: (res: AsyncResult<BaseGroupInfo[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2242,7 +2418,9 @@ export declare namespace EasemobChat {
 		changeOwner(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The new group owner. */
 				newOwner: UserId;
 				success?: (res: AsyncResult<ChangeGroupOwnerResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2259,7 +2437,9 @@ export declare namespace EasemobChat {
 		changeGroupOwner(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The new group owner. */
 				newOwner: UserId;
 				success?: (res: AsyncResult<ChangeGroupOwnerResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2275,6 +2455,7 @@ export declare namespace EasemobChat {
 		getGroupInfo(
 			this: Connection,
 			params: {
+				/** The group ID or group ID list. */
 				groupId: string | string[];
 				success?: (res: AsyncResult<GroupDetailInfo[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2291,8 +2472,11 @@ export declare namespace EasemobChat {
 		modifyGroup(
 			this: Connection,
 			params: {
+				/** The Group ID. */
 				groupId: string;
+				/** The group name. */
 				groupName: string;
+				/** The group description. */
 				description: string;
 				success?: (res: AsyncResult<ModifyGroupResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2303,8 +2487,11 @@ export declare namespace EasemobChat {
 		listGroupMember(
 			this: Connection,
 			params: {
+				/** The group ID。 */
 				groupId: string;
+				/** The page number, starting from 1. */
 				pageNum: number;
+				/** The number of members per page. The value cannot exceed 1000. */
 				pageSize: number;
 				success?: (res: AsyncResult<GroupMember[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2321,8 +2508,11 @@ export declare namespace EasemobChat {
 		listGroupMembers(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The page number, starting from 1. */
 				pageNum: number;
+				/** The number of members per page. The value cannot exceed 1000. */
 				pageSize: number;
 				success?: (res: AsyncResult<GroupMember[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2338,17 +2528,20 @@ export declare namespace EasemobChat {
 		getGroupAdmin(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<UserId[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<UserId[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated Use {@link setGroupAdmin instead.} */
 		setAdmin(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The ID of the user set as admin. */
 				username: UserId;
 				success?: (res: AsyncResult<SetGroupAdminResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2365,7 +2558,9 @@ export declare namespace EasemobChat {
 		setGroupAdmin(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The ID of the user set as admin. */
 				username: UserId;
 				success?: (res: AsyncResult<SetGroupAdminResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2373,6 +2568,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<SetGroupAdminResult>>;
 
 		/**
+		 * @deprecated Use {@link removeGroupAdmin} instead.
 		 * Removes a group admin. Only the group owner can call this method. The user whose admin permissions are revoked will receive "operation: 'removeAdmin'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
@@ -2382,17 +2578,39 @@ export declare namespace EasemobChat {
 		removeAdmin(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The ID of the user with admin privileges revoked. */
 				username: string;
 				success?: (res: AsyncResult<RemoveGroupAdminResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<RemoveGroupAdminResult>>;
 
-		/**  @deprecated */
+		/**
+		 * Removes a group admin. Only the group owner can call this method. The user whose admin permissions are revoked will receive "operation: 'removeAdmin'" in the callback of onGroupEvent.
+		 *
+		 * ```typescript
+		 * connection.removeGroupAdmin({groupId: 'groupId', username: 'user1'})
+		 * ```
+		 */
+		removeGroupAdmin(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+				/** The ID of the user with admin privileges revoked. */
+				username: string;
+				success?: (res: AsyncResult<RemoveGroupAdminResult>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<RemoveGroupAdminResult>>;
+
+		/**  @deprecated Use {@link destroyGroup instead.}*/
 		dissolveGroup(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<DestroyGroupResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2409,6 +2627,7 @@ export declare namespace EasemobChat {
 		destroyGroup(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<DestroyGroupResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2416,6 +2635,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<DestroyGroupResult>>;
 
 		/**
+		 * @deprecated Use {@link leaveGroup} instead.
 		 * Leaves the group. Group members will receive "operation: 'memberAbsence'" in the callback of onGroupEvent.
 		 *
 		 * ```typescript
@@ -2425,17 +2645,37 @@ export declare namespace EasemobChat {
 		quitGroup(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<{ result: true }>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<{ result: true }>>;
 
-		/**  @deprecated */
+		/**
+		 * Leaves the group. Group members will receive "operation: 'memberAbsence'" in the callback of onGroupEvent.
+		 *
+		 * ```typescript
+		 * connection.leaveGroup({groupId: 'groupId'})
+		 * ```
+		 */
+		leaveGroup(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+				success?: (res: AsyncResult<{ result: true }>) => void;
+				error?: (error: ErrorEvent) => void;
+			}
+		): Promise<AsyncResult<{ result: true }>>;
+
+		/** @deprecated Use {@link inviteUsersToGroup} instead.*/
 		inviteToGroup(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The array of invitee IDs. */
 				users: UserId[];
 				success?: (
 					res: AsyncResult<InviteUsersToGroupResult[]>
@@ -2456,7 +2696,9 @@ export declare namespace EasemobChat {
 		inviteUsersToGroup(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The array of invitee IDs. */
 				users: UserId[];
 				success?: (
 					res: AsyncResult<InviteUsersToGroupResult[]>
@@ -2475,18 +2717,22 @@ export declare namespace EasemobChat {
 		joinGroup(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The additional information of the request. */
 				message: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<CommonRequestResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated Use {@link acceptGroupJoinRequest} instead. */
 		agreeJoinGroup(
 			this: Connection,
 			params: {
+				/** The ID of the user requesting to join the group. */
 				applicant: UserId;
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2503,19 +2749,24 @@ export declare namespace EasemobChat {
 		acceptGroupJoinRequest(
 			this: Connection,
 			params: {
+				/** The ID of the user requesting to join the group. */
 				applicant: UserId;
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<CommonRequestResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link rejectGroupJoinRequest} instead. */
 		rejectJoinGroup(
 			this: Connection,
 			params: {
+				/** The ID of the user who sends the request to join the group. */
 				applicant: UserId;
+				/** The group ID. */
 				groupId: string;
+				/** The reason of declining. */
 				reason: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2532,19 +2783,24 @@ export declare namespace EasemobChat {
 		rejectGroupJoinRequest(
 			this: Connection,
 			params: {
+				/** The ID of the user who sends the request to join the group. */
 				applicant: UserId;
+				/** The group ID. */
 				groupId: string;
+				/** The reason of declining. */
 				reason: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<CommonRequestResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link acceptGroupInvite} instead. */
 		agreeInviteIntoGroup(
 			this: Connection,
 			params: {
+				/** The user ID of the invitee. */
 				invitee: UserId;
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2561,23 +2817,27 @@ export declare namespace EasemobChat {
 		acceptGroupInvite(
 			this: Connection,
 			params: {
+				/** The user ID of the invitee. */
 				invitee: UserId;
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<CommonRequestResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated Use {@link rejectGroupInvite} instead. */
 		rejectInviteIntoGroup(
 			this: Connection,
 			params: {
+				/** The user ID of the invitee. */
 				invitee: UserId;
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
-		): Promise<any>;
+		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
 		 * Declines a group invitation. If a group member invites a user to join a group, the invitee can call this method to decline the invitation.
@@ -2589,18 +2849,22 @@ export declare namespace EasemobChat {
 		rejectGroupInvite(
 			this: Connection,
 			params: {
+				/** The user ID of the invitee. */
 				invitee: UserId;
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
-		): Promise<any>;
+		): Promise<AsyncResult<CommonRequestResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link removeGroupMember} instead. */
 		removeSingleGroupMember(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The member ID to remove. */
 				username: UserId;
 				success?: (res: AsyncResult<RemoveGroupMemberResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2617,18 +2881,22 @@ export declare namespace EasemobChat {
 		removeGroupMember(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The member ID to remove. */
 				username: UserId;
 				success?: (res: AsyncResult<RemoveGroupMemberResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<RemoveGroupMemberResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link removeGroupMembers} instead. */
 		removeMultiGroupMember(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The array of member IDs to remove. */
 				users: UserId[];
 				success?: (res: AsyncResult<RemoveGroupMemberResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2645,19 +2913,24 @@ export declare namespace EasemobChat {
 		removeGroupMembers(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The array of member IDs to remove. */
 				users: UserId[];
 				success?: (res: AsyncResult<RemoveGroupMemberResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<RemoveGroupMemberResult[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link muteGroupMember} instead. */
 		mute(
 			this: Connection,
 			params: {
+				/** The ID of the group member to mute. */
 				username: UserId;
+				/** The mute duration in milliseconds. The value `-1` indicates that the member is muted permanently.*/
 				muteDuration: number;
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<MuteGroupMemberResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2674,19 +2947,24 @@ export declare namespace EasemobChat {
 		muteGroupMember(
 			this: Connection,
 			params: {
+				/** The ID of the group member to mute. */
 				username: UserId;
+				/** The mute duration in milliseconds. The value `-1` indicates that the member is muted permanently.*/
 				muteDuration: number;
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<MuteGroupMemberResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<MuteGroupMemberResult[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link unmuteGroupMember} instead. */
 		removeMute(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The group member ID to unmute. */
 				username: UserId;
 				success?: (res: AsyncResult<UnmuteGroupMemberResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2703,17 +2981,20 @@ export declare namespace EasemobChat {
 		unmuteGroupMember(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The group member ID to unmute. */
 				username: UserId;
 				success?: (res: AsyncResult<UnmuteGroupMemberResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<UnmuteGroupMemberResult[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link getGroupMutelist} instead. */
 		getMuted(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<GetGroupMuteListResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2730,17 +3011,20 @@ export declare namespace EasemobChat {
 		getGroupMuteList(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<GetGroupMuteListResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<GetGroupMuteListResult[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link blockGroupMember} instead. */
 		groupBlockSingle(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** User ID to be added to the blocklist. */
 				username: UserId;
 				success?: (res: AsyncResult<GroupRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2757,18 +3041,22 @@ export declare namespace EasemobChat {
 		blockGroupMember(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** User ID to be added to the blocklist. */
 				username: UserId;
 				success?: (res: AsyncResult<GroupRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<GroupRequestResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link blockGroupMembers} instead. */
 		groupBlockMulti(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The array of member's user IDs to be added to the blocklist. */
 				usernames: UserId[];
 				success?: (res: AsyncResult<GroupRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2785,18 +3073,22 @@ export declare namespace EasemobChat {
 		blockGroupMembers(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The array of member's user IDs to be added to the blocklist. */
 				usernames: UserId[];
 				success?: (res: AsyncResult<GroupRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<GroupRequestResult[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link unblockGroupMember} instead. */
 		removeGroupBlockSingle(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The user ID of the member to be removed from the blocklist. */
 				username: string;
 				success?: (res: AsyncResult<GroupRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2813,18 +3105,22 @@ export declare namespace EasemobChat {
 		unblockGroupMember(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The user ID of the member to be removed from the blocklist. */
 				username: string;
 				success?: (res: AsyncResult<GroupRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<GroupRequestResult>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link unblockGroupMembers} instead. */
 		removeGroupBlockMulti(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The array of members‘ user IDs to be removed from the group blocklist. */
 				usernames: UserId[];
 				success?: (res: AsyncResult<GroupRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2841,17 +3137,20 @@ export declare namespace EasemobChat {
 		unblockGroupMembers(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The array of members‘ user IDs to be removed from the group blocklist. */
 				usernames: UserId[];
 				success?: (res: AsyncResult<GroupRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<GroupRequestResult[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link getGroupBlocklist} instead. */
 		getGroupBlacklistNew(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<UserId[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2859,17 +3158,12 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UserId[]>>;
 
 		/**
-		 * Gets the group blocklist.
-		 *
-		 * ```typescript
-		 * connection.getGroupBlacklist({groupId: 'groupId'})
-		 * ```
-		 * @hidden
-		 * @deprecated
+		 * @deprecated Use {@link getGroupBlocklist} instead.
 		 */
 		getGroupBlacklist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<UserId[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2886,6 +3180,7 @@ export declare namespace EasemobChat {
 		getGroupBlocklist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<UserId[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2902,6 +3197,7 @@ export declare namespace EasemobChat {
 		disableSendGroupMsg(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<{ mute: true }>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2918,6 +3214,7 @@ export declare namespace EasemobChat {
 		enableSendGroupMsg(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<{ mute: false }>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2925,7 +3222,6 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<{ mute: false }>>;
 
 		/**
-		 * @hidden
 		 * @deprecated Use {@link addUsersToGroupAllowlist} instead.
 		 * Adds members to the group allowlist. Members on the allowlist can still post messages even if they are muted in the group. Only the group admin or above can call this method. Members added to the allowlist will receive "operation: 'addUserToAllowlist'" in the callback of onGroupEvent.
 		 *
@@ -2936,7 +3232,9 @@ export declare namespace EasemobChat {
 		addUsersToGroupWhitelist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** An array of member IDs to be added to the allowlist. */
 				users: UserId[];
 				success?: (res: AsyncResult<GroupRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2953,18 +3251,22 @@ export declare namespace EasemobChat {
 		addUsersToGroupAllowlist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** An array of member IDs to be added to the allowlist. */
 				users: UserId[];
 				success?: (res: AsyncResult<GroupRequestResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<GroupRequestResult[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link removeGroupWhitelistMember} instead. */
 		rmUsersFromGroupWhitelist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The ID of the member to be removed from the group allowlist. */
 				userName: UserId;
 				success?: (res: AsyncResult<GroupRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2982,7 +3284,9 @@ export declare namespace EasemobChat {
 		removeGroupWhitelistMember(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The ID of the member to be removed from the group allowlist. */
 				userName: UserId;
 				success?: (res: AsyncResult<GroupRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2999,7 +3303,9 @@ export declare namespace EasemobChat {
 		removeGroupAllowlistMember(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The ID of the member to be removed from the group allowlist. */
 				userName: UserId;
 				success?: (res: AsyncResult<GroupRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3017,6 +3323,7 @@ export declare namespace EasemobChat {
 		getGroupWhitelist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<UserId[]>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3033,17 +3340,20 @@ export declare namespace EasemobChat {
 		getGroupAllowlist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<UserId[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<UserId[]>>;
 
-		/**  @deprecated */
+		/**  @deprecated  Use {@link isInGroupAllowlist} instead. */
 		isGroupWhiteUser(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The user ID to query. */
 				userName: UserId;
 				success?: (res: AsyncResult<IsInGroupWhiteListResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3061,7 +3371,9 @@ export declare namespace EasemobChat {
 		isInGroupWhiteList(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The user ID to query. */
 				userName: UserId;
 				success?: (res: AsyncResult<IsInGroupWhiteListResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3078,7 +3390,9 @@ export declare namespace EasemobChat {
 		isInGroupAllowlist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The user ID to query. */
 				userName: UserId;
 				success?: (res: AsyncResult<IsInGroupWhiteListResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3095,7 +3409,9 @@ export declare namespace EasemobChat {
 		getGroupMsgReadUser(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The ID of message to query. */
 				msgId: string;
 				success?: (res: AsyncResult<GetGroupMsgReadUserResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3112,6 +3428,7 @@ export declare namespace EasemobChat {
 		fetchGroupAnnouncement(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
 				success?: (res: AsyncResult<{ announcement: string }>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3128,7 +3445,9 @@ export declare namespace EasemobChat {
 		updateGroupAnnouncement(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The group announcement. */
 				announcement: string;
 				success?: (
 					res: AsyncResult<UpdateGroupAnnouncementResult>
@@ -3147,11 +3466,17 @@ export declare namespace EasemobChat {
 		uploadGroupSharedFile(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The shared file object to upload. */
 				file: object;
+				/** The upload progress callback. */
 				onFileUploadProgress?: (data: ProgressEvent) => void;
+				/** The upload completion callback. */
 				onFileUploadComplete?: (data: any) => void;
+				/** The upload failure callback. */
 				onFileUploadError?: (data: any) => void;
+				/** The upload cancellation callback. */
 				onFileUploadCanceled?: (data: any) => void;
 			}
 		): void;
@@ -3166,7 +3491,9 @@ export declare namespace EasemobChat {
 		deleteGroupSharedFile(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The shared file ID. */
 				fileId: string;
 				success?: (
 					res: AsyncResult<DeleteGroupSharedFileResult>
@@ -3186,9 +3513,12 @@ export declare namespace EasemobChat {
 		fetchGroupSharedFileList(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
-				pageNum?: number;
-				pageSize?: number;
+				/** The page number, starting from 1. */
+				pageNum: number;
+				/** The number of members per page. The value cannot exceed 10. */
+				pageSize: number;
 				success?: (
 					res: AsyncResult<FetchGroupSharedFileListResult>
 				) => void;
@@ -3206,9 +3536,12 @@ export declare namespace EasemobChat {
 		getGroupSharedFilelist(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
-				pageNum?: number;
-				pageSize?: number;
+				/** The page number, starting from 1. */
+				pageNum: number;
+				/** The number of members per page. The value cannot exceed 10. */
+				pageSize: number;
 				success?: (
 					res: AsyncResult<FetchGroupSharedFileListResult>
 				) => void;
@@ -3226,8 +3559,11 @@ export declare namespace EasemobChat {
 		downloadGroupSharedFile(
 			this: Connection,
 			params: {
+				/** The group ID. */
 				groupId: string;
+				/** The shared file ID. */
 				fileId: string;
+				/** The secret key required to download the file. */
 				secret?: string;
 				onFileDownloadComplete?: (data: Blob) => void;
 				onFileDownloadError?: (err: ErrorEvent) => void;
@@ -3266,15 +3602,6 @@ export declare namespace EasemobChat {
 			}
 		): Promise<AsyncResult<UserId[]>>;
 
-		/** @deprecated */
-		getRoster(
-			this: Connection,
-			params?: {
-				success?: (res: RosterData[]) => void;
-				error?: (error: ErrorEvent) => void;
-			}
-		): Promise<AsyncResult<UserId[]>>;
-
 		/**
 		 * Gets the contact list.
 		 *
@@ -3290,12 +3617,15 @@ export declare namespace EasemobChat {
 			}
 		): Promise<AsyncResult<UserId[]>>;
 
-		/** @deprecated */
+		/** @deprecated  Use {@link uploadPushToken} instead. */
 		uploadToken(
 			this: Connection,
 			params: {
+				/** The device ID that identifies the device. Custom device IDs are allowed. */
 				deviceId: string;
+				/** The push token, which identifies a device during message push. Custom push tokens are allowed.*/
 				deviceToken: string;
+				/** The app ID for the push service, which is the senderID for Firebase Cloud Messaging (FCM) and "appId+#+AppKey" for the vivo push service. */
 				notifierName: string;
 				success?: (res: AsyncResult<UploadTokenResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3312,8 +3642,11 @@ export declare namespace EasemobChat {
 		uploadPushToken(
 			this: Connection,
 			params: {
+				/** The device ID that identifies the device. Custom device IDs are allowed. */
 				deviceId: string;
+				/** The push token, which identifies a device during message push. Custom push tokens are allowed.*/
 				deviceToken: string;
+				/** The app ID for the push service, which is the senderID for Firebase Cloud Messaging (FCM) and "appId+#+AppKey" for the vivo push service. */
 				notifierName: string;
 				success?: (res: AsyncResult<UploadTokenResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3344,10 +3677,10 @@ export declare namespace EasemobChat {
 		 * Gets the conversation list and the latest message under the conversation.
 		 *
 		 * ```typescript
-		 * connection.getConversationList()
+		 * connection.getConversationlist()
 		 * ```
 		 */
-		getConversationList(
+		getConversationlist(
 			this: Connection,
 			params?: {
 				success?: (res: AsyncResult<SessionInfo[]>) => void;
@@ -3366,8 +3699,17 @@ export declare namespace EasemobChat {
 		deleteSession(
 			this: Connection,
 			params: {
+				/** The conversation ID: the peer's user ID or group ID. */
 				channel: string;
+				/** The conversation type.
+				 * - `singleChat`: one-to-one chat;
+				 * - `groupChat`: group chat.
+				 */
 				chatType: 'singleChat' | 'groupChat';
+				/** Whether to delete server roaming messages during conversation deletion.
+				 * - `true`: Yes;
+				 * - `false`: No.
+				 */
 				deleteRoam: boolean;
 				success?: (res: AsyncResult<DeleteSessionResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3384,8 +3726,17 @@ export declare namespace EasemobChat {
 		deleteConversation(
 			this: Connection,
 			params: {
+				/** The conversation ID: the peer's user ID or group ID. */
 				channel: string;
+				/** The conversation type.
+				 * - `singleChat`: one-to-one chat;
+				 * - `groupChat`: group chat.
+				 */
 				chatType: 'singleChat' | 'groupChat';
+				/** Whether to delete server roaming messages during conversation deletion.
+				 * - `true`: Yes;
+				 * - `false`: No.
+				 */
 				deleteRoam: boolean;
 				success?: (res: AsyncResult<DeleteSessionResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3432,7 +3783,9 @@ export declare namespace EasemobChat {
 		 */
 		fetchUserInfoById(
 			this: Connection,
+			/** The array of IDs of users or user ID to query.  */
 			userId: UserId | UserId[],
+			/** User properties to query. If the parameter is blank, query all. */
 			properties?: ConfigurableKey[] | ConfigurableKey
 		): Promise<
 			AsyncResult<{
@@ -3449,6 +3802,7 @@ export declare namespace EasemobChat {
 		 */
 		updateCurrentUserNick(
 			this: Connection,
+			/** The nickname shown when a message push notification is received. */
 			nick: string
 		): Promise<AsyncResult<BaseUserInfo[]>>;
 
@@ -3463,10 +3817,21 @@ export declare namespace EasemobChat {
 		fetchHistoryMessages(
 			this: Connection,
 			options: {
+				/** The user ID of the other party or the group ID. */
 				queue: string;
-				start?: number | null;
+				/** The starting message ID for this query. The default value is -1, which means to start retrieving from the latest message. */
+				start?: number | string | null;
+				/** The number of messages to retrieve each time. The default value is 20. */
 				count?: number;
+				/** Whether it is a group chat.
+				 *  - `true`: Yes.
+				 *  - (Default)`false`: No.
+				 */
 				isGroup?: boolean;
+				/** Whether to format messages.
+				 * - `true`: Yes.
+				 * - (Default)`false`: No.
+				 */
 				format?: boolean;
 				success?: (res: MessageBody[]) => void;
 				fail?: (error: ErrorEvent) => void;
@@ -3525,7 +3890,7 @@ export declare namespace EasemobChat {
 		 */
 		deleteContact(this: Connection, to: string): void;
 
-		/** @deprecated  */
+		/** @deprecated  Use {@link acceptContactInvite} instead. */
 		acceptInvitation(this: Connection, to: string): void;
 
 		/**
@@ -3537,7 +3902,7 @@ export declare namespace EasemobChat {
 		 */
 		acceptContactInvite(this: Connection, to: string): void;
 
-		/** @deprecated  */
+		/** @deprecated  Use {@link declineContactInvite} instead. */
 		declineInvitation(this: Connection, to: string): void;
 
 		/**
@@ -3549,25 +3914,22 @@ export declare namespace EasemobChat {
 		 */
 		declineContactInvite(this: Connection, to: string): void;
 
-		/** @deprecated */
+		/** @deprecated  Use {@link addUsersToBlocklist} instead. */
 		addToBlackList(
 			this: Connection,
 			options: {
+				/** The user ID. You can type a specific user ID to add a single user to the blocklist or type an array of user IDs, like ["user1","user2"], to add multiple users. */
 				name: UserId | UserId[];
 			}
 		): void;
 
 		/**
-		 * @deprecated
-		 * Add contacts to your blacklist.
-		 *
-		 * ```typescript
-		 * connection.addUsersToBlacklist({name: 'user1'})
-		 * ```
+		 * @deprecated Use {@link addUsersToBlocklist} instead.
 		 */
 		addUsersToBlacklist(
 			this: Connection,
 			options: {
+				/** The user ID. You can type a specific user ID to add a single user to the blocklist or type an array of user IDs, like ["user1","user2"], to add multiple users. */
 				name: UserId | UserId[];
 			}
 		): void;
@@ -3582,29 +3944,27 @@ export declare namespace EasemobChat {
 		addUsersToBlocklist(
 			this: Connection,
 			options: {
+				/** The user ID. You can type a specific user ID to add a single user to the blocklist or type an array of user IDs, like ["user1","user2"], to add multiple users. */
 				name: UserId | UserId[];
 			}
 		): void;
 
-		/** @deprecated */
+		/** @deprecated   Use {@link removeUserFromBlackList} instead. */
 		removeFromBlackList(
 			this: Connection,
 			options: {
+				/** The user ID. You can type a specific user ID to remove a single user from the blocklist or type an array of user IDs, like ["user1","user2"], to remove multiple users. */
 				name: UserId | UserId[];
 			}
 		): void;
 
 		/**
-		 * @deprecated
-		 * Removes friends from your blacklist
-		 *
-		 * ```typescript
-		 * connection.removeUserFromBlackList({name: 'user1'})
-		 * ```
+		 * @deprecated  Use {@link removeUserFromBlackList} instead.
 		 */
 		removeUserFromBlackList(
 			this: Connection,
 			options: {
+				/** The user ID. You can type a specific user ID to remove a single user from the blocklist or type an array of user IDs, like ["user1","user2"], to remove multiple users. */
 				name: UserId | UserId[];
 			}
 		): void;
@@ -3619,21 +3979,10 @@ export declare namespace EasemobChat {
 		removeUserFromBlocklist(
 			this: Connection,
 			options: {
+				/** The user ID. You can type a specific user ID to remove a single user from the blocklist or type an array of user IDs, like ["user1","user2"], to remove multiple users. */
 				name: UserId | UserId[];
 			}
 		): void;
-
-		/** @deprecated*/
-		subscribe(
-			this: Connection,
-			options: { to: UserId; message?: string }
-		): void;
-		/** @deprecated*/
-		subscribed(this: Connection, options: { to: UserId }): void;
-		/** @deprecated*/
-		unsubscribed(this: Connection, options: { to: UserId }): void;
-		/** @deprecated*/
-		removeRoster(this: Connection, options: { to: UserId }): void;
 
 		/**
 		 * Recalls a message.
@@ -3645,21 +3994,52 @@ export declare namespace EasemobChat {
 		recallMessage(
 			this: Connection,
 			option: {
+				/** The ID of the message to be recalled. */
 				mid: string;
+				/** The recipient of the message. */
 				to: UserId;
-				type?: 'chat' | 'groupchat' | 'chatroom'; // v3.0
-				chatType?: 'singleChat' | 'groupChat' | 'chatRoom'; // v4.0
+				/** The chat type for SDK old:
+				 * - chat: one-to-one chat;
+				 * - groupchat: group chat;
+				 * - chatroom: chat room.
+				 */
+				type?: 'chat' | 'groupchat' | 'chatroom';
+				/** The chat type for SDK new:
+				 * - `singleChat`: one-to-one chat;
+				 * - `groupchat`: group chat;
+				 * - `chatroom`: chat room.
+				 */
+				chatType?: 'singleChat' | 'groupChat' | 'chatRoom';
+				/** Is it a message in the thread. */
 				isChatThread?: boolean;
 				success?: (res: number) => void;
 				fail?: (error: ErrorEvent) => void;
 			}
 		): Promise<SendMsgResult>;
 
-		// listen @since 3.0
+		// listen @deprecated
 		listen(this: Connection, parameters: ListenParameters): void;
 
-		// eventHandler @since 4.0
+		/**
+		 * Adds listening events.
+		 *
+		 * ```typescript
+		 * connection.addEventHandler('customId', {
+		 * 	onTextMessage: (message) => {
+		 * 		console.log(message)
+		 * 	}
+		 * })
+		 * ```
+		 */
 		addEventHandler(id: string, handler: EventHandlerType): void;
+
+		/**
+		 * Removes listening events.
+		 *
+		 * ```typescript
+		 * connection.removeEventHandler('customId')
+		 * ```
+		 */
 		removeEventHandler(id: string): void;
 
 		/**
@@ -3983,8 +4363,11 @@ export declare namespace EasemobChat {
 		reportMessage(
 			this: Connection,
 			params: {
+				/** The type of report. */
 				reportType: string;
+				/** The reason for reporting. */
 				reportReason: string;
+				/** ID of the message to be reported. */
 				messageId: string;
 			}
 		): Promise<void>;
@@ -4181,7 +4564,7 @@ export declare namespace EasemobChat {
 		): Promise<void>;
 
 		/**
-		 * @deprecated
+		 * @deprecated Use { getReactionlist } instead.
 		 * Gets the reaction list for the message.
 		 *
 		 * ```typescript
@@ -4245,18 +4628,132 @@ export declare namespace EasemobChat {
 				pageSize?: number;
 			}
 		): Promise<AsyncResult<GetReactionDetailResult>>;
+
+		/**
+		 * Get the chat room all properties.
+		 *
+		 * ```typescript
+		 * connection.getChatRoomAttributes({chatRoomId: 'roomId')
+		 * ```
+		 */
+		getChatRoomAttributes(
+			this: Connection,
+			params: {
+				/** The chat room ID. */
+				chatRoomId: string;
+				/** The custom attribute to get. If you pass the attribute key, the SDK returns the attribute value. If you set it as null, the SDK returns all the attributes value. */
+				attributeKeys?: Array<string>;
+			}
+		): Promise<AsyncResult<GetChatroomAttributesResult>>;
+
+		/**
+		 * Set chat room properties in batches.
+		 *
+		 * ```typescript
+		 * connection.setChatRoomAttributes({chatRoomId: 'roomId', attributes: {"key1": "value1","key2":"value2"}, autoDelete: true, isForced: false})
+		 * ```
+		 */
+		setChatRoomAttributes(
+			this: Connection,
+			params: {
+				/** The chat room ID. */
+				chatRoomId: string;
+				/** The attributes. */
+				attributes: {
+					[key: string]: string;
+				};
+				/** Whether to delete chat room attributes set by the member when he or she exits the chat room.
+				 * (Default)`true`: Yes.
+				 * `false`: No. */
+				autoDelete?: boolean;
+				/** Whether to allow a member to overwrite the chat room attribute set by another member.
+				 * `true`: Yes.
+				 * （Default）`false`: No. */
+				isForced?: boolean;
+			}
+		): Promise<AsyncResult<ChatroomAttributes>>;
+
+		/**
+		 * Set chat room properties individually.
+		 *
+		 * ```typescript
+		 * connection.setChatroomAttribute({chatRoomId: 'roomId', attributeKey:"key1", attributeValue:"value1", autoDelete: true, isForced: false})
+		 * ```
+		 */
+		setChatRoomAttribute(
+			this: Connection,
+			params: {
+				/** The chat room ID. */
+				chatRoomId: string;
+				/** The custom attribute key. */
+				attributeKey: string;
+				/** The custom attribute value. */
+				attributeValue: string;
+				/**
+				 * Whether to delete chat room attributes set by the member when he or she exits the chat room.
+				 * - (Default)`true`: Yes;
+				 * - `false`: No.
+				 */
+				autoDelete?: boolean;
+				/**
+				 * Whether to allow a member to overwrite the chat room attribute set by another member.
+				 * - `true`: Yes;
+				 * - (Default)`false`: No.
+				 */
+				isForced?: boolean;
+			}
+		): Promise<void>;
+
+		/**
+		 * Batch remove chat room attributes.
+		 *
+		 * ```typescript
+		 * connection.removeChatRoomAttributes({chatRoomId: 'roomId', attributeKeys: ['key1','key2',...], isForced: false })
+		 * ```
+		 */
+		removeChatRoomAttributes(
+			this: Connection,
+			params: {
+				/** The chat room ID. */
+				chatRoomId: string;
+				/** The key of the chat room attribute to delete. */
+				attributeKey: string;
+				/**
+				 * Whether to allow a member to delete any chat room attribute set by any member.
+				 * - `true`: Yes;
+				 * - (Default)`false`: No.
+				 */
+				isForced?: boolean;
+			}
+		): Promise<AsyncResult<ChatroomAttributes>>;
+
+		/**
+		 * Remove chat room attributes individually.
+		 *
+		 * ```typescript
+		 * connection.removeChatRoomAttribute({chatRoomId: 'roomId', attributeKey: 'attributeValue', isForced: false })
+		 * ```
+		 */
+		removeChatRoomAttribute(
+			this: Connection,
+			params: {
+				/** The chat room ID. */
+				chatRoomId: string;
+				/** Delete attribute key. */
+				attributeKey: string;
+				/** remove chatRoom attributes (Allow to delete all contents of the chat room). */
+				isForced?: boolean;
+			}
+		): Promise<void>;
 	}
 
-	/**
-	 *
-	 * @module eventHandler
-	 */
+	// ----- for EventHandler ------
+
 	type DispatchParameters =
 		| MessageBody
 		| OnPresenceMsg
 		| RosterData
 		| ErrorEvent
-		| MuteMsgBody
 		| ReceivedMsgBody
 		| RecallMsgBody
 		| ChannelMsgBody;
@@ -4278,20 +4775,35 @@ export declare namespace EasemobChat {
 
 	interface EventData {
 		/** The type of operation. */
-		/** 操作类型。 */
 		operation: string;
 		/** The ID of a group or chatroom. */
-		/** 群组或者聊天室 ID。 */
 		id: string;
 		/** Message sender. */
-		/** 消息发送者。 */
 		from: string;
 		/** Message receiver. */
-		/** 消息接收者。 */
-		to: string;
-		/** Additional data for the operation event. */
-		/** 操作事件的其他数据。 */
 		data?: any;
+		/** ChatRoom Attributes.  */
+		/** 聊天室属性。 */
+		attributes?: {
+			[key: string]: string;
+		};
+	}
+
+	interface GetChatroomAttributesResult {
+		/** ChatRoom ID.*/
+		chatRoomId: string;
+		/** The custom attribute to get. If you pass the attribute key, the SDK returns the attribute value. If you set it as null, the SDK returns all the attributes value. */
+		attributeKeys: Array<string>;
+	}
+	interface ChatroomAttributes {
+		/** Status code. */
+		status: 'success' | 'fail';
+		/** The keys of failure. */
+		errorKeys: {
+			[key: string]: string;
+		};
+		/** The keys of success. */
+		successKeys: Array<string>;
 	}
 
 	type Event =
@@ -4309,12 +4821,10 @@ export declare namespace EasemobChat {
 		| 'onDeliveredMessage'
 		| 'onReadMessage'
 		| 'onRecallMessage'
-		| 'onMutedMessage'
 		| 'onChannelMessage'
 		| 'onError'
 		| 'onOffline'
 		| 'onOnline'
-		| 'onRoster'
 		| 'onStatisticMessage'
 		| 'onContactAgreed'
 		| 'onContactRefuse'
@@ -4336,44 +4846,79 @@ export declare namespace EasemobChat {
 		| 'onChatroomEvent';
 
 	interface EventHandlerType {
+		/** @deprecated  Use { onConnected } instead. */
 		onOpened?: (msg: any) => void;
+		/** @deprecated */
 		onPresence?: (msg: OnPresenceMsg) => void;
+		/** The callback to receive a text message. */
 		onTextMessage?: (msg: TextMsgBody) => void;
+		/** The callback to receive a image message. */
 		onImageMessage?: (msg: ImgMsgBody) => void;
+		/** The callback to receive a audio message. */
 		onAudioMessage?: (msg: AudioMsgBody) => void;
+		/** The callback to receive a video message. */
 		onVideoMessage?: (msg: VideoMsgBody) => void;
+		/** The callback to receive a file message. */
 		onFileMessage?: (msg: FileMsgBody) => void;
+		/** The callback to receive a location message. */
 		onLocationMessage?: (msg: LocationMsgBody) => void;
+		/** The callback to receive a command message. */
 		onCmdMessage?: (msg: CmdMsgBody) => void;
+		/** The callback to receive a custom message. */
 		onCustomMessage?: (msg: CustomMsgBody) => void;
+		/** The callback to receive a received ack. */
 		onReceivedMessage?: (msg: ReceivedMsgBody) => void;
+		/** The callback to receive a delivery ack. */
 		onDeliveredMessage?: (msg: DeliveryMsgBody) => void;
+		/** The callback to receive a read ack. */
 		onReadMessage?: (msg: ReadMsgBody) => void;
+		/** The callback to receive a recall message. */
 		onRecallMessage?: (msg: RecallMsgBody) => void;
-		onMutedMessage?: (msg: MuteMsgBody) => void;
+		/** The callback to receive a session read ack. */
 		onChannelMessage?: (msg: ChannelMsgBody) => void;
+		/** The callback to receive error. */
 		onError?: (error: ErrorEvent) => void;
-		onOffline?: (msg: any) => void;
-		onOnline?: (msg: any) => void;
-		onRoster?: (rosters: RosterData[]) => void;
+		/** The callback for network disconnection. */
+		onOffline?: () => void;
+		/** The callback for network connection. */
+		onOnline?: () => void;
+		/** The callback to receive a statistic message. */
 		onStatisticMessage?: (msg: any) => void;
+		/** The callback to accept contact request. */
 		onContactAgreed?: (msg: ContactMsgBody) => void;
+		/** The callback to refuse contact request. */
 		onContactRefuse?: (msg: ContactMsgBody) => void;
+		/** The callback to deleted a contact. */
 		onContactDeleted?: (msg: ContactMsgBody) => void;
+		/** The callback to added a contact. */
 		onContactAdded?: (msg: ContactMsgBody) => void;
-		onTokenWillExpire?: (msg: any) => void;
-		onTokenExpired?: (msg: any) => void;
-		onContactInvited?: (msg: any) => void;
+		/** The callback whose token is about to expire. */
+		onTokenWillExpire?: () => void;
+		/** The callback whose token has expired. */
+		onTokenExpired?: () => void;
+		/** The callback to contact request was received. */
+		onContactInvited?: (msg: ContactMsgBody) => void;
+		/** The callback for successful connection. */
 		onConnected?: () => void;
+		/** The callback for disconnected. */
 		onDisconnected?: () => void;
+		/** @deprecated  Use { onGroupEvent } instead. */
 		onGroupChange?: (msg: any) => void;
+		/** @deprecated  Use { onChatroomEvent } instead. */
 		onChatroomChange?: (msg: any) => void;
+		/** @deprecated */
 		onContactChange?: (msg: any) => void;
+		/** Occurs when the presence state of a subscribed user changes. */
 		onPresenceStatusChange?: (msg: PresenceType[]) => void;
+		/** The callback to receive a reaction message. */
 		onChatThreadChange?: (msg: ThreadChangeInfo) => void;
+		/** The callback to receive a multi device event. */
 		onMultiDeviceEvent?: (msg: ThreadMultiDeviceInfo) => void;
+		/** The callback to receive a reaction message. */
 		onReactionChange?: (msg: ReactionMessage) => void;
+		/** The callback to receive a group event. */
 		onGroupEvent?: (eventData: EventData) => void;
+		/** The callback to receive a chatroom event. */
 		onChatroomEvent?: (eventData: EventData) => void;
 	}
 
@@ -4381,6 +4926,10 @@ export declare namespace EasemobChat {
 		[key: string]: EventHandlerType;
 	}
 
+	/**
+	 * This is the module of the SDK that is responsible for registering listening events.
+	 * @module eventHandler
+	 */
 	class EventHandler {
 		handlerData: HandlerData;
 		constructor(
@@ -4388,10 +4937,12 @@ export declare namespace EasemobChat {
 			eventHandlerId: string,
 			eventHandler: EventHandlerType
 		);
+		/** Adds listening events. */
 		addEventHandler(
 			eventHandlerId: string,
 			eventHandler: EventHandlerType
 		): void;
+		/** Removes listening events. */
 		removeEventHandler(eventHandlerId: string): void;
 		dispatch(
 			this: EventHandler,
@@ -4419,15 +4970,11 @@ export declare namespace EasemobChat {
 		onDeliveredMessage?: (msg: DeliveryMsgBody) => void;
 		onReadMessage?: (msg: ReadMsgBody) => void;
 		onRecallMessage?: (msg: RecallMsgBody) => void;
-		onMutedMessage?: (msg: MuteMsgBody) => void;
 		onChannelMessage?: (msg: ChannelMsgBody) => void;
 		onError?: (error: ErrorEvent) => void;
 		onOffline?: () => void;
 		onOnline?: () => void;
-		onRoster?: (rosters: RosterData[]) => void;
 		onStatisticMessage?: () => void;
-		onCreateGroup?: () => void;
-		onBlacklistUpdate?: () => void;
 		onContactAgreed?: (msg: ContactMsgBody) => void;
 		onContactRefuse?: (msg: ContactMsgBody) => void;
 		onContactDeleted?: (msg: ContactMsgBody) => void;
@@ -4438,25 +4985,34 @@ export declare namespace EasemobChat {
 		onPresenceStatusChange?: (msg: PresenceType[]) => void;
 	}
 
-	/**
-	 * @module Error
-	 */
+	// ----- for Error -----
+
 	interface ErrorParameters {
+		/** Error code. */
 		type: Code;
+		/** Error message.  */
 		message: string;
+		/** Other data. */
 		data?: any;
 	}
+
+	/**
+	 * Error class
+	 * @module Error
+	 */
 	class ErrorEvent {
+		/** Error code. */
 		type: Code;
+		/** Error message.  */
 		message: string;
+		/** Other data. */
 		data?: any;
 		constructor(parameters: ErrorParameters);
 		static create(parameters: ErrorParameters): ErrorEvent;
 	}
 
-	/**
-	 * @module Logger
-	 */
+	// ---- for Logger ---
+
 	type DefaultLevel =
 		| 'TRACE'
 		| 'DEBUG'
@@ -4480,6 +5036,11 @@ export declare namespace EasemobChat {
 		color: string;
 		background: string;
 	}
+
+	/**
+	 * SDK log function
+	 * @module Logger
+	 */
 	class Logger {
 		name: string;
 		currentLevel: LevelNum;
@@ -4522,9 +5083,8 @@ export declare namespace EasemobChat {
 		download(): void;
 	}
 
-	/**
-	 * @moudle message
-	 */
+	// --- for Message ---
+
 	type MessageType =
 		| 'read'
 		| 'delivery'
@@ -4540,9 +5100,13 @@ export declare namespace EasemobChat {
 
 	type ChatType = 'singleChat' | 'groupChat' | 'chatRoom';
 	interface FileObj {
+		/** The file URL. */
 		url: string;
+		/** The file name. */
 		filename: string;
+		/** The file type. */
 		filetype: string;
+		/** The File object. */
 		data: File;
 	}
 
@@ -4562,6 +5126,18 @@ export declare namespace EasemobChat {
 		isAddedBySelf?: boolean;
 	}
 
+	/** Message online state type. */
+	enum ONLINESTATETYPE {
+		/** Offline message. */
+		OFFLINE = 0,
+		/** Online message. */
+		ONLINE = 1,
+		/** Unknown state. */
+		UNKNOWN = 2,
+		/** Message online status is not enabled. */
+		NONE = 3,
+	}
+
 	interface PresenceMsg {
 		type: OnPresenceMsgType;
 		to: string;
@@ -4577,565 +5153,1046 @@ export declare namespace EasemobChat {
 	}
 
 	interface ReadMsgSetParameters {
+		/** The message ID. */
 		id: string;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** The session type. */
 		chatType: 'singleChat' | 'groupChat';
 	}
 	interface ReadMsgBody extends ReadMsgSetParameters {
+		/** The message type. */
 		type: 'read';
-		ackId?: string;
-		mid?: string;
-		groupReadCount?: { [key: string]: number };
-		ackContent?: string;
+		/** Session type. */
 		chatType: 'singleChat' | 'groupChat';
+		/** The ID of the read message */
+		ackId?: string;
+		/** The ID of the read message This parameter has the same value as ackId.*/
+		mid?: string;
+		/** The number of group members that have read the messages. */
+		groupReadCount?: { [key: string]: number };
+		/** The message content. */
+		ackContent?: string;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 	interface ReadParameters {
+		/** The message type. */
 		type: 'read';
+		/** The recipient. */
 		id: string;
 	}
 
 	interface CreateReadMsgParameters {
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** The message type. */
 		type: 'read';
-		id: string;
-		ackContent?: string;
+		/** The session type. */
 		chatType: 'singleChat' | 'groupChat';
+		/** The ID of the read message. */
+		id: string;
+		/** The message content. */
+		ackContent?: string;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface DeliveryParameters {
+		/** The ID of the delivery receipt. */
 		id: string;
+		/** The message type. */
 		type: 'delivery';
 	}
 	interface DeliveryMsgSetParameters {
+		/** The ID of the delivered message. This parameter has the same value as mid. */
 		ackId: string;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
 	}
 	interface DeliveryMsgBody {
+		/** The ID of the delivery receipt. */
 		id: string;
+		/** The ID of the delivered message. */
 		mid?: string;
+		/** The ID of the delivered message. This parameter has the same value as mid. */
 		ackId?: string;
+		/** The message type. */
 		type: 'delivery';
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 
 	interface CreateDeliveryMsgParameters {
+		/** The ID of the delivered message. */
 		ackId: string;
+		/** The message type. */
 		type: 'delivery';
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface ChannelMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The receipt. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
 	}
 
 	interface ChannelMsgBody extends ChannelMsgSetParameters {
+		/** The message ID. */
 		id: string;
+		/** Whether it's group chat. */
 		group?: string;
+		/** The message type. */
 		type: 'channel';
+		/** Time. */
 		time: number;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
+
 	interface ChannelParameters {
+		/** The message type. */
 		type: 'channel';
+		/** The message ID. */
 		id: string;
 	}
 
 	interface CreateChannelMsgParameters {
+		/** The message type. */
 		type: 'channel';
+		/** The session type. */
 		chatType: ChatType;
+		/** The receipt. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface TextParameters {
+		/** The message type. */
 		type: 'txt';
+		/** The message ID. */
 		id: string;
 	}
+
 	interface TextMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The recipient. */
 		to: string;
+		/** The message content. */
 		msg: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** Message extension. */
 		ext?: { [key: string]: any };
+		/** Whether the message is a thread message. */
+		isChatThread?: boolean;
 	}
 
 	interface TextMsgBody {
+		/** The message ID. */
 		id: string;
+		/** The session type. */
 		chatType: ChatType;
+		/** The message type. */
 		type: 'txt';
+		/** The recipient. */
 		to: string;
+		/** The message content. */
 		msg: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** @deprecated Whether the session type is group. */
 		group?: string;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** Message extension. */
 		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck?: boolean; languages?: string[] };
+		/** Message translation */
 		translations?: TranslationResult;
+		/** Time. */
 		time: number;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reactions?: Reaction;
+		/** The message thread. */
+		chatThread?: ChatThread;
+		/** The message thread overview. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 
 	interface CreateTextMsgParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The message type. */
 		type: 'txt';
+		/** The recipient. */
 		to: string;
+		/** The message content. */
 		msg: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** Message extension. */
 		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck?: boolean; languages?: string[] };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface CmdParameters {
+		/** The message type. */
 		type: 'cmd';
+		/** The message ID. */
 		id: string;
 	}
 	interface CmdMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The recipient. */
 		to: string;
+		/** The command. */
 		action: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** Message extension. */
 		ext?: { [key: string]: any };
 	}
 
 	interface CmdMsgBody {
+		/** The message ID. */
 		id: string;
+		/** The session type. */
 		chatType: ChatType;
+		/** The message type. */
 		type: 'cmd';
+		/** The recipient. */
 		to: string;
+		/** The command. */
 		action: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** @deprecated Whether the session type is group. */
 		group?: string;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** Message extension. */
 		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { [key: string]: any };
+		/** Time. */
 		time: number;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reactions?: Reaction;
+		/** The message thread. */
+		chatThread?: ChatThread;
+		/** The message thread overview. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 
 	interface CreateCmdMsgParameters {
+		/** The message type. */
 		type: 'cmd';
+		/** The session type. */
 		chatType: ChatType;
+		/** The recipient. */
 		to: string;
+		/** The command. */
 		action: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** Message extension. */
 		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface CustomParameters {
+		/** The message type. */
 		type: 'custom';
+		/** The message ID. */
 		id: string;
 	}
 	interface CustomMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The recipient. */
 		to: string;
+		/** The custom event. */
 		customEvent: string;
+		/** The custom event extension. */
 		customExts: { [key: string]: any };
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** Message extension. */
 		ext?: { [key: string]: any };
 	}
 
 	interface CustomMsgBody {
+		/** The message ID. */
 		id: string;
+		/** The session type. */
 		chatType: ChatType;
+		/** The message type. */
 		type: 'custom';
+		/** The recipient. */
 		to: string;
+		/** The custom event. */
 		customEvent: string;
+		/** The custom event extension. */
 		customExts: { [key: string]: any };
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** @deprecated Whether the session type is group. */
 		group?: string;
 		params?: { [key: string]: any };
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** Message extension. */
 		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { [key: string]: any };
+		/** Time. */
 		time: number;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reactions?: Reaction;
+		/** The message thread. */
+		chatThread?: ChatThread;
+		/** The message thread overview. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 
 	interface CreateCustomMsgParameters {
+		/** The message type. */
 		type: 'custom';
+		/** The session type. */
 		chatType: ChatType;
+		/** The recipient. */
 		to: string;
+		/** The custom event. */
 		customEvent: string;
+		/** The custom event extension. */
 		customExts: { [key: string]: any };
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** Message extension. */
 		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface LocationParameters {
+		/** The message type. */
 		type: 'loc';
+		/** The message ID. */
 		id: string;
 	}
+
 	interface LocationMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The recipient. */
 		to: string;
+		/** The address. */
 		addr: string;
+		/** The building name. */
 		buildingName: string;
+		/** The latitude. */
 		lat: number;
+		/** The longitude. */
 		lng: number;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** The message extension. */
 		ext?: { [key: string]: any };
 	}
 
 	interface LocationMsgBody {
+		/** The message ID. */
 		id: string;
+		/** The session type. */
 		chatType: ChatType;
+		/** The message type. */
 		type: 'loc';
+		/** The recipient. */
 		to: string;
+		/** The address. */
 		addr: string;
+		/** The building name. */
 		buildingName: string;
+		/** The latitude. */
 		lat: number;
+		/** The longitude. */
 		lng: number;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** @deprecated Whether the session type is group. */
 		group?: string;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** Time. */
 		time: number;
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reactions?: Reaction;
+		/** The message thread. */
+		chatThread?: ChatThread;
+		/** The message thread overview. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 
 	interface CreateLocationMsgParameters {
+		/** The message type. */
 		type: 'loc';
+		/** The session type. */
 		chatType: ChatType;
+		/** The recipient. */
 		to: string;
+		/** The address. */
 		addr: string;
+		/** The building name. */
 		buildingName: string;
+		/** The latitude. */
 		lat: number;
+		/** The longitude. */
 		lng: number;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface FileParameters {
+		/** The message type. */
 		type: 'file';
+		/** The message ID. */
 		id: string;
 	}
+
+	interface UploadFileResult {
+		/** The file URL. */
+		url: string;
+		entities: {
+			/** Secret required to download the file. */
+			'share-secret': string;
+			/** the file category. */
+			type: 'chatfile';
+			/** Unique ID generated by the file on the server. */
+			uuid: string;
+		}[];
+		[key: string]: any;
+	}
+
 	interface FileMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The file object. */
 		file: FileObj;
+		/** The file name. */
 		filename?: string;
+		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** File upload address. */
 		apiUrl?: string;
-		onFileUploadError?: (err: any) => void;
-		onFileUploadComplete?: (data: any) => void;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (err: ErrorEvent) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: UploadFileResult) => void;
+		/** The callback of the file upload progress. */
 		onFileUploadProgress?: (data: ProgressEvent) => void;
+		/** The message body. */
 		body?: {
+			/** The file URL. */
 			url: string;
+			/** The file type. */
 			type: string;
+			/** The file name. */
 			filename: string;
 		};
+		/** Whether the message is a thread message. */
+		isChatThread?: boolean;
 	}
 
 	interface FileMsgBody extends CreateFileMsgParameters {
+		/** The message ID. */
 		id: string;
+		/** The message type. */
 		type: 'file';
+		/** @deprecated Whether the session type is group. */
 		group?: string;
+		/** The file URL. */
 		url?: string;
+		/** Secret required to download the file. */
 		secret?: string;
 		length?: number;
+		/** The file size. */
 		file_length?: number;
+		/** The file type. */
 		filetype?: string;
+		/** AccessToken needed to download files */
 		accessToken?: string;
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Time. */
 		time: number;
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reactions?: Reaction;
+		/** The message thread. */
+		chatThread?: ChatThread;
+		/** The message thread overview. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
+		/** Whether the message is a thread message. */
+		isChatThread?: boolean;
 	}
 
 	interface CreateFileMsgParameters {
+		/** The message type. */
 		type: 'file';
+		/** The session type. */
 		chatType: ChatType;
+		/** The file object. */
 		file: FileObj;
+		/** The file name. */
 		filename?: string;
+		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** File upload address. */
 		apiUrl?: string;
-		onFileUploadError?: (err: any) => void;
-		onFileUploadComplete?: (data: any) => void;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (err: ErrorEvent) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: UploadFileResult) => void;
+		/** The callback of the file upload progress. */
 		onFileUploadProgress?: (data: ProgressEvent) => void;
+		/** The message body. */
 		body?: {
+			/** The file URL. */
 			url: string;
+			/** The file type. */
 			type: string;
+			/** The file name. */
 			filename: string;
 		};
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface ImgParameters {
+		/** The message type. */
 		type: 'img';
+		/** The message ID. */
 		id: string;
 	}
 
 	interface ImgMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The recipient. */
 		to: string;
+		/** The file object. */
 		file?: FileObj;
+		/** The image width. */
 		width?: number;
+		/** The image height. */
 		height?: number;
+		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** @deprecated Whether the session type is group. */
 		group?: string;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** The file URL. If the file is uploaded, you can directly use the URL. */
 		url?: string;
-		onFileUploadError?: (error: any) => void;
-		onFileUploadComplete?: (data: any) => void;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (err: ErrorEvent) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: UploadFileResult) => void;
+		/** The callback of the file upload progress. */
 		onFileUploadProgress?: (data: ProgressEvent) => void;
-		uploadError?: (error: any) => void;
-		uploadComplete?: (data: any) => void;
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { [key: string]: any };
+		/** The message body. */
 		body?: {
+			/** The file URL. */
 			url: string;
+			/** The file type. */
 			type: string;
+			/** The file name. */
 			filename: string;
 		};
 	}
 
 	interface ImgMsgBody extends ImgMsgSetParameters {
+		/** The message ID. */
 		id: string;
+		/** The message type. */
 		type: 'img';
+		/** Time. */
 		time: number;
+		/** Secret required to download the image. */
 		secret?: string;
+		/** The thumbnails of image. */
 		thumb?: string;
+		/** Secret required to download the thumbnails. */
 		thumb_secret?: string;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reactions?: Reaction;
+		/** The message thread. */
+		chatThread?: ChatThread;
+		/** The message thread overview. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 
 	interface CreateImgMsgParameters {
+		/** The message type. */
 		type: 'img';
+		/** The session type. */
 		chatType: ChatType;
+		/** The file object. */
 		file?: FileObj;
+		/** The file URL. If the file is uploaded, you can directly use the URL. */
 		url?: string;
+		/** The image width. */
 		width?: number;
+		/** The image height. */
 		height?: number;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
-		onFileUploadError?: (error: any) => void;
-		onFileUploadComplete?: (data: any) => void;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (err: ErrorEvent) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: UploadFileResult) => void;
+		/** The callback of the file upload progress. */
 		onFileUploadProgress?: (data: ProgressEvent) => void;
-		uploadError?: (error: any) => void;
-		uploadComplete?: (data: any) => void;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** The message body. */
 		body?: {
+			/** The file URL. */
 			url: string;
+			/** The file type. */
 			type: string;
+			/** The file name. */
 			filename: string;
 		};
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface AudioParameters {
+		/** The message type. */
 		type: 'audio';
+		/** The message ID. */
 		id: string;
 	}
 	interface AudioMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The file object. */
 		file: FileObj;
+		/** The file name. */
 		filename: string;
+		/** The audio duration. */
 		length?: number;
+		/** The file size. */
 		file_length?: number;
+		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** File upload address. */
 		apiUrl?: string;
-		onFileUploadError?: (err: any) => void;
-		onFileUploadComplete?: (data: any) => void;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (err: ErrorEvent) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: UploadFileResult) => void;
+		/** The callback of the file upload progress. */
 		onFileUploadProgress?: (data: ProgressEvent) => void;
+		/** The message body. */
 		body?: {
+			/** The file URL. */
 			url: string;
+			/** The file type. */
 			type: string;
+			/** The file name. */
 			filename: string;
 		};
 	}
 
 	interface AudioMsgBody extends AudioMsgSetParameters {
+		/** The message ID. */
 		id: string;
+		/** The message type. */
 		type: 'audio';
+		/** The audio file URL. */
 		url?: string;
+		/** Secret required to download the audio file. */
 		secret?: string;
+		/** The file type. */
 		filetype?: string;
+		/** AccessToken needed to download files */
 		accessToken?: string;
+		/** @deprecated Whether the session type is group. */
 		group?: string;
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { [key: string]: any };
+		/** Time. */
 		time: number;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reactions?: Reaction;
+		/** The message thread. */
+		chatThread?: ChatThread;
+		/** The message thread overview. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 
 	interface CreateAudioMsgParameters {
+		/** The message type. */
 		type: 'audio';
+		/** The session type. */
 		chatType: ChatType;
+		/** The file object. */
 		file: FileObj;
+		/** The file name. */
 		filename: string;
+		/** The audio duration. */
 		length?: number;
+		/** The audio file length. */
 		file_length?: number;
+		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed.*/
 		from?: string;
-		roomType?: boolean;
-		success?: (data: SendMsgResult) => void;
-		fail?: () => void;
+		/** The message extension. */
 		ext?: { [key: string]: any };
-		apiUrl?: string;
-		onFileUploadError?: (err: any) => void;
-		onFileUploadComplete?: (data: any) => void;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (err: ErrorEvent) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: UploadFileResult) => void;
+		/** The callback of the file upload progress. */
 		onFileUploadProgress?: (data: ProgressEvent) => void;
+		/** The message body. */
 		body?: {
+			/** The file URL. */
 			url: string;
+			/** The file type. */
 			type: string;
+			/** The file name. */
 			filename: string;
 		};
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface VideoParameters {
+		/** The message type. */
 		type: 'video';
+		/** The message ID. */
 		id: string;
 	}
 	interface VideoMsgSetParameters {
+		/** The session type. */
 		chatType: ChatType;
+		/** The file object. */
 		file: FileObj;
+		/** The file name. */
 		filename: string;
+		/** The video duration. */
 		length?: number;
+		/** The size of the video file. */
 		file_length?: number;
+		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** @deprecated Whether the session type is chat room. */
 		roomType?: boolean;
+		/** The callback for message sending success. */
 		success?: (data: SendMsgResult) => void;
+		/** The callback for a message sending failure. */
 		fail?: () => void;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** File upload address. */
 		apiUrl?: string;
-		onFileUploadError?: (err: any) => void;
-		onFileUploadComplete?: (data: any) => void;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (err: ErrorEvent) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: UploadFileResult) => void;
+		/** The callback of the file upload progress. */
 		onFileUploadProgress?: (data: ProgressEvent) => void;
+		/** The message body. */
 		body?: {
+			/** The file URL. */
 			url: string;
+			/** The file type. */
 			type: string;
+			/** The file name. */
 			filename: string;
 		};
 	}
 
 	interface VideoMsgBody extends VideoMsgSetParameters {
+		/** The message ID. */
 		id: string;
+		/** The message type. */
 		type: 'video';
+		/** The file URL. */
 		url?: string;
+		/** Secret required to download the video file. */
 		secret?: string;
+		/** The file type. */
 		filetype?: string;
+		/** AccessToken needed to download files */
 		accessToken?: string;
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { [key: string]: any };
+		/** @deprecated Whether the session type is group. */
 		group?: string;
+		/** Time. */
 		time: number;
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reactions?: Reaction;
+		/** The message thread. */
+		chatThread?: ChatThread;
+		/** The message thread overview. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
 
 	interface CreateVideoMsgParameters {
+		/** The message type. */
 		type: 'video';
+		/** The session type. */
 		chatType: ChatType;
+		/** The file object. */
 		file: FileObj;
+		/** The file name. */
 		filename: string;
+		/** The video duration. */
 		length?: number;
+		/** The size of the video file. */
 		file_length?: number;
+		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
+		/** The recipient. */
 		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
 		from?: string;
+		/** The message extension. */
 		ext?: { [key: string]: any };
+		/** File upload address. */
 		apiUrl?: string;
-		onFileUploadError?: (err: any) => void;
-		onFileUploadComplete?: (data: any) => void;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (err: ErrorEvent) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: UploadFileResult) => void;
+		/** The callback of the file upload progress. */
 		onFileUploadProgress?: (data: ProgressEvent) => void;
+		/** The message body. */
 		body?: {
+			/** The file URL. */
 			url: string;
+			/** The file type. */
 			type: string;
+			/** The file name. */
 			filename: string;
 		};
+		/** Whether read receipts are required during a group session. */
 		msgConfig?: { allowGroupAck: boolean };
+		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 	}
 
 	interface ReceivedMsgBody {
+		/** Locally generated message ID. */
 		id: string;
+		/** Message ID generated by the server. */
 		mid: string;
+		/** The recipient. */
 		to: string;
-		time: number;
 	}
 
 	interface RecallMsgBody {
-		id?: string;
+		/** The message ID. */
+		id: string;
+		/** The message sender. */
 		from: string;
+		/** The message receiver. */
 		to: string;
+		/** The ID of the message to be recalled. */
 		mid: string;
+		/** Message online state type. */
+		onlineState?: ONLINESTATETYPE;
 	}
-	interface MuteMsgBody {
-		mid: string;
-	}
+
 	interface ContactMsgBody {
+		/** The message type, subscribe: request a contact, unsubscribed: cancel or refuse to add contact, subscribed: added contact successfully. */
+		type: 'subscribe' | 'unsubscribed' | 'subscribed';
+		/** The message receiver. */
 		to: string;
+		/** The message sender. */
 		from: string;
-		status: string;
-		type: 'subscribed' | 'unsubscribed' | 'subscribe';
+		/** Reason. */
+		status?: string;
 	}
 
 	type NewMessageParamters =
@@ -5190,19 +6247,26 @@ export declare namespace EasemobChat {
 		| VideoMsgBody
 		| FileMsgBody;
 
+	/**
+	 * Message class is used to create a message.
+	 * @module message
+	 */
 	class Message {
+		/** The message ID. */
 		id: string;
+		/** The message type. */
 		type: MessageType;
 		body?: MessageBody;
 		constructor(type: MessageType, id?: string);
+		/** @deprecated */
 		static createOldMsg(options: NewMessageParamters): MessageBody;
+		/** Create messages. */
 		static create(options: CreateMsgType): MessageBody;
+		/** @deprecated */
 		set(options: MessageSetParameters): void;
 	}
 
-	/**
-	 * @moudle utils
-	 */
+	// ---- for Utils
 
 	interface AjaxOptions {
 		url: string;
@@ -5227,20 +6291,16 @@ export declare namespace EasemobChat {
 		UNI = 'uni',
 	}
 	interface EnvInfo {
+		/** Code running platform. */
 		platform: PLATFORM;
+		/** global variable. */
 		global: any;
 	}
-	interface Uri {
-		url: string;
-		filename: string;
-		filetype: string;
-		data: File | null;
-	}
 	interface UploadFile {
-		onFileUploadProgress?: (msg: any) => void;
-		onFileUploadComplete?: (msg: any) => void;
-		onFileUploadError?: (msg: any) => void;
-		onFileUploadCanceled?: (msg: any) => void;
+		onFileUploadProgress?: (data: ProgressEvent) => void;
+		onFileUploadComplete?: (data: any) => void;
+		onFileUploadError?: (error: ErrorEvent) => void;
+		onFileUploadCanceled?: () => void;
 		accessToken: string;
 		appKey: string;
 		apiUrl?: string;
@@ -5248,16 +6308,27 @@ export declare namespace EasemobChat {
 		file: object;
 	}
 	interface DownloadParams {
+		url: string;
 		onFileDownloadComplete: (data: any) => void;
-		onFileDownloadError: (error: any) => void;
-		id: string;
-		secret: string;
+		onFileDownloadError: (error: {
+			type: Code;
+			id: string;
+			xhr: XMLHttpRequest;
+		}) => void;
+		id?: string;
+		headers?: { [key: string]: any };
+		secret?: string;
 		[key: string]: any;
 	}
+
+	/**
+	 * Some utility methods provided in SDK
+	 * @module utils
+	 */
 	interface Utils {
 		getUniqueId: () => string;
 		ajax: (options: AjaxOptions) => Promise<any>;
-		getFileUrl: (fileInputId: string | HTMLInputElement) => Uri;
+		getFileUrl: (fileInputId: string | HTMLInputElement) => FileObj;
 		uploadFile: (options: UploadFile) => void;
 		listenNetwork: (online: () => void, offline: () => void) => void;
 		getEnvInfo: () => EnvInfo;
