@@ -12,7 +12,7 @@
 	font-weight: 400;
 	line-height: 96rpx;
 }
-.login_user, .login_pwd, .login_btn {
+.login_user, .login_pwd, .login_btn, .login_sms {
 	display: flex;
 }
 
@@ -21,7 +21,7 @@
 	margin: 0 2px;
 }
 
-.login_user input, .login_pwd input {
+.login_user input, .login_pwd input, .login_sms input {
 	height: 96rpx;
 	background-color: #ffffff;
 	border: 2rpx solid #999999;
@@ -34,11 +34,22 @@
 	display: inline-block;
 	flex: 1;
 }
+.register-image{
+	width: 120px;
+    height: 96rpx;
+    border: 1px solid #ddd;
+    margin: 0 64rpx 0 0;
+    margin-top: 32rpx;
+}
 .login_user input {
 	margin-top: 128rpx
 }
 .login_pwd input {
 	margin-top: 32rpx;
+}
+.login_sms input {
+	margin-top: 32rpx;
+	margin-right: 32rpx;
 }
 .login_btn button{
 	flex: 1;
