@@ -82,7 +82,7 @@ Component({
 		getToken(userId, channelName){
 			let me = this
 			wx.request({
-				url: `https://a1.easemob.com/token/rtcToken/v1?userAccount=${userId}&channelName=${channelName}&appkey=${encodeURIComponent('easemob-demo#easeim')}`,//仅为示例，并非真实的接口地址
+				url: `https://a1.easemob.com/token/rtcToken/v1?userAccount=${userId}&channelName=${channelName}&appkey=${encodeURIComponent(wx.WebIM.config.appkey)}`,//仅为示例，并非真实的接口地址
 				header: {
 				    'Authorization': 'Bearer ' + wx.WebIM.conn.context.accessToken
 				},
