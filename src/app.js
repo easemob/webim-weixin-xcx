@@ -64,27 +64,29 @@ function getCurrentRoute(){
 // }
 // 包含陌生人版本
 function calcUnReadSpot(message){
-	let myName = wx.getStorageSync("myUsername");
-	wx.getStorageInfo({
-		success: function(res){
-			let storageKeys = res.keys
-			let newChatMsgKeys = [];
-			let historyChatMsgKeys = [];
-			storageKeys.forEach((item) => {
-				if (item.indexOf(myName) > -1 && item.indexOf('rendered_') == -1) {
-					newChatMsgKeys.push(item)
-				}
-			})
-			let count = newChatMsgKeys.reduce(function(result, curMember, idx){
-				let chatMsgs;
-				chatMsgs = wx.getStorageSync(curMember) || [];
-				return result + chatMsgs.length;
-			}, 0)
-
-			getApp().globalData.unReadMessageNum = count;
-			disp.fire("em.xmpp.unreadspot", message);
-		}
-	})
+	setTimeout(() => {
+		let myName = wx.getStorageSync("myUsername");
+		wx.getStorageInfo({
+			success: function(res){
+				let storageKeys = res.keys
+				let newChatMsgKeys = [];
+				let historyChatMsgKeys = [];
+				storageKeys.forEach((item) => {
+					if (item.indexOf(myName) > -1 && item.indexOf('rendered_') == -1) {
+						newChatMsgKeys.push(item)
+					}
+				})
+				let count = newChatMsgKeys.reduce(function(result, curMember, idx){
+					let chatMsgs;
+					chatMsgs = wx.getStorageSync(curMember) || [];
+					return result + chatMsgs.length;
+				}, 0)
+	
+				getApp().globalData.unReadMessageNum = count;
+				disp.fire("em.xmpp.unreadspot", message);
+			}
+		})
+	}, 0);
 }
 
 function saveGroups(){
