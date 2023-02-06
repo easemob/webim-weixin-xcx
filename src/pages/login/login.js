@@ -152,10 +152,7 @@ Page({
 			this.toastFilled('请输入验证码！')
 			return;
 		}
-		wx.setStorage({
-			key: "myUsername",
-			data: __test_account__ || this.data.name.toLowerCase()
-		});
+		
 
 		// 此处为测试用来切换沙箱环境，请忽略
 		// if(this.data.isSandBox){
@@ -167,7 +164,7 @@ Page({
 
 		const that = this;
 		wx.request({
-			url: 'https://a1.easemob.com/inside/app/user/login/V1',
+			url: 'https://a1.easemob.com/inside/app/user/login/V2',
 			header: {
 			    'content-type': 'application/json'
 			},
@@ -178,12 +175,17 @@ Page({
 			},
 			success (res) {
 				if(res.statusCode == 200){
-					const {phoneNumber, token} = res.data
+					const {phoneNumber, token, chatUserName} = res.data
 					getApp().conn.open({
-						user: that.data.name,
+						user: chatUserName,
 						accessToken: token,
 					});
 					getApp().globalData.phoneNumber = phoneNumber
+
+					wx.setStorage({
+						key: "myUsername",
+						data: chatUserName
+					});
 				}else if(res.statusCode == 400){
 					if(res.data.errorInfo){
 						switch (res.data.errorInfo) {
