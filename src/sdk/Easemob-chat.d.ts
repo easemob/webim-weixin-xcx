@@ -23,6 +23,9 @@ export declare namespace EasemobChat {
 	/** The user ID.  */
 	type UserId = string;
 
+	/** The group ID.  */
+	type GroupId = string;
+
 	interface CommonRequestResult {
 		/** The result of request. */
 		result: boolean;
@@ -133,9 +136,40 @@ export declare namespace EasemobChat {
 		chatThreadId?: string;
 		/** The message thread name. */
 		chatThreadName?: string;
-		/** The group ID to which the message thread belongs.  */
+		/** The ID of the parent message in the message thread. */
 		parentId?: string;
 	}
+
+	interface RoamingDeleteMultiDeviceInfo {
+		/** Event name of multi device event. */
+		operation: 'deleteRoaming';
+		/** The target user ID or group ID. */
+		conversationId: string;
+		/** The chat type. */
+		chatType: 'singleChat' | 'groupChat';
+		/** The client resource. */
+		resource: string;
+	}
+
+	interface GroupMemberAttributesUpdateMultiDeviceInfo {
+		/**
+		 * Custom attributes of a group member.
+		 */
+		attributes: MemberAttributes;
+		/** The user ID of the message sender. */
+		from: UserId;
+		/** The group ID. */
+		id: GroupId;
+		/** The name of the multi-device event. */
+		operation: 'memberAttributesUpdate';
+		/** The user ID of the group member whose custom attributes are set.   */
+		userId: UserId;
+	}
+
+	type MultiDeviceEvent =
+		| ThreadMultiDeviceInfo
+		| RoamingDeleteMultiDeviceInfo
+		| GroupMemberAttributesUpdateMultiDeviceInfo;
 
 	interface ConnectionParameters {
 		/** The unique application key registered in console. */
@@ -566,6 +600,57 @@ export declare namespace EasemobChat {
 		/** The time stamp of file upload. */
 		created: number;
 	}
+
+	interface GroupInfo {
+		/** The number of existing members. */
+		affiliationsCount?: number;
+		/** The group name. */
+		groupName: string;
+		/** The group ID. */
+		groupId: string;
+		/** The current user role in the group. */
+		role?: 'member' | 'admin' | 'owner';
+		/** Whether the group disabled. */
+		disabled: boolean;
+		/** Whether a user requires the approval from the group owner or admin to join the group. -`true`: Yes; -`false`: No. */
+		approval: boolean;
+		/** Whether to allow group members to invite others to join the group. */
+		allowInvites: boolean;
+		/** The group description. */
+		description: string;
+		/** The maximum number of group members. */
+		maxUsers: number;
+		/** Whether it is a public group. */
+		public: boolean;
+	}
+	type MemberAttributes = Record<string, string>;
+
+	type GetGroupMembersAttributesResult = Record<UserId, MemberAttributes>;
+
+	interface GroupModifyInfo {
+		/** The name of a group.  */
+		name?: string;
+		/** The description of a group.  */
+		description?: string;
+		/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `listgroups`. */
+		public?: boolean;
+		/** Whether a user requires the approval from the group owner or admin to join the group. -`true`: Yes; -`false`: No. */
+		approval?: boolean;
+		/** Whether to allow group members to invite others to join the group. */
+		allowInvites?: boolean;
+		/** The maximum number of group members */
+		maxUsers?: number;
+		/** Whether the invitee needs to accept the invitation before joining the group. 
+					- `true`: The invitee's consent is required. The default value is `true`.
+					- `false`: The invitee will be directly added to the group without confirmation.  
+					*/
+		inviteNeedConfirm?: boolean;
+		/** Group detail extensions. */
+		ext?: string;
+		/** Last Modified Timestamp.  */
+		lastModified?: number;
+	}
+
 	// The group api result end.
 
 	// The contact api start.
@@ -579,13 +664,13 @@ export declare namespace EasemobChat {
 		/** The phone number. */
 		phone?: string;
 		/** Gender. */
-		gender?: string | number | boolean;
+		gender?: string;
 		/** Sign. */
 		sign?: string;
 		/** Birthday. */
 		birth?: string;
 		/** Extension. */
-		ext?: { [key: string]: string | number | boolean };
+		ext?: string;
 	}
 
 	/** Configurable field. */
@@ -696,12 +781,6 @@ export declare namespace EasemobChat {
 			score: number;
 		};
 	}
-
-	interface PublishPresenceResult {
-		/** The result of publish. */
-		result: 'ok';
-	}
-
 	interface SubscribePresence {
 		/** The expiration time of the presence subscription. */
 		expiry: number;
@@ -898,13 +977,17 @@ export declare namespace EasemobChat {
 		/** The Historical messages. */
 		messages: MessageBody[];
 	}
-	interface conversationList {
+	interface ConversationList {
 		/** The conversation ID. */
 		channel_id: string;
 		/** Overview of the latest news. */
-		lastMessage: LastMessage;
+		lastMessage: MessageBody | Record<string, never>;
 		/** The number of unread messages. */
 		unread_num: number;
+	}
+	interface ConversationInfo {
+		/** The conversation list. */
+		channel_infos: ConversationList[];
 	}
 
 	interface SilentModeConversationType {
@@ -1138,6 +1221,8 @@ export declare namespace EasemobChat {
 		GROUP_MEMBERS_LIMIT = 607,
 		/** Group disabled */
 		GROUP_IS_DISABLED = 608,
+		/** Failed to set the custom attributes of a group member. */
+		GROUP_MEMBER_ATTRIBUTES_SET_FAILED = 609,
 		/** Invalid token or App Key. */
 		REST_PARAMS_STATUS = 700,
 		/** The user being operated is not in the chatroom. */
@@ -1485,7 +1570,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<AddUsersToChatRoomResult>>;
 
 		/**
-		 * Joins the chat room. After a user joins successfully, other members in the chat room will receive operation: 'memberPresence' in the onChatroomEvent callback.
+		 * Joins the chat room.
+		 *
+		 * @note
+		 * After a user joins successfully, other members in the chat room will receive operation: 'memberPresence' in the onChatroomEvent callback.
 		 *
 		 * ```typescript
 		 * connection.joinChatRoom({roomId: 'roomId'})
@@ -1496,7 +1584,7 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				roomId: string;
-				/** The reason for joining the chat room. It is optional. It is only used for groups. */
+				/** The reason for joining the chat room. Not enabled. */
 				message?: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1505,7 +1593,13 @@ export declare namespace EasemobChat {
 
 		/**
 		 * @deprecated Use {@link leaveChatRoom} instead.
-		 * Exits chat room. And others will receive "operation: 'memberAbsence'" in the callback of onChatroomEvent.
+		 * Exits the chat room.
+		 *
+		 * @note
+		 * When a member exits the chat room, other members will receive "operation: 'memberAbsence'" in the callback of onChatroomEvent.
+		 *
+		 * ```typescript
+		 * connection.leaveChatRoom({roomId: 'roomId'}
 		 *
 		 * ```typescript
 		 * connection.quitChatRoom({roomId: 'roomId'})
@@ -1522,7 +1616,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<{ result: boolean }>>;
 
 		/**
-		 * Exits chat room. And others will receive "operation: 'memberAbsence'" in the callback of onChatroomEvent.
+		 * Exits the chat room.
+		 *
+		 * @note
+		 * When a member exits the chat room, other members will receive "operation: 'memberAbsence'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.leaveChatRoom({roomId: 'roomId'})
@@ -1592,7 +1689,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<GetChatRoomAdminResult>>;
 
 		/**
-		 * Sets a user as chat room admin. Only the chat room owner can call this method. The members who are set as admins will receive "operation: 'setAdmin'" in the callback of onChatroomEvent.
+		 * Sets a member as the chat room admin.
+		 *
+		 * @note
+		 * Only the chat room owner can call this method. The new admin will receive "operation: 'setAdmin'" in the callback of `onChatroomEvent`.
 		 *
 		 * ```typescript
 		 * connection.setChatRoomAdmin({chatRoomId: 'chatRoomId', username: 'user1'})
@@ -1611,7 +1711,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<SetChatRoomAdminResult>>;
 
 		/**
-		 * Removes chat room admins. Only the chat room owner can call this method. The users whose admin privileges are removed will receive "operation: 'removeAdmin'" in the callback of onChatroomEvent.
+		 * Removes chat room admins.
+		 *
+		 * @note
+		 * Only the chat room owner can call this method. The users whose admin privileges are removed will receive "operation: 'removeAdmin'" in the callback of `onChatroomEvent`.
 		 *
 		 * ```typescript
 		 * connection.removeChatRoomAdmin({chatRoomId: 'chatRoomId', username: 'user1'})
@@ -1630,7 +1733,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<RemoveChatRoomAdminResult>>;
 
 		/**
-		 *  Mutes chat room member. Only the chat room owner can call this method. The muted member and other members will receive "operation:'muteMember'" in the callback of onChatroomEvent.
+		 * Mutes chat room member.
+		 *
+		 * @note
+		 * Only the chat room owner or admins can call this method. The muted member and other admins will receive "operation:'muteMember'" in the callback of `onChatroomEvent`.
 		 *
 		 * ```typescript
 		 * connection.muteChatRoomMember({username: 'user1', muteDuration: -1, chatRoomId: 'chatRoomId'})
@@ -1641,7 +1747,7 @@ export declare namespace EasemobChat {
 			params: {
 				/** The member to be muted in the chat room. */
 				username: string;
-				/** The mute duration in milliseconds. The value -1 indicates that the member is muted permanently. */
+				/** The mute duration in milliseconds. The value `-1` indicates that the member is muted permanently. */
 				muteDuration: number;
 				/** The chat room ID. */
 				chatRoomId: string;
@@ -1650,7 +1756,17 @@ export declare namespace EasemobChat {
 			}
 		): Promise<AsyncResult<MuteChatRoomMemberResult>>;
 
-		/** @deprecated */
+		/**
+		 * @deprecated Use {@link unmuteChatRoomMember} instead.
+		 * Unmutes the chat room member.
+		 *
+		 * @note
+		 * Only the chat room owner or admins can call this method. The members who are unmuted and other admins will receive "operation: 'unmuteMember'" in the callback of onChatroomEvent.
+		 *
+		 * ```typescript
+		 * connection.removeMuteChatRoomMember({chatRoomId: 'chatRoomId', username: 'user1'})
+		 * ```
+		 */
 		removeMuteChatRoomMember(
 			this: Connection,
 			params: {
@@ -1666,11 +1782,14 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UnmuteChatRoomMemberResult[]>>;
 
 		/**
-		 * Unmute the chat room member. Only the chatroom owner can call this method. The members who are muted and others will receive "operation: 'unmuteMember'" in the callback of onChatroomEvent.
+		 * Unmutes the chat room member.
+		 *
+		 * @note
+		 * Only the chat room owner can call this method. The members who are unmuted and other admins will receive "operation: 'unmuteMember'" in the callback of onChatroomEvent.
 		 *
 		 * ```typescript
 		 * connection.unmuteChatRoomMember({chatRoomId: 'chatRoomId', username: 'user1'})
-		 * `
+		 * ```
 		 */
 		unmuteChatRoomMember(
 			this: Connection,
@@ -1738,7 +1857,14 @@ export declare namespace EasemobChat {
 			}
 		): Promise<AsyncResult<GetChatRoomMuteListResult[]>>;
 
-		/** @deprecated */
+		/**
+		 * @deprecated Use {@link blockChatRoomMember} instead.
+		 * Adds a member to the the block list of the chat room. Only the chat room owner or admin can call this method.
+		 *
+		 * ```typescript
+		 * connection.chatRoomBlockSingle({chatRoomId: 'chatRoomId', username: 'user1'})
+		 * ```
+		 */
 		chatRoomBlockSingle(
 			this: Connection,
 			params: {
@@ -1752,7 +1878,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Adds a member to the chat room blocklist. Only the chat room owner or admin can call this method.
+		 * Adds a member to the the block list of the chat room. Only the chat room owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.blockChatRoomMember({chatRoomId: 'chatRoomId', username: 'user1'})
@@ -1784,7 +1910,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult[]>>;
 
 		/**
-		 * Adds members to the chat room blocklist. Only the chat room owner or admin can call this method.
+		 * Adds members to the block list of the chat room. Only the chat room owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.blockChatRoomMembers({usernames: ['user1', 'user2'], chatRoomId: 'chatRoomId'})
@@ -1816,7 +1942,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult>>;
 
 		/**
-		 * Removes an individual user from the chat room blocklist. Only the chatroom owner or admin can call this method.
+		 * Removes a member from the block list of the chat room. Only the chat room owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.unblockChatRoomMember({chatRoomId: 'chatRoomId', username: 'user1'})
@@ -1827,7 +1953,7 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				chatRoomId: string;
-				/** The member to be removed from the blocklist. */
+				/** The member to be removed from the block list. */
 				username: string;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -1848,7 +1974,10 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CommonRequestResult[]>>;
 
 		/**
-		 * Removes members from the chat room blocklist. Only the chatroom owner or admin can call this method.
+		 * Removes a member from the the block list of the chat room.
+		 *
+		 * @note
+		 * Only the chat room owner or admin can call this method.
 		 *
 		 * ```typescript
 		 * connection.unblockChatRoomMembers({chatRoomId: 'chatRoomId', usernames: ['user1', 'user2']})
@@ -1878,7 +2007,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UserId[]>>;
 
 		/**
-		 * Gets the blocklist of the chat room.
+		 * Gets the block list of the chat room.
 		 *
 		 * ```typescript
 		 * connection.getChatRoomBlacklist({chatRoomId: 'chatRoomId'})
@@ -2106,6 +2235,21 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<IsChatRoomWhiteUserResult>>;
 
 		/**
+		 * Check whether you are on the chat room mute list.
+		 *
+		 * ```typescript
+		 * connection.isInChatRoomMutelist({chatRoomId: 'chatRoomId'})
+		 * ```
+		 */
+		isInChatRoomMutelist(
+			this: any,
+			params: {
+				/** The chat room ID. */
+				chatRoomId: string;
+			}
+		): Promise<boolean>;
+
+		/**
 		 * Gets the announcement of the chat room.
 		 *
 		 * ```typescript
@@ -2256,6 +2400,8 @@ export declare namespace EasemobChat {
 					inviteNeedConfirm: boolean;
 					/** The group max users. */
 					maxusers: number;
+					/** Group detail extensions which can be in the JSON format to contain more group information. */
+					ext?: string;
 				};
 				success?: (res: AsyncResult<CreateGroupResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2303,6 +2449,8 @@ export declare namespace EasemobChat {
 					inviteNeedConfirm: boolean;
 					/** The group max users. */
 					maxusers: number;
+					/** Group detail extensions which can be in the JSON format to contain more group information. */
+					ext?: string;
 				};
 				success?: (res: AsyncResult<CreateGroupResult>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -2394,25 +2542,53 @@ export declare namespace EasemobChat {
 		/**
 		 * Lists all the groups a user has joined.
 		 *
+		 * @note
+		 * If either `needAffiliations` or `needAffiliations` is set `true`, when you get data with pagination, the current page number (pageNum) starts from 0 and you can get a maximum of 20 groups (pageSize) on each page and
+		 * the function return type is `Promise<AsyncResult<GroupTypes.GroupInfo[]>`
+		 *
+		 * If neither of the parameters is set, when you get data with pagination, the current page number (pageNum) starts from 1 and you can get a maximum of 500 groups (pageSize) on each page and and
+		 * the function return type is `Promise<AsyncResult<GroupTypes.BaseGroupInfo[]>`
+		 *
 		 * ```typescript
-		 * connection.getJoinedGroups()
+		 * connection.getJoinedGroups({
+		 * 		pageNum: 1,
+		 * 		pageSize: 500,
+		 * 		needAffiliations: false,
+		 * 		needRole: false
+		 * })
 		 * ```
 		 */
 		getJoinedGroups(
 			this: Connection,
 			params: {
-				/** The current page number. */
+				/**
+				 * If either `needAffiliations` or `needAffiliations` is set, when you get data with pagination, the current page number (pageNum) starts from 0.
+				 *
+				 * If neither of the parameters is set, when you get data with pagination, the current page number (pageNum) starts from 1.
+				 * */
 				pageNum: number;
-				/** The number of group per page. */
+				/**
+				 * If either `needAffiliations` or `needAffiliations` is set, when you get data with pagination, you can get a maximum of 20 groups (pageSize) on each page.
+				 *
+				 * If neither of the parameters is set, when you get data with pagination, you can get a maximum of 500 groups (pageSize) on each page.
+				 * */
 				pageSize: number;
-				/** Whether the number of group members is required. */
+				/** Whether the number of group members is required.
+				 * `true`: Yes;
+				 * （Default）`false`: No.
+				 */
 				needAffiliations?: boolean;
-				/** Whether the role of the account in the group is required. */
+				/** Whether the role of the current user in the group is required.
+				 * `true`: Yes;
+				 * （Default）`false`: No.
+				 */
 				needRole?: boolean;
-				success?: (res: AsyncResult<BaseGroupInfo[]>) => void;
+				success?: (
+					res: AsyncResult<BaseGroupInfo[] | GroupInfo[]>
+				) => void;
 				error?: (error: ErrorEvent) => void;
 			}
-		): Promise<AsyncResult<BaseGroupInfo[]>>;
+		): Promise<AsyncResult<BaseGroupInfo[] | GroupInfo[]>>;
 
 		/**  @deprecated */
 		changeOwner(
@@ -2475,9 +2651,11 @@ export declare namespace EasemobChat {
 				/** The Group ID. */
 				groupId: string;
 				/** The group name. */
-				groupName: string;
+				groupName?: string;
 				/** The group description. */
-				description: string;
+				description?: string;
+				/** Group detail extensions which can be in the JSON format to contain more group information. */
+				ext?: string;
 				success?: (res: AsyncResult<ModifyGroupResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
@@ -2927,7 +3105,7 @@ export declare namespace EasemobChat {
 			this: Connection,
 			params: {
 				/** The ID of the group member to mute. */
-				username: UserId;
+				username: UserId | UserId[];
 				/** The mute duration in milliseconds. The value `-1` indicates that the member is muted permanently.*/
 				muteDuration: number;
 				/** The group ID. */
@@ -2948,7 +3126,7 @@ export declare namespace EasemobChat {
 			this: Connection,
 			params: {
 				/** The ID of the group member to mute. */
-				username: UserId;
+				username: UserId | UserId[];
 				/** The mute duration in milliseconds. The value `-1` indicates that the member is muted permanently.*/
 				muteDuration: number;
 				/** The group ID. */
@@ -2965,7 +3143,7 @@ export declare namespace EasemobChat {
 				/** The group ID. */
 				groupId: string;
 				/** The group member ID to unmute. */
-				username: UserId;
+				username: UserId | UserId[];
 				success?: (res: AsyncResult<UnmuteGroupMemberResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
@@ -2984,7 +3162,7 @@ export declare namespace EasemobChat {
 				/** The group ID. */
 				groupId: string;
 				/** The group member ID to unmute. */
-				username: UserId;
+				username: UserId | UserId[];
 				success?: (res: AsyncResult<UnmuteGroupMemberResult[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
@@ -3400,6 +3578,21 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<IsInGroupWhiteListResult>>;
 
 		/**
+		 * Check whether you are on the group mute list.
+		 *
+		 * ```typescript
+		 * connection.isInGroupMutelist({groupId: 'groupId'})
+		 * ```
+		 */
+		isInGroupMutelist(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+			}
+		): Promise<boolean>;
+
+		/**
 		 * Checks which members have read group message. This is a [value-added function] and .
 		 *
 		 * ```typescript
@@ -3570,6 +3763,62 @@ export declare namespace EasemobChat {
 			}
 		): void;
 
+		/**
+		 * Sets custom attributes of a group member.
+		 * After custom attributes of a group member are set, other members in the group receive the `operation: 'memberAttributesUpdate'`  in the `onGroupEvent` callback and the other devices of the group member receive the  the `operation: 'memberAttributesUpdate'`  in the `onMultiDeviceEvent` callback.
+		 *
+		 * ```typescript
+		 * connection.setGroupMemberAttributes({groupId: 'groupId', userId: 'userId', memberAttributes: {key: 'value'}})
+		 * ```
+		 */
+		setGroupMemberAttributes(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+				/** The user ID of the group member. */
+				userId: string;
+				/**
+				 * The custom attributes to set in key-value format. In a key-value pair, if the value is set to an empty string, the custom attribute will be deleted.
+				 */
+				memberAttributes: MemberAttributes;
+			}
+		): Promise<void>;
+
+		/**
+		 * Gets all custom attributes of a group member.
+		 * ```typescript
+		 * connection.getGroupMemberAttributes({groupId: 'groupId', userId: 'userId'})
+		 * ```
+		 */
+		getGroupMemberAttributes(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+				/** The user ID of the group member. */
+				userId: string;
+			}
+		): Promise<AsyncResult<MemberAttributes>>;
+
+		/**
+		 * Gets custom attributes of multiple group members by attribute key.
+		 * ```typescript
+		 * connection.getGroupMembersAttributes({groupId: 'groupId', userIds: ['userId'], keys: ['avatar', 'nickname']})
+		 * ```
+		 */
+		getGroupMembersAttributes(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+				/** The array of user IDs of group members whose custom attributes are retrieved. */
+				userIds: UserId[];
+				/** The array of keys of custom attributes to be retrieved. If you pass in an empty array or do not set this parameter, the SDK gets all custom attributes of these group members. */
+				keys?: string[];
+			}
+		): Promise<AsyncResult<GetGroupMembersAttributesResult>>;
+
 		// Contact API
 		/**
 		 * @deprecated Use {@link getBlocklist} instead.
@@ -3683,10 +3932,14 @@ export declare namespace EasemobChat {
 		getConversationlist(
 			this: Connection,
 			params?: {
-				success?: (res: AsyncResult<SessionInfo[]>) => void;
+				/** The page number, starting from 1. */
+				pageNum?: number;
+				/** The number of conversation per page. The value cannot exceed 20. */
+				pageSize?: number;
+				success?: (res: AsyncResult<ConversationInfo>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
-		): Promise<AsyncResult<conversationList[]>>;
+		): Promise<AsyncResult<ConversationInfo>>;
 
 		/**
 		 * @deprecated Use Use {@link deleteConversation} instead.
@@ -3756,7 +4009,7 @@ export declare namespace EasemobChat {
 		updateOwnUserInfo(
 			this: Connection,
 			params: UpdateOwnUserInfoParams | ConfigurableKey,
-			value?: any
+			value?: string
 		): Promise<AsyncResult<UpdateOwnUserInfoParams>>;
 
 		/**
@@ -3771,7 +4024,7 @@ export declare namespace EasemobChat {
 		updateUserInfo(
 			this: Connection,
 			params: UpdateOwnUserInfoParams | ConfigurableKey,
-			value?: any
+			value?: string
 		): Promise<AsyncResult<UpdateOwnUserInfoParams>>;
 
 		/**
@@ -3871,6 +4124,33 @@ export declare namespace EasemobChat {
 				fail?: (error: ErrorEvent) => void;
 			}
 		): Promise<HistoryMessages>;
+
+		/**
+		 * Delete roaming messages.
+		 *
+		 * ```typescript
+		 * connection.removeHistoryMessages({targetId: 'userId', chatType: 'singleChat', time: Date.now()})
+		 *
+		 * connection.removeHistoryMessages({targetId: 'userId', chatType: 'singleChat', messageIds: ['messageId']})
+		 * ```
+		 */
+		removeHistoryMessages(
+			this: Connection,
+			options: {
+				/** The ID of the peer user or group. */
+				targetId: string;
+				/**
+				 * conversation type:
+				 * - `singleChat`: single chat;
+				 * - `groupChat`: group chat.
+				 */
+				chatType: 'singleChat' | 'groupChat';
+				/** List of message IDs to be deleted, The number of IDs cannot exceed 20. */
+				messageIds?: Array<string>;
+				/** The starting point in time to delete the message. */
+				beforeTimeStamp?: number;
+			}
+		): Promise<void>;
 
 		/**
 		 * Adds a friend.
@@ -4075,9 +4355,9 @@ export declare namespace EasemobChat {
 		publishPresence(params: {
 			/** The extension description information of the presence state. It can be set as nil. */
 			description: string;
-			success?: (res: AsyncResult<PublishPresenceResult>) => void;
+			success?: () => void;
 			error?: (error: ErrorEvent) => void;
-		}): Promise<AsyncResult<PublishPresenceResult>>;
+		}): Promise<void>;
 
 		/**
 		 * Subscribes to a user's presence states. If the subscription succeeds, the subscriber will receive the callback when the user's presence state changes.
@@ -4105,9 +4385,9 @@ export declare namespace EasemobChat {
 		unsubscribePresence(params: {
 			/** The array of IDs of users whose presence states you want to unsubscribe from. */
 			usernames: UserId[];
-			success?: (res: AsyncResult<PublishPresenceResult>) => void;
+			success?: () => void;
 			error?: (error: ErrorEvent) => void;
-		}): Promise<AsyncResult<PublishPresenceResult>>;
+		}): Promise<void>;
 
 		/**
 		 * @deprecated Use {@link getSubscribedPresencelist} instead.
@@ -4633,7 +4913,7 @@ export declare namespace EasemobChat {
 		 * Get the chat room all properties.
 		 *
 		 * ```typescript
-		 * connection.getChatRoomAttributes({chatRoomId: 'roomId')
+		 * connection.getChatRoomAttributes({chatRoomId: 'roomId', attributeKeys:['attributeKey1'])
 		 * ```
 		 */
 		getChatRoomAttributes(
@@ -4658,7 +4938,7 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				chatRoomId: string;
-				/** The attributes. */
+				/** The map of custom chat room attributes. */
 				attributes: {
 					[key: string]: string;
 				};
@@ -4674,7 +4954,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<ChatroomAttributes>>;
 
 		/**
-		 * Set chat room properties individually.
+		 * Sets a custom chat room attribute.
 		 *
 		 * ```typescript
 		 * connection.setChatroomAttribute({chatRoomId: 'roomId', attributeKey:"key1", attributeValue:"value1", autoDelete: true, isForced: false})
@@ -4685,9 +4965,15 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				chatRoomId: string;
-				/** The custom attribute key. */
+				/**
+				 * The chat room attribute key. A single key cannot exceed 128 characters; the total number of keys in a chat room cannot exceed 100. The following character sets are supported:
+				 * - 26 lowercase English letters (a-z)
+				 * - 26 uppercase English letters (A-Z)
+				 * - 10 numbers (0-9)
+				 * - "_", "-", "."
+				 */
 				attributeKey: string;
-				/** The custom attribute value. */
+				/** The chat room attribute value. The attribute value can contain a maximum of 4096 characters. The total length of custom chat room attributes cannot exceed 10 GB for each app.*/
 				attributeValue: string;
 				/**
 				 * Whether to delete chat room attributes set by the member when he or she exits the chat room.
@@ -4705,7 +4991,7 @@ export declare namespace EasemobChat {
 		): Promise<void>;
 
 		/**
-		 * Batch remove chat room attributes.
+		 * Removes custom chat room attributes.
 		 *
 		 * ```typescript
 		 * connection.removeChatRoomAttributes({chatRoomId: 'roomId', attributeKeys: ['key1','key2',...], isForced: false })
@@ -4716,10 +5002,9 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				chatRoomId: string;
-				/** The key of the chat room attribute to delete. */
-				attributeKey: string;
-				/**
-				 * Whether to allow a member to delete any chat room attribute set by any member.
+				/** The array of keys of attributes to remove. The array can contain a maximum number of 10 attribute keys. */
+				attributeKeys: Array<string>;
+				/** Whether to allow chat room members to overwrite the chat room attributes set by others.
 				 * - `true`: Yes;
 				 * - (Default)`false`: No.
 				 */
@@ -4739,9 +5024,13 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				chatRoomId: string;
-				/** Delete attribute key. */
+				/** The key of the chat room attribute to delete. */
 				attributeKey: string;
-				/** remove chatRoom attributes (Allow to delete all contents of the chat room). */
+				/**
+				 * Whether to allow a member to delete any chat room attribute set by any member.
+				 * - `true`: Yes;
+				 * - (Default)`false`: No.
+				 */
 				isForced?: boolean;
 			}
 		): Promise<void>;
@@ -4780,10 +5069,11 @@ export declare namespace EasemobChat {
 		id: string;
 		/** Message sender. */
 		from: string;
-		/** Message receiver. */
+		/** Additional data for the operation event. */
 		data?: any;
-		/** ChatRoom Attributes.  */
-		/** 聊天室属性。 */
+		/** The modified group info. */
+		detail?: GroupModifyInfo;
+		/** ChatRoom attributes.  */
 		attributes?: {
 			[key: string]: string;
 		};
@@ -4844,6 +5134,130 @@ export declare namespace EasemobChat {
 		| 'onMultiDeviceEvent'
 		| 'onGroupEvent'
 		| 'onChatroomEvent';
+
+	interface GroupEvent {
+		/** The type of operation. <br/>
+		 * create: Occurs when the current user created a group on another device.<br/>
+		 * destroy:  Occurs when the group was destroyed.<br/>
+		 * requestToJoin: Occurs when someone applied to join the group. Only the group owner and administrator will receive this event. <br/>
+		 * acceptRequest: Occurs when your group adding application is approved. Only the person who applies for group will receive this event.<br/>
+		 * joinPublicGroupDeclined: Occurs when your group adding application is refused. Only the person who applies for group will receive this event.<br/>
+		 * inviteToJoin: Occurs when you receive an invitation to join a group. <br/>
+		 * acceptInvite: Occurs when someone accepted your invitation to join the group. <br/>
+		 * rejectInvite: Occurs when someone refused your invitation to join the group. <br/>
+		 * removeMember:  Occurs when you are removed from a group or added to block list. Only the removed person receives this event.<br/>
+		 * unblockMember: Occurs when being removed from the block list. Only the removed person receives this event.<br/>
+		 * updateInfo: Occurs when modifying group. <br/>
+		 * memberPresence: Occurs when someone joined the group. <br/>
+		 * memberAbsence: Occurs when someone leaved the group. <br/>
+		 * directJoined: Occurs when you are directly pulled into the group and no consent is required. <br/>
+		 * changeOwner: Occurs when transferring group. Only new and old group owners can receive this event. <br/>
+		 * setAdmin: Occurs when being set as administrator. Only the person who is set to administrator can receive this event.<br/>
+		 * removeAdmin: Occurs when you are removed as an administrator. Only the removed person can receive this event.  <br/>
+		 * muteMember: Occurs when you are muted. Only the person who is muted can receive this event. <br/>
+		 * unmuteMember: Occurs when you are unmuted. Only the person who is unmuted can receive this event. <br/>
+		 * updateAnnouncement: Occurs when the group announcement was updated.  <br/>
+		 * deleteAnnouncement: Occurs when the group announcement was deleted.  <br/>
+		 * uploadFile: Occurs when a shared file is uploaded.    <br/>
+		 * deleteFile: Occurs when a shared file is deleted.  <br/>
+		 * addUserToAllowlist: Occurs when being added to the allow list.   <br/>
+		 * removeAllowlistMember: Occurs when being removed from the allow list.  <br/>
+		 * muteAllMembers: Occurs when the group was set with a ban for all members.  <br/>
+		 * unmuteAllMembers: Occurs when the group lifted the ban.  <br/>
+		 * memberAttributesUpdate: Occurs when a custom attributes of a group member is updated. <br/>
+		 */
+		operation:
+			| 'create'
+			| 'destroy'
+			| 'requestToJoin'
+			| 'acceptRequest'
+			| 'joinPublicGroupDeclined'
+			| 'inviteToJoin'
+			| 'acceptInvite'
+			| 'rejectInvite'
+			| 'removeMember'
+			| 'unblockMember'
+			| 'updateInfo'
+			| 'memberPresence'
+			| 'memberAbsence'
+			| 'directJoined'
+			| 'changeOwner'
+			| 'setAdmin'
+			| 'removeAdmin'
+			| 'muteMember'
+			| 'unmuteMember'
+			| 'updateAnnouncement'
+			| 'deleteAnnouncement'
+			| 'uploadFile'
+			| 'deleteFile'
+			| 'addUserToAllowlist'
+			| 'removeAllowlistMember'
+			| 'muteAllMembers'
+			| 'unmuteAllMembers'
+			| 'memberAttributesUpdate';
+		/** The ID of a group. */
+		id: string;
+		/** Message sender. */
+		from: string;
+		/** The name of a group.  */
+		name?: string;
+		/** The modified group info. */
+		detail?: GroupModifyInfo;
+	}
+
+	interface ChatroomEvent {
+		/** The type of operation. <br/>
+		 * destroy:  Occurs when the chat room was destroyed.<br/>
+		 * removeMember:  Occurs when you are removed from a chat room or added to block list. Only the removed person receives this event.<br/>
+		 * unblockMember: Occurs when being removed from the block list. Only the removed person receives this event.<br/>
+		 * updateInfo: Occurs when modifying chat room. <br/>
+		 * memberPresence: Occurs when someone joined the chat room. <br/>
+		 * memberAbsence: Occurs when someone leaved the chat room. <br/>
+		 * setAdmin: Occurs when being set as administrator. Only the person who is set to administrator can receive this event.<br/>
+		 * removeAdmin: Occurs when you are removed as an administrator. Only the removed person can receive this event.  <br/>
+		 * muteMember: Occurs when you are muted. Only the person who is muted can receive this event. <br/>
+		 * unmuteMember: Occurs when you are unmuted. Only the person who is unmuted can receive this event. <br/>
+		 * updateAnnouncement: Occurs when the chat room announcement was updated.  <br/>
+		 * deleteAnnouncement: Occurs when the chat room announcement was deleted.  <br/>
+		 * uploadFile: Occurs when a shared file is uploaded.    <br/>
+		 * deleteFile: Occurs when a shared file is deleted.  <br/>
+		 * addUserToAllowlist: Occurs when being added to the allow list.   <br/>
+		 * removeAllowlistMember: Occurs when being removed from the allow list.  <br/>
+		 * muteAllMembers: Occurs when the chat room was set with a ban for all members.  <br/>
+		 * unmuteAllMembers: Occurs when the chat room lifted the ban.  <br/>
+		 * updateChatRoomAttributes: Occurs when the chat room attributes are updated.  <br/>
+		 * removeChatRoomAttributes: when the chat room attributes are deleted. <br/>
+		 */
+		operation:
+			| 'destroy'
+			| 'removeMember'
+			| 'unblockMember'
+			| 'updateInfo'
+			| 'memberPresence'
+			| 'memberAbsence'
+			| 'setAdmin'
+			| 'removeAdmin'
+			| 'muteMember'
+			| 'unmuteMember'
+			| 'updateAnnouncement'
+			| 'deleteAnnouncement'
+			| 'uploadFile'
+			| 'deleteFile'
+			| 'addUserToAllowlist'
+			| 'removeAllowlistMember'
+			| 'muteAllMembers'
+			| 'unmuteAllMembers'
+			| 'updateChatRoomAttributes'
+			| 'removeChatRoomAttributes';
+		/** The ID of a chatroom. */
+		id: string;
+		/** Message sender. */
+		from: string;
+		/** The name of a chatroom.  */
+		name?: string;
+		/** ChatRoom Attributes.  */
+		attributes?: Array<string> | { [key: string]: string };
+	}
 
 	interface EventHandlerType {
 		/** @deprecated  Use { onConnected } instead. */
@@ -4913,13 +5327,13 @@ export declare namespace EasemobChat {
 		/** The callback to receive a reaction message. */
 		onChatThreadChange?: (msg: ThreadChangeInfo) => void;
 		/** The callback to receive a multi device event. */
-		onMultiDeviceEvent?: (msg: ThreadMultiDeviceInfo) => void;
+		onMultiDeviceEvent?: (msg: MultiDeviceEvent) => void;
 		/** The callback to receive a reaction message. */
 		onReactionChange?: (msg: ReactionMessage) => void;
 		/** The callback to receive a group event. */
-		onGroupEvent?: (eventData: EventData) => void;
+		onGroupEvent?: (eventData: GroupEvent) => void;
 		/** The callback to receive a chatroom event. */
-		onChatroomEvent?: (eventData: EventData) => void;
+		onChatroomEvent?: (eventData: ChatroomEvent) => void;
 	}
 
 	interface HandlerData {
@@ -5150,6 +5564,7 @@ export declare namespace EasemobChat {
 		owner?: string;
 		reason?: string;
 		kicked?: string;
+		detail?: GroupModifyInfo;
 	}
 
 	interface ReadMsgSetParameters {
@@ -5179,6 +5594,13 @@ export declare namespace EasemobChat {
 		isChatThread?: boolean;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 	interface ReadParameters {
 		/** The message type. */
@@ -5202,6 +5624,13 @@ export declare namespace EasemobChat {
 		ackContent?: string;
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface DeliveryParameters {
@@ -5235,6 +5664,13 @@ export declare namespace EasemobChat {
 		isChatThread?: boolean;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateDeliveryMsgParameters {
@@ -5248,6 +5684,13 @@ export declare namespace EasemobChat {
 		from?: string;
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface ChannelMsgSetParameters {
@@ -5262,6 +5705,7 @@ export declare namespace EasemobChat {
 	interface ChannelMsgBody extends ChannelMsgSetParameters {
 		/** The message ID. */
 		id: string;
+		mid?: string;
 		/** Whether it's group chat. */
 		group?: string;
 		/** The message type. */
@@ -5272,6 +5716,13 @@ export declare namespace EasemobChat {
 		isChatThread?: boolean;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface ChannelParameters {
@@ -5284,6 +5735,8 @@ export declare namespace EasemobChat {
 	interface CreateChannelMsgParameters {
 		/** The message type. */
 		type: 'channel';
+		/** The ID of the read message. */
+		id?: string;
 		/** The session type. */
 		chatType: ChatType;
 		/** The receipt. */
@@ -5292,6 +5745,13 @@ export declare namespace EasemobChat {
 		from?: string;
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface TextParameters {
@@ -5361,6 +5821,13 @@ export declare namespace EasemobChat {
 		chatThreadOverview?: ChatThreadOverview;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateTextMsgParameters {
@@ -5380,6 +5847,13 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck?: boolean; languages?: string[] };
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CmdParameters {
@@ -5444,6 +5918,13 @@ export declare namespace EasemobChat {
 		chatThreadOverview?: ChatThreadOverview;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateCmdMsgParameters {
@@ -5465,6 +5946,13 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck: boolean };
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CustomParameters {
@@ -5534,6 +6022,13 @@ export declare namespace EasemobChat {
 		chatThreadOverview?: ChatThreadOverview;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateCustomMsgParameters {
@@ -5555,6 +6050,13 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck: boolean };
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface LocationParameters {
@@ -5632,6 +6134,13 @@ export declare namespace EasemobChat {
 		chatThreadOverview?: ChatThreadOverview;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateLocationMsgParameters {
@@ -5657,6 +6166,13 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck: boolean };
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface FileParameters {
@@ -5689,6 +6205,8 @@ export declare namespace EasemobChat {
 		filename?: string;
 		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
+		/** The size of the  file. */
+		file_length?: number;
 		/** The recipient. */
 		to: string;
 		/** The sender, which can only be the current user and can not be changed.*/
@@ -5754,6 +6272,13 @@ export declare namespace EasemobChat {
 		onlineState?: ONLINESTATETYPE;
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateFileMsgParameters {
@@ -5794,6 +6319,13 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck: boolean };
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface ImgParameters {
@@ -5814,6 +6346,8 @@ export declare namespace EasemobChat {
 		width?: number;
 		/** The image height. */
 		height?: number;
+		/** The image file length. */
+		file_length?: number;
 		/** The input ID of the file to be uploaded. */
 		fileInputId?: string;
 		/** The sender, which can only be the current user and can not be changed.*/
@@ -5872,6 +6406,13 @@ export declare namespace EasemobChat {
 		chatThreadOverview?: ChatThreadOverview;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateImgMsgParameters {
@@ -5887,6 +6428,8 @@ export declare namespace EasemobChat {
 		width?: number;
 		/** The image height. */
 		height?: number;
+		/** The image file length. */
+		file_length?: number;
 		/** The recipient. */
 		to: string;
 		/** The sender, which can only be the current user and can not be changed.*/
@@ -5912,6 +6455,13 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck: boolean };
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface AudioParameters {
@@ -5993,6 +6543,13 @@ export declare namespace EasemobChat {
 		chatThreadOverview?: ChatThreadOverview;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateAudioMsgParameters {
@@ -6035,6 +6592,13 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck: boolean };
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface VideoParameters {
@@ -6116,6 +6680,13 @@ export declare namespace EasemobChat {
 		chatThreadOverview?: ChatThreadOverview;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface CreateVideoMsgParameters {
@@ -6160,6 +6731,13 @@ export declare namespace EasemobChat {
 		msgConfig?: { allowGroupAck: boolean };
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
+		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 */
+		deliverOnlineOnly?: boolean;
 	}
 
 	interface ReceivedMsgBody {
@@ -6246,7 +6824,10 @@ export declare namespace EasemobChat {
 		| AudioMsgBody
 		| VideoMsgBody
 		| FileMsgBody;
-
+	type MessagePriority = 'high' | 'normal' | 'low';
+	interface PriorityExt {
+		chatroom_msg_tag: number;
+	}
 	/**
 	 * Message class is used to create a message.
 	 * @module message
