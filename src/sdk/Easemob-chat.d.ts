@@ -1205,6 +1205,10 @@ export declare namespace EasemobChat {
 		MESSAGE_MODERATION_BLOCKED = 508,
 		/** Group chat ID current limiting. */
 		MESSAGE_CURRENT_LIMITING = 509,
+		/** The network is disconnected, causing message sending failure. */
+		MESSAGE_WEBSOCKET_DISCONNECTED = 510,
+		/** You have exceeded the maximum allowed size of a message body.*/
+		MESSAGE_SIZE_LIMIT = 511,
 		/** The group is not found. */
 		GROUP_NOT_EXIST = 605,
 		/** The user being operated is not in the group. */
@@ -4095,7 +4099,7 @@ export declare namespace EasemobChat {
 		 * Gets the message history.
 		 *
 		 * ```typescript
-		 * connection.getHistoryMessages({targetId:'user1',chatType:'groupChat', pageSize: 20})
+		 * connection.getHistoryMessages({targetId:'targetId',chatType:'groupChat', pageSize: 20})
 		 * ```
 		 */
 		getHistoryMessages(
@@ -4110,16 +4114,28 @@ export declare namespace EasemobChat {
 				/** The chat type:
 				 * - `singleChat`: one-to-one chat;
 				 * - `groupChat`: group chat;
-				 * - `chatRoom`: chat room.
 				 * - (Default)`singleChat`: No.
 				 */
-				chatType?: 'singleChat' | 'groupChat' | 'chatRoom';
+				chatType?: 'singleChat' | 'groupChat';
 				/** Whether to select pull history messages in positive order(Pull message from the oldest to the latest).
 				 * - `up`: means searching from the newer messages to the older messages.
 				 * - `down`: means searching from the older messages to the newer messages.
 				 * - (Default)`up`.
 				 */
-				searchDirection?: string;
+				searchDirection?: 'down' | 'up';
+				/** Query conditions. */
+				searchOptions?: {
+					/** The user ID of the message sender. This parameter is used only for group chat. */
+					from?: UserId;
+					/** An array of message types for query. If no value is passed in, all message types will be queried. */
+					msgTypes?: Array<
+						Exclude<MessageType, 'read' | 'delivery' | 'channel'>
+					>;
+					/** The start timestamp for query. The unit is millisecond. */
+					startTime?: number;
+					/** The end timestamp for query. The unit is millisecond. */
+					endTime?: number;
+				};
 				success?: (res: MessageBody[]) => void;
 				fail?: (error: ErrorEvent) => void;
 			}
