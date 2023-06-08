@@ -57,13 +57,6 @@ export declare namespace EasemobChat {
 		jid: Jid;
 	}
 
-	interface SendMsgResult {
-		/** The message local ID. */
-		localMsgId: string;
-		/** The ID of the message on the server. */
-		serverMsgId: string;
-	}
-
 	// eventHandle types
 	type OnPresenceMsgType =
 		| 'rmChatRoomMute'
@@ -166,8 +159,23 @@ export declare namespace EasemobChat {
 		userId: UserId;
 	}
 
+	interface ConversationChangedInfo {
+		/** The multi-device conversation event. */
+		operation:
+			| 'pinnedConversation'
+			| 'unpinnedConversation'
+			| 'deleteConversation';
+		/** The conversation ID. */
+		conversationId: string;
+		/** The conversation type. */
+		conversationType: 'singleChat' | 'groupChat';
+		/** The UNIX timestamp of the current operation. The unit is millisecond.*/
+		timestamp: number;
+	}
+
 	type MultiDeviceEvent =
 		| ThreadMultiDeviceInfo
+		| ConversationChangedInfo
 		| RoamingDeleteMultiDeviceInfo
 		| GroupMemberAttributesUpdateMultiDeviceInfo;
 
@@ -657,19 +665,19 @@ export declare namespace EasemobChat {
 	interface UpdateOwnUserInfoParams {
 		/** The nickname. */
 		nickname?: string;
-		/** The avatar url. */
+		/** The avatar URL. */
 		avatarurl?: string;
-		/** The email. */
+		/** The email address. */
 		mail?: string;
 		/** The phone number. */
 		phone?: string;
-		/** Gender. */
-		gender?: string;
-		/** Sign. */
+		/** Gender. You can define it with the following type: string, number, boolean. */
+		gender?: string | number | boolean;
+		/** Signature. */
 		sign?: string;
 		/** Birthday. */
 		birth?: string;
-		/** Extension. */
+		/** Extension. You can define it with the following type: string, number, boolean. */
 		ext?: string;
 	}
 
@@ -691,24 +699,24 @@ export declare namespace EasemobChat {
 	}
 
 	interface BaseUserInfo {
-		/** Whether the current user is enabled. */
+		/** Whether the current user is enabled. - `true`: Yes; - `false`: No.*/
 		activated: boolean;
-		/** The time stamp when the current user was created. */
+		/** The timestamp when the current user is created. */
 		created: number;
-		/** The time when Finally edit the user information. */
+		/** The time when the user information is last modified. */
 		modified: number;
-		/** User nickname for push. */
+		/** The display name in the message push notification. */
 		nickname: string;
 		/** The user type. */
 		type: string;
 		/** The user ID. */
 		username: string;
-		/** The user uuid. */
+		/** The user uuid on the server. */
 		uuid: string;
 	}
 
 	interface PushInfo {
-		/** The device token. */
+		/** The device ID, used to identify a device, which can be customized.*/
 		device_id: string;
 		/** The push token, which can be defined by yourself, is generally used to identify the same device. */
 		device_token: string;
@@ -717,14 +725,14 @@ export declare namespace EasemobChat {
 	}
 
 	interface UploadTokenResult extends BaseUserInfo {
-		/** The push ionfo. */
+		/** The push information. */
 		pushInfo: PushInfo[];
 	}
 
 	interface SessionInfo {
-		/** The session ID. */
+		/** The conversation ID. */
 		channel_id: string;
-		/** The last message content. */
+		/** The content of the last message.*/
 		meta: {
 			/** The message sender. */
 			from: string;
@@ -732,18 +740,77 @@ export declare namespace EasemobChat {
 			id: string;
 			/** The message content. */
 			payload: string;
-			/** The time of receiving message. */
+			/** The time when the message is received. */
 			timestamp: number;
-			/** Message receiver. */
+			/** The message recipient. */
 			to: string;
 		};
 		/** The number of unread messages. */
 		unread_num: number;
 	}
 
+	interface ConversationList {
+		/** The conversation ID. */
+		channel_id: string;
+		/** Overview of the latest news. */
+		lastMessage: MessageBody | Record<string, never>;
+		/** The number of unread messages. */
+		unread_num: number;
+	}
+	interface ConversationInfo {
+		/** The conversation list. */
+		channel_infos: ConversationList[];
+	}
 	interface DeleteSessionResult {
 		/** The result of request. */
 		result: 'ok';
+	}
+
+	interface SendMsgResult {
+		/** The local ID of the message. */
+		localMsgId: string;
+		/** The message ID on the server. */
+		serverMsgId: string;
+	}
+
+	interface HistoryMessages {
+		/** The position from which to start getting data for the next query. If the number of returned data entries is smaller than that specified in the request, the cursor is an empty string (''), which indicates that the current page is the last page; otherwise, the SDK returns the specific cursor position which indicates where to start getting data for the next query. */
+		cursor?: string;
+		/** The historical messages. */
+		messages: MessagesType[];
+		/** Whether it is the last page of data.
+		 *  - `true`: Yes;
+		 *  - `false`: No.
+		 * If the number of data entries is smaller than the message count set in the request, `false` is returned; otherwise, `true` is returned.
+		 */
+		isLast: boolean;
+	}
+
+	interface ServerConversations {
+		/** The conversation list. */
+		conversations: ConversationItem[];
+		/** The position from which to start getting data for the next query. If the number of returned data entries is smaller than that specified in the request, the cursor is `'undefined'`, which indicates that the current page is the last page; otherwise, the SDK returns the specific cursor position which indicates where to start getting data for the next query.*/
+		cursor: string;
+	}
+	interface ConversationItem {
+		/** The conversation ID. */
+		conversationId: string;
+		/** The conversation type. */
+		conversationType: 'singleChat' | 'groupChat';
+		/** Whether the conversation is pinned. `true`: pinned; `false`: unpinned. */
+		isPinned: boolean;
+		/** The UNIX timestamp when the conversation is pinned. The unit is millisecond. This value is `0` when conversation is not pinned. */
+		pinnedTime: number;
+		/** Overview of the latest message. */
+		lastMessage: MessageBody | Record<string, never> | null;
+		/** The number of unread messages. */
+		unReadCount: number;
+	}
+	interface PinConversation {
+		/** Whether the conversation is pinned. `true`: pinned; `false`: unpinned.*/
+		isPinned: boolean;
+		/** The UNIX timestamp when the conversation is pinned. The unit is millisecond. This value is `0` when the conversation is not pinned. */
+		pinnedTime: number;
 	}
 	// The contact api result end.
 
@@ -970,24 +1037,6 @@ export declare namespace EasemobChat {
 		timestamp?: number;
 		/** The creation time. */
 		createTimestamp?: number;
-	}
-	interface HistoryMessages {
-		//** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is empty string, the data of the first page will be fetched.*/
-		cursor?: string;
-		/** The Historical messages. */
-		messages: MessageBody[];
-	}
-	interface ConversationList {
-		/** The conversation ID. */
-		channel_id: string;
-		/** Overview of the latest news. */
-		lastMessage: MessageBody | Record<string, never>;
-		/** The number of unread messages. */
-		unread_num: number;
-	}
-	interface ConversationInfo {
-		/** The conversation list. */
-		channel_infos: ConversationList[];
 	}
 
 	interface SilentModeConversationType {
@@ -1255,6 +1304,8 @@ export declare namespace EasemobChat {
 		THREAD_NOT_EXIST = 1300,
 		/** Chat thread already exists. */
 		THREAD_ALREADY_EXIST = 1301,
+		/** The current conversation not exist . */
+		CONVERSATION_NOT_EXIST = 1400,
 	}
 
 	/**
@@ -3927,7 +3978,7 @@ export declare namespace EasemobChat {
 		>;
 
 		/**
-		 * Gets the conversation list and the latest message under the conversation.
+		 * Gets the conversation list and the latest message in the conversation.
 		 *
 		 * ```typescript
 		 * connection.getConversationlist()
@@ -3936,9 +3987,9 @@ export declare namespace EasemobChat {
 		getConversationlist(
 			this: Connection,
 			params?: {
-				/** The page number, starting from 1. */
+				/** The current page number, starting from 1. */
 				pageNum?: number;
-				/** The number of conversation per page. The value cannot exceed 20. */
+				/** The number of conversations that you expect to get on each page. The value cannot exceed 20. */
 				pageSize?: number;
 				success?: (res: AsyncResult<ConversationInfo>) => void;
 				error?: (error: ErrorEvent) => void;
@@ -3947,7 +3998,7 @@ export declare namespace EasemobChat {
 
 		/**
 		 * @deprecated Use Use {@link deleteConversation} instead.
-		 * Delete the session.
+		 * Delete the conversation.
 		 *
 		 * ```typescript
 		 * connection.deleteSession()
@@ -3956,14 +4007,14 @@ export declare namespace EasemobChat {
 		deleteSession(
 			this: Connection,
 			params: {
-				/** The conversation ID: the peer's user ID or group ID. */
+				/** The conversation ID: The user ID of the peer user or group ID. */
 				channel: string;
 				/** The conversation type.
 				 * - `singleChat`: one-to-one chat;
 				 * - `groupChat`: group chat.
 				 */
 				chatType: 'singleChat' | 'groupChat';
-				/** Whether to delete server roaming messages during conversation deletion.
+				/** Whether to delete historical messages on the server during conversation deletion.
 				 * - `true`: Yes;
 				 * - `false`: No.
 				 */
@@ -3983,14 +4034,14 @@ export declare namespace EasemobChat {
 		deleteConversation(
 			this: Connection,
 			params: {
-				/** The conversation ID: the peer's user ID or group ID. */
+				/** The conversation ID: The user ID of the peer user or group ID. */
 				channel: string;
 				/** The conversation type.
 				 * - `singleChat`: one-to-one chat;
 				 * - `groupChat`: group chat.
 				 */
 				chatType: 'singleChat' | 'groupChat';
-				/** Whether to delete server roaming messages during conversation deletion.
+				/** Whether to delete historical messages on the server during conversation deletion.
 				 * - `true`: Yes;
 				 * - `false`: No.
 				 */
@@ -4111,7 +4162,7 @@ export declare namespace EasemobChat {
 				cursor?: number | string | null;
 				/** The number of messages to retrieve each time. The default value is 20,The maximum value is 50. */
 				pageSize?: number;
-				/** The chat type:
+				/** The chat type for SDK:
 				 * - `singleChat`: one-to-one chat;
 				 * - `groupChat`: group chat;
 				 * - (Default)`singleChat`: No.
@@ -4142,7 +4193,7 @@ export declare namespace EasemobChat {
 		): Promise<HistoryMessages>;
 
 		/**
-		 * Delete roaming messages.
+		 * Unidirectionally deletes historical messages from the server.
 		 *
 		 * ```typescript
 		 * connection.removeHistoryMessages({targetId: 'userId', chatType: 'singleChat', time: Date.now()})
@@ -4161,9 +4212,9 @@ export declare namespace EasemobChat {
 				 * - `groupChat`: group chat.
 				 */
 				chatType: 'singleChat' | 'groupChat';
-				/** List of message IDs to be deleted, The number of IDs cannot exceed 20. */
+				/** The ID list of messages to be deleted. A maximum of 20 message IDs can be passed in. */
 				messageIds?: Array<string>;
-				/** The starting point in time to delete the message. */
+				/** The starting timestamp for message deletion. Messages with the timestamp before the specified one will be deleted. */
 				beforeTimeStamp?: number;
 			}
 		): Promise<void>;
@@ -4175,7 +4226,11 @@ export declare namespace EasemobChat {
 		 * connection.addContact('user1', 'I am Bob')
 		 * ```
 		 */
-		addContact(this: Connection, to: string, message?: string): void;
+		addContact(
+			this: Connection,
+			to: string,
+			message?: string
+		): Promise<void>;
 
 		/**
 		 * Deletes the contact.
@@ -4184,10 +4239,10 @@ export declare namespace EasemobChat {
 		 * connection.deleteContact('user1')
 		 * ```
 		 */
-		deleteContact(this: Connection, to: string): void;
+		deleteContact(this: Connection, to: string): Promise<void>;
 
 		/** @deprecated  Use {@link acceptContactInvite} instead. */
-		acceptInvitation(this: Connection, to: string): void;
+		acceptInvitation(this: Connection, to: string): Promise<void>;
 
 		/**
 		 * Accepts a friend request.
@@ -4196,10 +4251,10 @@ export declare namespace EasemobChat {
 		 * connection.acceptContactInvite('user1')
 		 * ```
 		 */
-		acceptContactInvite(this: Connection, to: string): void;
+		acceptContactInvite(this: Connection, to: string): Promise<void>;
 
 		/** @deprecated  Use {@link declineContactInvite} instead. */
-		declineInvitation(this: Connection, to: string): void;
+		declineInvitation(this: Connection, to: string): Promise<void>;
 
 		/**
 		 * Declines a friend request.
@@ -4208,7 +4263,7 @@ export declare namespace EasemobChat {
 		 * connection.declineContactInvite('user1')
 		 * ```
 		 */
-		declineContactInvite(this: Connection, to: string): void;
+		declineContactInvite(this: Connection, to: string): Promise<void>;
 
 		/** @deprecated  Use {@link addUsersToBlocklist} instead. */
 		addToBlackList(
@@ -4217,7 +4272,7 @@ export declare namespace EasemobChat {
 				/** The user ID. You can type a specific user ID to add a single user to the blocklist or type an array of user IDs, like ["user1","user2"], to add multiple users. */
 				name: UserId | UserId[];
 			}
-		): void;
+		): Promise<void>;
 
 		/**
 		 * @deprecated Use {@link addUsersToBlocklist} instead.
@@ -4228,7 +4283,7 @@ export declare namespace EasemobChat {
 				/** The user ID. You can type a specific user ID to add a single user to the blocklist or type an array of user IDs, like ["user1","user2"], to add multiple users. */
 				name: UserId | UserId[];
 			}
-		): void;
+		): Promise<void>;
 
 		/**
 		 * Adds a contact to the blocklist.
@@ -4243,7 +4298,7 @@ export declare namespace EasemobChat {
 				/** The user ID. You can type a specific user ID to add a single user to the blocklist or type an array of user IDs, like ["user1","user2"], to add multiple users. */
 				name: UserId | UserId[];
 			}
-		): void;
+		): Promise<void>;
 
 		/** @deprecated   Use {@link removeUserFromBlackList} instead. */
 		removeFromBlackList(
@@ -4252,7 +4307,7 @@ export declare namespace EasemobChat {
 				/** The user ID. You can type a specific user ID to remove a single user from the blocklist or type an array of user IDs, like ["user1","user2"], to remove multiple users. */
 				name: UserId | UserId[];
 			}
-		): void;
+		): Promise<void>;
 
 		/**
 		 * @deprecated  Use {@link removeUserFromBlackList} instead.
@@ -4263,7 +4318,7 @@ export declare namespace EasemobChat {
 				/** The user ID. You can type a specific user ID to remove a single user from the blocklist or type an array of user IDs, like ["user1","user2"], to remove multiple users. */
 				name: UserId | UserId[];
 			}
-		): void;
+		): Promise<void>;
 
 		/**
 		 * Removes contacts from the blocklist.
@@ -4278,7 +4333,7 @@ export declare namespace EasemobChat {
 				/** The user ID. You can type a specific user ID to remove a single user from the blocklist or type an array of user IDs, like ["user1","user2"], to remove multiple users. */
 				name: UserId | UserId[];
 			}
-		): void;
+		): Promise<void>;
 
 		/**
 		 * Recalls a message.
@@ -4302,11 +4357,11 @@ export declare namespace EasemobChat {
 				type?: 'chat' | 'groupchat' | 'chatroom';
 				/** The chat type for SDK new:
 				 * - `singleChat`: one-to-one chat;
-				 * - `groupchat`: group chat;
+				 * - `groupChat`: group chat;
 				 * - `chatroom`: chat room.
 				 */
 				chatType?: 'singleChat' | 'groupChat' | 'chatRoom';
-				/** Is it a message in the thread. */
+				/** Whether the message is in the thread. */
 				isChatThread?: boolean;
 				success?: (res: number) => void;
 				fail?: (error: ErrorEvent) => void;
@@ -4650,7 +4705,7 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<ChatThreadDetail>>;
 
 		/**
-		 * Reports a message.
+		 * Reports an inappropriate message.
 		 *
 		 * ```typescript
 		 * reportMessage({reportType: 'adult', reportReason: 'reason', messageId: 'id'})
@@ -4659,14 +4714,74 @@ export declare namespace EasemobChat {
 		reportMessage(
 			this: Connection,
 			params: {
-				/** The type of report. */
+				/** The type of reporting. */
 				reportType: string;
-				/** The reason for reporting. */
+				/** The reason for reporting. You need to type a specific reason. */
 				reportReason: string;
-				/** ID of the message to be reported. */
+				/** The ID of the message to report. */
 				messageId: string;
 			}
 		): Promise<void>;
+
+		/**
+		 * Gets the list of conversations from the server with pagination.
+		 *
+		 * The SDK returns the list of conversations in the reverse chronological order of their active time (the timestamp of the last message).
+		 *
+		 * If there is no message in the conversation, the SDK retrieves the list of conversations in the reverse chronological order of their creation time.
+		 *
+		 * ```typescript
+		 * connection.getServerConversations({pageSize:50, cursor: ''})
+		 * ```
+		 */
+		getServerConversations(
+			this: any,
+			params: {
+				/** The number of conversations that you expect to get on each page. The value range is [1,50] and the default value is `20`. */
+				pageSize?: number;
+				/** The position from which to start getting data. If you set `cursor` to an empty string (''), the SDK retrieves conversations from the latest active one.*/
+				cursor?: string;
+			}
+		): Promise<AsyncResult<ServerConversations>>;
+		/**
+		 * Get the list of pinned conversations from the server with pagination.
+		 *
+		 * The SDK returns the pinned conversations in the reverse chronological order of their pinning.
+		 *
+		 * ```typescript
+		 * connection.getServerPinnedConversations({pageSize:50, cursor: ''})
+		 * ```
+		 */
+		getServerPinnedConversations(
+			this: any,
+			params: {
+				/** The number of conversations that you expect to get on each page. The value range is [1,50] and the default value is `20`. */
+				pageSize?: number;
+				/** The position from which to start getting data. If you pass in an empty string (''), the SDK retrieves conversations from the latest pinned one.*/
+				cursor?: string;
+			}
+		): Promise<AsyncResult<ServerConversations>>;
+		/**
+		 * Sets whether to pin a conversation.
+		 *
+		 * ```typescript
+		 * connection.pinConversation({conversationId:'conversationId',conversationType: 'singleChat', isPinned: boolean})
+		 * ```
+		 */
+		pinConversation(
+			this: any,
+			params: {
+				/** The conversation ID. */
+				conversationId: string;
+				/** The conversation type. */
+				conversationType: 'singleChat' | 'groupChat';
+				/** Whether to pin the conversation:
+				 * - `true`: Yes.
+				 * - `false`: No. The conversation is unpinned.
+				 */
+				isPinned: boolean;
+			}
+		): Promise<AsyncResult<PinConversation>>;
 
 		/**
 		 * Set the DND Settings for the current login user.
@@ -5613,8 +5728,8 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
 	}
@@ -5643,8 +5758,8 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
 	}
@@ -5683,8 +5798,8 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
 	}
@@ -5703,8 +5818,8 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
 	}
@@ -5735,8 +5850,8 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
 	}
@@ -5764,8 +5879,8 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
 	}
@@ -5840,10 +5955,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface CreateTextMsgParameters {
@@ -5866,10 +5984,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface CmdParameters {
@@ -5937,10 +6058,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface CreateCmdMsgParameters {
@@ -5965,10 +6089,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface CustomParameters {
@@ -6041,10 +6168,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface CreateCustomMsgParameters {
@@ -6069,10 +6199,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface LocationParameters {
@@ -6153,10 +6286,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface CreateLocationMsgParameters {
@@ -6185,10 +6321,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface FileParameters {
@@ -6291,8 +6430,8 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
 	}
@@ -6338,10 +6477,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface ImgParameters {
@@ -6425,10 +6567,16 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		receiverList?: string[];
+		/** The thumbnail width. */
+		thumbnailWidth?: number;
+		/** The thumbnail height. */
+		thumbnailHeight?: number;
 	}
 
 	interface CreateImgMsgParameters {
@@ -6474,10 +6622,16 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		receiverList?: string[];
+		/** The thumbnail width. */
+		thumbnailWidth?: number;
+		/** The thumbnail height. */
+		thumbnailHeight?: number;
 	}
 
 	interface AudioParameters {
@@ -6562,10 +6716,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface CreateAudioMsgParameters {
@@ -6611,10 +6768,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface VideoParameters {
@@ -6699,10 +6859,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface CreateVideoMsgParameters {
@@ -6750,10 +6913,13 @@ export declare namespace EasemobChat {
 		/** Message priority. */
 		priority?: MessagePriority;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
-		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is not delivered.
-		 *  - (Default) `false`: The message is delivered to the recipients regardless of whether they are online or offline.
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		/** 消息接收方列表。 */
+		receiverList?: string[];
 	}
 
 	interface ReceivedMsgBody {
@@ -6801,6 +6967,19 @@ export declare namespace EasemobChat {
 		| AudioParameters
 		| VideoParameters
 		| FileParameters;
+
+	type MessagesType =
+		| TextMsgBody
+		| DeliveryMsgBody
+		| ChannelMsgBody
+		| CmdMsgBody
+		| CustomMsgBody
+		| ImgMsgBody
+		| LocationMsgBody
+		| AudioMsgBody
+		| VideoMsgBody
+		| FileMsgBody
+		| ReadMsgBody;
 
 	type MessageSetParameters =
 		| ReadMsgSetParameters
