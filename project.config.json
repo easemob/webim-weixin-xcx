@@ -38,15 +38,15 @@
     "useApiHostProcess": true
   },
   "compileType": "miniprogram",
-  "libVersion": "2.12.2",
+  "libVersion": "2.33.0",
   "appid": "wxc4ee73bd631ccad8",
   "projectname": "%E7%8E%AF%E4%BF%A1%E5%8D%B3%E6%97%B6%E9%80%9A%E8%AE%AF%E4%BA%91",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
-  "condition": {},
   "srcMiniprogramRoot": "src/",
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  }
+  },
+  "condition": {}
 }

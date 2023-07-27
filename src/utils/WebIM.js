@@ -1,5 +1,5 @@
 
-import websdk from "../sdk/Easemob-chat-4.1.7";
+import websdk from "../sdk/Easemob-chat-4.2.0";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
@@ -7,18 +7,19 @@ console.groupEnd = console.groupEnd || {};
 
 var window = {};
 let WebIM = window.WebIM = websdk;
+WebIM.message = websdk.message
 window.WebIM.config = config;
 //var DOMParser = window.DOMParser = xmldom.DOMParser;
 //let document = window.document = new DOMParser().parseFromString("<?xml version='1.0'?>\n", "text/xml");
 
-WebIM.isDebug = function(option){
+WebIM.isDebug = function (option) {
 	if (option) {
 		WebIM.config.isDebug = option.isDebug
 		openDebug(WebIM.config.isDebug)
-	} 
+	}
 
-	function openDebug(value){
-		function ts(){
+	function openDebug(value) {
+		function ts() {
 			var d = new Date();
 			var Hours = d.getHours(); // 获取当前小时数(0-23)
 			var Minutes = d.getMinutes(); // 获取当前分钟数(0-59)
@@ -41,7 +42,7 @@ WebIM.isDebug = function(option){
 		// }else{
 		// 	Strophe.Strophe.Connection.prototype.rawOutput = function(){};
 		// }
-		
+
 	}
 }
 
@@ -50,7 +51,7 @@ WebIM.isDebug = function(option){
  * You can auto signed in each time when you refresh the page in dev model.
  */
 WebIM.config.autoSignIn = false;
-if(WebIM.config.autoSignIn){
+if (WebIM.config.autoSignIn) {
 	WebIM.config.autoSignInName = "lwz2";
 	WebIM.config.autoSignInPwd = "1";
 }
@@ -67,36 +68,36 @@ if(WebIM.config.autoSignIn){
 //   function() {
 //     console.log(arguments, 'ggogogo');
 //   }, stropheConn.wait, stropheConn.hold);
-WebIM.parseEmoji = function(msg){
-	if(typeof WebIM.Emoji === "undefined" || typeof WebIM.Emoji.map === "undefined"){
+WebIM.parseEmoji = function (msg) {
+	if (typeof WebIM.Emoji === "undefined" || typeof WebIM.Emoji.map === "undefined") {
 		return msg;
 	}
 	var emoji = WebIM.Emoji,
 		reg = null;
 	var msgList = [];
 	var objList = [];
-	for(var face in emoji.map){
-		if(emoji.map.hasOwnProperty(face)){
-			while(msg.indexOf(face) > -1){
+	for (var face in emoji.map) {
+		if (emoji.map.hasOwnProperty(face)) {
+			while (msg.indexOf(face) > -1) {
 				msg = msg.replace(face, "^" + emoji.map[face] + "^");
 			}
 		}
 	}
 	var ary = msg.split("^");
 	var reg = /^e.*g$/;
-	for(var i = 0; i < ary.length; i++){
-		if(ary[i] != ""){
+	for (var i = 0; i < ary.length; i++) {
+		if (ary[i] != "") {
 			msgList.push(ary[i]);
 		}
 	}
-	for(var i = 0; i < msgList.length; i++){
-		if(reg.test(msgList[i])){
+	for (var i = 0; i < msgList.length; i++) {
+		if (reg.test(msgList[i])) {
 			var obj = {};
 			obj.data = msgList[i];
 			obj.type = "emoji";
 			objList.push(obj);
 		}
-		else{
+		else {
 			var obj = {};
 			obj.data = msgList[i];
 			obj.type = "txt";
@@ -106,13 +107,13 @@ WebIM.parseEmoji = function(msg){
 	return objList;
 };
 
-WebIM.time = function(){
+WebIM.time = function () {
 	var date = new Date();
 	var Hours = date.getHours();
 	var Minutes = date.getMinutes();
 	var Seconds = date.getSeconds();
 	var time = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " "
-								+ (Hours < 10 ? "0" + Hours : Hours) + ":" + (Minutes < 10 ? "0" + Minutes : Minutes) + ":" + (Seconds < 10 ? "0" + Seconds : Seconds);
+		+ (Hours < 10 ? "0" + Hours : Hours) + ":" + (Minutes < 10 ? "0" + Minutes : Minutes) + ":" + (Seconds < 10 ? "0" + Seconds : Seconds);
 	return time;
 };
 
@@ -232,33 +233,33 @@ WebIM.conn = new WebIM.connection({
 //   onOpened: () => dispatch({type: Types.ON_OPEND})
 // })
 Math.uuid = function (len, radix) {
-    var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-    var chars = CHARS, uuid = [], i; 
-    radix = radix || chars.length;
+	var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+	var chars = CHARS, uuid = [], i;
+	radix = radix || chars.length;
 
-    if (len) {
-        // Compact form
-        for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
-    } else {
-        // rfc4122, version 4 form
-        var r;
+	if (len) {
+		// Compact form
+		for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+	} else {
+		// rfc4122, version 4 form
+		var r;
 
-        // rfc4122 requires these characters
-        uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-        uuid[14] = '4';
+		// rfc4122 requires these characters
+		uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+		uuid[14] = '4';
 
-        // Fill in random data. At i==19 set the high bits of clock sequence
-        // as
-        // per rfc4122, sec. 4.1.5
-        for (i = 0; i < 36; i++) {
-            if (!uuid[i]) {
-                r = 0 | Math.random() * 16;
-                uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-            }
-        }
-    }
+		// Fill in random data. At i==19 set the high bits of clock sequence
+		// as
+		// per rfc4122, sec. 4.1.5
+		for (i = 0; i < 36; i++) {
+			if (!uuid[i]) {
+				r = 0 | Math.random() * 16;
+				uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+			}
+		}
+	}
 
-    return uuid.join('');
+	return uuid.join('');
 };
 // export default WebIM;
 module.exports = {
