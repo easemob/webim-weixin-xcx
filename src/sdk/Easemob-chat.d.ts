@@ -57,6 +57,30 @@ export declare namespace EasemobChat {
 		jid: Jid;
 	}
 
+	interface SendMsgResult {
+		/** The message local ID. */
+		localMsgId: string;
+		/** The ID of the message on the server. */
+		serverMsgId: string;
+	}
+
+	/** The modified message. */
+	type ModifiedMsg = TextMsgBody;
+
+	interface ModifyMsgResult extends SendMsgResult {
+		/** The modified message. */
+		message: ModifiedMsg;
+	}
+
+	interface ModifiedMsgInfo {
+		/** Gets the user ID of the operator that modified the message last time. */
+		operatorId: string;
+		/** Gets the number of times a message is modified. A message can be modified at most five times.*/
+		operationCount: number;
+		/** Gets the UNIX timestamp of the last message modification, in milliseconds. */
+		operationTime: number;
+	}
+
 	// eventHandle types
 	type OnPresenceMsgType =
 		| 'rmChatRoomMute'
@@ -774,7 +798,7 @@ export declare namespace EasemobChat {
 	}
 
 	interface HistoryMessages {
-		/** The position from which to start getting data for the next query. If the number of returned data entries is smaller than that specified in the request, the cursor is an empty string (''), which indicates that the current page is the last page; otherwise, the SDK returns the specific cursor position which indicates where to start getting data for the next query. */
+		/** The starting message ID for the next query. If the number of messages returned by the SDK is smaller than the requested number, the cursor will be `undefined`. */
 		cursor?: string;
 		/** The historical messages. */
 		messages: MessagesType[];
@@ -1161,6 +1185,13 @@ export declare namespace EasemobChat {
 		reactionList: ReactionListItem[];
 	}
 
+	interface DownloadCombineMessagesParams {
+		/** The file url. */
+		url: string;
+		/** The file secret. */
+		secret: string;
+	}
+
 	/**
 	 * The error code defined by SDK.
 	 * @module Code
@@ -1210,12 +1241,16 @@ export declare namespace EasemobChat {
 		OPERATION_UNSUPPORTED = 53,
 		/** An operation that is not allowed. */
 		OPERATION_NOT_ALLOWED = 54,
+		/** A local database operation failed. */
+		LOCAL_DB_OPERATION_FAILED = 55,
 		/** The uploading of the file failed. */
 		WEBIM_UPLOADFILE_ERROR = 101,
 		/** The current user is not logged in when uploading the file. */
 		WEBIM_UPLOADFILE_NO_LOGIN = 102,
 		/** File-downloading failed. */
 		WEBIM_DOWNLOADFILE_ERROR = 200,
+		/** Parse file failed. */
+		PARSE_FILE_ERROR = 203,
 		/** User does not found. */
 		USER_NOT_FOUND = 204,
 		/** The user is logged in on another device. */
@@ -4368,6 +4403,35 @@ export declare namespace EasemobChat {
 			}
 		): Promise<SendMsgResult>;
 
+		/**
+		 * Modifies a message on the server.
+		 *
+		 * This method can only modify a text message in one-to-one chats or group chats, but not in chat rooms.
+		 *
+		 * Upon a message modification, the callback `onModifiedMessage` will be received by the message recipient(s) and in multi-device login scenarios.
+		 *
+		 * ```typescript
+		 *
+		 * const textMessage = WebIM.message.create({
+		 *   type: "txt",
+		 *   msg: "message content",
+		 *   to: "username",
+		 *   chatType: "singleChat",
+		 * });
+		 *
+		 * connection.modifyMessage({ messageId: 'messageId', message: textMessage })
+		 * ```
+		 */
+		modifyMessage(
+			this: Connection,
+			option: {
+				/** The ID of the message to modify.*/
+				messageId: string;
+				/** The modified message.*/
+				modifiedMessage: ModifiedMsg;
+			}
+		): Promise<ModifyMsgResult>;
+
 		// listen @deprecated
 		listen(this: Connection, parameters: ListenParameters): void;
 
@@ -4392,6 +4456,11 @@ export declare namespace EasemobChat {
 		 * ```
 		 */
 		removeEventHandler(id: string): void;
+
+		/** Download combined message. */
+		downloadAndParseCombineMessage(
+			options: DownloadCombineMessagesParams
+		): Promise<MessagesType[]>;
 
 		/**
 		 * Gets all languages what the translate service support.
@@ -5261,6 +5330,7 @@ export declare namespace EasemobChat {
 		| 'onContactChange'
 		| 'onPresenceStatusChange'
 		| 'onReactionChange'
+		| 'onModifiedMessage'
 		| 'onChatThreadChange'
 		| 'onMultiDeviceEvent'
 		| 'onGroupEvent'
@@ -5421,6 +5491,8 @@ export declare namespace EasemobChat {
 		onRecallMessage?: (msg: RecallMsgBody) => void;
 		/** The callback to receive a session read ack. */
 		onChannelMessage?: (msg: ChannelMsgBody) => void;
+		/** Occurs when the message content is modified. */
+		onModifiedMessage?: (msg: ModifiedMsg) => void;
 		/** The callback to receive error. */
 		onError?: (error: ErrorEvent) => void;
 		/** The callback for network disconnection. */
@@ -5945,7 +6017,7 @@ export declare namespace EasemobChat {
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
-		reactions?: Reaction;
+		reactions?: Reaction[];
 		/** The message thread. */
 		chatThread?: ChatThread;
 		/** The message thread overview. */
@@ -5959,8 +6031,9 @@ export declare namespace EasemobChat {
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 		/** The list of message recipients. */
-		/** 消息接收方列表。 */
 		receiverList?: string[];
 	}
 
@@ -5989,8 +6062,111 @@ export declare namespace EasemobChat {
 		 */
 		deliverOnlineOnly?: boolean;
 		/** The list of message recipients. */
-		/** 消息接收方列表。 */
 		receiverList?: string[];
+	}
+
+	interface CombineMsgBody {
+		/** The message ID. */
+		id: string;
+		/** The session type. */
+		chatType: ChatType;
+		/** The message type. */
+		type: 'combine';
+		/** The recipient. */
+		to: string;
+		/** The sender, which can only be the current user and can not be changed.*/
+		from?: string;
+		/** Message extension. */
+		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
+		msgConfig?: {
+			allowGroupAck?: boolean;
+			languages?: string[];
+		};
+		/** Time. */
+		time: number;
+		/** Whether the message is a thread message. */
+		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
+		 */
+		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		receiverList?: string[];
+		/** The file URL. */
+		url?: string;
+		/** The secret key required to download the file. */
+		secret?: string;
+		/** The size of the  file. */
+		file_length?: number;
+		/** The file type. */
+		filename: string;
+		/** The title of the merged messages. */
+		title: string;
+		/** The summary list of merged messages. */
+		summary: string;
+		/** The reactions list of the message. */
+		reactions?: Reaction[];
+		/** The information of thread message. */
+		chatThread?: ChatThread;
+		/** The overview of thread message. */
+		chatThreadOverview?: ChatThreadOverview;
+		/** The online state. */
+		onlineState?: ONLINESTATETYPE;
+		/** Compatibility information for merging messages. */
+		compatibleText: string;
+		/** The level of the merged message. */
+		combineLevel: number;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (error: any) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: { url: string; secret: string }) => void;
+	}
+
+	type CombineMsgList = Exclude<
+		MessagesType,
+		DeliveryMsgBody | ReadMsgBody | ChannelMsgBody
+	>[];
+
+	interface CreateCombineMsgParameters {
+		/** The conversation type. */
+		chatType: ChatType;
+		/** The message type. */
+		type: 'combine';
+		/** The recipient. */
+		to: string;
+		/** The sender, which can only be the current user and can not be changed. */
+		from?: string;
+		/** The message extension. */
+		ext?: { [key: string]: any };
+		/** Whether read receipts are required during a group session. */
+		msgConfig?: { allowGroupAck?: boolean; languages?: string[] };
+		/** Whether the message is a thread message. */
+		isChatThread?: boolean;
+		/** Message priority. */
+		priority?: MessagePriority;
+		/** Whether the message is delivered only when the recipient(s) is/are online:
+		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
+		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
+		 */
+		deliverOnlineOnly?: boolean;
+		/** The list of message recipients. */
+		receiverList?: string[];
+		/** Compatibility information for merging messages. */
+		compatibleText: string;
+		/** The title of the merged messages. */
+		title: string;
+		/** The summary list of merged messages. */
+		summary: string;
+		/** The list of merged messages. */
+		messageList: CombineMsgList;
+		/** The callback of a file upload error. */
+		onFileUploadError?: (error: any) => void;
+		/** The callback of file upload completion. */
+		onFileUploadComplete?: (data: { url: string; secret: string }) => void;
 	}
 
 	interface CmdParameters {
@@ -6048,7 +6224,7 @@ export declare namespace EasemobChat {
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
-		reactions?: Reaction;
+		reactions?: Reaction[];
 		/** The message thread. */
 		chatThread?: ChatThread;
 		/** The message thread overview. */
@@ -6063,7 +6239,6 @@ export declare namespace EasemobChat {
 		 */
 		deliverOnlineOnly?: boolean;
 		/** The list of message recipients. */
-		/** 消息接收方列表。 */
 		receiverList?: string[];
 	}
 
@@ -6158,7 +6333,7 @@ export declare namespace EasemobChat {
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
-		reactions?: Reaction;
+		reactions?: Reaction[];
 		/** The message thread. */
 		chatThread?: ChatThread;
 		/** The message thread overview. */
@@ -6276,7 +6451,7 @@ export declare namespace EasemobChat {
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
-		reactions?: Reaction;
+		reactions?: Reaction[];
 		/** The message thread. */
 		chatThread?: ChatThread;
 		/** The message thread overview. */
@@ -6291,7 +6466,6 @@ export declare namespace EasemobChat {
 		 */
 		deliverOnlineOnly?: boolean;
 		/** The list of message recipients. */
-		/** 消息接收方列表。 */
 		receiverList?: string[];
 	}
 
@@ -6418,7 +6592,7 @@ export declare namespace EasemobChat {
 		/** Time. */
 		time: number;
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
-		reactions?: Reaction;
+		reactions?: Reaction[];
 		/** The message thread. */
 		chatThread?: ChatThread;
 		/** The message thread overview. */
@@ -6557,7 +6731,7 @@ export declare namespace EasemobChat {
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
-		reactions?: Reaction;
+		reactions?: Reaction[];
 		/** The message thread. */
 		chatThread?: ChatThread;
 		/** The message thread overview. */
@@ -6706,7 +6880,7 @@ export declare namespace EasemobChat {
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
-		reactions?: Reaction;
+		reactions?: Reaction[];
 		/** The message thread. */
 		chatThread?: ChatThread;
 		/** The message thread overview. */
@@ -6849,7 +7023,7 @@ export declare namespace EasemobChat {
 		/** Whether the message is a thread message. */
 		isChatThread?: boolean;
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
-		reactions?: Reaction;
+		reactions?: Reaction[];
 		/** The message thread. */
 		chatThread?: ChatThread;
 		/** The message thread overview. */
@@ -6979,7 +7153,8 @@ export declare namespace EasemobChat {
 		| AudioMsgBody
 		| VideoMsgBody
 		| FileMsgBody
-		| ReadMsgBody;
+		| ReadMsgBody
+		| CombineMsgBody;
 
 	type MessageSetParameters =
 		| ReadMsgSetParameters
@@ -7005,7 +7180,8 @@ export declare namespace EasemobChat {
 		| CreateChannelMsgParameters
 		| CreateDeliveryMsgParameters
 		| CreateReadMsgParameters
-		| CreateAudioMsgParameters;
+		| CreateAudioMsgParameters
+		| CreateCombineMsgParameters;
 
 	type MessageBody =
 		| ReadMsgBody
@@ -7018,7 +7194,9 @@ export declare namespace EasemobChat {
 		| ImgMsgBody
 		| AudioMsgBody
 		| VideoMsgBody
-		| FileMsgBody;
+		| FileMsgBody
+		| CombineMsgBody;
+
 	type MessagePriority = 'high' | 'normal' | 'low';
 	interface PriorityExt {
 		chatroom_msg_tag: number;
