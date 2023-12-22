@@ -57,11 +57,18 @@ export declare namespace EasemobChat {
 		jid: Jid;
 	}
 
+	type ExcludeAckMessageBody = Exclude<
+		MessageBody,
+		ReadMsgBody | DeliveryMsgBody | ChannelMsgBody
+	>;
+
 	interface SendMsgResult {
 		/** The message local ID. */
 		localMsgId: string;
 		/** The ID of the message on the server. */
 		serverMsgId: string;
+		/** Message. */
+		message?: ExcludeAckMessageBody;
 	}
 
 	/** The modified message. */
@@ -188,11 +195,15 @@ export declare namespace EasemobChat {
 		operation:
 			| 'pinnedConversation'
 			| 'unpinnedConversation'
-			| 'deleteConversation';
+			| 'deleteConversation'
+			| 'markConversation'
+			| 'unMarkConversation';
 		/** The conversation ID. */
 		conversationId: string;
 		/** The conversation type. */
 		conversationType: 'singleChat' | 'groupChat';
+		/** The conversation mark. */
+		conversationMark?: MarkType;
 		/** The UNIX timestamp of the current operation. The unit is millisecond.*/
 		timestamp: number;
 	}
@@ -214,6 +225,8 @@ export declare namespace EasemobChat {
 		deviceId?: string;
 		/** Whether to use your own upload function, for example, when uploading images and files to your server. - `true`: Use your own upload function; - (Default)`false`: Do not use your own upload function. */
 		useOwnUploadFun?: boolean;
+		/** When the moderation service replaces the content of a message, whether the adjusted message is returned to the sender. - `true`: Return the adjusted message to the sender. - `false`: Return the original message to the sender. */
+		useReplacedMessageContents?: boolean;
 		/** The maximum number of reconnection. */
 		autoReconnectNumMax?: number;
 		/** Whether DNS is enabled or not. It is enabled by default. The private cloud should be turned off */
@@ -790,13 +803,6 @@ export declare namespace EasemobChat {
 		result: 'ok';
 	}
 
-	interface SendMsgResult {
-		/** The local ID of the message. */
-		localMsgId: string;
-		/** The message ID on the server. */
-		serverMsgId: string;
-	}
-
 	interface HistoryMessages {
 		/** The starting message ID for the next query. If the number of messages returned by the SDK is smaller than the requested number, the cursor will be `undefined`. */
 		cursor?: string;
@@ -829,6 +835,8 @@ export declare namespace EasemobChat {
 		lastMessage: MessageBody | Record<string, never> | null;
 		/** The number of unread messages. */
 		unReadCount: number;
+		/** The conversation marks. */
+		marks?: Array<MarkType>;
 	}
 	interface PinConversation {
 		/** Whether the conversation is pinned. `true`: pinned; `false`: unpinned.*/
@@ -847,6 +855,30 @@ export declare namespace EasemobChat {
 		cursor?: string;
 		/** The contact list. */
 		contacts: ContactItem[];
+	}
+
+	/** The conversation mark types. The mapping between each type of conversation mark and their actual meanings is maintained by the developer. */
+	enum MarkType {
+		mark_0,
+		mark_1,
+		mark_2,
+		mark_3,
+		mark_4,
+		mark_5,
+		mark_6,
+		mark_7,
+		mark_8,
+		mark_9,
+		mark_10,
+		mark_11,
+		mark_12,
+		mark_13,
+		mark_14,
+		mark_15,
+		mark_16,
+		mark_17,
+		mark_18,
+		mark_19,
 	}
 
 	interface OperateResult {
@@ -1210,6 +1242,15 @@ export declare namespace EasemobChat {
 		secret: string;
 	}
 
+	interface NewTokenResult {
+		/** Whether success. */
+		status: boolean;
+		/** The new token. */
+		token?: string;
+		/** The expire time. */
+		expire?: number;
+	}
+
 	/**
 	 * The error code defined by SDK.
 	 * @module Code
@@ -1486,6 +1527,8 @@ export declare namespace EasemobChat {
 		private reconnect(): void;
 		/** send message */
 		send(params: MessageBody): Promise<SendMsgResult>;
+		/** Updates token. */
+		renewToken(token: string): Promise<NewTokenResult>;
 
 		// ChatRoom API
 		/**
@@ -2354,7 +2397,7 @@ export declare namespace EasemobChat {
 				/** The chat room ID. */
 				chatRoomId: string;
 			}
-		): Promise<boolean>;
+		): Promise<AsyncResult<boolean>>;
 
 		/**
 		 * Gets the announcement of the chat room.
@@ -3697,7 +3740,7 @@ export declare namespace EasemobChat {
 				/** The group ID. */
 				groupId: string;
 			}
-		): Promise<boolean>;
+		): Promise<AsyncResult<boolean>>;
 
 		/**
 		 * Checks which members have read group message. This is a [value-added function] and .
@@ -4917,6 +4960,76 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CursorContactsResult>>;
 
 		/**
+		 * Marks conversations.
+		 *
+		 * ```typescript
+		 * connection.addConversationMark({
+		 * 		conversations: [{conversationId: 'conversationId', conversationType: 'singleChat'}],
+		 *    mark: 0,
+		 * })
+		 * ```
+		 */
+		addConversationMark(
+			this: Connection,
+			params: {
+				/** The list of conversations. */
+				conversations: Array<
+					Pick<
+						ConversationItem,
+						'conversationId' | 'conversationType'
+					>
+				>;
+				/** The mark to add for the conversations. */
+				mark: MarkType;
+			}
+		): Promise<void>;
+
+		/**
+		 * Unmarks conversations.
+		 *
+		 * ```typescript
+		 * connection.removeConversationMark({
+		 * 		conversations: [{conversationId: 'conversationId', conversationType: 'singleChat'}],
+		 *    mark: 0,
+		 * })
+		 * ```
+		 */
+		removeConversationMark(
+			this: Connection,
+			params: {
+				/** The list of conversations. */
+				conversations: Array<
+					Pick<
+						ConversationItem,
+						'conversationId' | 'conversationType'
+					>
+				>;
+				/** The conversation mark to remove. */
+				mark: MarkType;
+			}
+		): Promise<void>;
+
+		/**
+		 * Get the list of filter conversations from the server with pagination.
+		 *
+		 * ```typescript
+		 * connection.getServerConversationsByFilter({pageSize:10, cursor: '',filter: {mark: 0})
+		 * ```
+		 */
+		getServerConversationsByFilter(
+			this: Connection,
+			params: {
+				/** The number of conversations that you expect to get on each page. The value range is [1,10] and the default value is `10`. */
+				pageSize?: number;
+				/** The position from which to start getting data. */
+				cursor?: string;
+				filter: {
+					mark: MarkType;
+				};
+			}
+		): Promise<AsyncResult<ServerConversations>>;
+
+		/**
 		 * Set the DND Settings for the current login user.
 		 *
 		 * ```typescript
@@ -5363,6 +5476,7 @@ export declare namespace EasemobChat {
 	type Event =
 		| 'onOpened'
 		| 'onPresence'
+		| 'onMessage'
 		| 'onTextMessage'
 		| 'onImageMessage'
 		| 'onAudioMessage'
@@ -5529,6 +5643,13 @@ export declare namespace EasemobChat {
 		onOpened?: (msg: any) => void;
 		/** @deprecated */
 		onPresence?: (msg: OnPresenceMsg) => void;
+		/** Occurs when a message is received. This callback is triggered to notify the user when a message such as texts or an image, video, voice, location, or file is received. */
+		onMessage?: (
+			msg: Exclude<
+				MessageBody,
+				ReadMsgBody | DeliveryMsgBody | ChannelMsgBody | CmdMsgBody
+			>[]
+		) => void;
 		/** The callback to receive a text message. */
 		onTextMessage?: (msg: TextMsgBody) => void;
 		/** The callback to receive a image message. */
@@ -6092,6 +6213,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6157,6 +6280,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6303,6 +6428,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6413,6 +6540,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6531,6 +6660,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6675,6 +6806,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6813,6 +6946,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6964,6 +7099,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -7083,6 +7220,10 @@ export declare namespace EasemobChat {
 		url?: string;
 		/** Secret required to download the video file. */
 		secret?: string;
+		/** The thumbnail URL. */
+		thumb?: string;
+		/** The key required to download the thumbnail. */
+		thumb_secret?: string;
 		/** The file type. */
 		filetype?: string;
 		/** AccessToken needed to download files */
@@ -7107,6 +7248,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
