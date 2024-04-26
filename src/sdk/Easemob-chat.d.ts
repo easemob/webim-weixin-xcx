@@ -57,15 +57,25 @@ export declare namespace EasemobChat {
 		jid: Jid;
 	}
 
+	type ExcludeAckMessageBody = Exclude<
+		MessageBody,
+		ReadMsgBody | DeliveryMsgBody | ChannelMsgBody
+	>;
+
 	interface SendMsgResult {
 		/** The message local ID. */
 		localMsgId: string;
 		/** The ID of the message on the server. */
 		serverMsgId: string;
+		/** Message. */
+		message?: ExcludeAckMessageBody;
 	}
 
 	/** The modified message. */
 	type ModifiedMsg = TextMsgBody;
+
+	/** Messages supported by the `onModifiedMessage` event. */
+	type ModifiedEventMessage = TextMsgBody | CustomMsgBody;
 
 	interface ModifyMsgResult extends SendMsgResult {
 		/** The modified message. */
@@ -188,11 +198,15 @@ export declare namespace EasemobChat {
 		operation:
 			| 'pinnedConversation'
 			| 'unpinnedConversation'
-			| 'deleteConversation';
+			| 'deleteConversation'
+			| 'markConversation'
+			| 'unMarkConversation';
 		/** The conversation ID. */
 		conversationId: string;
 		/** The conversation type. */
 		conversationType: 'singleChat' | 'groupChat';
+		/** The conversation mark. */
+		conversationMark?: MarkType;
 		/** The UNIX timestamp of the current operation. The unit is millisecond.*/
 		timestamp: number;
 	}
@@ -214,6 +228,8 @@ export declare namespace EasemobChat {
 		deviceId?: string;
 		/** Whether to use your own upload function, for example, when uploading images and files to your server. - `true`: Use your own upload function; - (Default)`false`: Do not use your own upload function. */
 		useOwnUploadFun?: boolean;
+		/** When the moderation service replaces the content of a message, whether the adjusted message is returned to the sender. - `true`: Return the adjusted message to the sender. - `false`: Return the original message to the sender. */
+		useReplacedMessageContents?: boolean;
 		/** The maximum number of reconnection. */
 		autoReconnectNumMax?: number;
 		/** Whether DNS is enabled or not. It is enabled by default. The private cloud should be turned off */
@@ -242,6 +258,13 @@ export declare namespace EasemobChat {
 		owner: string;
 	}
 	type GetChatRoomsResult = ChatRoomBaseInfo[];
+
+	type JoinedChatRoomInfo = Pick<
+		GetChatRoomDetailsResult,
+		'id' | 'name' | 'owner' | 'created' | 'description' | 'maxusers'
+	>;
+
+	type JoinedChatRoomsResult = JoinedChatRoomInfo[];
 
 	type BaseMembers = { member: string } | { owner: string };
 
@@ -790,13 +813,6 @@ export declare namespace EasemobChat {
 		result: 'ok';
 	}
 
-	interface SendMsgResult {
-		/** The local ID of the message. */
-		localMsgId: string;
-		/** The message ID on the server. */
-		serverMsgId: string;
-	}
-
 	interface HistoryMessages {
 		/** The starting message ID for the next query. If the number of messages returned by the SDK is smaller than the requested number, the cursor will be `undefined`. */
 		cursor?: string;
@@ -805,7 +821,7 @@ export declare namespace EasemobChat {
 		/** Whether it is the last page of data.
 		 *  - `true`: Yes;
 		 *  - `false`: No.
-		 * If the number of data entries is smaller than the message count set in the request, `false` is returned; otherwise, `true` is returned.
+		 * If the number of data entries is smaller than the message count set in the request, the data is of the last page and `true` is returned; otherwise, `false` is returned.
 		 */
 		isLast: boolean;
 	}
@@ -816,6 +832,22 @@ export declare namespace EasemobChat {
 		/** The position from which to start getting data for the next query. If the number of returned data entries is smaller than that specified in the request, the cursor is `'undefined'`, which indicates that the current page is the last page; otherwise, the SDK returns the specific cursor position which indicates where to start getting data for the next query.*/
 		cursor: string;
 	}
+
+	interface PinnedMessageInfo {
+		/** The pinned message. */
+		message: MessagesType;
+		/** When the message is pinned. The unit is millisecond.  */
+		pinTime: number;
+		/** The user ID of the operator that pins the message. */
+		operatorId: UserId;
+	}
+	interface CursorPinnedMessagesResult {
+		/** The position from which to start getting data for the next query. If the number of returned data entries is smaller than that specified in the request, the cursor is an empty string (''), which indicates that the current page is the last page; otherwise, the SDK returns the specific cursor position which indicates where to start getting data for the next query.*/
+		cursor: string;
+		/** The list of pinned messages. */
+		list: PinnedMessageInfo[];
+	}
+
 	interface ConversationItem {
 		/** The conversation ID. */
 		conversationId: string;
@@ -829,6 +861,8 @@ export declare namespace EasemobChat {
 		lastMessage: MessageBody | Record<string, never> | null;
 		/** The number of unread messages. */
 		unReadCount: number;
+		/** The conversation marks. */
+		marks?: Array<MarkType>;
 	}
 	interface PinConversation {
 		/** Whether the conversation is pinned. `true`: pinned; `false`: unpinned.*/
@@ -847,6 +881,30 @@ export declare namespace EasemobChat {
 		cursor?: string;
 		/** The contact list. */
 		contacts: ContactItem[];
+	}
+
+	/** The conversation mark types. The mapping between each type of conversation mark and their actual meanings is maintained by the developer. */
+	enum MarkType {
+		mark_0,
+		mark_1,
+		mark_2,
+		mark_3,
+		mark_4,
+		mark_5,
+		mark_6,
+		mark_7,
+		mark_8,
+		mark_9,
+		mark_10,
+		mark_11,
+		mark_12,
+		mark_13,
+		mark_14,
+		mark_15,
+		mark_16,
+		mark_17,
+		mark_18,
+		mark_19,
 	}
 
 	interface OperateResult {
@@ -1210,6 +1268,15 @@ export declare namespace EasemobChat {
 		secret: string;
 	}
 
+	interface NewTokenResult {
+		/** Whether success. */
+		status: boolean;
+		/** The new token. */
+		token?: string;
+		/** The expire time. */
+		expire?: number;
+	}
+
 	/**
 	 * The error code defined by SDK.
 	 * @module Code
@@ -1470,11 +1537,11 @@ export declare namespace EasemobChat {
 		open(parameters: {
 			/** The User ID. */
 			user: string;
-			/** The password. */
+			/** @deprecated The password. It is recommended to use `accessToken` params.*/
 			pwd?: string;
 			/** Token required to connect to the message service. */
 			accessToken?: string;
-			/** @deprecated Use 'accessToken' instead. */
+			/** @deprecated It is recommended to use `accessToken` params. */
 			agoraToken?: string;
 			success?: (res: any) => void;
 			error?: (res: any) => void;
@@ -1486,6 +1553,8 @@ export declare namespace EasemobChat {
 		private reconnect(): void;
 		/** send message */
 		send(params: MessageBody): Promise<SendMsgResult>;
+		/** Updates token. */
+		renewToken(token: string): Promise<NewTokenResult>;
 
 		// ChatRoom API
 		/**
@@ -1752,10 +1821,10 @@ export declare namespace EasemobChat {
 				pageSize: number;
 				/** The chat room ID. */
 				chatRoomId: string;
-				success?: (res: AsyncResult<{ member: string }[]>) => void;
+				success?: (res: AsyncResult<BaseMembers[]>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
-		): Promise<AsyncResult<{ member: string }[]>>;
+		): Promise<AsyncResult<BaseMembers[]>>;
 
 		/**
 		 * Lists all chat room members with pagination.
@@ -2354,7 +2423,7 @@ export declare namespace EasemobChat {
 				/** The chat room ID. */
 				chatRoomId: string;
 			}
-		): Promise<boolean>;
+		): Promise<AsyncResult<boolean>>;
 
 		/**
 		 * Gets the announcement of the chat room.
@@ -2650,7 +2719,7 @@ export declare namespace EasemobChat {
 		 * Lists all the groups a user has joined.
 		 *
 		 * @note
-		 * If either `needAffiliations` or `needAffiliations` is set `true`, when you get data with pagination, the current page number (pageNum) starts from 0 and you can get a maximum of 20 groups (pageSize) on each page and
+		 * If either `needAffiliations` or `needRole` is set `true`, when you get data with pagination, the current page number (pageNum) starts from 0 and you can get a maximum of 20 groups (pageSize) on each page and
 		 * the function return type is `Promise<AsyncResult<GroupTypes.GroupInfo[]>`
 		 *
 		 * If neither of the parameters is set, when you get data with pagination, the current page number (pageNum) starts from 1 and you can get a maximum of 500 groups (pageSize) on each page and and
@@ -2669,13 +2738,13 @@ export declare namespace EasemobChat {
 			this: Connection,
 			params: {
 				/**
-				 * If either `needAffiliations` or `needAffiliations` is set, when you get data with pagination, the current page number (pageNum) starts from 0.
+				 * If either `needAffiliations` or `needRole` is set, when you get data with pagination, the current page number (pageNum) starts from 0.
 				 *
 				 * If neither of the parameters is set, when you get data with pagination, the current page number (pageNum) starts from 1.
 				 * */
 				pageNum: number;
 				/**
-				 * If either `needAffiliations` or `needAffiliations` is set, when you get data with pagination, you can get a maximum of 20 groups (pageSize) on each page.
+				 * If either `needAffiliations` or `needRole` is set, when you get data with pagination, you can get a maximum of 20 groups (pageSize) on each page.
 				 *
 				 * If neither of the parameters is set, when you get data with pagination, you can get a maximum of 500 groups (pageSize) on each page.
 				 * */
@@ -3697,7 +3766,7 @@ export declare namespace EasemobChat {
 				/** The group ID. */
 				groupId: string;
 			}
-		): Promise<boolean>;
+		): Promise<AsyncResult<boolean>>;
 
 		/**
 		 * Checks which members have read group message. This is a [value-added function] and .
@@ -4208,18 +4277,19 @@ export declare namespace EasemobChat {
 		getHistoryMessages(
 			this: Connection,
 			options: {
-				/** The user ID of the other party or the group ID. */
+				/** The user ID of the other party or the group ID or chat room ID. */
 				targetId: string;
 				/** The starting message ID for this query. The default value is -1, which means to start retrieving from the latest message. */
 				cursor?: number | string | null;
 				/** The number of messages to retrieve each time. The default value is 20,The maximum value is 50. */
 				pageSize?: number;
-				/** The chat type for SDK:
+				/**
+				 * The chat type for SDK:
 				 * - `singleChat`: one-to-one chat;
 				 * - `groupChat`: group chat;
-				 * - (Default)`singleChat`: No.
+				 * - `chatRoom`: chat room chat.
 				 */
-				chatType?: 'singleChat' | 'groupChat';
+				chatType: 'singleChat' | 'groupChat' | 'chatRoom';
 				/** Whether to select pull history messages in positive order(Pull message from the oldest to the latest).
 				 * - `up`: means searching from the newer messages to the older messages.
 				 * - `down`: means searching from the older messages to the newer messages.
@@ -4415,6 +4485,8 @@ export declare namespace EasemobChat {
 				chatType?: 'singleChat' | 'groupChat' | 'chatRoom';
 				/** Whether the message is in the thread. */
 				isChatThread?: boolean;
+				/** Custom extension fields. */
+				ext?: string;
 				success?: (res: number) => void;
 				fail?: (error: ErrorEvent) => void;
 			}
@@ -4492,7 +4564,7 @@ export declare namespace EasemobChat {
 		 * Translates message.
 		 *
 		 * ```typescript
-		 * connection.translateMessage('hello', 'zh')
+		 * connection.translateMessage({text: 'hello', languages: [zh-Hans]})
 		 * ```
 		 */
 		translateMessage(params: {
@@ -4917,6 +4989,164 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<CursorContactsResult>>;
 
 		/**
+		 * Marks conversations.
+		 *
+		 * ```typescript
+		 * connection.addConversationMark({
+		 * 		conversations: [{conversationId: 'conversationId', conversationType: 'singleChat'}],
+		 *    mark: 0,
+		 * })
+		 * ```
+		 */
+		addConversationMark(
+			this: Connection,
+			params: {
+				/** The list of conversations. */
+				conversations: Array<
+					Pick<
+						ConversationItem,
+						'conversationId' | 'conversationType'
+					>
+				>;
+				/** The mark to add for the conversations. */
+				mark: MarkType;
+			}
+		): Promise<void>;
+
+		/**
+		 * Unmarks conversations.
+		 *
+		 * ```typescript
+		 * connection.removeConversationMark({
+		 * 		conversations: [{conversationId: 'conversationId', conversationType: 'singleChat'}],
+		 *    mark: 0,
+		 * })
+		 * ```
+		 */
+		removeConversationMark(
+			this: Connection,
+			params: {
+				/** The list of conversations. */
+				conversations: Array<
+					Pick<
+						ConversationItem,
+						'conversationId' | 'conversationType'
+					>
+				>;
+				/** The conversation mark to remove. */
+				mark: MarkType;
+			}
+		): Promise<void>;
+
+		/**
+		 * Gets the conversations from the server with pagination according to the conversation filter.
+		 *
+		 * ```typescript
+		 * connection.getServerConversationsByFilter({pageSize:10, cursor: '',filter: {mark: 0})
+		 * ```
+		 */
+		getServerConversationsByFilter(
+			this: Connection,
+			params: {
+				/** The number of conversations to retrieve on each page. The value range is [1,10] and the default value is `10`. */
+				pageSize?: number;
+				/** The position from which to start getting data. */
+				cursor?: string;
+				/** The conversation filter options. */
+				filter: {
+					/** The conversation mark for query. */
+					mark: MarkType;
+				};
+			}
+		): Promise<AsyncResult<ServerConversations>>;
+
+		/**
+		 * Get the unique IDs of current user on the other devices. The ID is user ID + "/" + resource.
+		 *
+		 * ```typescript
+		 * connection.getSelfIdsOnOtherPlatform()
+		 * ```
+		 */
+		getSelfIdsOnOtherPlatform(
+			this: Connection
+		): Promise<AsyncResult<string[]>>;
+
+		/**
+		 * Deletes all conversations and all messages in them.
+		 *
+		 * ```typescript
+		 * connection.deleteAllMessagesAndConversations()
+		 * ```
+		 */
+		deleteAllMessagesAndConversations(this: Connection): Promise<void>;
+
+		/**
+		 * Pins a message.
+		 *
+		 * connection.pinMessage({
+		 * 		conversationId: 'conversationId',
+		 * 		conversationType: 'groupChat',
+		 * 		messageId: 'messageId'
+		 * })
+		 */
+		pinMessage(
+			this: Connection,
+			params: {
+				/** The conversation ID. */
+				conversationId: string;
+				/** The conversation type. */
+				conversationType: 'groupChat' | 'chatRoom';
+				/** The ID of the message to be pinned. */
+				messageId: string;
+			}
+		): Promise<void>;
+
+		/**
+		 * Unpins a message.
+		 *
+		 * connection.unpinMessage({
+		 * 		conversationId: 'conversationId',
+		 * 		conversationType: 'groupChat',
+		 * 		messageId: 'messageId'
+		 * })
+		 */
+		unpinMessage(
+			this: Connection,
+			params: {
+				/** The conversation ID. */
+				conversationId: string;
+				/** The conversation type. */
+				conversationType: 'groupChat' | 'chatRoom';
+				/** The ID of the message to be unpinned. */
+				messageId: string;
+			}
+		): Promise<void>;
+
+		/**
+		 * Gets the pinned messages in a conversation with pagination.
+		 *
+		 * connection.getServerPinnedMessages({
+		 * 		conversationId: 'conversationId',
+		 * 		conversationType: 'groupChat',
+		 * 		pageSize: 20,
+		 * 		cursor: ''
+		 * })
+		 */
+		getServerPinnedMessages(
+			this: Connection,
+			params: {
+				/** The conversation ID. */
+				conversationId: string;
+				/** The conversation type. */
+				conversationType: 'groupChat' | 'chatRoom';
+				/** The number of pinned messages to retrieve on each page. The value range is [1,50] and the default value is `10`. */
+				pageSize?: number;
+				/** The position from which to start getting data. For the first call of the method, an empty string ('') is passed in and the SDK returns the list of pinned messages in the descending order of when they are pinned.  */
+				cursor?: string;
+			}
+		): Promise<AsyncResult<CursorPinnedMessagesResult>>;
+
+		/**
 		 * Set the DND Settings for the current login user.
 		 *
 		 * ```typescript
@@ -5298,6 +5528,24 @@ export declare namespace EasemobChat {
 				isForced?: boolean;
 			}
 		): Promise<void>;
+
+		/**
+		 *
+		 * Gets the list of chat rooms that a user has joined.
+		 *
+		 * ```typescript
+		 * connection.getJoinedChatRooms({pageNum: 1, pageSize: 20})
+		 * ```
+		 */
+		getJoinedChatRooms(
+			this: Connection,
+			params: {
+				/** The page number, starting from 1. */
+				pageNum: number;
+				/** The number of chat rooms to get per page. The value cannot exceed 500. */
+				pageSize: number;
+			}
+		): Promise<AsyncResult<JoinedChatRoomsResult>>;
 	}
 
 	// ----- for EventHandler ------
@@ -5333,14 +5581,16 @@ export declare namespace EasemobChat {
 		id: string;
 		/** Message sender. */
 		from: string;
-		/** Additional data for the operation event. */
-		data?: any;
 		/** The modified group info. */
 		detail?: GroupModifyInfo;
-		/** ChatRoom attributes.  */
-		attributes?: {
-			[key: string]: string;
-		};
+		/** The name of a group or chatroom.  */
+		name?: string;
+		/** The userId of a group event.  */
+		userId?: string;
+		/** Custom Attributes.  */
+		attributes?: Array<string> | { [key: string]: string };
+		/** The member count. For a chat room with more than 2000 members, `memberCount` will not be returned. */
+		memberCount?: number;
 	}
 
 	interface GetChatroomAttributesResult {
@@ -5398,7 +5648,8 @@ export declare namespace EasemobChat {
 		| 'onChatThreadChange'
 		| 'onMultiDeviceEvent'
 		| 'onGroupEvent'
-		| 'onChatroomEvent';
+		| 'onChatroomEvent'
+		| 'onMessagePinEvent';
 
 	interface GroupEvent {
 		/** The type of operation. <br/>
@@ -5468,6 +5719,8 @@ export declare namespace EasemobChat {
 		name?: string;
 		/** The modified group info. */
 		detail?: GroupModifyInfo;
+		/** The member count. */
+		memberCount?: number;
 	}
 
 	interface ChatroomEvent {
@@ -5522,6 +5775,26 @@ export declare namespace EasemobChat {
 		name?: string;
 		/** ChatRoom Attributes.  */
 		attributes?: Array<string> | { [key: string]: string };
+		/** The member count. For a chat room with more than 2000 members, `memberCount` will not be returned. */
+		memberCount?: number;
+	}
+
+	interface MessagePinEvent {
+		/** The conversation type. */
+		conversationType: 'groupChat' | 'chatRoom';
+		/** The conversation ID. */
+		conversationId: string;
+		/** The ID of the message that is pinned or unpinned. */
+		messageId: string;
+		/** The user ID of the operator that pins or unpins the message */
+		operatorId: UserId;
+		/** When the message is pinned or unpinned. */
+		time: number;
+		/** The operation type. <br/>
+		 * pin: A message is pinned.<br/>
+		 * unpin: A message is unpinned.<br/>
+		 */
+		operation: 'pin' | 'unpin';
 	}
 
 	interface EventHandlerType {
@@ -5529,6 +5802,13 @@ export declare namespace EasemobChat {
 		onOpened?: (msg: any) => void;
 		/** @deprecated */
 		onPresence?: (msg: OnPresenceMsg) => void;
+		/** Occurs when a message is received. This callback is triggered to notify the user when a message such as texts or an image, video, voice, location, or file is received. */
+		onMessage?: (
+			msg: Exclude<
+				MessageBody,
+				ReadMsgBody | DeliveryMsgBody | ChannelMsgBody | CmdMsgBody
+			>[]
+		) => void;
 		/** The callback to receive a text message. */
 		onTextMessage?: (msg: TextMsgBody) => void;
 		/** The callback to receive a image message. */
@@ -5556,7 +5836,7 @@ export declare namespace EasemobChat {
 		/** The callback to receive a session read ack. */
 		onChannelMessage?: (msg: ChannelMsgBody) => void;
 		/** Occurs when the message content is modified. */
-		onModifiedMessage?: (msg: ModifiedMsg) => void;
+		onModifiedMessage?: (msg: ModifiedEventMessage) => void;
 		/** The callback to receive error. */
 		onError?: (error: ErrorEvent) => void;
 		/** The callback for network disconnection. */
@@ -5601,6 +5881,8 @@ export declare namespace EasemobChat {
 		onGroupEvent?: (eventData: GroupEvent) => void;
 		/** The callback to receive a chatroom event. */
 		onChatroomEvent?: (eventData: ChatroomEvent) => void;
+		/** The callback to receive a pin message event. */
+		onMessagePinEvent?: (eventData: MessagePinEvent) => void;
 	}
 
 	interface HandlerData {
@@ -5714,8 +5996,8 @@ export declare namespace EasemobChat {
 	interface Config {
 		useCache: boolean;
 		maxCache: number;
-		color: string;
-		background: string;
+		color?: string;
+		background?: string;
 	}
 
 	/**
@@ -5732,6 +6014,9 @@ export declare namespace EasemobChat {
 		config: Config;
 		logBytes: number;
 		constructor(name: string, defaultLevel: Level, factory?: any);
+		/**
+		 * set Logger config.
+		 */
 		setConfig(cofig: Config): void;
 		/**
 		 * get current log level
@@ -5742,8 +6027,8 @@ export declare namespace EasemobChat {
 		 */
 		setLevel(
 			level: Level,
-			persist: boolean,
-			name: string
+			persist?: boolean,
+			name?: string
 		): 'No console available for logging' | undefined;
 		setDefaultLevel(level: Level): void;
 		/**
@@ -5762,6 +6047,19 @@ export declare namespace EasemobChat {
 		 * down load logs
 		 */
 		download(): void;
+		/**
+		 * The logs callback function.
+		 */
+		onLog(data: {
+			/** The time when logs are printed. */
+			time: string;
+			/** The log level. */
+			level: string;
+			/** The log content. */
+			logs: any[];
+		}): void;
+		/** Sets whether to output logs to the console. */
+		setConsoleLogVisibility(visible: boolean): void;
 	}
 
 	// --- for Message ---
@@ -6092,6 +6390,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6157,6 +6457,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6303,6 +6605,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6413,6 +6717,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6420,6 +6726,8 @@ export declare namespace EasemobChat {
 		deliverOnlineOnly?: boolean;
 		/** The list of message recipients. */
 		receiverList?: string[];
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 	}
 
 	interface CreateCustomMsgParameters {
@@ -6531,6 +6839,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6675,6 +6985,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6813,6 +7125,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -6964,6 +7278,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -7083,6 +7399,10 @@ export declare namespace EasemobChat {
 		url?: string;
 		/** Secret required to download the video file. */
 		secret?: string;
+		/** The thumbnail URL. */
+		thumb?: string;
+		/** The key required to download the thumbnail. */
+		thumb_secret?: string;
 		/** The file type. */
 		filetype?: string;
 		/** AccessToken needed to download files */
@@ -7107,6 +7427,8 @@ export declare namespace EasemobChat {
 		priority?: MessagePriority;
 		/** Whether global notify message or not. */
 		broadcast?: boolean;
+		/** Whether the message content is replaced. This property is valid only when `useReplacedMessageContent` is set to `true` during initialization. */
+		isContentReplaced?: boolean;
 		/** Whether the message is delivered only when the recipient(s) is/are online:
 		 *  - `true`: The message is delivered only when the recipient(s) is/are online. If the recipient is offline, the message is discarded.
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
@@ -7189,6 +7511,8 @@ export declare namespace EasemobChat {
 		mid: string;
 		/** Message online state type. */
 		onlineState?: ONLINESTATETYPE;
+		/** Custom extension fields. */
+		ext: string;
 	}
 
 	interface ContactMsgBody {
