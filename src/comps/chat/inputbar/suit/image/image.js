@@ -108,25 +108,28 @@ Component({
 									to: me.getSendToParam(),
 									roomType: false,
 									chatType: me.data.chatType,
-									success: function (argument) {
+									success: function (id, serverMsgId) {
 										disp.fire('em.chat.sendSuccess', id);
+										msg.id = serverMsgId;
+										msg.body.id = serverMsgId;
+										me.triggerEvent(
+											"newImageMsg",
+											{
+												msg: msg,
+												type: msgType.IMAGE
+											},
+											{
+												bubbles: true,
+												composed: true
+											}
+										);
 									}
 								});
 								if(me.data.chatType == msgType.chatType.CHAT_ROOM){
 									msg.setGroup("groupchat");
 								}
 								WebIM.conn.send(msg.body);
-								me.triggerEvent(
-									"newImageMsg",
-									{
-										msg: msg,
-										type: msgType.IMAGE
-									},
-									{
-										bubbles: true,
-										composed: true
-									}
-								);
+								
 							}
 						});
 					}

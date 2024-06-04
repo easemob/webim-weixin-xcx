@@ -56,24 +56,25 @@ Component({
 								addr: respData.address,
 								chatType: me.data.chatType,
 								success(id, serverMsgId){
-
+									msg.id = serverMsgId;
+									msg.body.id = serverMsgId;
+									me.triggerEvent(
+										"newLocationMsg",
+										{
+											msg: msg,
+											type: msgType.LOCATION
+										},
+										{
+											bubbles: true,
+											composed: true
+										}
+									);
 								}
 							});
 							if(me.data.chatType == msgType.chatType.CHAT_ROOM){
 								msg.setGroup("groupchat");
 							}
 							WebIM.conn.send(msg.body);
-							me.triggerEvent(
-								"newLocationMsg",
-								{
-									msg: msg,
-									type: msgType.LOCATION
-								},
-								{
-									bubbles: true,
-									composed: true
-								}
-							);
 						}
 					});
 				}
