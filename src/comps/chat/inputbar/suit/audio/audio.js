@@ -222,8 +222,21 @@ Component({
 						to: me.getSendToParam(),
 						roomType: false,
 						chatType: me.data.chatType,
-						success: function (argument) {
+						success: function (id, serverMsgId) {
 							disp.fire('em.chat.sendSuccess', id);
+							msg.id = serverMsgId;
+							msg.body.id = serverMsgId;
+							me.triggerEvent(
+								"newAudioMsg",
+								{
+									msg: msg,
+									type: msgType.AUDIO,
+								},
+								{
+									bubbles: true,
+									composed: true
+								}
+							);
 						}
 					});
 					if(me.isGroupChat()){
@@ -233,17 +246,7 @@ Component({
 					//console.log('发送的语音消息', msg.body)
 					WebIM.conn.send(msg.body);
 
-					me.triggerEvent(
-						"newAudioMsg",
-						{
-							msg: msg,
-							type: msgType.AUDIO,
-						},
-						{
-							bubbles: true,
-							composed: true
-						}
-					);
+					
 				}
 			});
 		},

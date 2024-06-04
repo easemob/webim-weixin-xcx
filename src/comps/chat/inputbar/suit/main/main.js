@@ -86,6 +86,8 @@ Component({
 				success(id, serverMsgId){
 					console.log('成功了')
 					disp.fire('em.chat.sendSuccess', id, me.data.userMessage);
+					msg.id = serverMsgId;
+					msg.body.id = serverMsgId;
 					me.triggerEvent(
 						"newTextMsg",
 						{
