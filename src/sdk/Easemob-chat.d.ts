@@ -240,6 +240,12 @@ export declare namespace EasemobChat {
 		url?: string;
 		/** Whether to use HTTPS only. By default, the browser determines whether to use HTTPS only according to the domain name. */
 		https?: boolean;
+		/** Whether to use a fixed device ID (deviceId).
+		 * <br> - (Default) `true`: The SDK generates a device ID for a browser and saves it to the local storage. Then in the browser, all SDK instances use the same device.
+		 * <br> -`false`: A random device ID is used for connections of each SDK instance. That is to say, each SDK instance uses a different device for connections.
+		 * <br> This parameter has an impact on the kicking policy during a multi-device login scenario.
+		 */
+		isFixedDeviceId?: boolean;
 	}
 
 	interface RegisterUserResult extends AsyncResult {
@@ -1326,8 +1332,6 @@ export declare namespace EasemobChat {
 		OPERATION_UNSUPPORTED = 53,
 		/** An operation that is not allowed. */
 		OPERATION_NOT_ALLOWED = 54,
-		/** A local database operation failed. */
-		LOCAL_DB_OPERATION_FAILED = 55,
 		/** The uploading of the file failed. */
 		WEBIM_UPLOADFILE_ERROR = 101,
 		/** The current user is not logged in when uploading the file. */
@@ -1404,6 +1408,8 @@ export declare namespace EasemobChat {
 		CHATROOM_MEMBERS_FULL = 704,
 		/** The chatroom is not found. */
 		CHATROOM_NOT_EXIST = 705,
+		/** A local database operation failed. */
+		LOCAL_DB_OPERATION_FAILED = 800,
 		/** Websocket error. */
 		SDK_RUNTIME_ERROR = 999,
 		/** The parameter length exceeds the limit when posting custom presence status. */
@@ -1553,6 +1559,8 @@ export declare namespace EasemobChat {
 		private reconnect(): void;
 		/** send message */
 		send(params: MessageBody): Promise<SendMsgResult>;
+		/** Set custom extensions for login information. When a multi-device login is kicked, the custom extension information will be passed to the kicked device. */
+		setLoginInfoCustomExt(ext: string): void;
 		/** Updates token. */
 		renewToken(token: string): Promise<NewTokenResult>;
 
@@ -1760,8 +1768,15 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				roomId: string;
-				/** The reason for joining the chat room. Not enabled. */
+				/** The reason for joining the chat room. This parameter does not take effect. You can ignore it. */
 				message?: string;
+				/** Extension fields carried when joining a chat room. */
+				ext?: string;
+				/** Whether to leave all the currently joined chat rooms when joining a chat room.
+				 * - `true`: The user joins the chat room, while leaving all other chat rooms.
+				 * -  (Default) `false`: The user joins the chat room, without leaving all other chat rooms.
+				 */
+				leaveOtherRooms?: boolean;
 				success?: (res: AsyncResult<CommonRequestResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
@@ -5591,6 +5606,8 @@ export declare namespace EasemobChat {
 		attributes?: Array<string> | { [key: string]: string };
 		/** The member count. For a chat room with more than 2000 members, `memberCount` will not be returned. */
 		memberCount?: number;
+		/** The extension fields. */
+		ext?: string;
 	}
 
 	interface GetChatroomAttributesResult {
@@ -5777,6 +5794,8 @@ export declare namespace EasemobChat {
 		attributes?: Array<string> | { [key: string]: string };
 		/** The member count. For a chat room with more than 2000 members, `memberCount` will not be returned. */
 		memberCount?: number;
+		/** The extension fields. */
+		ext?: string;
 	}
 
 	interface MessagePinEvent {
@@ -5862,7 +5881,7 @@ export declare namespace EasemobChat {
 		/** The callback for successful connection. */
 		onConnected?: () => void;
 		/** The callback for disconnected. */
-		onDisconnected?: () => void;
+		onDisconnected?: (error?: ErrorEvent) => void;
 		/** @deprecated  Use { onGroupEvent } instead. */
 		onGroupChange?: (msg: any) => void;
 		/** @deprecated  Use { onChatroomEvent } instead. */
