@@ -1,5 +1,5 @@
 
-import websdk from "../sdk/Easemob-chat-4.8.0";
+import websdk from "../sdk/Easemob-chat-4.8.1";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
@@ -225,7 +225,8 @@ WebIM.conn = new WebIM.connection({
 	autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
 	autoReconnectInterval: WebIM.config.autoReconnectInterval,
 	isDebug: WebIM.config.isDebug,
-	deviceId: WebIM.config.deviceId
+  deviceId: WebIM.config.deviceId,
+  enableReportLogs: true
 });
 
 // async response
