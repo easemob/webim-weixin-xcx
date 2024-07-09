@@ -177,16 +177,11 @@ Component({
 		renderMsg(renderableMsg, type, curChatMsg, sessionKey, isnew){
 			let me = this
 			// 手动去重 这操作没必要
-			// if (curChatMsg.length > 1) {
-			// 	this.data.chatMsg.map(function(elem, index) {
-			// 		curChatMsg.map(function(item, i) {
-			// 			if(elem.mid == item.mid){
-			// 				//me.data.chatMsg.splice(index, 1)
-			// 				curChatMsg.splice(i, 1)
-			// 			}
-			// 		})
-			// 	})
-			// }
+			if (curChatMsg.length > 1) {
+        curChatMsg = curChatMsg.filter((item, i) => {
+          return !me.data.chatMsg.find((msg) => msg.mid === item.mid);
+        });
+      }
 			
 
 			var historyChatMsgs = wx.getStorageSync("rendered_" + sessionKey) || [];
@@ -220,13 +215,9 @@ Component({
 			wx.setStorageSync("rendered_" + sessionKey, historyChatMsgs);
 
 			let chatMsg = wx.getStorageSync(sessionKey) || [];
-			chatMsg.map(function(item, index) {
-				curChatMsg.map(function(item2, index2) {
-					if (item2.mid == item.mid) {
-						chatMsg.splice(index, 1)
-					}
-				})
-			})
+			chatMsg = chatMsg.filter((item) => {
+        return !curChatMsg.find((msg) => msg.mid === item.mid);
+      });
 			
 
 			wx.setStorageSync(sessionKey, chatMsg);
