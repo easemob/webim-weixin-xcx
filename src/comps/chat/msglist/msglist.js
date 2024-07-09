@@ -177,7 +177,7 @@ Component({
 		renderMsg(renderableMsg, type, curChatMsg, sessionKey, isnew){
 			let me = this
 			// 手动去重 这操作没必要
-			if (curChatMsg.length > 1) {
+			if (curChatMsg.length > 0) {
         curChatMsg = curChatMsg.filter((item, i) => {
           return !me.data.chatMsg.find((msg) => msg.mid === item.mid);
         });
