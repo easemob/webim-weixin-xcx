@@ -154,7 +154,10 @@ export declare namespace EasemobChat {
 		| 'chatThreadDestroy'
 		| 'chatThreadJoin'
 		| 'chatThreadLeave'
-		| 'chatThreadNameUpdate';
+		| 'chatThreadNameUpdate'
+		| 'setSilentModeForUser'
+		| 'removeSilentModeForConversation'
+		| 'setSilentModeForConversation';
 
 	interface ThreadMultiDeviceInfo {
 		/** Event name of thread multi device event. */
@@ -211,11 +214,37 @@ export declare namespace EasemobChat {
 		timestamp: number;
 	}
 
+	interface NotificationConMultiDeviceInfo {
+		operation:
+			| 'setSilentModeForConversation'
+			| 'removeSilentModeForConversation';
+		resource: string;
+		conversationId: string;
+		type: 'singleChat' | 'groupChat';
+		data: {
+			type?: 'AT' | 'NONE' | 'ALL';
+			ignoreDuration?: number;
+		};
+	}
+	interface NotificationUserMultiDeviceInfo {
+		operation: 'setSilentModeForUser';
+		resource: string;
+		// user: string;
+		data: {
+			ignoreInterval: string;
+		};
+	}
+
+	type NotificationMultiDeviceInfo =
+		| NotificationConMultiDeviceInfo
+		| NotificationUserMultiDeviceInfo;
+
 	type MultiDeviceEvent =
 		| ThreadMultiDeviceInfo
 		| ConversationChangedInfo
 		| RoamingDeleteMultiDeviceInfo
-		| GroupMemberAttributesUpdateMultiDeviceInfo;
+		| GroupMemberAttributesUpdateMultiDeviceInfo
+		| NotificationMultiDeviceInfo;
 
 	interface ConnectionParameters {
 		/** The unique application key registered in console. */
@@ -1230,6 +1259,22 @@ export declare namespace EasemobChat {
 		| SilentModeDuration
 		| SilentModeInterval;
 
+	interface ConversationWithRemindType {
+		/** Conversation id. */
+		conversationId: string;
+		/** Conversation type. */
+		type: 'singleChat' | 'groupChat';
+		/** Silent mode type. */
+		remindType: SILENTMODETYPE;
+	}
+
+	interface GetSilentModeRemindTypeConversationsResult {
+		/** The cursor that specifies where to start to get data. */
+		cursor: string;
+		/** conversations with remind type. */
+		conversations: ConversationWithRemindType[];
+	}
+
 	interface GetReactionDetailResult {
 		/** The reaction to be added to the message. The length is limited to 128 characters. */
 		reaction: string;
@@ -1357,6 +1402,9 @@ export declare namespace EasemobChat {
 		 * Note: You can send messages to strangers by default. This error occurs only when you enable the function of allowing to send messages only to your contacts.
 		 */
 		USER_NOT_FRIEND = 221,
+
+		/** get DNS failed */
+		SERVER_GET_DNSLIST_FAILED = 304,
 
 		/** The server is busy. */
 		SERVER_BUSY = 500,
@@ -1642,10 +1690,12 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				chatRoomId: string;
-				success?: (res: AsyncResult<GetChatRoomDetailsResult>) => void;
+				success?: (
+					res: AsyncResult<Array<GetChatRoomDetailsResult>>
+				) => void;
 				error?: (error: ErrorEvent) => void;
 			}
-		): Promise<AsyncResult<GetChatRoomDetailsResult>>;
+		): Promise<AsyncResult<Array<GetChatRoomDetailsResult>>>;
 
 		/**
 		 * Modifies the specifications of the chat room.
@@ -5110,7 +5160,7 @@ export declare namespace EasemobChat {
 				/** The conversation ID. */
 				conversationId: string;
 				/** The conversation type. */
-				conversationType: 'groupChat' | 'chatRoom';
+				conversationType: ChatType;
 				/** The ID of the message to be pinned. */
 				messageId: string;
 			}
@@ -5131,7 +5181,7 @@ export declare namespace EasemobChat {
 				/** The conversation ID. */
 				conversationId: string;
 				/** The conversation type. */
-				conversationType: 'groupChat' | 'chatRoom';
+				conversationType: ChatType;
 				/** The ID of the message to be unpinned. */
 				messageId: string;
 			}
@@ -5153,7 +5203,7 @@ export declare namespace EasemobChat {
 				/** The conversation ID. */
 				conversationId: string;
 				/** The conversation type. */
-				conversationType: 'groupChat' | 'chatRoom';
+				conversationType: ChatType;
 				/** The number of pinned messages to retrieve on each page. The value range is [1,50] and the default value is `10`. */
 				pageSize?: number;
 				/** The position from which to start getting data. For the first call of the method, an empty string ('') is passed in and the SDK returns the list of pinned messages in the descending order of when they are pinned.  */
@@ -5608,6 +5658,8 @@ export declare namespace EasemobChat {
 		memberCount?: number;
 		/** The extension fields. */
 		ext?: string;
+		/** The reason for the event. */
+		reason?: string;
 	}
 
 	interface GetChatroomAttributesResult {
@@ -5655,6 +5707,7 @@ export declare namespace EasemobChat {
 		| 'onTokenExpired'
 		| 'onContactInvited'
 		| 'onConnected'
+		| 'onReconnecting'
 		| 'onDisconnected'
 		| 'onGroupChange'
 		| 'onChatroomChange'
@@ -5666,7 +5719,9 @@ export declare namespace EasemobChat {
 		| 'onMultiDeviceEvent'
 		| 'onGroupEvent'
 		| 'onChatroomEvent'
-		| 'onMessagePinEvent';
+		| 'onMessagePinEvent'
+		| 'onOfflineMessageSyncStart'
+		| 'onOfflineMessageSyncFinish';
 
 	interface GroupEvent {
 		/** The type of operation. <br/>
@@ -5732,12 +5787,16 @@ export declare namespace EasemobChat {
 		id: string;
 		/** Message sender. */
 		from: string;
+		/** The userId of a group event.  */
+		userId?: string;
 		/** The name of a group.  */
 		name?: string;
 		/** The modified group info. */
 		detail?: GroupModifyInfo;
 		/** The member count. */
 		memberCount?: number;
+		/** The reason for the event. */
+		reason?: string;
 	}
 
 	interface ChatroomEvent {
@@ -5796,11 +5855,13 @@ export declare namespace EasemobChat {
 		memberCount?: number;
 		/** The extension fields. */
 		ext?: string;
+		/** The reason for the event. */
+		reason?: string;
 	}
 
 	interface MessagePinEvent {
 		/** The conversation type. */
-		conversationType: 'groupChat' | 'chatRoom';
+		conversationType: ChatType;
 		/** The conversation ID. */
 		conversationId: string;
 		/** The ID of the message that is pinned or unpinned. */
@@ -5880,6 +5941,8 @@ export declare namespace EasemobChat {
 		onContactInvited?: (msg: ContactMsgBody) => void;
 		/** The callback for successful connection. */
 		onConnected?: () => void;
+		/** The callback for reconnecting. */
+		onReconnecting?: () => void;
 		/** The callback for disconnected. */
 		onDisconnected?: (error?: ErrorEvent) => void;
 		/** @deprecated  Use { onGroupEvent } instead. */
@@ -5902,6 +5965,10 @@ export declare namespace EasemobChat {
 		onChatroomEvent?: (eventData: ChatroomEvent) => void;
 		/** The callback to receive a pin message event. */
 		onMessagePinEvent?: (eventData: MessagePinEvent) => void;
+		/** Occurs when the SDK starts pulling offline messages from the server. */
+		onOfflineMessageSyncStart?: () => void;
+		/** Occurs when the SDK finishes pulling offline messages from the server.*/
+		onOfflineMessageSyncFinish?: () => void;
 	}
 
 	interface HandlerData {
@@ -6149,6 +6216,7 @@ export declare namespace EasemobChat {
 		reason?: string;
 		kicked?: string;
 		detail?: GroupModifyInfo;
+		ext?: string;
 	}
 
 	interface ReadMsgSetParameters {
@@ -7633,6 +7701,9 @@ export declare namespace EasemobChat {
 		static createOldMsg(options: NewMessageParamters): MessageBody;
 		/** Create messages. */
 		static create(options: CreateMsgType): MessageBody;
+		/** When sending attachment messages, use this method to obtain the file path. */
+		static getFileUrl: (fileInputId: string | HTMLInputElement) => FileObj;
+
 		/** @deprecated */
 		set(options: MessageSetParameters): void;
 	}
