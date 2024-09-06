@@ -1,0 +1,38 @@
+<!--pages/login/index.wxml-->
+
+<view class="login_logo_container">
+  <image class="login_logo" src="../../static/logo.png" mode="" />
+  <text class="login_title_text">环信 微信小程序 Demo</text>
+</view>
+<view class="login_input_container">
+  <van-cell-group>
+  <!-- 手机号输入 -->
+    <van-field 
+    model:value="{{ loginPhoneNumber }}"
+    custom-class="custom-field" placeholder="请输入手机号"
+  
+    />
+    <!-- 验证码输入 -->
+    <van-field 
+    model:value="{{ loginSms }}"
+    custom-class="custom-field" 
+    custom-style="margin-top:20rpx"
+    center clearable placeholder="请输入短信验证码" use-button-slot>
+      <van-button wx:if="{{ counter < 60 }}"  slot="button" size="small" type="info" color="#009eff" disabled>
+        {{counter}}s
+      </van-button>
+      <van-button wx:if="{{ counter === 60 }}" slot="button" size="small" type="info" color="#009eff" bind:tap="getCode" disabled="{{ !loginPhoneNumber }}">
+        {{smsButtonText}}
+      </van-button>
+    </van-field>
+  </van-cell-group>
+</view>
+<view class="login_button_container">
+<!-- 隐私协议勾选 -->
+  <view class="login_privacy_box">
+    <van-checkbox model:value="{{ privacyChecked }}" bind:change="onPrivacyChecked" shape="square"><text class="login_privacy_text">同意 《隐私协议》</text> </van-checkbox>
+  </view>
+  <!-- 登录按钮 -->
+  <van-button class="login_button" type="info" block loading="{{ loginLoadingStatus }}" loading-text="登录中..." disabled="{{ loginBtnDisabledStatus }}" color="#009eff" bind:click="loginIM" disabled="{{ !loginPhoneNumber && !loginSms  }}">登录</van-button>
+  <!-- <van-button class="login_button" type="info" block loading="{{ loginLoadingStatus }}" loading-text="登录中..." disabled="{{ loginBtnDisabledStatus }}" color="#009eff" bind:click="onEntryConversationPage">登录</van-button> -->
+</view>

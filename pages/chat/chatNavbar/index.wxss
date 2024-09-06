@@ -1,0 +1,15 @@
+/* pages/chat/chatNavbar/index.wxss */
+.chat_navbar_left_container{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+.chat_navbar_title{
+  white-space: nowrap;       /* 强制文本在一行内显示 */
+  overflow: hidden;          /* 隐藏溢出内容 */
+  text-overflow: ellipsis;   /* 使用省略号来表示溢出的文本 */
+  max-width: 60%;           /* 根据需要设置最大宽度，通常与父元素配合使用 */
+}

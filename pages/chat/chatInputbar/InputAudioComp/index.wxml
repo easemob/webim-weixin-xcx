@@ -1,0 +1,26 @@
+<van-popup show="{{ show }}" bind:close="onClose" custom-style="height: 30%;" position="bottom">
+  <view class="audio_container">
+    <view wx:if="{{ recordState=== 2 || recordState=== 3 }}" class="audio_handle_icon_box" bind:tap="handleDeleteRecordAudioData">
+      <image class="audio_trash_icon" src="/static/message/trash.png" mode="aspectFill" />
+    </view>
+    <view class="audio_show_box">
+      <!-- 开始录音 -->
+      <view wx:if="{{ recordState=== 0 }}" class="audio_show_record_default" bind:tap="handleStartRecordAudio">
+        <image class="audio_show_record_icon" src="/static/message/mic_on.png" mode="aspectFill" />
+      </view>
+      <!-- 录音中 -->
+      <view wx:if="{{ recordState=== 1 }}" class="audio_show_record_default" bind:tap="handleRecordAudioEnd">
+        <text>{{ recordingTime }}</text>
+      </view>
+      <!-- 录音结束播放 -->
+      <view wx:if="{{ recordState=== 2 || recordState=== 3  }}" class="audio_show_record_default" bind:tap="handleRecordAudioPlay">
+        <text>{{ recordingTime }}</text>
+      </view>
+      <!-- 录音状态文案 -->
+      <text class="audio_show_record_text_default">{{ recordStateText }}</text>
+    </view>
+    <view wx:if="{{ recordState=== 2 || recordState=== 3 }}" class="audio_handle_icon_box audio_handle_send_icon_box" bind:tap="handleSendRecordAudio">
+      <image class="audio_send_icon" src="/static/message/airplane.png" mode="aspectFill" />
+    </view>
+  </view>
+</van-popup>

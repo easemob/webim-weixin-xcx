@@ -1,0 +1,12 @@
+<van-popup round show="{{ show }}" bind:close="onClose" custom-style="height: 30%; padding-top:20rpx" position="bottom">
+  <view class="input_more_func_container">
+    <van-cell class="input_more_func_container_item" wx:for="{{ inputMoreFunctionAction }}"  wx:key="type" clickable data-func-type="{{ item.type }}" bind:tap="onClickMoreFuncItem">
+      <image slot="icon" src="{{ item.icon }}" mode="aspectFill" />
+      <view slot="title">
+        <view class="van-cell-text">{{ item.title }}</view>
+      </view>
+    </van-cell>
+  </view>
+
+
+</van-popup>

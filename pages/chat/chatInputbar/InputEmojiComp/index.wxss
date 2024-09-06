@@ -1,0 +1,23 @@
+.emoji_container {
+  width: 100%;
+  height: 500rpx;
+  background: #FFF;
+}
+
+.scroll_view {
+  width: 100%;
+  height: 100%;
+  /* background-color: pink; */
+  font-size: 60rpx;
+  padding:20rpx;
+  box-sizing: border-box;
+}
+
+.emoji_box {
+  display: inline-block;
+  width: 60rpx;
+  height: 60rpx;
+  box-sizing: border-box;
+  padding: 10rpx;
+  margin: 5rpx;
+}

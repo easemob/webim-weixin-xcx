@@ -1,0 +1,29 @@
+<view class="notifications_container">
+  <!-- navbar -->
+  <van-nav-bar left-text="返回" left-arrow bind:click-left="onClickLeft">
+    <view slot="title">新请求
+    </view>
+  </van-nav-bar>
+  <van-empty wx:if="{{ !notificationsList.length }}" description="暂无新请求" />
+  <scroll-view wx:if="{{ notificationsList.length }}" class="scroll_content" scroll-y="true">
+    <van-cell wx:for="{{ notificationsList }}" wx:key="key" center>
+      <van-icon slot="icon" size="100rpx" custom-style="margin-right:20rpx;" name="{{item.chatType === 'singleChat'? '/static/avatar/defaultAvatarSingle.png':'/static/avatar/defaultAvatarGroup.png' }}" />
+      <view class="notifications_container_cell_title" slot="title" wx:if="{{ item.chatType==='singleChat' }}">
+        <view>{{ item.from }}：</view>
+        <view>请求添加您为好友！</view>
+      </view>
+      <view class="notifications_container_cell_title" slot="title" wx:if="{{ item.chatType==='groupChat' }}">
+        <view>{{ item.name }}</view>
+        <view>{{ item.from }}：邀请您加入群组！</view>
+      </view>
+      <view wx:if="{{ item.chatType==='singleChat' }}" slot="right-icon">
+        <van-button type="danger" size="mini" bind:tap="onDeclineContactsApply" data-key="{{ item.key }}">拒绝</van-button>
+        <van-button data-key="{{ item.key }}" type="info" size="mini" bind:tap="onAcceptContactApply">添加</van-button>
+      </view>
+      <view wx:if="{{ item.chatType==='groupChat' }}" slot="right-icon">
+        <van-button type="danger" size="mini" bind:tap="onDeclineGroupInvite" data-key="{{ item.key }}">忽略</van-button>
+        <van-button data-key="{{ item.key }}" type="info" size="mini" bind:tap="onAcceptGroupInvite">同意</van-button>
+      </view>
+    </van-cell>
+  </scroll-view>
+</view>

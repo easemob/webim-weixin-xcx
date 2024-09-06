@@ -1,0 +1,37 @@
+page {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
+/* pages/conversation/index.wxss */
+.conversation_container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.scroll-content {
+  flex: 1; /* 占据剩余空间 */
+  overflow-y: scroll; /* 启用滚动 */
+}
+.conversation_avatar_image{
+  width:100rpx;
+  height: 100rpx;
+  margin-right: 20rpx;
+}
+.van-swipe-cell__left,
+.van-swipe-cell__right {
+  display: inline-block;
+  width: 65px;
+  height: 44px;
+  font-size: 15px;
+  line-height: 44px;
+  color: #fff;
+  text-align: center;
+  background-color: #f44;
+}

@@ -1,0 +1,9 @@
+<view wx:if="{{ showEomjiContainer }}" class="emoji_container">
+  <scroll-view class="scroll_view" scroll-y="true">
+    <block wx:for="{{ emojis }}" wx:for-item="emoji" wx:key="*this">
+    <view class="emoji_box" data-emoji-item="{{ emoji }}" bind:tap="onCickEmojiItem">
+      {{emoji}}
+    </view>
+    </block>
+  </scroll-view>
+</view>

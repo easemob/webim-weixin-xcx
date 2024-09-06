@@ -1,0 +1,35 @@
+<!--pages/mine/index.wxml-->
+<view class="mine_container">
+  <!-- nav-bar -->
+  <van-nav-bar border="{{ false }}">
+    <van-icon slot="left" size="50rpx" name="https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/IMDemo/avatar/Image2.png" />
+    <view slot="title">我的
+    </view>
+  </van-nav-bar>
+  <view class="mine_content">
+    <view class="mine_content_header">
+      <van-image width="300rpx" height="300rpx" src="{{ loginUserInfosData.avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" radius="20rpx" />
+      <text>{{ loginUserInfosData.nickname || '暂未设置昵称' }}</text>
+      <view class="mine_content_id_box" bind:tap="copyUserId">
+        <text class="mine_content_id_text">ID：{{ loginEMUserId }}</text>
+        <image class="mine_content_copy_icon" src="/static/mine/copy_icon.png"></image>
+      </view>
+    </view>
+    <view class="mine_content_body">
+      <!-- 设置cell -->
+      <van-cell-group title="设置">
+        <!-- <van-cell title="用户状态" value="在线" icon="/static/mine/presence_cell_icon.png" is-link /> -->
+        <!-- <van-cell title="通用" icon="/static/mine/general_cell_icon.png" is-link /> -->
+        <van-cell title="个人信息" url="/pages/profileEdit/profilePrview/index" link-type="navigateTo" icon="/static/mine/profile_cell_icon.png" is-link />
+        <van-cell title="隐私" icon="/static/mine/privacy_cell_icon.png" url="/pages/blackList/index" is-link />
+        <van-cell title="关于" icon="/static/mine/about_cell_icon.png" label="{{'Easemob mini program SDK：' + sdkVersion}}"   />
+      </van-cell-group>
+      <!-- 账号cell -->
+      <van-cell-group title="账号">
+        <van-cell title-class="mine_account_text" title="退出登录" is-link bind:tap="onChange" />
+      </van-cell-group>
+    </view>
+  </view>
+  <van-dialog id="van-dialog" confirm-button-color="#009eff" />
+  <view class="tabbar_placeholder_box" style="height: {{tabbarPlaceholderHeight}}px;"></view>
+</view>

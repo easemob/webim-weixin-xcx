@@ -1,0 +1,9 @@
+<!-- navbar -->
+<van-nav-bar left-text="修改备注" left-arrow bind:click-left="onClickLeft">
+</van-nav-bar>
+<view class="remark_textarea_container">
+  <van-field  model:value="{{ remarkValue }}" custom-class="remark_textarea_style" type="textarea" placeholder="请输出好友备注" autosize show-word-limit maxlength="15"  border="{{ false }}"  auto-focus="{{ true }}"  />
+  <view class="remark_sava_button_box">
+    <van-button type="info" size="small" bind:tap="handleSaveRemarkValue">确认修改</van-button>
+  </view>
+</view>

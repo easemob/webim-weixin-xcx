@@ -1,0 +1,25 @@
+<view class="create_group_container">
+  <!-- navbar -->
+  <van-nav-bar left-text="返回" left-arrow bind:click-left="onClickLeft">
+    <view slot="title">创建群组
+    </view>
+  </van-nav-bar>
+  <view class="create_handle_btn">
+    <van-button  type="info" size="mini" disabled="{{ checkedValues.length === 0 }}" bind:tap="cancelCreateNewGroup">取消</van-button>
+    <van-button  type="info" size="mini" bind:tap="actionCreateNewGroup">创建</van-button>
+  </view>
+  <scroll-view scroll-y="true" class="scroll-content">
+    <van-checkbox-group value="{{ checkedValues }}" bind:change="onCheckboxChange">
+      <block wx:for="{{ enrichedContactsList }}" wx:key="userId">
+        <van-cell>
+          <!-- 自定义 icon 部分为复选框 -->
+          <view class="contact_left" slot="icon">
+            <van-checkbox shape="square" name="{{ item.userId }}" />
+            <van-icon size="100rpx" custom-style="margin-right:20rpx;" name="{{ item.avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" />
+            <text>{{item.remark || item.nickname || item.userId }}</text>
+          </view>
+        </van-cell>
+      </block>
+    </van-checkbox-group>
+  </scroll-view>
+</view>

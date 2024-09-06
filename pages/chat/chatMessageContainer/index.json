@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "van-image": "@vant/weapp/image/index",
+    "van-action-sheet": "@vant/weapp/action-sheet/index",
+    "van-cell": "@vant/weapp/cell/index"
+  }
+}

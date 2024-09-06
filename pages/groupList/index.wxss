@@ -1,0 +1,22 @@
+page {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+.group_list_container{
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.title_container{
+  display: flex;
+  flex-direction: row;
+}
+.scroll-content {
+  flex: 1; /* 占据剩余空间 */
+  overflow-y: scroll; /* 启用滚动 */
+}

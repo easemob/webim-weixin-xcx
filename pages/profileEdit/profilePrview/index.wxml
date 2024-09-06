@@ -1,0 +1,16 @@
+<view class="profile_preview_container">
+  <!-- navbar -->
+  <van-nav-bar left-text="返回" left-arrow bind:click-left="onClickLeft">
+    <view slot="title">个人信息
+    </view>
+  </van-nav-bar>
+  <view class="profile_preview_content">
+    <van-cell center clickable>
+      <view slot="title">
+        <view class="van-cell-text">头像</view>
+      </view>
+        <van-icon slot="right-icon" bind:tap="onChooseAvatarImage" size="100rpx"  name="{{ loginUserInfosData.avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" />
+    </van-cell>
+    <van-cell isLink bind:tap="entryNicknameEditPage" title="昵称" value="{{ loginUserInfosData.nickname || '暂无昵称' }}"  />
+  </view>
+</view>

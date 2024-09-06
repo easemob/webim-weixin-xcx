@@ -1,0 +1,25 @@
+page {
+  height: 100%;
+  width: 100%;
+  /* position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0; */
+}
+
+.contacts_container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.contacts_content {
+  flex: 1; /* 占据剩余空间 */
+  overflow-y: scroll; /* 启用滚动 */
+}
+.custom-dot {
+  margin-left: 5px;
+  color: red;
+  font-size: 10px;
+}

@@ -1,0 +1,17 @@
+<view class="black_list_container">
+  <!-- navbar -->
+  <van-nav-bar left-text="返回" left-arrow bind:click-left="onClickLeft">
+    <view slot="title">黑名单
+    </view>
+  </van-nav-bar>
+  <van-empty wx:if="{{ !enrichedBlackList.length }}" description="黑名单里没有人~" />
+  <scroll-view wx:if="{{ enrichedBlackList.length }}" scroll-y="true" class="scroll-content">
+    <van-cell wx:for="{{ enrichedBlackList }}" wx:key="userId" wx:for-item="blackItem" center clickable>
+      <view slot="title" class="title_container">
+        <view class="van-cell-text">{{blackItem.nickname || blackItem.userId}}</view>
+      </view>
+      <van-icon slot="icon" size="100rpx" custom-style="margin-right:20rpx;" name="{{ blackItem.avatarurl?blackItem.avatarurl:'/static/avatar/defaultAvatarSingle.png' }}" />
+    </van-cell>
+
+  </scroll-view>
+</view>

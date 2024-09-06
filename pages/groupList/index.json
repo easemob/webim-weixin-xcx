@@ -1,0 +1,13 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "van-nav-bar": "@vant/weapp/nav-bar/index",
+    "van-search": "@vant/weapp/search/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-tag": "@vant/weapp/tag/index",
+    "van-skeleton": "@vant/weapp/skeleton/index"
+
+  }
+}

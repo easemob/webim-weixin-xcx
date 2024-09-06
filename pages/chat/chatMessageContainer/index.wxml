@@ -1,0 +1,47 @@
+<!--pages/chat/chatMessage/index.wxml-->
+<scroll-view class="scroll_view" scroll-y="true" upper-threshold="100" bindscrolltoupper="onMessageScrolltoupper" scroll-top="{{scrollHeight}}">
+  <view class="message_item_container {{ item.from === loginUserId ? 'message-bubble-right' : 'message-bubble-left'}}" wx:for="{{ messageList }}" wx:key="id">
+    <!-- 登录用户头像 -->
+    <van-image wx:if="{{ item.from === loginUserId }}" width="40" height="40" radius="10rpx" src="{{ loginUserInfosData.avatarurl || item.displayAvatar ||'/static/avatar/defaultAvatarSingle.png' }}" />
+    <!-- 其他用户头像 -->
+    <van-image wx:if="{{ item.from !== loginUserId }}" width="40" height="40" radius="10rpx" src="{{ item.avatarurl || conversationParams.avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" />
+    <view class="message_item_content_box {{ item.from === loginUserId ? 'message_item_content_box_right' : 'message_item_content_box_left' }}">
+      <!-- 昵称 -->
+      <view wx:if="{{ item.from !== loginUserId && item.type !== 'groupChat' }}" class="message_item_content_nickname">{{ item.nickname || item.from }}</view>
+      <!-- 消息体 -->
+      <view wx:if="{{ !item.isRecall }}" class="{{ item.from === loginUserId ? 'message_item_content_right' : 'message_item_content_left'}}" data-message-item="{{ item }}" bind:longpress="onLongPressMessageItem">
+        <!-- 普通文本 -->
+        <text wx:if="{{ item.type === 'txt' }}"> {{item.msg}} </text>
+        <!-- 图片消息 -->
+        <van-image wx:if="{{ item.type === 'img' }}" width="{{ item.width > 0  && item.width < 800 ? item.width/2+'rpx' : 100}}" height="{{item.height > 0 && item.height < 500 ? item.height / 2+'rpx' : 100}}" src="{{ item.thumb || item.url}}" bind:click="onPreviewImage" data-image-url="{{ item.url }}" />
+        <!-- 视频消息 -->
+        <view class="video_message" wx:if="{{ item.type === 'video' }}">
+          <van-image width="150" height="100" src="{{ item.thumb}}" />
+          <image class="video_message_play_icon" src="/static/message/triangle_in_circle.png" mode="aspectFill" bind:tap="onPreviewVideo" data-video-url="{{ item.url }}" data-video-poster-url="{{ item.thumb }}" />
+        </view>
+        <!-- 语音片段 -->
+        <view wx:if="{{ item.type === 'audio' }}" class="audio_message {{currentPlayingId === item.id ? 'playing' : ''}}" data-id="{{item.id}}" data-url="{{item.url}}" bind:tap="playAudio">
+          {{item.length+'″'}}
+          <image class="audio_message_play_icon" src="{{item.from === loginUserId ? '/static/message/wave3_left.png' : '/static/message/wave3_right.png'}}" />
+        </view>
+        <view wx:if="{{ item.type === 'custom' }}">[ 自定义消息 ]</view>
+        <view wx:if="{{ item.type === 'file' }}">暂不支持文件下载预览</view>
+        <view wx:if="{{ item.type === 'loc' }}">暂不支持位置消息展示</view>
+      </view>
+      <view wx:if="{{ item.isRecall }}" class="{{ item.from === loginUserId ? 'message_item_content_right' : 'message_item_content_left'}} recall_text">
+        <text>撤回了</text>
+        <text wx:if="{{ item.type === 'txt' }}">一段文本消息。</text>
+        <text wx:if="{{ item.type === 'img' }}">一张图片。</text>
+        <text wx:if="{{ item.type === 'video' }}">一个视频。</text>
+        <text wx:if="{{ item.type === 'audio' }}">一条语音。</text>
+        <!-- <text wx:if="{{ item.type === 'custom' }}">自定义消息</text> -->
+      </view>
+      <!-- 消息时间 -->
+      <view class="message_item_content_time">{{ item.formattedTimestamp }}</view>
+    </view>
+  </view>
+</scroll-view>
+<van-action-sheet show="{{ show }}" bind:close="onClose" cancel-text="取消" bind:cancel="onClose">
+  <van-cell wx:if="{{ selectedMessageItem.type === 'txt' }}" title="复制" icon="/static/message/doc_on_doc.png" clickable bind:tap="copyTextMessageItem" />
+  <van-cell wx:if="{{ !selectedMessageItem.from || selectedMessageItem.from === loginUserId }}" title="撤回" icon="/static/message/arrow_Uturn_anti_clockwise.png" clickable bind:tap="actionRecallMessage" />
+</van-action-sheet>

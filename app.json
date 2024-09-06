@@ -1,0 +1,48 @@
+{
+  "pages": [
+    "pages/login/index",
+    "pages/conversation/index",
+    "pages/contacts/index",
+    "pages/mine/index",
+    "pages/chat/index",
+    "pages/addContacts/index",
+    "pages/groupList/index",
+    "pages/blackList/index",
+    "pages/contactsDetail/index",
+    "pages/groupDetail/index",
+    "pages/contactsRemark/index",
+    "pages/groupMemberList/index",
+    "pages/editGroupInfos/index",
+    "pages/createGroup/index",
+    "pages/notifications/index",
+    "pages/profileEdit/profilePrview/index",
+    "pages/profileEdit/nicknameEdit/index",
+    "pages/groupMemberList/addGroupMember/index",
+    "pages/groupMemberList/deleteGroupMember/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "EaseIM",
+    "navigationBarBackgroundColor": "#ffffff"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#000000",
+    "selectedColor": "#3cc51f",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/conversation/index"
+      },
+      {
+        "pagePath": "pages/contacts/index"
+      },
+      {
+        "pagePath": "pages/mine/index"
+      }
+    ]
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

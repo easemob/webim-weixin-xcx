@@ -1,0 +1,129 @@
+.scroll_view {
+  height: 100%;
+  width: 100%;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.message_item_container {
+  display: flex;
+  width: 100%;
+  margin: 20rpx 0;
+}
+
+.message-bubble-left {
+  flex-direction: row;
+  color: #000;
+}
+
+.message-bubble-right {
+  flex-direction: row-reverse;
+  color: #fff;
+}
+.message_item_content_box{
+  width: 100%;
+  /* background: pink; */
+  display: flex;
+  flex-direction: column;
+}
+.message_item_content_box_left{
+  align-items: flex-start;
+}
+.message_item_content_box_right{
+  align-items: flex-end;
+}
+.message_item_content_right,
+.message_item_content_left {
+  max-width: 60%;
+  min-width: 15%;
+  min-height: 90rpx;
+  padding: 8rpx 10rpx;
+  box-sizing: border-box;
+  margin: 0 10rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.message_item_content_left {
+  background-color: #E8F4FD;
+  border-radius: 0 20rpx 20rpx 20rpx;
+}
+
+.message_item_content_right {
+  background-color: #459CF8;
+  border-radius: 20rpx 20rpx 0 20rpx;
+}
+
+.message_item_content_nickname {
+  font-size: 26rpx;
+  color: #459CF8;
+  margin:0 10rpx 10rpx 10rpx;
+}
+
+.message_item_content_time {
+  font-size: 26rpx;
+  margin: 10rpx;
+  color: #E3E3E3;
+}
+
+/* 定义闪烁动画 */
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 音频消息的基础样式 */
+.audio_message {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 30rpx;
+  /* background-color: #f0f0f0; */
+  transition: background-color 0.3s;
+}
+
+/* 播放状态下的样式 */
+.audio_message.playing {
+  animation: blink 1s infinite;
+  /* 闪烁动画 */
+  background-color: #d1eaff;
+  /* 可以改变背景颜色以突出显示 */
+}
+
+.audio_message_play_icon {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.video_message {
+  position: relative;
+}
+
+.video_message_play_icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100rpx;
+  height: 100rpx;
+  transform: translate(-50%, -50%);
+  /* z-index: 99; */
+}
+
+.recall_text{
+  font-size: 25rpx;
+  background-color: #FFF;
+  font-weight: 200;
+  color: #000;
+}

@@ -1,0 +1,40 @@
+<view class="contacts_detail_container">
+  <!-- navbar -->
+  <van-nav-bar left-text="返回" left-arrow bind:click-left="onClickLeft">
+  </van-nav-bar>
+  <!-- 页面内容 -->
+  <view class="contacts_detail_container_header">
+    <van-image width="300rpx" height="300rpx" src="{{ avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" radius="20rpx" />
+    <text class="contacts_detail_container_header_title"> {{ remark || nickname || userId }}</text>
+    <view class="contacts_detail_content_id_box" bind:tap="copyUserId">
+      <text class="contacts_detail_content_id_text">ID：{{ userId }}</text>
+      <image class="contacts_detail_content_copy_icon" src="/static/mine/copy_icon.png"></image>
+    </view>
+    <view class="contacts_detail_container_header_func_box">
+      <view class="func_btn_container">
+        <view class="func_btn_container_view" bind:tap="onEntryChatPage">
+          <image src="/static/detail/bubble_fill.png" mode="aspectFill" />
+          <text>发消息</text>
+        </view>
+        <!-- <view class="func_btn_container_view">
+          <image src="/static/detail/magnifier.png" mode="aspectFill" />
+          <text>搜索消息</text>
+        </view> -->
+      </view>
+
+    </view>
+  </view>
+  <view class="contacts_detail_container_body">
+    <van-cell title="备注" value="{{remark}}" bind:tap="entryContactsRemarkPage" is-link />
+    <van-cell title="拉黑">
+      <van-switch checked="{{ blackchecked }}" size="40rpx" loading="{{ switchLoading }}" bind:change="onChange" />
+    </van-cell>
+    <van-cell title="清空聊天记录" is-link />
+    <van-cell clickable bind:tap="onDeleteContacts">
+      <view slot="title">
+        <view style="color:red" >删除好友</view>
+      </view>
+    </van-cell>
+  </view>
+  <van-dialog id="van-dialog" confirm-button-color="#009eff" />
+</view>
