@@ -1,0 +1,13 @@
+<!-- navbar -->
+<van-nav-bar bind:click-left="onClickLeft">
+    <view slot="left">
+      <van-icon color="#009eff" name="arrow-left" />
+      <text>修改昵称</text>
+    </view>
+  </van-nav-bar>
+<view class="nickname_edit_textarea_container">
+  <van-field  model:value="{{ inputValue }}"  type="textarea" placeholder="请输出..." autosize show-word-limit maxlength="15"  border="{{ false }}"  auto-focus="{{ true }}"  />
+  <view class="nickname_edit_sava_button_box">
+    <van-button type="info" size="small" bind:tap="handleSaveNicknameEditValue">确认修改</van-button>
+  </view>
+</view>

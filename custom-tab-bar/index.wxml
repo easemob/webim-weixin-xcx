@@ -1,0 +1,18 @@
+<!--layout/tabbar/index.wxml-->
+<van-tabbar active="{{ active }}" bind:change="onTabbarChange" placeholder="{{ tabbarPlaceholder }}" border="{{ border }}">
+  <van-tabbar-item info="{{totalUnreadCount>0?totalUnreadCount:''}}">
+    <image slot="icon" src="/static/tabbar/conversation.png" mode="aspectFit" style="width: 50rpx; height: 50rpx;" />
+    <image slot="icon-active" src="/static/tabbar/conversation_active.png" mode="aspectFit" style="width: 50rpx; height: 50rpx;" />
+    会话
+  </van-tabbar-item>
+  <van-tabbar-item dot="{{ notificationsList.length }}">
+    <image slot="icon" src="/static/tabbar/contacts.png" mode="aspectFit" style="width: 50rpx; height: 50rpx;" />
+    <image slot="icon-active" src="/static/tabbar/contacts_active.png" mode="aspectFit" style="width: 50rpx; height: 50rpx;" />
+    联系人
+  </van-tabbar-item>
+  <van-tabbar-item>
+    <image slot="icon" src="/static/tabbar/mine.png" mode="aspectFit" style="width: 50rpx; height: 50rpx;" />
+    <image slot="icon-active" src="/static/tabbar/mine_active.png" mode="aspectFit" style="width: 50rpx; height: 50rpx;" />
+    我的
+  </van-tabbar-item>
+</van-tabbar>

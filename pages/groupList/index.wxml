@@ -1,0 +1,29 @@
+<view class="group_list_container">
+  <!-- navbar -->
+  <van-nav-bar left-text="返回" left-arrow bind:click-left="onClickLeft">
+    <view slot="title">群组列表
+      <van-loading wx:if="{{joinGroupListLoading}}" color="#1989fa" size="25rpx" />
+    </view>
+  </van-nav-bar>
+  <!-- 会话列表加载骨架屏 -->
+  <view class="converstation_skeleton_container" wx:if="loading" wx:for="{{20}}" wx:key="index">
+    <van-skeleton title avatar row="1" loading="{{ loading }}" />
+  </view>
+  <van-search model:value="{{ searchGroupListValue }}" placeholder="搜索群组" bind:search="onSearch" bind:cancel="onSearchCancel" bind:focus="onSearchFocus" bind:change="onActionSearchInputValue" />
+  <van-cell title="创建群组" is-link bind:tap="entryCreateGroupPage" />
+  <scroll-view scroll-y="true" lower-threshold="100" class="scroll-content" bindscrolltolower="onJoinGroupListScrolltolower">
+    <van-cell wx:for="{{ searchStatus? searchSourceData: joinedGroupList }}" wx:key="groupId" wx:for-item="joinGroupItem" center label="{{ joinGroupItem.groupId }}" clickable data-groupid="{{ joinGroupItem.groupId }}" data-grouprole="{{ joinGroupItem.role }}" bind:tap="entryGroupDetailPage">
+      <view slot="title" class="title_container">
+        <view class="van-cell-text text-ellipsis">{{joinGroupItem.groupName || joinGroupItem.groupId}}</view>
+        <view wx:if="{{joinGroupItem.affiliationsCount>0}}">({{joinGroupItem.affiliationsCount}})</view>
+        <van-tag plain wx:if="{{ joinGroupItem.role==='owner' }}" type="danger">群主</van-tag>
+        <van-tag plain wx:if="{{ joinGroupItem.role==='admin' }}" type="success">管理员</van-tag>
+      </view>
+      <van-icon slot="icon" size="100rpx" custom-style="margin-right:20rpx;" name="/static/avatar/defaultAvatarGroup.png" />
+      <view slot="right-icon">
+        <van-tag type="success" wx:if="{{ joinGroupItem.public }}">公开群</van-tag>
+        <van-tag type="danger" wx:if="{{ !joinGroupItem.public}}">私有群</van-tag>
+      </view>
+    </van-cell>
+  </scroll-view>
+</view>

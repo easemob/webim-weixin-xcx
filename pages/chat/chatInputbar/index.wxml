@@ -1,0 +1,28 @@
+<!--pages/chat/chatInputbar/index.wxml-->
+<!-- inputbar 等高占位元素 -->
+<view class="chat_inputbar_placeholder" style="margin-bottom: {{sageAreaBottomHeight}}px;"></view>
+<!-- inputbar 容器 -->
+<view class="chat_inputbar_container" style="margin-bottom: {{sageAreaBottomHeight}}px;">
+  <view class="chat_inputbar_container_content">
+    <!-- 音频 -->
+    <view class="chat_inputbar_container_audio" bind:tap="onOpenRecordAudioPopup">
+      <image class="input_icon" src="/static/input/wave_in_circle.png" mode="aspectFill" />
+    </view>
+    <!-- 文本输入 -->
+    <view class="chat_inputbar_container_input_box">
+      <input  model:value="{{ messageContent }}" cursor="{{20}}" auto-height="{{true}}" confirm-type="send" adjust-keyboard-to="bottom" show-confirm-bar="{{false}}" bindconfirm="sendTextMessage" bindinput="handleInput" bindfocus="handleFocus" bindblur="handleBlur" />
+    </view>
+    <!-- 表情 -->
+    <view class="chat_inputbar_container_emoji_box" bind:tap="onHandleEomjiPickerContainer">
+      <image class="input_icon" src="/static/input/face.png" mode="aspectFill" />
+    </view>
+    <!-- 更多 -->
+    <view class="chat_inputbar_container_more_func_box" bind:tap="onOpenMoreComponent">
+      <image class="input_icon" src="/static/input/plus.png" mode="aspectFill" />
+    </view>
+  </view>
+  <!-- 表情选择组件 -->
+  <input-emoji-comp id="inputEmojiComp" bindinsertAtCursor="insertAtCursor" />
+</view>
+<input-audio-comp id="inputAudioComp" chat-type="{{ chatType }}" target-id="{{ targetId }}" bindcallUpdateMessageList="callUpdateMessageList" />
+<input-more-comp id="inputMoreComp" chat-type="{{ chatType }}" target-id="{{ targetId }}" bindcallUpdateMessageList="callUpdateMessageList" />

@@ -1,0 +1,15 @@
+.remark_textarea_container{
+  width: 100%;
+  height: 100%;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+.remark_textarea_style{
+  width: 100%;
+  background-color: #EEF0F1;
+  border-radius: 10rpx;
+}
+.remark_sava_button_box{
+  width: 100%;
+  text-align: right;
+}

@@ -1,0 +1,9 @@
+<van-nav-bar title="添加朋友" left-text="返回" left-arrow bind:click-left="onClickLeft" />
+<!-- 搜索输入框 -->
+<van-search model:value="{{ searchContactValue }}" placeholder="请输入联系人ID" bind:search="onActionSearchContact"  bind:cancel="onSearchCancel" bind:clear="onSearchClear" bind:change="onSearchChange" />
+<van-cell wx:if="{{ searchResultData.userId  }}" center title="{{searchResultData.nickname || '暂无昵称'}}" label="{{ searchResultData.userId }}">
+  <van-icon  slot="icon" size="100rpx" custom-style="margin-right:20rpx;" name="{{ searchResultData.avatarurl?searchResultData.avatarurl: '/static/avatar/defaultAvatarSingle.png' }}"  />
+  <van-button type="info" size="mini" bind:tap="onAddContact">添加</van-button>
+</van-cell>
+<!-- 搜索结果预览框 -->
+<van-empty wx:if="{{ !searchContactValue}}" image="search" description="搜索联系人" />

@@ -1,0 +1,11 @@
+<!--pages/chat/chatNavbar/index.wxml-->
+<!-- nav-bar -->
+<van-nav-bar fixed placeholder="{{ true }}">
+  <view class="chat_navbar_left_container" slot="left">
+    <van-icon color="#009eff" name="arrow-left" size="40rpx" bind:tap="onBackPage" />
+    <van-icon wx:if="{{ chatType==='groupChat' }}" size="50rpx" name="/static/avatar/defaultAvatarGroup.png" />
+    <van-icon wx:if="{{ chatType==='singleChat' }}" size="50rpx" name="{{ conversationParams.avatarurl?conversationParams.avatarurl:'/static/avatar/defaultAvatarSingle.png' }}" />
+    <view class="chat_navbar_title">{{ conversationParams.title || targetId }}</view>
+  </view>
+
+</van-nav-bar>

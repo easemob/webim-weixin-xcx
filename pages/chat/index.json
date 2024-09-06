@@ -1,0 +1,8 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "chat-navbar":"./chatNavbar/index",
+    "chat-message-container":"./chatMessageContainer/index",
+    "chat-inputbar":"./chatInputbar/index"
+  }
+}

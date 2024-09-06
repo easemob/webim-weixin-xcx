@@ -1,9 +1,14 @@
-.idea/*
+# Windows
+[Dd]esktop.ini
+Thumbs.db
+$RECYCLE.BIN/
+
+# macOS
 .DS_Store
-.swp
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+
+# Node.js
 node_modules/
-build/
-.cache/
-emedia_for_wx/
-src/miniprogram_npm/*
-src/emedia/webrtc/*

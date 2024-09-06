@@ -1,0 +1,27 @@
+<view class="group_member_list_container">
+  <!-- navbar -->
+  <van-nav-bar bind:click-left="onClickLeft">
+    <view slot="left">
+      <van-icon color="#009eff" name="arrow-left" />
+      <text>群成员</text>
+    </view>
+  </van-nav-bar>
+  <view wx:if="{{ groupRole === 'owner' }}" class="group_member_handler_box">
+    <van-cell icon="/static/group/person_add_fill.png" title="添加群成员" is-link bind:tap="entryAddGroupMemberPage" />
+    <van-cell icon="/static/group/person_minus_fill.png" title="删除群成员" is-link bind:tap="entryDeleteGroupMemberPage" />
+  </view>
+  <scroll-view class="scroll-content" scroll-y="true" lower-threshold="100" bindscrolltolower="onGroupMemberListScrolltolower">
+    <van-cell-group title="群组成员">
+      <van-cell wx:for="{{ groupMemberList }}" wx:key="member" wx:for-item="groupMemberItem" inset="true" clickable="true" label="{{  groupMemberItem.member || groupMemberItem.owner }}">
+        <van-icon slot="icon" size="100rpx" custom-style="margin-right:20rpx;" name="{{ groupMemberItem.userInfo.avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" />
+        <view slot="title" class="title_container">
+          <view class="van-cell-text">{{ groupMemberItem.userInfo.nickname || groupMemberItem.member ||groupMemberItem.owner }}</view>
+        </view>
+        <view slot="right-icon">
+          <van-tag plain wx:if="{{ groupMemberItem.owner }}" type="danger">群主</van-tag>
+          <van-tag plain wx:if="{{ groupMemberItem.member }}" type="success">成员</van-tag>
+        </view>
+      </van-cell>
+    </van-cell-group>
+  </scroll-view>
+</view>

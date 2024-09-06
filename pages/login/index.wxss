@@ -1,0 +1,52 @@
+/* pages/login/index.wxss */
+.login_logo_container{
+  width: 100%;
+  height: 400rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.login_logo{
+  width: 200rpx;
+  height: 200rpx;
+}
+.login_title_text{
+  text-align: center;
+  width: 100%;
+  height: 200rpx;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #009eff;
+}
+.login_input_container{
+  padding: 25rpx;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+.login_button_container{
+  padding: 25rpx;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+.login_privacy_box{
+  width: 100%;
+  height: 60rpx;
+  margin: 10rpx 0;
+}
+.login_privacy_text{
+  font-size: .5em;
+  font-weight: bold;
+  color: #009eff;
+  
+}
+.login_button{
+  margin: 20rpx 0;
+}
+.custom-field {
+  border: 1px solid #ebedf0; /* 边框颜色 */
+  border-radius: 4px; /* 边框圆角 */
+  padding: 10px; /* 内边距 */
+}

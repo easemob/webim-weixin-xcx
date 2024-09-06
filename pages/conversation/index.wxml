@@ -1,0 +1,42 @@
+<!-- 会话列表正式UI页面 -->
+<view class="conversation_container">
+  <!-- nav-bar -->
+  <van-nav-bar>
+    <van-image slot="left" width="60rpx" height="60rpx" radius="5" src="{{ loginUserInfosData.avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" />
+    <view slot="title">会话
+      <van-loading wx:if="{{conversationLoading}}" color="#1989fa" size="25rpx" />
+    </view>
+  </van-nav-bar>
+  <!-- 会话列表加载骨架屏 -->
+  <view wx:if="loading" wx:for="{{20}}" wx:key="index">
+    <van-skeleton title avatar row="1" loading="{{ loading }}" />
+  </view>
+  <!-- 搜索输入框 -->
+  <van-search model:value="{{ searchConversationValue }}" placeholder="请输入搜索关键词" bind:focus="onSearchFocus" bind:cancel="onSearchCancel" bind:change="onActionSearchInputValue" />
+  <!-- 会话列表滚动 -->
+  <van-empty wx:if="{{ !enrichedConversationList.length }}" description="暂无会话" />
+  <scroll-view wx:if="{{ enrichedConversationList.length }}" class="scroll-content" scroll-y="true" bindscrolltolower="onConversationScrolltolower">
+    <van-cell wx:for="{{  searchStatus? searchSourceData: enrichedConversationList}}" wx:for-item="conversationItem" wx:key="conversationId" inset="true" clickable="true" bind:longpress="onCallOpenConversationHandlerActionSheet" data-conversationid="{{conversationItem.conversationId}}" data-conversationtype="{{conversationItem.conversationType}}" data-conversation-item="{{ conversationItem }}" bind:tap="onEntryChatPage">
+      <!-- 会话头像 -->
+      <van-icon wx:if="{{ conversationItem.conversationType==='singleChat' }}" slot="icon" size="100rpx" custom-style="margin-right:20rpx;" name="{{ conversationItem.avatarurl?conversationItem.avatarurl: '/static/avatar/defaultAvatarSingle.png' }}" info="{{ conversationItem.unReadCount?conversationItem.unReadCount : '' }}" />
+      <van-icon wx:if="{{ conversationItem.conversationType==='groupChat' }}" slot="icon" size="100rpx" custom-style="margin-right:20rpx;" name="/static/avatar/defaultAvatarGroup.png" info="{{ conversationItem.unReadCount?conversationItem.unReadCount : '' }}" />
+      <!-- 会话标题以及预览 -->
+      <view slot="title">
+        <view wx:if="{{ conversationItem.conversationType === 'singleChat' }}" class="text-ellipsis">{{ conversationItem.remark || conversationItem.nickname || conversationItem.conversationId}}</view>
+        <view wx:if="{{ conversationItem.conversationType === 'groupChat' }}" class="text-ellipsis">{{ conversationItem.name || conversationItem.conversationId}}</view>
+        <view class="text-ellipsis" wx:if="{{ conversationItem.lastMessage.type==='txt' }}">{{ conversationItem.lastMessage.msg }}</view>
+        <view wx:if="{{ conversationItem.lastMessage.type==='img' }}">[图片]</view>
+        <view wx:if="{{ conversationItem.lastMessage.type==='video' }}">[视频]</view>
+        <view wx:if="{{ conversationItem.lastMessage.type==='audio' }}">[语音]</view>
+        <view wx:if="{{ conversationItem.lastMessage.type==='loc' }}">[位置]</view>
+        <view wx:if="{{ conversationItem.lastMessage.type==='custom' }}">[自定义消息]</view>
+      </view>
+      <!-- 会话时间 -->
+      <view slot="right-icon">
+        {{ conversationItem.lastMessage.time }}
+      </view>
+    </van-cell>
+  </scroll-view>
+  <view class="tabbar_placeholder_box" style="height: {{tabbarPlaceholderHeight}}px;"></view>
+</view>
+<van-action-sheet z-index="{{9999999}}" root-portal="{{ true }}" show="{{ showConversationHandlerActionSheet }}" actions="{{ actions }}" bind:close="onCloseConversationHandlerActionSheet" bind:select="onSelectConversationHandlerOptions" bind:cancel="onCloseConversationHandlerActionSheet" cancel-text="取消" />

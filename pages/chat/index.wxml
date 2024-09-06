@@ -1,0 +1,6 @@
+<!--pages/chat/index.wxml-->
+<view class="chat_container">
+  <chat-navbar chat-type="{{ chatType }}" target-id="{{ targetId }}" conversation-params="{{ conversationParams }}"></chat-navbar>
+  <chat-message-container id="chatMessageContainerComp" class="chat_message_container" chat-type="{{ chatType }}" target-id="{{ targetId }}" message-list="{{ messageList }}" conversation-params="{{ conversationParams }}" login-user-infos-data="{{ loginUserInfosData }}" bindonLoadMoreHistoryMessageData="onLoadMoreHistoryMessageData" bindhandleRecallMessage="handleRecallMessage" catchtap="onMessagePageTap" />
+  <chat-inputbar chat-type="{{ chatType }}" target-id="{{ targetId }}" bindupdateMessageList="updateMessageList" id="chatInputbarComp" />
+</view>

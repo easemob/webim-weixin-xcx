@@ -1,4 +1,0 @@
-<view class='swipedelete-wrapper' bindtouchmove='touchMoveHandler' bindtouchstart='touchStartHandler' style="transform:translateX({{translateX}}rpx)">
-	<slot></slot>
-  <view class='swipedelete-btn' bindtap='deleteItem'>删除</view>
-</view>

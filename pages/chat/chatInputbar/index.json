@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "input-audio-comp":"./InputAudioComp/index",
+    "input-emoji-comp":"./InputEmojiComp/index",
+    "input-more-comp":"./InputMoreComp/index"
+  }
+}

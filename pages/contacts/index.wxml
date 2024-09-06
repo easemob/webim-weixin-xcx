@@ -1,0 +1,36 @@
+<!--pages/contacts/index.wxml-->
+<view class="contacts_container">
+  <!-- nav-bar -->
+  <van-nav-bar>
+    <van-image slot="left" width="60rpx" height="60rpx" radius="5" src="{{ loginUserInfosData.avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" />
+    <view slot="title">联系人
+      <van-loading wx:if="{{conversationLoading}}" color="#1989fa" size="25rpx" />
+    </view>
+  </van-nav-bar>
+  <!-- 搜索输入框 -->
+  <van-search model:value="{{ searchContactsValue }}" placeholder="请输入搜索关键词" input-align="center" bind:focus="onSearchFocus" bind:cancel="onSearchCancel" bind:change="onActionSearchInputValue" />
+  <!-- 联系人内容 -->
+  <view class="contacts_content">
+    <van-cell-group>
+      <van-cell is-link  link-type="navigateTo" url="/pages/notifications/index">
+        <view slot="title" style="display: flex; align-items: center;">
+          <view style="margin-right: 10rpx;">新请求</view>
+          <van-icon wx:if="{{ notificationsList.length }}" dot />
+        </view>
+      </van-cell>
+      <van-cell is-link title="添加朋友" link-type="navigateTo" url="/pages/addContacts/index" />
+      <van-cell is-link title="群组" link-type="navigateTo" url="/pages/groupList/index" />
+      <van-cell is-link title="黑名单" link-type="navigateTo" url="/pages/blackList/index" />
+    </van-cell-group>
+
+    <scroll-view class="scroll-content" scroll-y="true" bindscrolltolower="onContactsScrolltolower">
+      <van-cell-group title="联系人">
+        <van-cell wx:for="{{ searchStatus? searchSourceData: enrichedContactsList }}" wx:key="userId" wx:for-item="contactsItem" inset="true" clickable="true" title="{{contactsItem.remark || contactsItem.nickname  || contactsItem.userId}}" label="{{ contactsItem.userId }}" data-userid="{{contactsItem.userId}}" data-remark="{{ contactsItem.remark }}" data-avatarurl="{{ contactsItem.avatarurl }}" data-nickname="{{ contactsItem.nickname }}" bind:tap="entryContactDetailPage">
+          <van-icon slot="icon" size="100rpx" custom-style="margin-right:20rpx;" name="{{ contactsItem.avatarurl || '/static/avatar/defaultAvatarSingle.png' }}" />
+        </van-cell>
+      </van-cell-group>
+    </scroll-view>
+  </view>
+  <!-- tabbar等高占位 -->
+  <view class="tabbar_placeholder_box" style="height: {{tabbarPlaceholderHeight}}px;"></view>
+</view>
