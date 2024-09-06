@@ -1,8 +1,0 @@
-<view class="inform">
-	<text class="defaultText" wx:if="{{ !friendList.length > 0 }}">暂时没有新的通知</text>
-	<view wx:for="{{ friendList }}" wx:key="" class="itemBar">
-		<text class="itemName">{{ item.from }}请求添加你为好友</text>
-		<button data-from="{{ item.from }}" class="rejectBtn" type="warn" size="mini" bindtap="reject">拒绝</button>
-		<button data-from="{{ item.from }}" class="agreeBtn" type="primary" size="mini" bindtap="agree">同意</button>
-	</view>
-</view>
