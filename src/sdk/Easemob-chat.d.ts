@@ -215,22 +215,32 @@ export declare namespace EasemobChat {
 	}
 
 	interface NotificationConMultiDeviceInfo {
+		/** The multi-device conversation event. */
 		operation:
 			| 'setSilentModeForConversation'
 			| 'removeSilentModeForConversation';
+		/** The client resource. */
 		resource: string;
+		/** The conversation ID. */
 		conversationId: string;
+		/** The conversation type. */
 		type: 'singleChat' | 'groupChat';
+		/** The silent mode type. */
 		data: {
+			/** The silent mode type. */
 			type?: 'AT' | 'NONE' | 'ALL';
+			/** The silent mode duration. */
 			ignoreDuration?: number;
 		};
 	}
 	interface NotificationUserMultiDeviceInfo {
+		/** The multi-device conversation event. */
 		operation: 'setSilentModeForUser';
+		/** The client resource. */
 		resource: string;
-		// user: string;
+		/** The silent mode type. */
 		data: {
+			/** Silent mode interval. */
 			ignoreInterval: string;
 		};
 	}
@@ -4144,6 +4154,18 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<UploadTokenResult>>;
 
 		/**
+		 *
+		 * Unbind push device token.
+		 *
+		 * ```typescript
+		 * connection.unbindPushToken()
+		 * ```
+		 */
+		unbindPushToken(
+			this: Connection
+		): Promise<AsyncResult<UploadTokenResult>>;
+
+		/**
 		 * @deprecated Use {@link getConversationlist} instead.
 		 * Gets the conversation list.
 		 *
@@ -4391,14 +4413,15 @@ export declare namespace EasemobChat {
 		removeHistoryMessages(
 			this: Connection,
 			options: {
-				/** The ID of the peer user or group. */
+				/** The ID of the peer user , group ID or chatRoom ID. */
 				targetId: string;
 				/**
-				 * conversation type:
-				 * - `singleChat`: single chat;
+				 * The conversation type:
+				 * - `singleChat`: one-to-one chat;
 				 * - `groupChat`: group chat.
+				 * - `chatRoom`: chat room.
 				 */
-				chatType: 'singleChat' | 'groupChat';
+				chatType: ChatType;
 				/** The ID list of messages to be deleted. A maximum of 20 message IDs can be passed in. */
 				messageIds?: Array<string>;
 				/** The starting timestamp for message deletion. Messages with the timestamp before the specified one will be deleted. */
@@ -5660,6 +5683,8 @@ export declare namespace EasemobChat {
 		ext?: string;
 		/** The reason for the event. */
 		reason?: string;
+		/** The updated announcement. */
+		announcement?: string;
 	}
 
 	interface GetChatroomAttributesResult {
@@ -5797,6 +5822,8 @@ export declare namespace EasemobChat {
 		memberCount?: number;
 		/** The reason for the event. */
 		reason?: string;
+		/** The updated announcement. */
+		announcement?: string;
 	}
 
 	interface ChatroomEvent {
@@ -5857,6 +5884,8 @@ export declare namespace EasemobChat {
 		ext?: string;
 		/** The reason for the event. */
 		reason?: string;
+		/** The updated announcement. */
+		announcement?: string;
 	}
 
 	interface MessagePinEvent {
@@ -6214,6 +6243,7 @@ export declare namespace EasemobChat {
 		gid?: string;
 		owner?: string;
 		reason?: string;
+		announcement?: string;
 		kicked?: string;
 		detail?: GroupModifyInfo;
 		ext?: string;
