@@ -1,5 +1,5 @@
 
-import websdk from "../sdk/Easemob-chat-4.10.0";
+import websdk from "../sdk/Easemob-chat-4.11.0";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
