@@ -26,19 +26,6 @@ export declare namespace EasemobChat {
 	/** The group ID.  */
 	type GroupId = string;
 
-	interface CommonRequestResult {
-		/** The result of request. */
-		result: boolean;
-		/** Action. */
-		action: string;
-		/** The reason of failure. */
-		reason?: string;
-		/** The user ID. */
-		user: string;
-		/** The group/chat room ID. */
-		id: string;
-	}
-
 	interface Jid {
 		appKey: string;
 		clientResource: string;
@@ -256,9 +243,11 @@ export declare namespace EasemobChat {
 		| GroupMemberAttributesUpdateMultiDeviceInfo
 		| NotificationMultiDeviceInfo;
 
-	interface ConnectionParameters {
-		/** The unique application key registered in console. */
-		appKey: string;
+	type ConnectionParameters = {
+		/** The unique application key registered on the console. */
+		appKey?: string;
+		/** The unique application id registered on the console. */
+		appId?: string;
 		/** Whether to enable the delivery receipt function. - `true`: Enable; - (Default)`false`: Do not enable. */
 		delivery?: boolean;
 		/** Heartbeat interval, in milliseconds. */
@@ -285,7 +274,7 @@ export declare namespace EasemobChat {
 		 * <br> This parameter has an impact on the kicking policy during a multi-device login scenario.
 		 */
 		isFixedDeviceId?: boolean;
-	}
+	};
 
 	interface RegisterUserResult extends AsyncResult {
 		entities: BaseUserInfo[];
@@ -365,6 +354,24 @@ export declare namespace EasemobChat {
 		/** The chat room ID. */
 		id: string;
 	}
+
+	interface JoinChatRoomInfo {
+		/** Whether all members are muted. */
+		isAllMembersMuted: boolean;
+		/** Chatroom creation time. */
+		createTimestamp: number;
+		/** Whether the member is on the allowlist. */
+		isInAllowlist: boolean;
+		/** The current number of members in the chat room. */
+		memberCount: number;
+		/** The member mute expiration time. if the member is not muted, the value is -1. */
+		muteExpireTimestamp: number;
+	}
+
+	type JoinChatRoomResult = CommonRequestResult & {
+		/** The information returned after joining a chat room. */
+		info: JoinChatRoomInfo;
+	};
 
 	interface AddUsersToChatRoomResult {
 		/** The newly added members. */
@@ -1837,10 +1844,10 @@ export declare namespace EasemobChat {
 				 * -  (Default) `false`: The user joins the chat room, without leaving all other chat rooms.
 				 */
 				leaveOtherRooms?: boolean;
-				success?: (res: AsyncResult<CommonRequestResult>) => void;
+				success?: (res: AsyncResult<JoinChatRoomResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
-		): Promise<AsyncResult<CommonRequestResult>>;
+		): Promise<AsyncResult<JoinChatRoomResult>>;
 
 		/**
 		 * @deprecated Use {@link leaveChatRoom} instead.
@@ -5392,6 +5399,20 @@ export declare namespace EasemobChat {
 		): Promise<AsyncResult<TranslationLanguageType>>;
 
 		/**
+		 * Get all conversations in silent mode.
+		 *
+		 * ```typescript
+		 * connection.getSilentModeRemindTypeConversations({pageSize: 10})
+		 * ```
+		 */
+		getSilentModeRemindTypeConversations(params: {
+			/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be fetched. */
+			cursor?: string;
+			/** The number of data entries per page. The default value is 10. */
+			pageSize: number;
+		}): Promise<AsyncResult<GetSilentModeRemindTypeConversationsResult>>;
+
+		/**
 		 * Adds a reaction to the message.
 		 *
 		 * ```typescript
@@ -5634,6 +5655,9 @@ export declare namespace EasemobChat {
 				pageSize: number;
 			}
 		): Promise<AsyncResult<JoinedChatRoomsResult>>;
+
+		/** Execute this method during the onShow declaration cycle of the application, which will actively detect whether the current connection is valid. */
+		onShow(): void;
 	}
 
 	// ----- for EventHandler ------
@@ -5685,6 +5709,8 @@ export declare namespace EasemobChat {
 		reason?: string;
 		/** The updated announcement. */
 		announcement?: string;
+		/** Expiration time for user mute. */
+		muteTimestamp?: { [key: string]: number };
 	}
 
 	interface GetChatroomAttributesResult {
@@ -6247,6 +6273,7 @@ export declare namespace EasemobChat {
 		kicked?: string;
 		detail?: GroupModifyInfo;
 		ext?: string;
+		muteTimestamp?: { [key: string]: number };
 	}
 
 	interface ReadMsgSetParameters {
@@ -6518,6 +6545,10 @@ export declare namespace EasemobChat {
 		modifiedInfo?: ModifiedMsgInfo;
 		/** The list of message recipients. */
 		receiverList?: string[];
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	interface CreateTextMsgParameters {
@@ -6611,6 +6642,10 @@ export declare namespace EasemobChat {
 		onFileUploadError?: (error: any) => void;
 		/** The callback of file upload completion. */
 		onFileUploadComplete?: (data: { url: string; secret: string }) => void;
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	type CombineMsgList = Exclude<
@@ -6731,6 +6766,10 @@ export declare namespace EasemobChat {
 		deliverOnlineOnly?: boolean;
 		/** The list of message recipients. */
 		receiverList?: string[];
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	interface CreateCmdMsgParameters {
@@ -6845,6 +6884,10 @@ export declare namespace EasemobChat {
 		receiverList?: string[];
 		/** Message modified info. */
 		modifiedInfo?: ModifiedMsgInfo;
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	interface CreateCustomMsgParameters {
@@ -6965,6 +7008,10 @@ export declare namespace EasemobChat {
 		deliverOnlineOnly?: boolean;
 		/** The list of message recipients. */
 		receiverList?: string[];
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	interface CreateLocationMsgParameters {
@@ -7109,6 +7156,10 @@ export declare namespace EasemobChat {
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	interface CreateFileMsgParameters {
@@ -7255,6 +7306,10 @@ export declare namespace EasemobChat {
 		thumbnailWidth?: number;
 		/** The thumbnail height. */
 		thumbnailHeight?: number;
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	interface CreateImgMsgParameters {
@@ -7404,6 +7459,10 @@ export declare namespace EasemobChat {
 		deliverOnlineOnly?: boolean;
 		/** The list of message recipients. */
 		receiverList?: string[];
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	interface CreateAudioMsgParameters {
@@ -7553,6 +7612,10 @@ export declare namespace EasemobChat {
 		deliverOnlineOnly?: boolean;
 		/** The list of message recipients. */
 		receiverList?: string[];
+		/** Has the message been read (only single chat messages have this field). */
+		isRead?: boolean;
+		/** Has the message been delivered (only single chat messages have this field). */
+		isDelivered?: boolean;
 	}
 
 	interface CreateVideoMsgParameters {
