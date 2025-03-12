@@ -59,14 +59,14 @@ export declare namespace EasemobChat {
 	}
 
 	/** The modified message. */
-	type ModifiedMsg = TextMsgBody;
+	type ModifiedMsg = ExcludeAckMessageBody;
 
 	/** Messages supported by the `onModifiedMessage` event. */
-	type ModifiedEventMessage = TextMsgBody | CustomMsgBody;
+	type ModifiedEventMessage = ExcludeAckMessageBody;
 
 	interface ModifyMsgResult extends SendMsgResult {
-		/** The modified message. */
-		message: ModifiedMsg;
+		/** The modified info of the message. */
+		modifiedInfo: ModifiedMsgInfo;
 	}
 
 	interface ModifiedMsgInfo {
@@ -1668,7 +1668,7 @@ export declare namespace EasemobChat {
 				/** (Optional) The members in the chat room. An array of user IDs. If you set this parameter, ensure that the array contains at least one user. */
 				members?: UserId[];
 				/** The super admin token. */
-				token: string;
+				token?: string;
 				success?: (res: AsyncResult<CreateDeleteChatRoomResult>) => any;
 				error?: (error: ErrorEvent) => any;
 			}
@@ -1727,11 +1727,11 @@ export declare namespace EasemobChat {
 				/** The chat room ID. */
 				chatRoomId: string;
 				/** The chat room name. */
-				chatRoomName: string;
+				chatRoomName?: string;
 				/** The description of the chat room. */
-				description: string;
+				description?: string;
 				/** The maximum number of members in the chat room. */
-				maxusers: number;
+				maxusers?: number;
 				success?: (res: AsyncResult<ModifyChatRoomResult>) => void;
 				error?: (error: ErrorEvent) => void;
 			}
@@ -2431,8 +2431,8 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				chatRoomId: string;
-				success: (res: AsyncResult<UserId[]>) => void;
-				error: (error: ErrorEvent) => void;
+				success?: (res: AsyncResult<UserId[]>) => void;
+				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<UserId[]>>;
 
@@ -2448,8 +2448,8 @@ export declare namespace EasemobChat {
 			params: {
 				/** The chat room ID. */
 				chatRoomId: string;
-				success: (res: AsyncResult<UserId[]>) => void;
-				error: (error: ErrorEvent) => void;
+				success?: (res: AsyncResult<UserId[]>) => void;
+				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<UserId[]>>;
 
@@ -2540,10 +2540,10 @@ export declare namespace EasemobChat {
 				roomId: string;
 				/** The announcement content. */
 				announcement: string;
-				success: (
+				success?: (
 					res: AsyncResult<UpdateChatRoomAnnouncementResult>
 				) => void;
-				error: (error: ErrorEvent) => void;
+				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<UpdateChatRoomAnnouncementResult>>;
 
@@ -4588,11 +4588,15 @@ export declare namespace EasemobChat {
 		): Promise<SendMsgResult>;
 
 		/**
-		 * Modifies a message on the server.
+		 * Modifies a message in the server.
 		 *
-		 * This method can only modify a text message in one-to-one chats or group chats, but not in chat rooms.
+		 * - Text message: Both the message body `msg` and extension information `ext` can be modified.
+		 * - Custom message: The custom extension property field  `customExts`, custom event type field `customEvent` , and message extension field `ext`  can be modified.
+		 * - Image/video/voice/file/location/combined message: Only the message extension field `ext` can be modified.
+		 * - Command message: This type of message cannot be modified.
 		 *
-		 * Upon a message modification, the callback `onModifiedMessage` will be received by the message recipient(s) and in multi-device login scenarios.
+		 * The message recipient can listen for message changes via `onModifiedMessage`.  Also, this callback applies in multi-device scenarios.
+		 *
 		 *
 		 * ```typescript
 		 *
@@ -6612,6 +6616,8 @@ export declare namespace EasemobChat {
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 		/** The list of message recipients. */
 		receiverList?: string[];
 		/** The file URL. */
@@ -6764,6 +6770,8 @@ export declare namespace EasemobChat {
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 		/** The list of message recipients. */
 		receiverList?: string[];
 		/** Has the message been read (only single chat messages have this field). */
@@ -7006,6 +7014,8 @@ export declare namespace EasemobChat {
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 		/** The list of message recipients. */
 		receiverList?: string[];
 		/** Has the message been read (only single chat messages have this field). */
@@ -7156,6 +7166,8 @@ export declare namespace EasemobChat {
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 		/** Has the message been read (only single chat messages have this field). */
 		isRead?: boolean;
 		/** Has the message been delivered (only single chat messages have this field). */
@@ -7306,6 +7318,8 @@ export declare namespace EasemobChat {
 		thumbnailWidth?: number;
 		/** The thumbnail height. */
 		thumbnailHeight?: number;
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 		/** Has the message been read (only single chat messages have this field). */
 		isRead?: boolean;
 		/** Has the message been delivered (only single chat messages have this field). */
@@ -7457,6 +7471,8 @@ export declare namespace EasemobChat {
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 		/** The list of message recipients. */
 		receiverList?: string[];
 		/** Has the message been read (only single chat messages have this field). */
@@ -7610,6 +7626,8 @@ export declare namespace EasemobChat {
 		 *  - (Default) `false`: The message is delivered when the recipient(s) is/are online. If the recipient(s) is/are offline, the message will not be delivered to them until they get online.
 		 */
 		deliverOnlineOnly?: boolean;
+		/** Message modified info. */
+		modifiedInfo?: ModifiedMsgInfo;
 		/** The list of message recipients. */
 		receiverList?: string[];
 		/** Has the message been read (only single chat messages have this field). */
