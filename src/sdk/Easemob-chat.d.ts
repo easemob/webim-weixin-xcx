@@ -274,6 +274,10 @@ export declare namespace EasemobChat {
 		 * <br> This parameter has an impact on the kicking policy during a multi-device login scenario.
 		 */
 		isFixedDeviceId?: boolean;
+		/** Custom platform, optional values [1-100]. Please refer to the multi device login document for details. */
+		customOSPlatform?: number;
+		/** Customize device name.  The device name can only be set through this parameter after configuring customOSPlatform. */
+		customDeviceName?: string;
 	};
 
 	interface RegisterUserResult extends AsyncResult {
@@ -551,6 +555,8 @@ export declare namespace EasemobChat {
 		public: boolean;
 		/** Whether on the blacklist. */
 		shieldgroup: boolean;
+		/** The group avatar. */
+		avatar: string;
 	}
 
 	interface ModifyGroupResult {
@@ -564,6 +570,8 @@ export declare namespace EasemobChat {
 		membersonly?: boolean;
 		/** Whether the permission invitation is modified successfully. */
 		allowinvites?: boolean;
+		/** Whether the group avatar is changed successfully. -`true`: Yes; -`false`: No. */
+		avatar?: boolean;
 	}
 
 	type GroupMember = { owner: UserId } | { member: UserId };
@@ -734,12 +742,19 @@ export declare namespace EasemobChat {
 
 	type GetGroupMembersAttributesResult = Record<UserId, MemberAttributes>;
 
+	type GroupMemberRole = 'owner' | 'admin' | 'member';
+	interface FetchedGroupMember {
+		role: GroupMemberRole;
+		userId: UserId;
+		joinedTime: number;
+	}
+
 	interface GroupModifyInfo {
 		/** The name of a group.  */
 		name?: string;
 		/** The description of a group.  */
 		description?: string;
-		/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `listgroups`. */
+		/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `getPublicGroups`. */
 		public?: boolean;
 		/** Whether a user requires the approval from the group owner or admin to join the group. -`true`: Yes; -`false`: No. */
 		approval?: boolean;
@@ -756,6 +771,8 @@ export declare namespace EasemobChat {
 		ext?: string;
 		/** Last Modified Timestamp.  */
 		lastModified?: number;
+		/** The group avatar. */
+		avatar?: string;
 	}
 
 	// The group api result end.
@@ -1420,6 +1437,11 @@ export declare namespace EasemobChat {
 		 */
 		USER_NOT_FRIEND = 221,
 
+		/** No permission to download file. */
+		WEBIM_DOWNLOADFILE_ERROR_NO_PERMISSION = 222,
+		/** The file has expired. */
+		WEBIM_DOWNLOADFILE_ERROR_EXPIRED = 223,
+
 		/** get DNS failed */
 		SERVER_GET_DNSLIST_FAILED = 304,
 
@@ -1911,6 +1933,8 @@ export declare namespace EasemobChat {
 		/**
 		 * Lists all chat room members with pagination.
 		 *
+		 * @deprecated Use {@link getChatRoomMembers} instead.
+		 *
 		 * ```typescript
 		 * connection.listChatRoomMembers({pageNum: 1, pageSize: 20, chatRoomId: 'chatRoomId'})
 		 * ```
@@ -1928,6 +1952,30 @@ export declare namespace EasemobChat {
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<{ member: string }[]>>;
+
+		/**
+		 * Gets the list chat room members with pagination.
+		 *
+		 * ```typescript
+		 * connection.getChatRoomMembers({cursor: '', limit: 50, chatRoomId: 'chatRoomId'})
+		 * ```
+		 */
+		getChatRoomMembers(
+			this: Connection,
+			params: {
+				/** The chat room ID. */
+				chatRoomId: string;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be fetched. */
+				cursor?: string;
+				/** The number of members retrieved per page.  The value range is [1,50], with 50 as the default.*/
+				limit?: number;
+			}
+		): Promise<
+			AsyncResult<{
+				cursor: string | undefined;
+				members: FetchedGroupMember[];
+			}>
+		>;
 
 		/**
 		 * Gets all admins of the chat room.
@@ -2641,11 +2689,13 @@ export declare namespace EasemobChat {
 				data: {
 					/** The group name. */
 					groupname: string;
+					/** The group avatar. */
+					avatar?: string;
 					/** The description of the group. */
 					desc: string;
 					/** The array of member IDs to add to the group. These users will be added directly into the group and receive "operation: 'directJoined'" in the callback of onGroupEvent. */
 					members: UserId[];
-					/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `listgroups`. */
+					/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `getPublicGroups`. */
 					public: boolean;
 					/** Whether a user requires the approval from the group admin to join the group. -`true`: Yes; -`false`: No.*/
 					approval: boolean;
@@ -2668,11 +2718,13 @@ export declare namespace EasemobChat {
 
 		/**
          * Creates group
+		 * @deprecated Use {@link createGroupVNext instead.}
          * 
          * ```typescript
          * connection.createGroup({
             data: {
                 groupname: 'groupname',
+				avatar: 'avatar',
                 desc: 'this is my group',
                 members: ['user1', 'user2'],
                 public: true,
@@ -2690,11 +2742,13 @@ export declare namespace EasemobChat {
 				data: {
 					/** The group name. */
 					groupname: string;
+					/** The group avatar. */
+					avatar?: string;
 					/** The description of the group. */
 					desc: string;
 					/** The array of member IDs to add to the group. These users will be added directly into the group and receive "operation: 'directJoined'" in the callback of onGroupEvent. */
 					members: UserId[];
-					/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `listgroups`. */
+					/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `getPublicGroups`. */
 					public: boolean;
 					/** Whether a user requires the approval from the group admin to join the group. -`true`: Yes; -`false`: No.*/
 					approval: boolean;
@@ -2714,6 +2768,54 @@ export declare namespace EasemobChat {
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<CreateGroupResult>>;
+
+		/**
+		 * Creates a group instance.
+		 *
+		 * ```typescript
+		 * connection.createGroupVNext({
+		 *  groupName: 'groupname',
+		 * 	avatar: 'group avatar',
+		 *  description: 'this is my group',
+		 *  members: ['user1', 'user2'],
+		 *  isPublic: true,
+		 * 	needApprovalToJoin: false,
+		 * 	allowMemberToInvite: true,
+		 * 	inviteNeedConfirm: false,
+		 * 	maxMemberCount: 200,
+		 * 	extension: JSON.stringify({info: 'group info'})
+		 * })
+		 * ```
+		 */
+		createGroupVNext(
+			this: Connection,
+			params: {
+				/** The group name. */
+				groupName?: string;
+				/** The group avatar. */
+				avatar?: string;
+				/** The description of the group. */
+				description?: string;
+				/** The array of member IDs to add to the group. These users will be added directly into the group and receive "operation: 'directJoined'" in the callback of onGroupEvent. */
+				members?: UserId[];
+				/** Whether it is a public group. -`true`: Yes; -`false`: No. Public group: the group that others can query by calling `getPublicGroups`. */
+				isPublic?: boolean;
+				/** Whether a user requires the approval from the group admin to join the group. -`true`: Yes; -`false`: No.*/
+				needApprovalToJoin?: boolean;
+				/** Whether to allow group members to invite others to the group. `true`: Allow; `false`: Do not allow.*/
+				allowMemberToInvite?: boolean;
+				/**
+				 * Whether the invitee needs to accept the invitation before joining the group.
+				 * - `true`: The invitee's consent is required. The default value is `true`.
+				 * - `false`: The invitee will be directly added to the group without confirmation.
+				 */
+				inviteNeedConfirm?: boolean;
+				/** The group max users. */
+				maxMemberCount?: number;
+				/** Group detail extensions which can be in the JSON format to contain more group information. */
+				extension?: string;
+			}
+		): Promise<AsyncResult<{ groupId: string }>>;
 
 		/**  @deprecated Use {@link blockGroupMessages instead.} */
 		blockGroup(
@@ -2912,6 +3014,8 @@ export declare namespace EasemobChat {
 				groupName?: string;
 				/** The group description. */
 				description?: string;
+				/** The group avatar. */
+				avatar?: string;
 				/** Group detail extensions which can be in the JSON format to contain more group information. */
 				ext?: string;
 				success?: (res: AsyncResult<ModifyGroupResult>) => void;
@@ -2936,6 +3040,7 @@ export declare namespace EasemobChat {
 
 		/**
 		 * Lists all members of the group with pagination.
+		 * @deprecated use {@link getGroupMembers} instead.
 		 *
 		 * ```typescript
 		 * connection.listGroupMembers({pageNum: 1, pageSize: 20, groupId: 'groupId'})
@@ -2954,6 +3059,30 @@ export declare namespace EasemobChat {
 				error?: (error: ErrorEvent) => void;
 			}
 		): Promise<AsyncResult<GroupMember[]>>;
+
+		/**
+		 * Gets the list group members with pagination.
+		 *
+		 * ```typescript
+		 * connection.getGroupMembers({cursor: '', limit: 50, groupId: 'groupId'})
+		 * ```
+		 */
+		getGroupMembers(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+				/** The cursor that specifies where to start to get data. If there will be data on the next page, this method will return the value of this field to indicate the position to start to get data of the next page. If it is null, the data of the first page will be fetched. */
+				cursor?: string;
+				/** The number of members retrieved per page.  The value range is [1,50], with 50 as the default.*/
+				limit?: number;
+			}
+		): Promise<
+			AsyncResult<{
+				cursor: string | undefined;
+				members: FetchedGroupMember[];
+			}>
+		>;
 
 		/**
 		 * Gets all admins in the group.
@@ -5696,7 +5825,7 @@ export declare namespace EasemobChat {
 		/** The ID of a group or chatroom. */
 		id: string;
 		/** Message sender. */
-		from: string;
+		from?: string;
 		/** The modified group info. */
 		detail?: GroupModifyInfo;
 		/** The name of a group or chatroom.  */
@@ -5715,6 +5844,8 @@ export declare namespace EasemobChat {
 		announcement?: string;
 		/** Expiration time for user mute. */
 		muteTimestamp?: { [key: string]: number };
+		/** User IDs of group members. */
+		members?: Array<string>;
 	}
 
 	interface GetChatroomAttributesResult {
@@ -5791,8 +5922,10 @@ export declare namespace EasemobChat {
 		 * removeMember:  Occurs when you are removed from a group or added to block list. Only the removed person receives this event.<br/>
 		 * unblockMember: Occurs when being removed from the block list. Only the removed person receives this event.<br/>
 		 * updateInfo: Occurs when modifying group. <br/>
-		 * memberPresence: Occurs when someone joined the group. <br/>
-		 * memberAbsence: Occurs when someone leaved the group. <br/>
+		 * memberPresence: Occurs when a user joined the group. <br/>
+		 * membersPresence: Occurs when more than one user joined the group. <br/>
+		 * memberAbsence: Occurs when a user leaved the group.<br/>
+		 * membersAbsence: Occurs when more than one user leaved the group. <br/>
 		 * directJoined: Occurs when you are directly pulled into the group and no consent is required. <br/>
 		 * changeOwner: Occurs when transferring group. Only new and old group owners can receive this event. <br/>
 		 * setAdmin: Occurs when being set as administrator. Only the person who is set to administrator can receive this event.<br/>
@@ -5822,7 +5955,9 @@ export declare namespace EasemobChat {
 			| 'unblockMember'
 			| 'updateInfo'
 			| 'memberPresence'
+			| 'membersPresence'
 			| 'memberAbsence'
+			| 'membersAbsence'
 			| 'directJoined'
 			| 'changeOwner'
 			| 'setAdmin'
@@ -5863,7 +5998,7 @@ export declare namespace EasemobChat {
 		 * unblockMember: Occurs when being removed from the block list. Only the removed person receives this event.<br/>
 		 * updateInfo: Occurs when modifying chat room. <br/>
 		 * memberPresence: Occurs when someone joined the chat room. <br/>
-		 * memberAbsence: Occurs when someone leaved the chat room. <br/>
+		 * memberAbsence: Occurs when someone leaved the chat room.  <br/>
 		 * setAdmin: Occurs when being set as administrator. Only the person who is set to administrator can receive this event.<br/>
 		 * removeAdmin: Occurs when you are removed as an administrator. Only the removed person can receive this event.  <br/>
 		 * muteMember: Occurs when you are muted. Only the person who is muted can receive this event. <br/>
@@ -5992,7 +6127,7 @@ export declare namespace EasemobChat {
 		onContactDeleted?: (msg: ContactMsgBody) => void;
 		/** The callback to added a contact. */
 		onContactAdded?: (msg: ContactMsgBody) => void;
-		/** The callback whose token is about to expire. */
+		/** Occurs when the token is about to expire. This event is triggered from when 20% of the validity period is left.*/
 		onTokenWillExpire?: () => void;
 		/** The callback whose token has expired. */
 		onTokenExpired?: () => void;
@@ -6220,7 +6355,8 @@ export declare namespace EasemobChat {
 		| 'img'
 		| 'audio'
 		| 'file'
-		| 'video';
+		| 'video'
+		| 'combine';
 
 	type ChatType = 'singleChat' | 'groupChat' | 'chatRoom';
 	interface FileObj {
@@ -7379,6 +7515,8 @@ export declare namespace EasemobChat {
 		thumbnailWidth?: number;
 		/** The thumbnail height. */
 		thumbnailHeight?: number;
+		/** Whether the image is a gif. */
+		isGif?: boolean;
 	}
 
 	interface AudioParameters {
