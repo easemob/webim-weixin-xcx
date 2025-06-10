@@ -4206,6 +4206,42 @@ export declare namespace EasemobChat {
 			}
 		): Promise<AsyncResult<GetGroupMembersAttributesResult>>;
 
+		/**
+		 * Gets the count of groups that the user has joined.
+		 * ```typescript
+		 * connection.getJoinedGroupsCount()
+		 * ```
+		 */
+		getJoinedGroupsCount(this: Connection): Promise<AsyncResult<number>>;
+
+		/**
+		 * Blocks group messages.
+		 * ```typescript
+		 * connection.blockGroupMessage({groupId: 'groupId'})
+		 * ```
+		 */
+		blockGroupMessage(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+			}
+		): Promise<AsyncResult<GroupRequestResult>>;
+
+		/**
+		 * Unblocks group messages.
+		 * ```typescript
+		 * connection.unblockGroupMessage({groupId: 'groupId'})
+		 * ```
+		 */
+		unblockGroupMessage(
+			this: Connection,
+			params: {
+				/** The group ID. */
+				groupId: string;
+			}
+		): Promise<AsyncResult<GroupRequestResult>>;
+
 		// Contact API
 		/**
 		 * @deprecated Use {@link getBlocklist} instead.
