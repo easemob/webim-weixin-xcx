@@ -19,28 +19,29 @@
 	</view>
 
 	<view class="login_user {{nameFocus}}">
-		<input type="text" placeholder="请输入您的手机号" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername" bindfocus="onFocusName" bindblur="onBlurName"/>
+		<input type="text" placeholder="用户ID" placeholder-style="color:rgb(173,185,193)" bindinput="bindUsername"
+			bindfocus="onFocusName" bindblur="onBlurName" />
 	</view>
-	<!-- <view class="login_pwd {{psdFocus}}">
+	<view class="login_pwd {{psdFocus}}">
 		<input type="text" password placeholder="用户密码" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword" bindfocus="onFocusPsd" bindblur="onBlurPsd"/>
-	</view> -->
+	</view>
 
-	<view class="login_sms {{psdFocus}}">
+	<!-- <view class="login_sms {{psdFocus}}">
 		<input type="text" placeholder="请输入验证码" hover-class="input-hover" placeholder-style="color:rgb(173,185,193)" bindinput="bindPassword" bindfocus="onFocusPsd" bindblur="onBlurPsd"/>
 		<button class="register-image" bindtap="getSmsCode">{{btnText}}</button>
-	</view>
+	</view> -->
 
 	<view class="login_btn">
 		<button hover-class="btn_hover" bind:tap="login">登录</button>
 	</view>
 
-	<!-- <view class="login_text">
-		<view>
+	<view class="login_text">
+		<!-- <view>
 			<navigator url="../register/register" open-type="redirect" hover-class="navigator-hover">新用户注册</navigator>
 			<text class="divider">/</text>
 			<navigator url="../resetpassword/resetpassword" open-type="redirect" hover-class="navigator-hover">找回密码</navigator>
-		</view>
+		</view> -->
 		<navigator url="../login_token/login_token" open-type="redirect" hover-class="navigator-hover">使用Token登录</navigator>
-	</view> -->
+	</view>
 	<template is="toast" data="{{ ..._toast_ }}"></template>
 </view>

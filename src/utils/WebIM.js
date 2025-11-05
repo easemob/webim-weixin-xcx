@@ -1,4 +1,4 @@
-import websdk from "../sdk/Easemob-chat-4.17.0";
+import websdk from "../sdk/Easemob-chat-4.17.0.js";
 import config from "./WebIMConfig";
 
 console.group = console.group || {};
@@ -230,17 +230,18 @@ WebIM.EmojiObj = {
 
 WebIM.conn = new WebIM.connection({
   appKey: WebIM.config.appkey,
-  isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
-  https: true, //typeof WebIM.config.https === "boolean" ? WebIM.config.https : location.protocol === "https:",
+  isHttpDNS: false,
+  // isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+  // https: true, //typeof WebIM.config.https === "boolean" ? WebIM.config.https : location.protocol === "https:",
   url: WebIM.config.socketServer,
   apiUrl: WebIM.config.apiURL,
-  isAutoLogin: false,
-  heartBeatWait: 30000, //WebIM.config.heartBeatWait,
-  autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
-  autoReconnectInterval: WebIM.config.autoReconnectInterval,
-  isDebug: WebIM.config.isDebug,
-  deviceId: WebIM.config.deviceId,
-  enableReportLogs: true,
+  // isAutoLogin: false,
+  // heartBeatWait: 30000, //WebIM.config.heartBeatWait,
+  // autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+  // autoReconnectInterval: WebIM.config.autoReconnectInterval,
+  // isDebug: WebIM.config.isDebug,
+  // deviceId: WebIM.config.deviceId,
+  enableReportLogs: false,
 });
 
 // async response

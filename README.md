@@ -7,10 +7,16 @@ demo 包含以下功能
   - 通讯录
   - 通知（加好友、加群）
   - 设置
-# 在本地跑起来
-拉取代码，导入开发者工具即可运行起来。
 
-# 数据结构
+## 在本地跑起来
+
+1. 拉取代码，导入开发者工具
+2. 把 src/utils/WebIMConfig 文件中的`your#appkey`替换成自己的 appKey
+3. 在环信控制台[创建应用](https://doc.easemob.com/product/console/app_create.html) 并 获取 [App Key](https://doc.easemob.com/product/console/app_manage.html)；
+4. 在 [环信控制台](https://console.easemob.com/user/login) 创建用户，获取用户 ID 和用户 token。详见 [创建用户文档](https://doc.easemob.com/product/console/operation_user.html#%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7)。
+5. 运行项目，输入用户ID 和密码/token 进行登录
+
+## 数据结构
 ```
 登录页：
 		login: {
@@ -56,7 +62,7 @@ globalData:
    myUsername: ''    //缓存登录用户名	   
    yourname + myName:''  //以用户名跟好友名为key来缓存聊天记录
 ```
-# 项目结构
+## 项目结构
 ```shell
 |- comps 自定义组件目录
     |- addfriend 添加好友页
@@ -86,10 +92,10 @@ globalData:
 |-app.wxss 一些全局样式
 |-project.config.json工程的一些配置，和开发者工具 “详情” 中的设置一样
 ```
-# 可以复用的代码
+## 可以复用的代码
 如果想快速搭建起一个有im能力的小程序，可以选择复用demo中的代码，其中utils以帮助快速集成sdk，comps > chat是聊天页。当然其他部分需要复用的，如常见的测滑删除、联系人按字母分类、通知的订阅模式也可以去具体文件去找。
 
-# 常见问题
+## 常见问题
 + 怎么发扩展消息？
 
   构造消息的时候msg.set(option)， option中传人ext字段，即可发送扩展消息,具体可以查看[文档](http://docs-im.easemob.com/im/applet/message#%E5%8F%91%E9%80%81%E6%96%87%E6%9C%AC%E6%B6%88%E6%81%AF_%E5%8D%95%E8%81%8A)。
@@ -99,7 +105,7 @@ globalData:
 + 陌生人消息不上屏？
 
   目前demo并没有去实现，现在的逻辑是会话列表是从好友列表去查的，可以看pages/chat/chat.js getChatList()。
-# 遇到的一些坑
+## 遇到的一些坑
 - 聊天页面布局，input focus时页面滑动，光标会错位，官方的说法是，input focus时不能使用动画。
 - 在scroll-view中无法触发onPullDownRefresh。
 - margin-bottom 只有在下面还有元素时才生效。
@@ -109,5 +115,5 @@ globalData:
 - 适配iphone X 使用wx.getSystemInfo() 返回的model在工具上是'iPhone X' 在真机上后面还会有其他字符，不要精确匹配。
 
 坑还有很多，大家慢慢趟吧
-# 写在最后
-这期小程序demo只完善了单聊部分，后面还要优化群组的一些功能，关于图片消息缓存的问题，目前图片都是压缩过的，大约在200k左右，如果要做缓存自己可以使用storage去实现，但是要注意小程序只有10M的存储空间，还有一些功能demo没有去实现但是sdk是支持的，要用到的话大家可以去查[文档](https://webim.easemob.com/sdk/jsdoc/out/connection.html)
+## 写在最后
+这期小程序demo只完善了单聊部分，后面还要优化群组的一些功能，关于图片消息缓存的问题，目前图片都是压缩过的，大约在200k左右，如果要做缓存自己可以使用storage去实现，但是要注意小程序只有10M的存储空间，还有一些功能demo没有去实现但是sdk是支持的，要用到的话大家可以去查[文档](https://doc.easemob.com/document/applet/overview.html)

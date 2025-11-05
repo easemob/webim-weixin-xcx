@@ -13,7 +13,7 @@
 		<button hover-class="btn_hover" bind:tap="login">登录</button>
 	</view>
 	<view class="login_text">
-		<navigator url="../register/register" open-type="redirect" hover-class="navigator-hover">新用户注册</navigator>
+		<!-- <navigator url="../register/register" open-type="redirect" hover-class="navigator-hover">新用户注册</navigator> -->
 		<navigator url="../login/login" open-type="redirect" hover-class="navigator-hover">使用密码登录</navigator>
 	</view>
 	<template is="toast" data="{{ ..._toast_ }}"></template>
