@@ -1,7 +1,6 @@
 # 介绍
 ******
-环信小程序demo是基于环信im SDK开发的一款即时通讯的小程序。这个demo可以帮助开发者们更轻松的集成环信SDK。可扫码体验：
-![huanxinIM](./src/images/huanxindemo.jpg)
+环信小程序demo是基于环信im SDK开发的一款即时通讯的小程序。这个demo可以帮助开发者们更轻松的集成环信SDK。
 demo 包含以下功能
   - 最近通话
   - 通讯录
